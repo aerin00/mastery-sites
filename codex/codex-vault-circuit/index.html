@@ -1,0 +1,1256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Codex Vault Circuit — Obsidian + AI Mastery</title>
+<style>
+/* =====================================================================
+   TOKENS — light palette lives on the bare :root.
+   >>> CHOOSE PER SUBJECT: the 6 values marked [PICK] below. <<<
+   Derive them from the subject's own world. Keep neutrals biased
+   toward the accent hue. Everything else in this file is structural
+   and should carry over unchanged.
+   ===================================================================== */
+:root{
+  /* [PICK] grounds — page, cards, raised surfaces */
+  --bg:#EDF0EE; --paper:#F9FBFA; --raise:#FFFFFF;
+  --ink:#121A19; --body:#25322F; --muted:#5C6B67; --faint:#849490;
+  --line:#D3DAD7; --line-2:#BCC6C2;
+  /* [PICK] structural accent — links, active nav, lab cards */
+  --accent:#6554C0; --accent-soft:#E9E5FA; --accent-ink:#44358F;
+  /* [PICK] signal — current state, eyebrows, the one loud thing */
+  --signal:#A95D16; --signal-soft:#F8E7D6;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#111A19; --code-ink:#DCE7E4; --code-line:#24322F;
+  --shadow:0 1px 2px rgba(18,26,25,.05), 0 8px 24px -12px rgba(18,26,25,.14);
+  --rail:264px;
+  /* [PICK] type: display / body / mono. Three roles, chosen deliberately. */
+  --f-disp:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:ui-serif,Georgia,Cambria,serif;
+  --f-mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+    --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#B9AEFF; --accent-soft:#25204B; --accent-ink:#D8D2FF;
+    --signal:#F0A45E; --signal-soft:#3A2515;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+  --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#B9AEFF; --accent-soft:#25204B; --accent-ink:#D8D2FF;
+  --signal:#F0A45E; --signal-soft:#3A2515;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname"></span><small id="brandtag"></small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search &middot; / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">&#9686;</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"></div>
+    <div class="legend" id="legend"></div>
+  </nav>
+  <main id="view"></main>
+</div>
+
+
+<script>
+/* =====================================================================
+   CONTENT — replace everything below this banner.
+   Three example phases show every field. Delete them and write yours.
+   See the Mastery Site build specification for the full rules. The short version:
+     - 8–14 phases. Phase 00 = read the instrument. Phase 01 = operate it
+       without configuring it. Last = capstone with the exclusions stated.
+     - `id` is STABLE and drives progress keys. `n` is cosmetic.
+     - A gotcha is only a gotcha if it fails SILENTLY.
+     - Every lab has one step that deliberately breaks something.
+     - Quiz items are recall, not recognition. They become the Drill deck.
+     - Assert only what you verified. Mark the rest <span class="unv">unverified</span>.
+   ===================================================================== */
+
+if (false) { // Retained scaffold example data, never executed.
+const SITE = {
+  key:   'mastery-scaffold-example',  // localStorage namespace. Change per site.
+  title: 'Control Stack',             // 2–4 word noun phrase. Reads like a product.
+  tag:   'SUBJECT',                   // small caps label beside the name
+  spine: 'Control layer',             // the rail legend heading — name your axis
+  layers: [                           // must match the `layer` values used below
+    { id:'l1', label:'Operating — you, live',   token:'warn'   },
+    { id:'l2', label:'Soft — instruction',      token:'accent' },
+    { id:'l3', label:'Hard — enforcement',      token:'stop'   },
+    { id:'l4', label:'Scale — isolation',       token:'signal' }
+  ],
+  refLede: 'Tables you will come back to, and the branching questions that pick a tool for you. Everything here is verified against primary sources.',
+  auditTitle: 'The source, checked',       // Audit mode headline
+  verifiedAgainst: 'Verified against &lt;primary sources&gt;, &lt;month year&gt;.'
+};
+
+const C = (...l) => l.join('\n');            // build code blocks from lines
+const K = s => '<code class="k">' + s + '</code>';   // inline highlighted code
+
+const PHASES = [
+{
+  id:'p0', n:'00', title:'Read the instrument', layer:'l1', layerLabel:'Operating',
+  time:'~30 min', pre:'None',
+  objective:'At any moment you can say <b>what state the system is in and why</b>. Every later phase measures against this baseline.',
+  concepts:[
+    {h:'A concept with prose only',
+     p:'<p>Second person, present tense, declarative. Every concept answers one question: <b>what goes wrong if I do not know this?</b> If there is no answer, it is trivia — cut it.</p><p>Inline code uses '+K('--flag')+' for emphasis or plain <code>code</code> tags otherwise. Never backticks — this file is a JS template literal.</p>'},
+    {h:'A concept with a table',
+     p:'<p>Reach for a table whenever more than three things run in parallel. Prose loses there, always.</p>',
+     table:{head:['Thing','Does','Costs'],rows:[
+       ['<code>alpha</code>','The first thing','Cheap'],
+       ['<code>beta</code>','The second thing','<b>Expensive</b>'],
+       ['<code>gamma</code>','The third thing','Free']]}},
+    {h:'A concept with a code block',
+     code:C('# code blocks are complete and runnable.',
+            '# no "..." placeholders in anything meant to be pasted.',
+            'command --flag value'),
+     p:'<p>Prose can come before or after the code. Order rendered is: <code>p</code> → <code>table</code> → <code>code</code> → <code>p2</code> → <code>code2</code>.</p>'},
+    {h:'A concept with two beats',
+     p:'<p>Use <code>p2</code> and <code>code2</code> when one snippet needs a follow-up point rather than a whole new concept.</p>',
+     code:C('first snippet'),
+     p2:'<p>The second beat lands here.</p>',
+     code2:C('second snippet')}
+  ],
+  lab:{title:'Baseline the real thing',
+    steps:[
+      'Do this against something <b>real that you own</b>, never a toy fixture.',
+      'Record a starting measurement. Write the number down.',
+      'Change one thing.',
+      'Measure again and compare.',
+      '<b>Break it deliberately:</b> remove the guard you just added and watch what happens with nothing catching it. Felt failure modes stick; described ones do not.'],
+    verify:'A falsifiable end state — "you have a number for X" — not "you understand X".'},
+  gotchas:[
+    {s:'trap',t:'Silently wrong is the only kind that counts',d:'If it errors loudly, that is documentation, not a gotcha. Hunt specifically for things that appear to work and do not.'},
+    {s:'cost',t:'Works, but expensive',d:'Tokens, money, latency, or attention. Name the cost and when it is worth paying.'},
+    {s:'stale',t:'Was true, changed, still widely repeated',d:'These are the highest-value corrections you can offer, because the reader is carrying the wrong belief right now.'},
+    {s:'ok',t:'A principle worth stating',d:'Not a failure mode. Use this tag sparingly or it dilutes the others.'}
+  ],
+  quiz:[
+    {q:'Write recall questions, not recognition ones. "Name the five things that load at startup" — not "Does the config load at startup?"',a:'The answer is complete enough to serve as the reference on its own, because people read these instead of scrolling back. These become the Drill deck, so they must stand without their phase around them.'},
+    {q:'A second question.',a:'Two to seven per phase.'}
+  ],
+  docs:[['Primary source','https://obsidian.md/help'],['Another primary source','https://obsidian.md/changelog/']]
+},
+
+{
+  id:'p1', n:'01', title:'Operate it, unmodified', layer:'l1', layerLabel:'Operating',
+  time:'1–2 h', pre:'Phase 00',
+  objective:'Run the default loop well <b>before configuring anything</b>. Most of the leverage in any tool lives here, and putting configuration first teaches people to solve problems they do not have yet.',
+  concepts:[
+    {h:'The default loop',
+     p:'<p>Name the loop the tool actually runs. Every primitive taught later is an intervention at one point in it, and knowing which point tells the learner which primitive to reach for.</p>'}
+  ],
+  lab:{title:'The same task, three ways',
+    steps:['Do it the naive way and measure.','Do it the recommended way and measure.','Compare, and form your own default.'],
+    verify:'You have an evidence-based default, not a remembered rule.'},
+  gotchas:[{s:'trap',t:'A widely repeated thing that is not true',d:'Name it, correct it, say what is true instead.'}],
+  quiz:[{q:'A checkpoint question.',a:'Its answer.'}],
+  docs:[['Primary source','https://obsidian.md/help']]
+},
+
+{
+  id:'p9', n:'02', title:'The capstone', layer:'l1', layerLabel:'Capstone',
+  time:'Half a day', pre:'All phases',
+  objective:'Assemble everything into one working setup, and <b>state what this path deliberately does not cover</b>.',
+  concepts:[
+    {h:'The invariants, restated with teeth',
+     p:'<ol><li>The two or three rules that survive every specific technique in this curriculum.</li><li>Stated so they are actionable, not aspirational.</li></ol>'},
+    {h:'What is deliberately out of scope',
+     p:'<p>Name the excluded territory and where its documentation lives. A curriculum that covers everything covers nothing, and the reader deserves to know the edge of the map.</p>'}
+  ],
+  lab:{title:'Build it for real',
+    steps:['Work the ship checklist top to bottom against one real project.','Hand it to someone else cold and watch where they stumble. Every stumble is a missing line.'],
+    verify:'Someone else got productive without asking you a question.'},
+  gotchas:[{s:'ok',t:'Configuration is a response to evidence',d:'Every entry should trace to a specific thing that went wrong twice. Speculative configuration is configuration you will not maintain.'}],
+  quiz:[{q:'State the central invariant precisely.',a:'The one-sentence version the learner should be able to produce cold.'}],
+  docs:[['Primary source','https://obsidian.md/help']]
+}
+];
+
+/* ---------------- decision trees: "which thing do I use for X" ---------------- */
+const TREES = [
+{title:'Where does this belong?', rows:[
+  ['Needed every single time','<code>option-a</code>','One line on why'],
+  ['Needed only in one context','<code>option-b</code>','Loads on match'],
+  ['Needed occasionally, on demand','<code>option-c</code>','Cheap until used'],
+  ['It must happen, no exceptions','<code>option-d</code>','Prose is not enforcement'],
+  ['It floods your working space','<code>option-e</code>','Only the summary returns']
+]},
+{title:'I am hitting <the most common friction>', rows:[
+  ['First move, always','Measure it','Find the actual cause. Do not guess'],
+  ['Cause A','The fix for A','Why'],
+  ['Cause B','The fix for B','Why'],
+  ['You reached for the dangerous escape hatch','Stop','What to use instead, and why']
+]}
+];
+
+/* ---------------- reference tables: pure lookup ---------------- */
+const REF = [
+{id:'r1', title:'The single most important table', note:'The one you will come back to most. Put it first.',
+ head:['#','Step','Can it approve?','Can it block?'],
+ rows:[['1','First step','Yes','Yes'],
+       ['2','Second step','No','Yes'],
+       ['3','Third step','Yes','No']]},
+{id:'r2', title:'Limits and defaults', note:'Every number that bounds behaviour.',
+ head:['Limit','Value'],
+ rows:[['A cap','<b>8</b>, then overridden'],
+       ['A lifetime','7 days, then self-deletes'],
+       ['A ceiling','20 concurrent']],
+ foot:'Optional footnote for a caveat that does not fit a cell.'}
+];
+
+/* ---------------- audit: the source, checked ----------------
+   OPTIONAL. Delete this whole constant and the Audit mode button
+   disappears automatically. Include it only when a source document
+   exists AND you actually verified it against primary sources.
+   Tags: holds | stale | wrong | gap
+   -------------------------------------------------------------- */
+const AUDIT = {
+ intro:'One paragraph: what the source is, whether it holds up overall, and how the findings below are sorted.',
+ groups:[
+ {label:'Holds up', tag:'holds', items:[
+   {c:'The claim, quoted or paraphrased tightly.',f:'Correct — and often, correct but stronger than stated. Say what the fuller version is.'}
+ ]},
+ {label:'Stale or incomplete', tag:'stale', items:[
+   {c:'A claim that was true and has moved.',f:'What is true now, and <b>why the gap matters</b> to someone acting on the old version.'}
+ ]},
+ {label:'Wrong', tag:'wrong', items:[
+   {c:'A claim that is not correct.',f:'The correction, plus the consequence. Mark anything you could not check as <span class="unv">unverified</span> rather than asserting it is wrong.'}
+ ]},
+ {label:'Missing entirely', tag:'gap', items:[
+   {c:'A whole mechanism the source does not mention.',f:'What it is and why its absence changes the picture the source paints. This section is usually the most valuable one in the audit.'}
+ ]}
+ ]
+};
+} // end retained scaffold example data
+
+const SITE = {
+  key:'vault-circuit-v1',
+  title:'Codex Vault Circuit',
+  tag:'CODEX-CENTRIC · OBSIDIAN + AI',
+  spine:'Knowledge loop',
+  layers:[
+    {id:'capture',label:'Capture — make evidence durable',token:'signal'},
+    {id:'shape',label:'Shape — make it navigable',token:'accent'},
+    {id:'retrieve',label:'Retrieve — find the right context',token:'warn'},
+    {id:'connect',label:'Connect — grant bounded access',token:'stop'},
+    {id:'prove',label:'Prove — verify and maintain',token:'ok'}
+  ],
+  refLede:'A Codex-first working reference for choosing the smallest reliable layer. Commands and ecosystem facts are dated; stable concepts are not.',
+  auditTitle:'Source audit',
+  verifiedAgainst:'Audited against the supplied guides and primary Obsidian and OpenAI documentation on 2026-08-21.'
+};
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">'+s+'</code>';
+
+const PHASES = [
+{id:'p0',n:'00',title:'Read your vault',layer:'capture',layerLabel:'Capture',time:'45 min',pre:'None',
+ objective:'Identify <b>what is authoritative, derived, sensitive, and reversible</b> before you let a tool touch a vault.',
+ concepts:[
+  {h:'The vault is a folder',p:'<p>A vault is ordinary files plus application configuration. Notes are the source of truth; indexes, embeddings, caches, and summaries are derived views that can be rebuilt.</p>'},
+  {h:'Practice before production',p:'<p>Use a disposable practice vault for every unfamiliar plugin, agent connection, or bulk operation. It gives you a baseline and a reset path.</p>'},
+  {h:'A data boundary is a design artifact',p:'<p>Write what an AI may read, what it may propose, and what it may change. A permission prompt is not a boundary if the scope was never chosen.</p>'},
+  {h:'Provenance survives the summary',p:'<p>Keep the original source, capture date, and your interpretation distinct. A fluent summary without its source becomes hard to trust and harder to correct.</p>'}
+ ],
+ lab:{title:'Create a practice boundary',steps:[
+  'Create a small practice vault with three Markdown notes and one attachment.',
+  'Open one note outside Obsidian and make a visible edit, then confirm it appears in the app.',
+  'Write a data-boundary note: allowed reads, prohibited reads, allowed writes, and recovery method.',
+  '<b>Break it deliberately:</b> edit a derived summary so it contradicts its source note, then identify which file wins.',
+  'Make a backup copy and record its location.'
+ ],verify:'You can point to the authoritative note, the derived artifact, the boundary note, and the backup without guessing.'},
+ gotchas:[
+  {s:'trap',t:'A cache looks more current than the note',d:'A generated index can return stale text without any visible error. When sources disagree, inspect the Markdown file before changing the system.'},
+  {s:'trap',t:'A permission prompt hides a broad scope',d:'A tool may succeed with access to more of the vault than the task needs. Success does not prove the scope was safe.'},
+  {s:'cost',t:'Testing in the real vault teaches the wrong lesson',d:'A successful experiment may leave unwanted edits, cache files, or sync churn. The practice vault makes failure cheap.'},
+  {s:'ok',t:'Reversibility is a feature',d:'Every early experiment needs a bounded target, a visible change, and a recovery route.'}
+ ],
+ quiz:[
+  {q:'Which artifact is authoritative when a note and a search index disagree?',a:'The Markdown note is authoritative. The index is a derived artifact that must be rebuilt or refreshed from the note.'},
+  {q:'Name the four parts of a useful AI data boundary.',a:'Allowed reads, prohibited reads, allowed writes, and a recovery method.'},
+  {q:'Why use a practice vault before connecting an agent?',a:'It bounds exposure and provides a resettable place to observe permissions, retrieval, and failure modes.'}
+ ],
+ docs:[['Obsidian Help','https://obsidian.md/help'],['Obsidian Changelog','https://obsidian.md/changelog/']]
+},
+{id:'p1',n:'01',title:'Work in plain files',layer:'capture',layerLabel:'Capture',time:'75 min',pre:'Phase 00',
+ objective:'Use Markdown, headings, links, and attachments well enough to <b>reconstruct a small vault from the filesystem</b>.',
+ concepts:[
+  {h:'Headings are retrieval handles',p:'<p>Headings divide a note into addressable, scannable units. They help people navigate and give future retrieval systems meaningful chunk boundaries.</p>'},
+  {h:'Links carry meaning',p:'<p>A wiki-link records a relationship. An embed displays another note. Use links to connect ideas and embeds to reuse a canonical passage without copying it.</p>'},
+  {h:'Attachments need a home',p:'<p>Store attachments predictably and preserve where they came from. A screenshot without a source or date is evidence with a shrinking half-life.</p>'},
+  {h:'Names are part of the interface',p:'<p>Clear file names and section titles improve exact search, human scanning, and agent citations. Rename deliberately and verify links after moves.</p>'}
+ ],
+ lab:{title:'Build a three-note trail',steps:[
+  'Create Concept, Example, and Review notes in the practice vault.',
+  'Add headings, a source URL, a code block, and one attachment.',
+  'Link Concept to Example and embed one heading from Example into Review.',
+  '<b>Break it deliberately:</b> rename a linked note outside Obsidian, then inspect the now-broken link.',
+  'Repair it and write one sentence on why the link exists.'
+ ],verify:'You can locate every note and attachment from the filesystem, and every internal link resolves after the repair.'},
+ gotchas:[
+  {s:'trap',t:'A copied passage silently forks',d:'Duplicated text may look like a shared reference but will drift. Embed or link the canonical passage when it must stay synchronized.'},
+  {s:'trap',t:'A rename outside the app can strand links',d:'The filename changes cleanly while wiki-links retain the old target. Check backlinks or search for the former name.'},
+  {s:'cost',t:'Attachment sprawl defeats later retrieval',d:'Unlabeled screenshots and PDFs are expensive to identify, cite, and exclude from AI context.'},
+  {s:'ok',t:'Readable names beat clever codes',d:'Use a stable naming convention only where it improves recognition or sorting. Do not manufacture taxonomy before you need it.'}
+ ],
+ quiz:[
+  {q:'What is the difference between a link and an embed in a vault?',a:'A link records a navigable relationship. An embed displays the target content in the current note while leaving the target canonical.'},
+  {q:'Why do headings matter to retrieval?',a:'They make notes scannable and provide semantic boundaries for lookup or future chunking.'},
+  {q:'What should you verify after moving or renaming a note?',a:'That links, embeds, attachment references, and backlinks still resolve to the intended target.'}
+ ],
+ docs:[['Advanced formatting syntax','https://obsidian.md/help/advanced-syntax'],['Obsidian Help','https://obsidian.md/help']]
+},
+{id:'p2',n:'02',title:'Shape the knowledge',layer:'shape',layerLabel:'Shape',time:'90 min',pre:'Phase 01',
+ objective:'Choose folders, properties, tags, and links so a note is <b>easy to find without over-organizing it</b>.',
+ concepts:[
+  {h:'Four primitives, four jobs',table:{head:['Primitive','Best for','Failure when overused'],rows:[
+   ['Folders','one physical home','deep paths hide related notes'],
+   ['Tags','flat labels and facets','synonym and spelling sprawl'],
+   ['Links','meaningful relationships','decorative graph noise'],
+   ['Properties','structured fields and queries','schema that nobody maintains']
+  ]}},
+  {h:'Properties are a contract',p:'<p>Use a small vocabulary for fields such as <code>type</code>, <code>status</code>, <code>source</code>, and <code>reviewed</code>. A field earns its place only if it changes a query, a decision, or a review.</p>'},
+  {h:'Indexes are maps, not warehouses',p:'<p>Use an index or map-of-content to orient a person around a topic. Do not turn it into a duplicate list of every note.</p>'},
+  {h:'Bases expose structured views',p:'<p>Use a Base when you need a view over notes and their properties. It does not turn a Markdown vault into a transactional database.</p>'}
+ ],
+ lab:{title:'Make a navigable mini-system',steps:[
+  'Create concept, lab, and source-note templates with a small frontmatter vocabulary.',
+  'Create five notes and apply only fields you can explain.',
+  'Make an index note that links to each note by its role.',
+  'Create a Base view that filters by status.',
+  '<b>Break it deliberately:</b> create two spellings for the same status and observe the split result.'
+ ],verify:'One Base view and one index note answer different navigation questions, and the property vocabulary has no accidental duplicate value.'},
+ gotchas:[
+  {s:'trap',t:'A tag synonym creates two invisible buckets',d:'Both tags look reasonable, yet a query only returns one spelling. Controlled vocabularies prevent silent fragmentation.'},
+  {s:'trap',t:'A property without a query becomes abandoned metadata',d:'The note appears structured, but the field does no work and drifts into inconsistent values.'},
+  {s:'cost',t:'Deep folders make one future move expensive',d:'A note with one home can have many relationships. Do not model all relationships as a path.'},
+  {s:'ok',t:'Discover structure from use',d:'Start simple, then promote repeated decisions into properties, templates, or indexes.'}
+ ],
+ quiz:[
+  {q:'Name the four organizational primitives and the job each does.',a:'Folders give one physical home; tags provide flat facets; links express relationships; properties provide structured fields and queries.'},
+  {q:'When does a property deserve to exist?',a:'When it changes a query, a decision, or a review. Otherwise it is likely decorative metadata.'},
+  {q:'What does a Base provide that an index note does not?',a:'A structured, queryable view over note properties. An index note provides a human-curated map and narrative orientation.'}
+ ],
+ docs:[['Introduction to Bases','https://obsidian.md/help/bases'],['Obsidian Help','https://obsidian.md/help']]
+},
+{id:'p2v',n:'03',title:'Build your vault',layer:'shape',layerLabel:'Shape',time:'90 min',pre:'Phase 02',
+ objective:'Build a small, usable vault scaffold with <b>one inbox, named homes, a starter template, and a map you can maintain</b>.',
+ concepts:[
+  {h:'Start with a small numbered scaffold',table:{head:['Path','Job','First item'],rows:[
+   ['<code>00 Inbox/</code>','unprocessed capture','one source note'],
+   ['<code>10 Projects/</code>','time-bounded outcomes','one active project note'],
+   ['<code>20 Areas/</code>','ongoing responsibilities','one area index'],
+   ['<code>30 Resources/</code>','reference material and learning','one concept note'],
+   ['<code>40 Archive/</code>','inactive material kept for history','one completed note'],
+   ['<code>90 System/Templates/</code>','reusable note shapes','one note template'],
+   ['<code>90 System/Attachments/</code>','images, PDFs, and other files','one labeled attachment']
+  ]}},
+  {h:'Folders give a note one home, not its whole meaning',p:'<p>Use the scaffold as a starting address system. Links, properties, and indexes describe the other ways a note matters. Do not create a folder for every topic, tag, or relationship.</p>'},
+  {h:'Use one starter note template',p:'<p>Begin with only the fields that guide a next action or a query. Add fields after repeated use proves they are necessary.</p>',code:C('---','type: note','status: inbox','source_url:','reviewed:','---','','# Untitled','', '## Why this matters','', '## Notes')},
+  {h:'Make Home a map, not a dashboard project',p:'<p>Create one Home note with links to the Inbox, current projects, areas, resources, archive, and templates. It is the human entry point, while properties and Bases provide structured views.</p>'},
+  {h:'Add complexity only after friction repeats',p:'<p>Do not install a plugin, create a new folder class, or expand the schema because it looks complete. Promote a pattern only after the same problem appears more than once.</p>'}
+ ],
+ lab:{title:'Build a first real vault',steps:[
+  'Create the seven folders in the starter scaffold inside a brand-new or disposable vault. Do not apply this exercise to an existing vault without a separate migration plan.',
+  'Create a <code>Home.md</code> note that links to each top-level folder and names what belongs there.',
+  'Create <code>90 System/Templates/Note.md</code> using the starter template, then create one note from it.',
+  'Add one project note, one source note, one concept note, and one labeled attachment in their named homes.',
+  'Create a Base or search view that returns notes with <code>status: inbox</code>.',
+  '<b>Break it deliberately:</b> change one note so <code>status</code> is a list while the other notes use plain text, then observe the inconsistent result and restore one type.'
+ ],verify:'Home links to every starter area, the inbox query returns the intended note, and every test note has one physical home plus visible links or properties.'},
+ gotchas:[
+  {s:'trap',t:'The inbox becomes permanent storage',d:'Items still appear captured, so no error forces a decision. A weekly review is what turns the inbox into a queue instead of an archive.'},
+  {s:'trap',t:'One property key silently has two types',d:'A text value in one note and a list in another can split query behavior without an obvious warning. Decide the type once and keep it consistent.'},
+  {s:'cost',t:'A folder tree becomes a second classification system',d:'Deep paths ask you to choose one meaning for a note, then make future moves and refactors expensive.'},
+  {s:'ok',t:'The scaffold is a starting address, not doctrine',d:'Keep it while it reduces decisions. Simplify it if a folder stays empty or never changes a retrieval or review choice.'}
+ ],
+ quiz:[
+  {q:'Name the seven starter locations in the new-vault scaffold and the job of each.',a:'00 Inbox holds unprocessed capture; 10 Projects holds time-bounded outcomes; 20 Areas holds ongoing responsibilities; 30 Resources holds reference material; 40 Archive holds inactive history; 90 System/Templates holds reusable note shapes; 90 System/Attachments holds labeled files.'},
+  {q:'What belongs in a folder versus a link or property?',a:'A folder gives a note one physical home. Links express relationships, and properties support structured queries and review states.'},
+  {q:'When should you add a new folder or property field?',a:'Only after a repeated friction proves it changes a real retrieval, review, or decision. Do not add it merely because a schema looks more complete.'}
+ ],
+ docs:[['Obsidian Help','https://obsidian.md/help'],['Introduction to Bases','https://obsidian.md/help/bases']]
+},
+{id:'p3',n:'04',title:'Close the capture loop',layer:'shape',layerLabel:'Shape',time:'75 min',pre:'Phase 03',
+ objective:'Turn incoming material into <b>source, interpretation, action, and review</b> instead of an unprocessed pile.',
+ concepts:[
+  {h:'Capture is not endorsement',p:'<p>Capture material faithfully first. Mark it as a source. Your interpretation and any decision belong in linked notes so later readers can separate evidence from judgment.</p>'},
+  {h:'Review is a state transition',p:'<p>Use states such as inbox, active, reviewed, parked, and archived only if each state triggers a different next action.</p>'},
+  {h:'Uncertainty belongs beside the claim',p:'<p>Mark unresolved claims inline. A caveat hidden in a separate note does not travel with the copied or retrieved claim.</p>'},
+  {h:'One inbox, one route',p:'<p>Multiple capture sources can be useful, but they need one visible intake destination and one review loop before they become permanent knowledge.</p>'}
+ ],
+ lab:{title:'Process one source end to end',steps:[
+  'Capture a short article or document as a source note with URL or file path and date.',
+  'Create a linked interpretation note containing facts, inferences, and open questions in separate sections.',
+  'Create one action note or task that names the decision owner and next review date.',
+  '<b>Break it deliberately:</b> copy one interpretation into the source note without labeling it, then repair the provenance boundary.',
+  'Move the finished item through your chosen review state.'
+ ],verify:'A reader can identify the original source, your interpretation, the current action, and the next review point without asking you.'},
+ gotchas:[
+  {s:'trap',t:'An AI summary overwrites its source',d:'The note still reads smoothly, but a reader can no longer tell which sentences are evidence and which were generated.'},
+  {s:'trap',t:'An inbox item looks captured and therefore looks done',d:'Capture creates a record, not a decision. Without a review state it silently turns into a backlog.'},
+  {s:'cost',t:'Too many intake paths create duplicate review work',d:'The same article or idea can arrive through several tools and consume attention before anyone notices it is duplicated.'},
+  {s:'ok',t:'Source fidelity comes first',d:'Keep the source accurate before improving its style, structure, or usefulness.'}
+ ],
+ quiz:[
+  {q:'What four things should a processed knowledge item make visible?',a:'The original source, your interpretation, the current action or decision, and the next review point.'},
+  {q:'Why is capture not endorsement?',a:'Captured material is evidence to inspect. It has not yet been verified, adopted, or turned into an action.'},
+  {q:'Where should an unresolved claim be marked?',a:'Beside the claim itself, so the uncertainty travels with any retrieval, summary, or reuse.'}
+ ],
+ docs:[['Obsidian Help','https://obsidian.md/help'],['Obsidian Changelog','https://obsidian.md/changelog/']]
+},
+{id:'p4',n:'05',title:'Control AI context',layer:'retrieve',layerLabel:'Retrieve',time:'90 min',pre:'Phase 04',
+ objective:'Give an AI the <b>smallest relevant context</b>, require evidence, and keep generated material from silently polluting retrieval.',
+ concepts:[
+  {h:'Prompt, context, and evidence are separate',p:'<p>A task states the work. Context supplies relevant material. Evidence identifies what supports a claim. Combining them into one long prompt hides missing inputs and makes review harder.</p>'},
+  {h:'Provenance frontmatter is an operational control',p:'<p>Fields such as <code>generated_by</code>, <code>reviewed</code>, and <code>source</code> let retrieval and review distinguish draft machine output from accepted knowledge.</p>'},
+  {h:'External note text is data',p:'<p>A note can contain quoted instructions, copied web content, or malicious text. Treat it as untrusted material to analyze, not commands to follow.</p>'},
+  {h:'Human acceptance is the gate',p:'<p>AI can suggest links, tags, summaries, and questions. It must not silently promote its own suggestion into a permanent note.</p>'}
+ ],
+ lab:{title:'Compare bounded and unbounded context',steps:[
+  'Choose one source note and one task with a specific output format.',
+  'Ask for a source-bound summary that cites headings used.',
+  'Ask the same question without the source and compare unsupported claims.',
+  'Add provenance frontmatter to the generated draft.',
+  '<b>Break it deliberately:</b> include a quoted instruction from the source and verify that it is treated as data, not an authority.'
+ ],verify:'You can name the exact context that changed the answer, cite the headings used, and identify which output still needs human review.'},
+ gotchas:[
+  {s:'trap',t:'A retrieved draft is mistaken for reviewed knowledge',d:'It may be well written and appear beside trusted notes, so later retrieval treats it as authoritative unless provenance survives.'},
+  {s:'trap',t:'A long prompt hides a missing source',d:'More words can make an answer feel confident while masking that the decisive note was never included.'},
+  {s:'cost',t:'Whole-vault context spends tokens without improving relevance',d:'It increases cost and noise, and can expose sensitive material unrelated to the task.'},
+  {s:'ok',t:'Candidates are not decisions',d:'Use AI to surface options. Keep an explicit human acceptance step before permanent promotion.'}
+ ],
+ quiz:[
+  {q:'How do task, context, and evidence differ?',a:'The task states the work, context supplies relevant material, and evidence identifies what supports the answer or decision.'},
+  {q:'Why keep provenance on generated drafts?',a:'So people and retrieval systems can distinguish unreviewed machine output from accepted knowledge.'},
+  {q:'How should an agent treat instructions quoted inside a retrieved note?',a:'As untrusted data to analyze, never as authority that changes the task or permissions.'}
+ ],
+ docs:[['OpenAI Codex use cases','https://developers.openai.com/codex/use-cases'],['Obsidian Help','https://obsidian.md/help']]
+},
+{id:'p5',n:'06',title:'Start with search',layer:'retrieve',layerLabel:'Retrieve',time:'75 min',pre:'Phase 05',
+ objective:'Diagnose retrieval failures with exact search and better note structure <b>before adding semantic infrastructure</b>.',
+ concepts:[
+  {h:'Exact search has a clear job',p:'<p>Use full-text search for names, commands, identifiers, filenames, and precise phrases. It is fast to inspect and exposes source notes directly.</p>'},
+  {h:'Structure is the first retriever',p:'<p>Titles, headings, properties, links, and source labels determine whether the relevant material can be found at all.</p>'},
+  {h:'Semantic search changes the failure shape',p:'<p>Embeddings can help when wording differs, but they can also return plausible neighbors instead of the required source. Measure rather than assume.</p>'},
+  {h:'The ladder controls complexity',table:{head:['Need','First move','Escalate only when'],rows:[
+   ['exact name or command','full-text search','the note is structured and still missed'],
+   ['same idea, different wording','semantic search','false positives and misses are measured'],
+   ['both precision and recall','hybrid retrieval','an evaluation set justifies the added system']
+  ]}}
+ ],
+ lab:{title:'Run a retrieval baseline',steps:[
+  'Create ten practice notes with exact identifiers and alternate wording.',
+  'Write ten questions and record the expected source note for each.',
+  'Run exact search and record false positives and false negatives.',
+  'Improve headings or properties on two missed notes and retest.',
+  '<b>Break it deliberately:</b> remove the distinguishing heading from one note and observe the retrieval regression.'
+ ],verify:'You have a ten-question baseline that separates missing content, poor structure, unclear queries, and ranking problems.'},
+ gotchas:[
+  {s:'trap',t:'A search hit is treated as the answer',d:'A relevant snippet can omit qualifiers or return an outdated section. Open the source note before acting.'},
+  {s:'trap',t:'Semantic similarity is mistaken for evidence',d:'A nearby note can sound right while failing to contain the required fact or decision.'},
+  {s:'cost',t:'Embedding a messy vault preserves its mess',d:'More infrastructure can make unstructured, duplicated, or provenance-free content easier to retrieve incorrectly.'},
+  {s:'ok',t:'Measure the baseline first',d:'A small evaluation set tells you whether a new retrieval layer solves the problem you actually have.'}
+ ],
+ quiz:[
+  {q:'When is exact search the right first retrieval method?',a:'For precise names, commands, identifiers, filenames, and phrases, especially before a semantic system is justified.'},
+  {q:'What does a ten-question retrieval baseline reveal?',a:'Whether failures come from missing content, poor note structure, unclear queries, indexing, or ranking.'},
+  {q:'Why is semantic similarity not enough?',a:'A semantically nearby result may not contain the evidence, qualifier, or exact decision required.'}
+ ],
+ docs:[['Obsidian CLI','https://obsidian.md/help/cli'],['Obsidian Help','https://obsidian.md/help']]
+},
+{id:'p6',n:'07',title:'Connect Codex safely',layer:'connect',layerLabel:'Connect',time:'90 min',pre:'Phase 06',
+ objective:'Connect <b>Codex</b> to a small practice vault with explicit read and write boundaries before exposing personal knowledge.',
+ concepts:[
+  {h:'Codex is the default client',p:'<p>This curriculum uses Codex as its default agent client. Claude Code examples in the supplied sources are comparison material, not Codex setup instructions. Verify Codex-specific behavior in current official OpenAI documentation before enabling any integration.</p>'},
+  {h:'Client, server, tool, resource',p:'<p>An MCP client is the AI application. A server exposes tools, resources, or prompts. Each tool has its own inputs, outputs, and permission implications.</p>'},
+  {h:'Scope is a security decision',p:'<p>Connection scope answers where a configuration applies and which data it can reach. Prefer the smallest scope that can complete the current lab.</p>'},
+  {h:'Read-only comes first',p:'<p>Retrieval and writing are separate capabilities. Prove that you can find and cite a note before enabling a path that changes it.</p>'},
+  {h:'Client recipes do not transfer automatically',p:'<p>Claude Code commands, Codex workflows, desktop clients, and community servers have different configuration and trust models. Treat Codex as the active client here, then verify its current official recipe before using it.</p>'}
+ ],
+ lab:{title:'Map a read boundary',steps:[
+  'Use only the practice vault from Phase 00.',
+  'Choose one approved agent client and inspect its current official integration documentation.',
+  'Connect the smallest available read-only surface or keep the exercise conceptual if no safe connector is installed.',
+  'Retrieve a known phrase and open the full source note for comparison.',
+  '<b>Break it deliberately:</b> request a write action and confirm that the boundary refuses it or that you stop before approval.'
+ ],verify:'You can draw the path from client to server to note and state every read boundary, write boundary, and approval point.'},
+ gotchas:[
+  {s:'trap',t:'A local server is assumed harmless',d:'Locality does not limit capability. A local server with broad file access can still read or change sensitive data.'},
+  {s:'trap',t:'Read access quietly includes more folders than expected',d:'A connection can succeed while its configured root is broader than the current task.'},
+  {s:'cost',t:'A client-specific command becomes a memorized ritual',d:'The command may change or apply to another client. Learn the connection contract and re-verify syntax at use time.'},
+  {s:'ok',t:'Prove retrieval before mutation',d:'A reliable read-only path, citations, and a small target make later automation safer to evaluate.'}
+ ],
+ quiz:[
+  {q:'Name the roles in an MCP connection.',a:'The client is the AI application; the server exposes capabilities; tools perform operations; resources provide readable context; prompts are reusable templates.'},
+  {q:'Why does a local connection still need a data boundary?',a:'Locality does not limit authority. The connection may still have broad file or API access.'},
+  {q:'What must be verified before enabling writes?',a:'The client-specific documentation, the actual read and write scope, the approval behavior, and the recovery route.'}
+ ],
+ docs:[['MCP introduction','https://modelcontextprotocol.io/docs/getting-started/intro'],['OpenAI Codex use cases','https://developers.openai.com/codex/use-cases']]
+},
+{id:'p7',n:'08',title:'Measure retrieval',layer:'prove',layerLabel:'Prove',time:'90 min',pre:'Phase 07',
+ objective:'Use an evaluation set to decide whether a retrieval change <b>improves the answers you actually need</b>.',
+ concepts:[
+  {h:'Expected sources make testing falsifiable',p:'<p>For each question, record the note or passage that should support a good answer. Without expected evidence, a relevant-looking result is impossible to judge consistently.</p>'},
+  {h:'Recall and precision pull differently',p:'<p>Recall asks whether the needed source appeared. Precision asks whether returned material was useful. A system can improve one while making the other worse.</p>'},
+  {h:'Changes need a baseline',p:'<p>Change one variable at a time, then compare before and after results. Keep the queries, expected notes, and review method stable.</p>'},
+  {h:'Staleness is measurable',p:'<p>Track when a source changed, when an index was rebuilt, and whether the result came from the expected current note.</p>'}
+ ],
+ lab:{title:'Build a ten-query evaluation set',steps:[
+  'Write ten realistic questions with expected source notes and acceptance conditions.',
+  'Run the baseline and record top results, misses, and misleading hits.',
+  'Change one factor: heading structure, chunk boundary, or query wording.',
+  'Rerun the same set and compare source recall and irrelevant material.',
+  '<b>Break it deliberately:</b> alter one expected source without updating the index, then record the stale result.'
+ ],verify:'You can show a before-and-after table and state whether the change improved, degraded, or failed to affect the tested workflow.'},
+ gotchas:[
+  {s:'trap',t:'A better-looking demo hides worse recall',d:'One impressive query can improve while several ordinary queries lose their supporting note.'},
+  {s:'trap',t:'A changed query invalidates the comparison',d:'The result may improve because the question changed, not because the retrieval system did.'},
+  {s:'cost',t:'Complex ranking is added before a simple failure is fixed',d:'Reranking cannot restore evidence that was never captured or given a useful heading.'},
+  {s:'ok',t:'Keep evidence with the score',d:'A number is useful only when you can inspect the returned sources and decide why it changed.'}
+ ],
+ quiz:[
+  {q:'What belongs in a retrieval evaluation case?',a:'A realistic question, expected source note or passage, acceptance conditions, retrieved results, and a dated review outcome.'},
+  {q:'How do recall and precision differ?',a:'Recall measures whether the needed source was found. Precision measures how much returned material was relevant and useful.'},
+  {q:'Why change one retrieval variable at a time?',a:'So the comparison can attribute an improvement or regression to a specific change.'}
+ ],
+ docs:[['Obsidian Changelog','https://obsidian.md/changelog/'],['Introduction to Bases','https://obsidian.md/help/bases']]
+},
+{id:'p8',n:'09',title:'Automate with guardrails',layer:'connect',layerLabel:'Connect',time:'90 min',pre:'Phase 08',
+ objective:'Add a small automation only when it has <b>a bounded target, an approval point, and a recovery route</b>.',
+ concepts:[
+  {h:'Automation follows a proven manual loop',p:'<p>First perform the workflow manually and record the desired result. Only repeated, stable steps should become automated.</p>'},
+  {h:'Instructions are not enforcement',p:'<p>An instruction file explains desired behavior. Permissions, filesystem boundaries, and explicit approval decide what can actually happen.</p>'},
+  {h:'Write-through beats free-form mutation',p:'<p>Route automated drafts into an inbox or review state. Make promotion to permanent knowledge an explicit human decision.</p>'},
+  {h:'Sync is another writer',p:'<p>Bulk changes and multiple sync mechanisms can produce conflicts. Coordinate the owner, active sync engine, and recovery plan before a large write.</p>'}
+ ],
+ lab:{title:'Design one reversible capture automation',steps:[
+  'Choose one repeated capture task and write the manual workflow first.',
+  'Define its input, output folder, naming rule, provenance fields, and human review gate.',
+  'Run it once on a practice vault or a single disposable note.',
+  '<b>Break it deliberately:</b> provide malformed input and verify it fails closed without touching unrelated notes.',
+  'Write reset steps that return the practice vault to its original state.'
+ ],verify:'The automation changes only its named target, records provenance, rejects malformed input safely, and has tested reset steps.'},
+ gotchas:[
+  {s:'trap',t:'A dry run writes a cache or a note anyway',d:'A tool can report a preview while leaving derived or temporary changes. Verify the filesystem after the first run.'},
+  {s:'trap',t:'Two sync engines race on the same files',d:'Each appears healthy until duplicate or conflict files silently enter the vault.'},
+  {s:'cost',t:'A broad automation creates review debt',d:'Fast bulk generation can produce more unreviewed material than the next review cycle can evaluate.'},
+  {s:'ok',t:'The inbox is a safety valve',d:'An inbox keeps capture useful while preserving a human gate before permanent indexing or publication.'}
+ ],
+ quiz:[
+  {q:'What three conditions make a small automation safe to try?',a:'A bounded target, an explicit approval or review point, and a tested recovery route.'},
+  {q:'Why are instructions not enforcement?',a:'They describe desired behavior, but actual permissions and tool boundaries determine what can happen.'},
+  {q:'Why route generated notes through an inbox?',a:'It separates capture from acceptance, preserves provenance, and prevents unreviewed drafts from becoming trusted retrieval material.'}
+ ],
+ docs:[['OpenAI Codex use cases','https://developers.openai.com/codex/use-cases'],['Obsidian CLI','https://obsidian.md/help/cli']]
+},
+{id:'p9',n:'10',title:'Run the circuit',layer:'prove',layerLabel:'Prove',time:'2–3 h',pre:'Phases 00–09',
+ objective:'Run one complete knowledge task from capture to verified action, then <b>teach the system without improvising its boundaries</b>.',
+ concepts:[
+  {h:'The complete loop',p:'<p>Capture research, preserve its source, structure it, retrieve only relevant context, use an agent under a boundary, verify the output, record the decision, and schedule review.</p>'},
+  {h:'The operating manual is the product',p:'<p>A durable system names when to use each layer, who approves changes, what sources are authoritative, and how stale derived artifacts are rebuilt.</p>'},
+  {h:'Stop at the simplest working layer',p:'<p>Mastery includes knowing when exact search, a simple template, or a human review is sufficient. More machinery is not proof of progress.</p>'},
+  {h:'Out of scope',p:'<p>This path does not certify enterprise deployment, full-vault autonomous writing, production-scale vector infrastructure, legal compliance, or every community plugin. Treat each as a new, source-backed project.</p>'}
+ ],
+ lab:{title:'Ship one explainable workflow',steps:[
+  'Capture one real research item into a source note with provenance.',
+  'Create a linked interpretation and a single action or decision.',
+  'Retrieve the source using the smallest appropriate method and cite the supporting heading.',
+  'Use an approved AI client only within the written boundary, then review the output.',
+  '<b>Break it deliberately:</b> remove the source citation from the final result and refuse to promote it until the evidence path is restored.'
+ ],verify:'Another person can use the site and your operating manual to reproduce the workflow, name its boundaries, and recover from the deliberate failure.'},
+ gotchas:[
+  {s:'trap',t:'A coherent workflow hides an uncited decision',d:'The process looks complete until someone asks why a recommendation was made and no source or review record exists.'},
+  {s:'trap',t:'A capstone works once but cannot be repeated',d:'Unrecorded setup details, hidden permissions, or manual fixes make the result non-transferable.'},
+  {s:'cost',t:'The system outgrows its maintenance loop',d:'Every index, template, and automation adds refresh work. Stop adding layers when the review burden exceeds the benefit.'},
+  {s:'ok',t:'A smaller system can be mastered',d:'The right endpoint is a reliable, explainable workflow, not maximum plugin count or automation depth.'}
+ ],
+ quiz:[
+  {q:'State the Vault Circuit in order.',a:'Capture, preserve source, structure, retrieve relevant context, connect under a boundary, verify output, record the decision, and review or update.'},
+  {q:'What is explicitly out of scope for this path?',a:'Enterprise deployment, autonomous full-vault writing, production-scale vector infrastructure, legal compliance, and exhaustive community-plugin coverage.'},
+  {q:'What is the stopping criterion for this curriculum?',a:'A learner can move from a practice vault to a safe, explainable, read-only AI-assisted workflow, prove each step, and know what to learn next.'}
+ ],
+ docs:[['Obsidian Changelog','https://obsidian.md/changelog/'],['OpenAI Codex use cases','https://developers.openai.com/codex/use-cases']]
+}
+];
+
+const TREES = [
+{title:'Where should this knowledge live?',rows:[
+ ['temporary thought or scratch work','Scratch note or project-local file','It is cheap to discard and does not need durable retrieval.'],
+ ['small stable rule for one project','<code>AGENTS.md</code> or project documentation','Keep local operating instructions near the work they govern.'],
+ ['long-lived cross-project knowledge','Obsidian note','It needs provenance, links, and review beyond one codebase.'],
+ ['transactional records or joins','Database or spreadsheet','A Markdown vault is not a replacement for constraints and transactions.'],
+ ['an AI must find it reliably','Structured note plus retrieval path','Add headings, provenance, and the smallest search layer that works.']
+]},
+{title:'Which retrieval method should I use?',rows:[
+ ['exact name, command, identifier, or filename','Full-text search','Exact terms are inspectable and should be the default baseline.'],
+ ['same concept with changed wording','Semantic search','Use only after measuring that exact search misses the intended material.'],
+ ['both exactness and conceptual recall matter','Hybrid retrieval','Combine methods only with an evaluation set and dated evidence.'],
+ ['results look plausible but wrong','Open the source note','A snippet or semantic neighbor is not evidence.'],
+ ['the source is never found','Improve capture and structure first','No ranking method fixes absent or poorly labeled knowledge.']
+]},
+{title:'How should Codex interact with a vault?',rows:[
+ ['learn or inspect a workflow','Read-only practice vault','Establish citations and boundaries before any mutation.'],
+ ['suggest links, tags, or summaries','Draft into an inbox or review state','Candidates require human acceptance before promotion.'],
+ ['repeat a stable manual capture step','Bounded automation','Name target, provenance, approval point, and recovery route.'],
+ ['change many notes or settings','Stop and make a manifest','Bulk work needs explicit scope and reversible verification.'],
+ ['a client recipe is unfamiliar','Read that client’s current official docs','Agent clients and community servers do not share one command model.']
+]},
+{title:'A result is weak. What failed?',rows:[
+ ['required note was absent','Capture failure','Create or recover the authoritative source note.'],
+ ['note exists but search missed it','Structure or index failure','Check title, headings, properties, and index freshness.'],
+ ['result names a nearby but wrong note','Ranking or query failure','Inspect the evaluation case before adding complexity.'],
+ ['answer has no source trail','Evidence failure','Do not promote it until the supporting path is restored.'],
+ ['automation made an unexpected write','Boundary failure','Stop, inspect the target and logs, then restore before retrying.']
+]}
+];
+
+const REF = [
+{id:'r1',title:'Knowledge artifacts',note:'Keep authoritative material separate from generated and derived views.',
+ head:['Artifact','Authoritative?','Required treatment'],rows:[
+ ['Markdown source note','Yes','Preserve source, capture date, and headings.'],
+ ['Interpretation or decision note','Yes, for its author','Link the evidence and label inferences.'],
+ ['Search index or embedding store','No','Rebuild from notes; record freshness.'],
+ ['AI-generated draft','No until reviewed','Keep provenance and route through review.'],
+ ['Backup copy','Recovery artifact','Test that it can be found and restored.']
+]},
+{id:'r2',title:'Retrieval ladder',note:'Escalate only when the preceding layer has a measured failure.',
+ head:['Layer','Use for','Evidence to keep'],rows:[
+ ['Exact search','names, commands, identifiers','query and expected source note'],
+ ['Better structure','missing or unclear notes','heading/property change and retest'],
+ ['Semantic search','wording mismatch','false positives and false negatives'],
+ ['Hybrid retrieval','precision plus recall','stable evaluation set and comparison'],
+ ['Reranking or custom index','persistent measured gaps','cost, freshness, and regression checks']
+]},
+{id:'r3',title:'Integration boundary card',note:'Fill this before enabling a new agent or MCP connection.',
+ head:['Field','Question'],rows:[
+ ['Read scope','Which folders, notes, or resources may it inspect?'],
+ ['Write scope','Which exact targets may it change, if any?'],
+ ['Approval','What requires human confirmation?'],
+ ['Provenance','How will generated material be labeled?'],
+ ['Recovery','How do you undo or rebuild the affected artifacts?'],
+ ['Verification date','When were the client-specific instructions tested?']
+]},
+{id:'r4',title:'Currency classes',note:'Do not let volatile facts masquerade as durable curriculum.',
+ head:['Class','Examples','Review cadence'],rows:[
+ ['Stable concept','Markdown, provenance, read boundary','yearly or when the concept changes'],
+ ['Operational recipe','CLI or client configuration','before use and after relevant changelog changes'],
+ ['Volatile ecosystem fact','plugin version, pricing, compatibility','before publication or recommendation'],
+ ['Unverified secondary claim','community benchmark or package detail','mark inline until a primary source confirms it']
+]}
+];
+
+const AUDIT = {
+ intro:'The supplied guides are strong complementary source material: the primary guide provides a curriculum and the alternative guide identifies the Crosley retrieval article as current but narrow. This site preserves that architecture, replaces client-specific assumptions with Codex-aware boundaries, and marks volatile implementation details for verification at use time.',
+ groups:[
+  {label:'Holds up',tag:'holds',items:[
+   {c:'Obsidian works best as a local Markdown corpus whose indexes and AI summaries are derived artifacts.',f:'Holds. This is the correct foundation for reversible retrieval and auditability.'},
+   {c:'Teach exact search and structured notes before semantic or hybrid retrieval.',f:'Holds. The source documents correctly frame retrieval infrastructure as an escalation after a measured failure.'},
+   {c:'Obsidian Desktop v1.13.7 is the current public desktop reference for this guide.',f:'Holds as of the audit date. The official changelog lists 1.13.7 Desktop on 2026-08-12; mobile 1.13.8 is a separate release.'}
+  ]},
+  {label:'Stale or incomplete',tag:'stale',items:[
+   {c:'Claude Code commands and hook examples are presented inside a general Obsidian + AI curriculum.',f:'Incomplete for a Codex learner. They are client-specific recipes, not portable concepts; verify the active client documentation before use.'},
+   {c:'Community MCP servers, plugin capabilities, versions, and pricing are treated as learning content.',f:'Volatile. Keep them in dated reference cards and label unverified community details rather than turning them into curriculum facts.'},
+   {c:'The original site blueprint lists routes, import/export, and dashboards beyond the supplied scaffold engine.',f:'Incomplete implementation scope. This standalone site delivers the core Path, Reference, Drill, and Audit loop; advanced progress import/export is a separate build.'}
+  ]},
+  {label:'Wrong',tag:'wrong',items:[
+   {c:'A working <code>claude mcp add</code> recipe can be reused as an agent-neutral integration instruction.',f:'Wrong. Client configuration, trust, and permission models vary. The transferable lesson is to define and verify the client, server, scope, tools, approvals, and recovery route.'},
+   {c:'Semantic similarity can be treated as proof that a retrieved note supports the answer.',f:'Wrong. A plausible neighbor may omit the required fact, qualifier, or decision. Open and cite the source note.'}
+  ]},
+  {label:'Missing entirely',tag:'gap',items:[
+   {c:'A Codex-specific adaptation layer.',f:'The supplied material uses Claude-centric terminology. This site adds agent-neutral concepts and directs the learner to verify current Codex behavior from official OpenAI documentation.'},
+   {c:'A strict human acceptance gate for generated vault content.',f:'The sources identify AI slop and provenance, but a repeatable inbox-to-review-to-promotion workflow is made explicit here.'},
+   {c:'A compact evidence-backed stopping rule.',f:'The capstone now stops at a safe, explainable, read-only AI-assisted workflow rather than pretending to certify every plugin or production retrieval system.'}
+  ]}
+ ]
+};
+
+/* ============================================================
+   Control Stack — app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+</body>
+</html>

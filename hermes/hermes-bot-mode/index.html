@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bot Roster</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☤</text></svg>">
+<style>
+/* =====================================================================
+   TOKENS — light palette lives on the bare :root.
+   >>> CHOOSE PER SUBJECT: the 6 values marked [PICK] below. <<<
+   Derive them from the subject's own world. Keep neutrals biased
+   toward the accent hue. Everything else in this file is structural
+   and should carry over unchanged.
+   ===================================================================== */
+:root{
+  /* [PICK] grounds — page, cards, raised surfaces */
+  --bg:#EEF1F4; --paper:#F8FAFC; --raise:#FFFFFF;
+  --ink:#101927; --body:#283548; --muted:#5E6C80; --faint:#8794A6;
+  --line:#D5DCE5; --line-2:#BDC7D4;
+  /* [PICK] structural accent — links, active nav, lab cards */
+  --accent:#245F8F; --accent-soft:#DDEAF4; --accent-ink:#17476E;
+  /* [PICK] signal — current state, eyebrows, the one loud thing */
+  --signal:#D08B14; --signal-soft:#F9EBCB;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#101927; --code-ink:#DDE7F2; --code-line:#24344A;
+  --shadow:0 1px 2px rgba(16,25,39,.05), 0 8px 24px -12px rgba(16,25,39,.18);
+  --rail:264px;
+  /* [PICK] type: display / body / mono. Three roles, chosen deliberately. */
+  --f-disp:'Segoe UI Variable Display','Segoe UI',Arial,sans-serif;
+  --f-body:'Segoe UI Variable Text','Segoe UI',Arial,sans-serif;
+  --f-mono:'Cascadia Code','SFMono-Regular',Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1320; --paper:#111C2B; --raise:#172438;
+    --ink:#E8EEF6; --body:#C9D3E0; --muted:#91A1B5; --faint:#6D7E93;
+    --line:#26354A; --line-2:#35485F;
+    --accent:#66B3ED; --accent-soft:#13324A; --accent-ink:#9BD3F8;
+    --signal:#F0B54B; --signal-soft:#3A2A0E;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#07101B; --code-ink:#D7E4F1; --code-line:#1C2B3F;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1320; --paper:#111C2B; --raise:#172438;
+  --ink:#E8EEF6; --body:#C9D3E0; --muted:#91A1B5; --faint:#6D7E93;
+  --line:#26354A; --line-2:#35485F;
+  --accent:#66B3ED; --accent-soft:#13324A; --accent-ink:#9BD3F8;
+  --signal:#F0B54B; --signal-soft:#3A2A0E;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#07101B; --code-ink:#D7E4F1; --code-line:#1C2B3F;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname"></span><small id="brandtag"></small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search &middot; / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">&#9686;</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"></div>
+    <div class="legend" id="legend"></div>
+  </nav>
+  <main id="view"></main>
+</div>
+
+
+<script>
+/* Bot Roster content: current as of 21 August 2026. */
+
+const SITE = {
+  title:'Bot Roster',
+  tag:'Hermes Bot Mode field manual',
+  key:'hermes-bot-mode-mastery-v1',
+  spine:'Bot lifecycle',
+  layers:[
+    {token:'warn',label:'Observe'},
+    {token:'accent',label:'Define'},
+    {token:'signal',label:'Coordinate'},
+    {token:'stop',label:'Control'}
+  ],
+  refLede:'Choose the smallest Hermes primitive that gives you the state, persistence, and control you actually need. Bot Mode is a roster and coordination surface, not a workflow guarantee.',
+  auditTitle:'Five-source field audit',
+  verifiedAgainst:'Checked against the current official Hermes Agent Bot Mode, Profiles, Cron, Multi-Connection, Security, Checkpoints, and Kanban documentation plus primary GitHub release records on 21 August 2026.'
+};
+
+const PHASES = [
+{
+  id:'baseline', n:'00', title:'Read the fleet', layer:'l1', layerLabel:'Observe', time:'35 min', pre:'Hermes Desktop installed',
+  objective:'Establish a falsifiable baseline by <b>mapping each visible Bot to its underlying profile, host, and live state</b>.',
+  concepts:[
+    {h:'A Bot is a profile',p:'<p>Bot Mode does not introduce a new agent object. Each Bot is a Hermes profile with isolated Hermes state under <code>~/.hermes/profiles/&lt;name&gt;/</code>. The roster is a desktop view over that primitive.</p>'},
+    {h:'Presence is recent activity, not health',p:'<p>The Active now strip contains the gateway-busy profile plus Bots that wrote within the last 90 seconds. It disappears when the fleet is idle and never reorders the roster. Treat it as activity telemetry, not proof that a Bot or gateway is healthy.</p>'},
+    {h:'Canonical chat is durable',p:'<p>Every Bot gets one pinned, persistent <b>Bot Chat</b> at creation. Bot routines and direct messages land in the Bot&apos;s own history, so the transcript is part of the operating surface.</p>'},
+    {h:'CLI and desktop must agree',p:'<p>The same profile is reachable from the shell. A basic inventory is read-only:</p>',code:['hermes profile list','hermes cron list'].join('\n'),p2:'<p>If the roster and CLI disagree, first check which backend the Desktop connection points to. Do not recreate profiles until you resolve that identity mismatch.</p>'}
+  ],
+  lab:{title:'Make a fleet ledger',steps:[
+    'Open the Bots tab and record each row: display name, profile name, source machine, latest-message time, hidden state, and routine count.',
+    'Run <code>hermes profile list</code> and reconcile local rows against the desktop roster.',
+    'Run <code>hermes cron list</code> and locate jobs whose names begin with <code>[bot:&lt;name&gt;]</code>.',
+    'Deliberately search for an invented Bot name and confirm that no roster row appears.',
+    'Open one real Bot, send the harmless prompt <code>Reply only BASELINE_OK</code>, and record the response time.',
+    'Refresh the ledger and mark which fields changed.'
+  ],verify:'Every visible local Bot maps to one profile, every Bot routine maps to a cron job, and the probe response is present in that Bot&apos;s canonical chat.'},
+  gotchas:[
+    {s:'trap',t:'A cached remote row looks live',d:'Unreachable connection rows can remain as last-known inventory. A row existing is not proof its machine can run work.'},
+    {s:'trap',t:'Hidden means stopped',d:'Hiding is display-only. Mentions still resolve, group membership stays intact, and routines keep running while unread activity accumulates silently.'},
+    {s:'stale',t:'Agent Inbox labels',d:'Launch-week coverage used <code>Agent Inbox</code>. The current canonical conversation is <code>Bot Chat</code>; old labels send operators to the wrong place.'},
+    {s:'cost',t:'Presence as polling',d:'Repeatedly opening chats to test health spends attention and may start work. Use profile, gateway, and cron status for diagnosis.'}
+  ],
+  quiz:[
+    {q:'What underlying Hermes primitive is every Bot?',a:'A Hermes profile with its own Hermes home, config, memory, sessions, skills, credentials, cron state, and database.'},
+    {q:'What does Active now prove, and what does it not prove?',a:'It proves recent write activity or a gateway-busy profile within the presence window. It does not prove durable gateway health, reachability, correctness, or task success.'},
+    {q:'Name the three baseline views that should reconcile.',a:'The Desktop Bot roster, <code>hermes profile list</code>, and <code>hermes cron list</code> for Bot-namespaced routines.'}
+  ],
+  docs:[['Bot Mode','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Profiles','https://hermes-agent.nousresearch.com/docs/user-guide/profiles']]
+},
+{
+  id:'default-loop', n:'01', title:'Operate one Bot', layer:'l1', layerLabel:'Observe', time:'45 min', pre:'Phase 00',
+  objective:'Use one canonical Bot Chat well and <b>distinguish a durable relationship from a scratch session</b>.',
+  concepts:[
+    {h:'Stay in the canonical lane',p:'<p>Clicking a Bot row lands in its forever-chat. Bot Mode preserves that relationship even when working context needs compression.</p>'},
+    {h:'Reset becomes compact',p:'<p>Inside the canonical Bot Chat, <code>/new</code> and <code>/reset</code> are rerouted to <code>/compact</code>. You get fresher working context without forking the relationship. Regular sessions on the same profile keep normal reset behavior.</p>'},
+    {h:'Headless parity',p:'<p>You can open the same agent from the CLI:</p>',code:'hermes -p researcher chat',p2:'<p>Replace <code>researcher</code> with a profile you own. The desktop and CLI share the profile, but a regular session is not automatically the canonical Bot Chat.</p>'},
+    {h:'Protocol scope matters',p:'<p>The backend injects the bot-to-bot protocol only into canonical Bot Chats. Regular profile sessions and <code>SOUL.md</code> are left untouched, which prevents team-routing instructions from leaking into every conversation.</p>'}
+  ],
+  lab:{title:'Feel the forever-chat invariant',steps:[
+    'Open one Bot from the roster and note the conversation title and most recent message.',
+    'Ask it to remember the temporary phrase <code>ORBIT GLASS</code> for this exercise.',
+    'Deliberately type <code>/new</code> inside the canonical Bot Chat and observe the reroute behavior.',
+    'Ask for the temporary phrase again and inspect whether the same conversation remains selected.',
+    'Open a regular session on the same profile and compare its title and reset behavior.',
+    'Return to the Bot row and verify the canonical transcript is still the same chat.'
+  ],verify:'The Bot row still opens the original canonical Bot Chat after the deliberate reset attempt, while the regular session remains a separate conversation.'},
+  gotchas:[
+    {s:'trap',t:'Editing SOUL fixes an open session',d:'Existing sessions may keep old prompt state. A Bot can appear to ignore the edit until you compact or start an appropriate new session.'},
+    {s:'trap',t:'Regular session has teammate protocol',d:'Only the canonical Bot Chat gets automatic messaging instructions. A similarly named regular session can look right while silently lacking them.'},
+    {s:'stale',t:'Manual inbox protocol in SOUL',d:'Current Bot Chats receive the protocol automatically at prompt-build time. Pasting launch-week protocol text into every SOUL duplicates instructions and can drift.'},
+    {s:'cost',t:'Resetting to solve every long chat',d:'The canonical reroute preserves continuity, but indiscriminate compaction can discard useful working detail. Compact when context pressure is visible.'}
+  ],
+  quiz:[
+    {q:'What happens to /new or /reset in a canonical Bot Chat?',a:'The composer reroutes it to <code>/compact</code>, preserving the same canonical conversation while refreshing working context.'},
+    {q:'Where is the bot-to-bot protocol injected?',a:'At prompt-build time in the canonical Bot Chat only, controlled by <code>agent.bot_mode_protocol</code>, which defaults on.'}
+  ],
+  docs:[['Bot Mode','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Sessions','https://hermes-agent.nousresearch.com/docs/user-guide/sessions']]
+},
+{
+  id:'profile-design', n:'02', title:'Design the profile', layer:'l2', layerLabel:'Define', time:'75 min', pre:'Phase 01',
+  objective:'Specify a specialist by <b>separating identity, capabilities, state, workspace, and enforcement</b>.',
+  concepts:[
+    {h:'Specialization has five axes',table:{head:['Axis','Hermes surface','Failure if confused'],rows:[
+      ['Identity','Name, title, description, avatar','Cosmetic labels substitute for a real mandate'],
+      ['Behavior','<code>SOUL.md</code>','Guidance is mistaken for enforcement'],
+      ['Capabilities','Skills, tools, MCP servers','A specialist has unnecessary access'],
+      ['Inference','Provider and model pin','Behavior and spend drift with launch profile'],
+      ['Workspace','<code>terminal.cwd</code> and sandbox backend','Profile isolation is mistaken for filesystem isolation']
+    ]}},
+    {h:'Profiles isolate Hermes state, not the host',p:'<p>A profile separates config, memory, sessions, credentials, skills, cron jobs, and databases. On the default local terminal backend, it still has your OS user&apos;s filesystem access. <code>SOUL.md</code> cannot enforce a directory boundary.</p>'},
+    {h:'Use an explicit working directory',p:'<p>If a Bot belongs to one project, set an absolute <code>terminal.cwd</code>. A local value of <code>.</code> means the directory Hermes was launched from, not the profile directory.</p>',code:'hermes -p researcher config set terminal.cwd /absolute/path/to/project'},
+    {h:'Pin only what must stay stable',p:'<p>Leaving model and provider unset inherits from the launch profile. Pin a model when consistent capability, cost, or scheduled behavior matters; otherwise inherit deliberately.</p>'}
+  ],
+  lab:{title:'Write a one-page Bot contract',steps:[
+    'Choose one recurring task from your real work and write its accepted input and required output.',
+    'Name one tool the Bot needs and three tools it does not need.',
+    'Write a five-line SOUL mandate with one explicit escalation condition.',
+    'Deliberately remove the needed tool or skill from the draft capability list.',
+    'Walk through the real task and record the exact step that now cannot complete.',
+    'Restore the minimum needed capability and choose an absolute working directory or explicitly record that none is required.',
+    'Define a pass/fail acceptance check that another Bot could apply.'
+  ],verify:'The contract names the task, inputs, output, minimum capabilities, workspace, escalation rule, and a falsifiable acceptance check.'},
+  gotchas:[
+    {s:'trap',t:'Profile equals sandbox',d:'The Bot has isolated Hermes state but can still reach host files as your OS user unless you add a real sandbox or safe root.'},
+    {s:'trap',t:'A role name creates specialization',d:'Researcher, critic, and editor labels can hide identical instructions and tools. The team looks differentiated while failing the same way.'},
+    {s:'trap',t:'Relative cwd means profile home',d:'On a local backend, <code>.</code> follows the launch directory. The Bot can silently operate in the wrong repository.'},
+    {s:'cost',t:'Every capability for every Bot',d:'Broad toolsets enlarge prompt schemas, credential exposure, and the number of failure paths you must supervise.'}
+  ],
+  quiz:[
+    {q:'Name the five axes of a Bot contract.',a:'Identity, behavioral instructions, capabilities, inference routing, and workspace/enforcement.'},
+    {q:'What does a profile isolate, and what does it not isolate?',a:'It isolates Hermes state such as config, memory, sessions, skills, credentials, cron, logs, and databases. It does not by itself sandbox host filesystem access or external CLI identity.'},
+    {q:'Why is an absolute terminal.cwd safer than a dot?',a:'An absolute path is stable. On the local backend, a dot resolves to the directory Hermes was launched from, which can change between runs.'}
+  ],
+  docs:[['Profiles','https://hermes-agent.nousresearch.com/docs/user-guide/profiles'],['Security','https://hermes-agent.nousresearch.com/docs/user-guide/security']]
+},
+{
+  id:'create-bot', n:'03', title:'Create the specialist', layer:'l2', layerLabel:'Define', time:'60 min', pre:'Phase 02',
+  objective:'Create a Bot whose <b>actual live profile matches the contract</b>, then prove the specialization with a task probe.',
+  concepts:[
+    {h:'Quick create is identity only',p:'<p>Name, Title, and Description create a Bot quickly. The Advanced surface is where you select a clone source, empty profile, model pin, SOUL, skills, toolsets, and MCP servers.</p>'},
+    {h:'Clone semantics are consequential',p:'<p>Desktop Duplicate is documented as a full clone of config, skills, SOUL, memory, and appearance. CLI <code>--clone</code> and <code>--clone-all</code> differ: the first copies config, credentials, SOUL, and skills with fresh memory; the second includes broader profile state but still excludes history-heavy directories.</p>'},
+    {h:'Shared keys reduce refresh collisions',p:'<p>New Bots share one OAuth or token pool with the main profile by default on current gateways, so credential refreshes do not invalidate one another. Older gateways may copy credentials instead, leaving forked state.</p>'},
+    {h:'Edit the live profile',p:'<p>Right-click <b>Edit Profile</b> to change avatar, title, description, model, capabilities, MCP servers, and SOUL. <b>Delete Profile</b> is available with destructive confirmation; the default profile cannot be deleted.</p>'}
+  ],
+  lab:{title:'Create a minimum viable specialist',steps:[
+    'Create a new Bot from the contract in Phase 02 using a distinctive test-safe name.',
+    'Use Advanced and choose Fresh profile or a deliberate clone source.',
+    'Deliberately choose Create empty or disable the one capability required by the contract.',
+    'Run the contract task probe and capture the missing-capability failure.',
+    'Open Edit Profile, enable only the required capability, and confirm the intended model behavior.',
+    'Repeat the same probe without changing the prompt.',
+    'Inspect <code>hermes profile show &lt;name&gt;</code> and reconcile it with the Desktop profile surface.'
+  ],verify:'The first probe fails for the predicted missing capability, the second passes after one scoped edit, and CLI/Desktop identity matches.'},
+  gotchas:[
+    {s:'trap',t:'Clone from the wrong machine',d:'For remote creation, the clone source is a profile on the target machine, usually its default. Your local profile is not silently copied there.'},
+    {s:'trap',t:'Unset model means fixed default',d:'An unset Bot inherits from the launch profile. Later model changes can alter behavior or cost without editing the Bot.'},
+    {s:'trap',t:'Cosmetic metadata is local only',d:'Current docs say look, title, and description live in backend profile metadata and follow connected desktops. Launch-week sources saying avatar state is plugin-local are stale.'},
+    {s:'cost',t:'Clone-all as a template',d:'A broad clone can copy memory and cron state you did not intend to reproduce. Prefer a fresh profile or config-only clone for reusable templates.'}
+  ],
+  quiz:[
+    {q:'What does the quick creation path configure?',a:'Only Name, Title, and Description. Specialization requires reviewing the Advanced capabilities and profile settings.'},
+    {q:'What is the operational difference between a fresh profile and a full duplicate?',a:'A fresh profile starts minimal or with bundled defaults. A full duplicate copies config, skills, SOUL, memory, and appearance, so it can inherit useful specialization and unwanted state.'}
+  ],
+  docs:[['Bot creation','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Profile commands','https://hermes-agent.nousresearch.com/docs/reference/profile-commands']]
+},
+{
+  id:'handoffs', n:'04', title:'Route a handoff', layer:'l4', layerLabel:'Coordinate', time:'75 min', pre:'Phase 03',
+  objective:'Hand work between two specialists with <b>explicit attribution, acceptance criteria, and a visible return path</b>.',
+  concepts:[
+    {h:'Mention is synchronous delegation',p:'<p>In any chat, <code>@researcher verify this claim</code> asks the active Bot to hand off, wait for a reply, and report it back. Hermes validates names against the live roster; unknown mentions pass through untouched.</p>'},
+    {h:'Canonical direct messages use file transport',p:'<p>Current local delivery writes the message to a temporary file and invokes the recipient&apos;s canonical Bot Chat. File transport preserves quotes, command substitutions, and backticks as data rather than shell syntax.</p>',code:['hermes -p researcher chat --in ~ -c "Bot Chat" --create-if-missing -Q --query-file /tmp/handoff.txt'].join('\n')},
+    {h:'Delivery is per invocation',p:'<p>The receiving Bot processes a direct message when it runs. Live interruption of a Bot already mid-conversation is future work, so a handoff is not an emergency stop channel.</p>'},
+    {h:'A handoff needs a contract',p:'<p>Include sender, artifact or source, required check, output format, and escalation condition. Without a boundary check, the second Bot can accept a plausible but wrong artifact and amplify it.</p>'}
+  ],
+  lab:{title:'Two-Bot acceptance handoff',steps:[
+    'Pick two real Bots with different mandates, such as researcher and reviewer.',
+    'Give the first Bot a small artifact and a pass condition the second Bot can verify.',
+    'Deliberately use <code>@invented-reviewer</code> once and observe that the unknown mention is not routed.',
+    'Repeat with the valid roster handle and ask for a structured pass, fail, or needs-user response.',
+    'Open the recipient&apos;s Bot Chat and inspect the attributed incoming message.',
+    'Compare the returned answer with the recipient&apos;s transcript and note any lost context.',
+    'Rename the recipient&apos;s display name only if safe, then confirm the offered mention tag in autocomplete.'
+  ],verify:'The invalid handle produces no handoff, the valid handle produces one attributed recipient turn, and the returned result contains the requested acceptance verdict.'},
+  gotchas:[
+    {s:'trap',t:'Unknown @mention looks delivered',d:'Unknown handles pass through as ordinary text. The sentence remains readable, so a missing teammate run can go unnoticed.'},
+    {s:'trap',t:'Reply equals acceptance',d:'A recipient can return fluent text without checking the artifact. Require a named pass condition and evidence at every boundary.'},
+    {s:'trap',t:'Direct message interrupts live work',d:'Delivery is per invocation. A Bot already running will not be reliably interrupted by the new message.'},
+    {s:'stale',t:'Inline -q shell handoff',d:'Current docs use a query file for direct messages so content is not shell-interpreted. Older examples with an inline query string are not the safe current pattern.'}
+  ],
+  quiz:[
+    {q:'What happens to an unknown @mention?',a:'It passes through untouched as normal text; Hermes does not route it to a Bot.'},
+    {q:'Name the five fields of a robust handoff.',a:'Sender or source, artifact/context, required check, output format, and escalation condition.'},
+    {q:'Why does current direct-message transport use a file?',a:'So quotes, command substitutions, backticks, and other message content arrive verbatim instead of being interpreted by the shell.'}
+  ],
+  docs:[['Bot messaging','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode']]
+},
+{
+  id:'groups', n:'05', title:'Run a room', layer:'l4', layerLabel:'Coordinate', time:'90 min', pre:'Phase 04',
+  objective:'Coordinate a group chat while <b>controlling who speaks, when the room settles, and when judgment returns to you</b>.',
+  concepts:[
+    {h:'Rooms are bounded deliberation',p:'<p>A room holds 2 to 6 Bots. One user message triggers at most 3 serial rounds and 10 messages. Mentioned Bots respond; when nobody is mentioned, every member is eligible to respond.</p>'},
+    {h:'Silence is part of the protocol',p:'<p>Each Bot replies briefly or passes. The room settles when an entire round stays silent. Do not interpret a quiet specialist as a delivery failure until you inspect the round and its mandate.</p>'},
+    {h:'Escalation is explicit',p:'<p>A Bot writes <code>@user</code> for a real judgment call, and the group row shows a needs-you badge. Define which decisions require that escalation before the room starts.</p>'},
+    {h:'Each member keeps its own room session',p:'<p>Every Bot retains a persistent <code>Group: &lt;name&gt;</code> session. Rooms have durable internal identity, so renaming changes display only, while disbanding removes that room and recreating the same name creates a fresh identity.</p>'}
+  ],
+  lab:{title:'Run a bounded review room',steps:[
+    'Create a group chat with 2 or 3 Bots whose mandates differ.',
+    'Give the room one small real artifact and define one decision reserved for <code>@user</code>.',
+    'Deliberately send the first prompt with no mentions and record which members answer or pass.',
+    'Send the same task scoped to one <code>@name</code> and compare the number and relevance of turns.',
+    'Ask one Bot to challenge another&apos;s conclusion and require source-level evidence.',
+    'Introduce an ambiguous choice that matches the escalation rule and verify the needs-you state.',
+    'Rename the room, reopen it, and verify the prior transcript persists.'
+  ],verify:'The room stays within documented caps, a scoped mention narrows participation, an explicit judgment call reaches you, and renaming preserves the same room history.'},
+  gotchas:[
+    {s:'trap',t:'No mention means no one',d:'In a room, no mention makes every member eligible. A broad prompt can silently multiply model calls.'},
+    {s:'trap',t:'Every Bot must answer',d:'Bots can pass, and a silent round settles the room. Waiting for a fixed headcount can make a healthy room look stuck.'},
+    {s:'trap',t:'Same room name means same room',d:'A disbanded room has durable deletion. Recreating the name starts a new internal identity even if the label matches.'},
+    {s:'cost',t:'Six frontier models for consensus',d:'More speakers can produce correlated repetition rather than independent evidence. Use the smallest set of genuinely different roles.'}
+  ],
+  quiz:[
+    {q:'State the documented group-room bounds.',a:'Two to six Bots, up to three serial rounds per user send, with a hard cap of ten messages.'},
+    {q:'Who is eligible when no Bot is mentioned?',a:'Every member, though each decides whether to reply or pass.'},
+    {q:'How does a Bot return a judgment call to the operator?',a:'It includes <code>@user</code>, which raises a needs-you badge on the group row.'}
+  ],
+  docs:[['Groups and group chats','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode']]
+},
+{
+  id:'routines', n:'06', title:'Schedule the Bot', layer:'l4', layerLabel:'Coordinate', time:'90 min', pre:'Phase 03',
+  objective:'Turn a proven manual task into a routine with <b>bounded spend, preflight checks, and an observable failure state</b>.',
+  concepts:[
+    {h:'Routines are cron jobs',p:'<p>Bot routines are ordinary Hermes cron jobs named <code>[bot:&lt;name&gt;] &lt;routine&gt;</code>. They appear in <code>hermes cron list</code>, and their runs land in the Bot&apos;s own chat history.</p>'},
+    {h:'Inference routing is resolved at fire time',p:'<p>Resolution is per-job pin, then <code>cron.model</code>, then the global default. The default drift guard prevents an unpinned recurring job from silently following a changed global provider or model.</p>'},
+    {h:'Preflight fails before spend',p:'<p>The scheduler checks credentials, required skill dependencies, and delivery targets before constructing an agent run. A failure becomes <code>blocked_config</code>, sends one alert, and makes no inference call.</p>'},
+    {h:'Headless approvals fail closed by default',p:'<p><code>approvals.cron_mode</code> defaults to <code>deny</code> for dangerous commands. Do not auto-approve a routine merely to make a demo pass.</p>'}
+  ],
+  lab:{title:'Build and break a harmless probe routine',steps:[
+    'Create a routine on a real Bot whose only output is <code>ROUTINE_PROBE_OK</code>, scheduled far enough ahead that you can inspect it first.',
+    'Pin its provider and model if it will recur or spend materially.',
+    'Confirm the <code>[bot:&lt;name&gt;]</code> namespace in <code>hermes cron list</code>.',
+    'Deliberately edit the prompt to require a tool or credential that the Bot does not have, then trigger the job manually.',
+    'Record whether preflight blocks it or the run returns an explicit tool failure.',
+    'Restore the no-tool probe, trigger it again, and inspect the Bot Chat result.',
+    'Pause or remove the probe after verification so it cannot become forgotten automation.'
+  ],verify:'One triggered run produces a visible failure without an irreversible action, the corrected run writes <code>ROUTINE_PROBE_OK</code> to the owning Bot&apos;s chat, and no active probe remains.'},
+  gotchas:[
+    {s:'trap',t:'One alert means every tick alerts',d:'A configuration failure alerts once. Later unhealthy ticks can stay silent until the state becomes healthy and breaks again.'},
+    {s:'trap',t:'Global model switch updates all routines',d:'The drift guard can skip unpinned jobs instead of silently following the new model. Inspect status after changing global inference.'},
+    {s:'trap',t:'A hidden Bot stops cron',d:'Hidden roster state never pauses routines. The job can keep running and accumulating unread results.'},
+    {s:'cost',t:'Group routine for a single check',d:'Routing a scheduled task through several Bots multiplies calls. Prove that specialist disagreement adds value before paying for it unattended.'}
+  ],
+  quiz:[
+    {q:'What is the routine model-resolution order?',a:'Per-job provider/model pin, then <code>cron.model</code> and its provider setting, then the global default.'},
+    {q:'What happens when cron preflight detects invalid configuration?',a:'The job becomes <code>blocked_config</code>, sends one alert, skips the LLM call, and waits for a healthy future run.'},
+    {q:'Where do Bot routine runs appear?',a:'In the Bot&apos;s own chat history and in core cron surfaces such as <code>hermes cron list</code>.'}
+  ],
+  docs:[['Bot routines','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Cron','https://hermes-agent.nousresearch.com/docs/user-guide/features/cron']]
+},
+{
+  id:'multi-machine', n:'07', title:'Cross the machines', layer:'l4', layerLabel:'Coordinate', time:'2 h', pre:'Phase 04',
+  objective:'Route Bots across registered connections and peers while <b>preserving machine ownership, handle identity, and credential boundaries</b>.',
+  concepts:[
+    {h:'Connections unify the roster, not the storage',p:'<p>A Bot&apos;s chats, memory, routines, and files remain on the machine that owns its profile. Clicking a Connections Bot does not switch the active window gateway; routing happens in the background.</p>'},
+    {h:'Handles carry source identity',p:'<p>When the same profile name exists on several sources, use <code>@name-device</code>. The device-qualified handle prevents same-named agents on two machines from blurring together.</p>'},
+    {h:'Peers enable bot-initiated DMs',p:'<p>A Bot can message a remote gateway without a Desktop in the loop after you register the API server as a peer. The key lives in <code>~/.hermes/.env</code>; peer name and URL live under <code>bot_peers</code>.</p>',code:['hermes peer list','hermes peer dm spark/researcher < /tmp/dm.txt'].join('\n')},
+    {h:'Network reachability is your boundary',p:'<p>The peer machine must run the <code>api_server</code> gateway with a strong <code>API_SERVER_KEY</code>. LAN, Tailscale, or VPN reachability remains your responsibility.</p>'}
+  ],
+  lab:{title:'Trace a route without changing gateways',steps:[
+    'Run <code>hermes peer list</code> and inventory configured peers without editing them.',
+    'Deliberately run <code>hermes peer dm nonexistent-peer &lt; /tmp/dm.txt</code> only after creating a harmless local text file, and capture the explicit unknown-peer failure.',
+    'If you have a registered Desktop connection, identify one remote Bot and its owning device badge.',
+    'Send a harmless probe using the fully qualified <code>@name-device</code> handle.',
+    'Confirm the current Desktop gateway did not switch and the reply is attributed to the remote source.',
+    'On the owning machine, locate the Bot Chat turn and compare timestamps.',
+    'If no remote connection exists, stop after the read-only peer inventory and document the untested path as <span class="unv">unverified locally</span>.'
+  ],verify:'The invalid peer fails explicitly, and either one remote round-trip is traced end to end or the absence of a configured remote path is recorded without inventing a successful test.'},
+  gotchas:[
+    {s:'trap',t:'Remote row owns local files',d:'The roster looks unified, but state and tools execute on the source machine. Relative paths can resolve somewhere entirely different.'},
+    {s:'trap',t:'Same profile name is enough',d:'Colliding names require the device-qualified handle. An unqualified mention can be ambiguous or route somewhere you did not intend.'},
+    {s:'trap',t:'Removing a gateway deletes the room',d:'Connected Desktops retain full room state and can reseed gateways. Removing one source does not necessarily remove collaboration history.'},
+    {s:'cost',t:'Peer key copied into prompts',d:'Peer keys are credentials in <code>.env</code>; Bots receive routing patterns and peer roster, not a reason to expose the key itself.'}
+  ],
+  quiz:[
+    {q:'Where does a Connections Bot execute and store state?',a:'On the machine that owns its profile, even though it appears in a unified Desktop roster.'},
+    {q:'When must you use @name-device?',a:'When the same profile name exists on more than one registered source, or whenever source-qualified routing is needed for certainty.'},
+    {q:'What three things does peer DM require?',a:'A reachable remote <code>api_server</code> gateway, a strong <code>API_SERVER_KEY</code>, and a registered peer name/URL with the key stored as a credential.'}
+  ],
+  docs:[['Bots across machines','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Multi-connection Desktop','https://hermes-agent.nousresearch.com/docs/user-guide/multi-connection-desktop']]
+},
+{
+  id:'recovery', n:'08', title:'Observe and recover', layer:'l3', layerLabel:'Control', time:'2 h', pre:'Phases 00–07',
+  objective:'Diagnose a silent coordination failure and <b>recover from the smallest verified boundary</b>.',
+  concepts:[
+    {h:'Follow the state chain',table:{head:['Boundary','Evidence','Recovery'],rows:[
+      ['Identity','Roster handle, profile show, source badge','Correct the target; do not recreate state'],
+      ['Capability','Profile tools, skills, MCP catalog','Enable the minimum missing capability'],
+      ['Delivery','Recipient Bot Chat or Group session','Retry one attributed handoff'],
+      ['Schedule','Cron status and last run','Fix config, then manually trigger once'],
+      ['Filesystem','Diff, checkpoint, working tree','Preview rollback before restoring']
+    ]}},
+    {h:'Checkpoints cover file mutations, not team truth',p:'<p>Hermes checkpoints can snapshot work before file-changing tools and support <code>/rollback diff</code> plus selective restore. They do not validate a Bot&apos;s reasoning, a handoff claim, or an external side effect.</p>'},
+    {h:'Preserve hand edits by default',p:'<p>Current rollback behavior restores files Hermes changed and skips later human edits when the write ledger can identify them. Use <code>--all</code> only when you intend to overwrite those edits.</p>'},
+    {h:'Bot Mode can be turned off safely',p:'<p>Disabling Settings → Plugins → Bots unregisters the roster, Routines pane, and composer middleware live. Profiles, sessions, and cron jobs remain, which makes plugin disablement a UI isolation step rather than data deletion.</p>'}
+  ],
+  lab:{title:'Recover a failed handoff safely',steps:[
+    'Choose a prior failed or deliberately rejected low-risk handoff from Phase 04 or 06.',
+    'Write a timestamped state chain: sender transcript, recipient transcript, routine status if relevant, and expected artifact.',
+    'Deliberately hide the recipient Bot and confirm <code>hermes profile list</code> still shows the profile.',
+    'Unhide it and identify the first boundary where evidence diverges from expectation.',
+    'Retry only that boundary with the same input and an explicit idempotency note.',
+    'If files changed, run <code>/rollback diff 1</code> before considering any restore.',
+    'Record the stop condition that prevents repeated blind retries.'
+  ],verify:'The failure is localized to one named boundary, one bounded retry either succeeds or stops, and no rollback occurs without a preview.'},
+  gotchas:[
+    {s:'trap',t:'Final answer proves the file changed',d:'A Bot can claim success while the artifact differs. Inspect the file, diff, or mutation-verifier evidence.'},
+    {s:'trap',t:'Rollback undoes external effects',d:'Filesystem checkpoints cannot unsend messages, revoke API calls, or reverse remote actions.'},
+    {s:'trap',t:'Disabling Bot Mode stops routines',d:'Turning off the plugin removes the UI only. Profiles, sessions, and cron jobs continue unless separately paused.'},
+    {s:'trap',t:'Blind retry is recovery',d:'Without an idempotency check, repeating a handoff can duplicate writes, messages, or downstream work.'}
+  ],
+  quiz:[
+    {q:'Name the five boundaries in the recovery state chain.',a:'Identity, capability, delivery, schedule, and filesystem/artifact state.'},
+    {q:'What does disabling the Bots plugin preserve?',a:'The underlying profiles, sessions, chats, and cron jobs. It removes the Bot Mode UI and middleware, not the data.'},
+    {q:'What must happen before a rollback?',a:'Preview the target with <code>/rollback diff</code>, identify external effects that rollback cannot reverse, and decide whether human hand edits must be preserved.'}
+  ],
+  docs:[['Bot Mode off switch','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Checkpoints','https://hermes-agent.nousresearch.com/docs/user-guide/checkpoints-and-rollback']]
+},
+{
+  id:'capstone', n:'09', title:'Ship a bounded team', layer:'l3', layerLabel:'Control', time:'Half day', pre:'All phases',
+  objective:'Deploy one small Bot team for real work with <b>evidence gates, cost limits, recovery rules, and an explicit boundary to Kanban</b>.',
+  concepts:[
+    {h:'Bot Mode is a human-visible coordination surface',p:'<p>Use it for persistent specialists, direct handoffs, bounded deliberation, and routines. It does not provide deterministic dependencies, durable retry state, or guaranteed routing.</p>'},
+    {h:'Escalate to Kanban when state must be durable',p:'<p>Hermes Kanban is a SQLite-backed task board with explicit statuses, dependencies, comments, retries, review states, and dispatcher behavior. Choose it when work must survive restarts, cross agent boundaries with auditability, or wait for human input.</p>'},
+    {h:'Enforcement beats persona',p:'<p>Keep approval mode, tool boundaries, safe roots, sandboxes, and human gates outside SOUL prose. A specialist&apos;s mandate improves behavior; it does not constrain a compromised or mistaken agent.</p>'},
+    {h:'Out of scope',p:'<p>This path stops at operator-level Bot Mode: profiles, chats, rooms, routines, peers, safety, and recovery. It does not teach plugin development, model benchmarking, enterprise identity management, public gateway deployment, or the internals of Hermes Kanban.</p>'}
+  ],
+  lab:{title:'Run one production-shaped pilot',steps:[
+    'Choose a reversible task that matters but cannot cause financial, legal, publishing, credential, or destructive filesystem effects.',
+    'Assign no more than three Bots with distinct mandates and one named human decision owner.',
+    'Define the handoff artifact and pass condition at each boundary.',
+    'Set a call, time, and cost ceiling; pin any routine model that could run unattended.',
+    'Deliberately inject one malformed artifact and verify the next Bot rejects it instead of continuing.',
+    'Run the healthy path once and capture transcripts, artifacts, timing, and exceptions.',
+    'Exercise one recovery path without repeating completed external actions.',
+    'Decide: keep in Bot Mode, simplify to one Bot, or move to Kanban because durable workflow state is required.'
+  ],verify:'The malformed artifact is stopped at its boundary, the healthy run meets every acceptance check within budget, and the keep/simplify/Kanban decision is written with evidence.'},
+  gotchas:[
+    {s:'trap',t:'More Bots means more independence',d:'Bots using the same model, sources, and instructions can share blind spots. Role labels alone do not create independent evidence.'},
+    {s:'trap',t:'A successful demo is a workflow guarantee',d:'One clean chain does not prove retry safety, deterministic routing, concurrency, or recovery under interruption.'},
+    {s:'trap',t:'SOUL is a security policy',d:'Persona text guides the model but cannot enforce filesystem, credential, network, approval, or publication boundaries.'},
+    {s:'cost',t:'Automating before measuring',d:'A recurring multi-Bot chain compounds API spend and maintenance. Prove the manual path and its acceptance checks first.'}
+  ],
+  quiz:[
+    {q:'When should Bot Mode give way to Kanban?',a:'When work needs durable dependencies, resumable state, explicit review or block statuses, retry controls, human comments, or an auditable cross-agent task history.'},
+    {q:'State the central operating invariant for Bot Mode.',a:'Treat every Bot as a real profile with real access, and every handoff as an untrusted boundary that needs evidence and a stop condition.'},
+    {q:'What is explicitly outside this mastery path?',a:'Plugin development, model benchmarking, enterprise identity and policy, public gateway deployment, and full Kanban implementation internals.'}
+  ],
+  docs:[['Bot Mode','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Security','https://hermes-agent.nousresearch.com/docs/user-guide/security'],['Kanban','https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban']]
+}
+];
+
+const TREES = [
+{title:'Which Hermes primitive do I use?',rows:[
+  ['One persistent specialist with its own memory','A profile shown as a Bot','Bot Mode makes the profile easy to operate'],
+  ['One Bot needs another Bot for one answer','An <code>@mention</code> handoff','The caller waits and reports the attributed reply'],
+  ['Two to six specialists should deliberate visibly','A group chat','The room has bounded serial rounds and human escalation'],
+  ['A task must run later or recur','A Bot routine / cron job','Scheduling and model pins belong to cron'],
+  ['Dependencies, retries, review, and durable state matter','Hermes Kanban','A task board is a workflow primitive; Bot Mode is not'],
+  ['Short anonymous parallel reasoning only','<code>delegate_task</code>','Use the lighter function-call shape when persistence is unnecessary']
+]},
+{title:'A Bot did not respond. What now?',rows:[
+  ['The handle is unknown','Check roster and autocomplete','Unknown @mentions pass through as text'],
+  ['The Bot is on another machine','Use <code>@name-device</code> and test reachability','State executes on the owning source'],
+  ['The Bot is mid-run','Wait or inspect its chat','DM delivery does not live-interrupt work'],
+  ['The Bot is hidden','Reveal hidden rows','Hidden state suppresses toasts, not work'],
+  ['A routine failed once','Inspect cron status and Bot Chat','Blocked config may alert only once'],
+  ['The regular session lacks team behavior','Open the canonical Bot Chat','Automatic protocol injection is scoped there']
+]},
+{title:'How do I keep a team inside budget?',rows:[
+  ['A task needs one capability','Use one Bot','Coordination has a real token and attention tax'],
+  ['A critic repeats the researcher','Change evidence or model, not the title','Different labels do not create independent failure modes'],
+  ['A room invites everyone','Mention only required members','No mention makes every member eligible'],
+  ['A routine is recurring','Pin its model/provider','Prevent accidental global-model drift'],
+  ['A check needs no LLM','Use no-agent cron or a script','Do not pay for inference to relay deterministic output'],
+  ['The same failure repeats','Stop and localize the boundary','Blind retries multiply cost and side effects']
+]},
+{title:'Where does a control belong?',rows:[
+  ['Tone, mandate, or escalation preference','<code>SOUL.md</code>','Behavioral guidance belongs in the persona'],
+  ['Which tools or MCP servers exist','Profile capabilities','Remove unnecessary access at the source'],
+  ['Where terminal work starts','Absolute <code>terminal.cwd</code>','Working directory is separate from profile state'],
+  ['Which writes are allowed','Sandbox / safe root / OS controls','Persona text cannot enforce a boundary'],
+  ['Dangerous command behavior','Approval configuration','Headless contexts should fail closed'],
+  ['Artifact quality between Bots','Handoff acceptance check','Every cross-agent boundary is untrusted']
+]},
+{title:'How should I recover?',rows:[
+  ['Roster and CLI disagree','Resolve backend and profile identity','Do not create duplicate state'],
+  ['A Bot lacks one capability','Enable the minimum missing item','Avoid broad privilege escalation'],
+  ['One handoff was lost','Retry that handoff with an idempotency note','Do not restart the entire chain'],
+  ['Cron is blocked_config','Repair config, then trigger once','The scheduler skipped spend intentionally'],
+  ['A file is wrong','Preview <code>/rollback diff</code>','Know what would change before restore'],
+  ['An external action already happened','Stop and reconcile manually','Filesystem rollback cannot reverse it']
+]}
+];
+
+const REF = [
+{id:'primitive-map',title:'Primitive boundary map',note:'The shortest reliable distinction between adjacent Hermes features.',head:['Primitive','Persistent identity','Durable workflow state','Best for'],rows:[
+  ['Profile / Bot','Yes','Chat and profile state only','A reusable specialist'],
+  ['@mention DM','Uses both Bots','No delivery state machine','One bounded handoff'],
+  ['Group chat','Uses member Bots','Persistent member sessions, bounded room mirror','Visible deliberation'],
+  ['Routine / cron','Runs as owning profile','Schedule and run status','Recurring or delayed work'],
+  ['Kanban','Named worker profiles','Yes, SQLite tasks and handoffs','Dependencies, retries, review, audit'],
+  ['delegate_task','Anonymous child','No','Short fork-and-join reasoning']
+]},
+{id:'group-bounds',title:'Group-room bounds',head:['Property','Current documented behavior'],rows:[
+  ['Members','2 to 6 Bots'],['Rounds','Up to 3 serial rounds per user send'],['Messages','Hard cap of 10 per send'],['Targeting','Mentioned Bots respond; with no mentions, all are eligible'],['Settlement','A full silent round ends deliberation'],['Human escalation','<code>@user</code> raises a needs-you badge'],['Context','Each member keeps a persistent <code>Group: &lt;name&gt;</code> session']
+]},
+{id:'commands',title:'Operator command index',note:'Replace example names and paths with values you own.',head:['Intent','Command'],rows:[
+  ['List profiles','<code>hermes profile list</code>'],['Inspect a profile','<code>hermes profile show researcher</code>'],['Open a profile chat','<code>hermes -p researcher chat</code>'],['List Bot routines','<code>hermes cron list</code>'],['List peers','<code>hermes peer list</code>'],['Open current Bot profile files','<code>~/.hermes/profiles/&lt;bot&gt;/</code>'],['Preview latest checkpoint','<code>/rollback diff 1</code>']
+]},
+{id:'data-ownership',title:'Data and ownership',head:['State','Lives where','Important consequence'],rows:[
+  ['Profile config, memory, skills, sessions','Owning profile&apos;s Hermes home','Unified roster does not unify storage'],
+  ['Bot look, title, description','Backend profile metadata','Follows desktops connected to that backend'],
+  ['Room full orchestration log','Each Desktop local storage','The shared gateway mirror is a bounded recent projection'],
+  ['Bot routine','Owning profile cron state','Can run while Bot is hidden or plugin is off'],
+  ['Peer key','<code>~/.hermes/.env</code>','Treat as a credential, not prompt content'],
+  ['Peer name and URL','<code>config.yaml</code> under <code>bot_peers</code>','Routing metadata is separate from the key']
+]},
+{id:'cron-control',title:'Routine control points',head:['Control','Default / order','Operator meaning'],rows:[
+  ['Model resolution','Job pin → <code>cron.model</code> → global default','Pin recurring spend'],
+  ['Model drift guard','Enabled','Unpinned jobs can skip instead of switching models silently'],
+  ['Preflight','Enabled','Invalid credentials, skills, or delivery can block before spend'],
+  ['Dangerous command in cron','<code>deny</code>','Headless routines fail closed'],
+  ['Blocked-config alert','Once per unhealthy episode','Inspect status; do not wait for repeated alerts'],
+  ['Nested cron creation','Disabled inside cron runs','Prevents runaway scheduling loops']
+]},
+{id:'source-drift',title:'Launch-week term corrections',head:['Older source term or claim','Current official form'],rows:[
+  ['Agent Inbox','Canonical <b>Bot Chat</b>'],
+  ['Paste messaging protocol into SOUL','Protocol is injected automatically into canonical Bot Chats'],
+  ['Delete from CLI only','Desktop <b>Delete Profile</b> exists with confirmation; default is protected'],
+  ['Inline <code>-q</code> message string','Current direct-message example uses <code>--query-file</code>'],
+  ['Avatar settings are plugin-local','Current metadata is stored on the backend profile'],
+  ['One group label per Bot','Current Bots can join any number of group chats']
+]},
+{id:'safety',title:'Safety reality check',head:['Statement','Status'],rows:[
+  ['Profile isolates Hermes state','True'],['Profile sandboxes host filesystem','False'],['SOUL enforces a workspace boundary','False'],['Smart approvals remove all risk','False'],['Hardline catastrophic-command blocklist survives YOLO','True'],['Write safe root constrains every shell command','False; it governs write/patch tools, not a hostile terminal process'],['Rollback reverses external side effects','False']
+]}
+];
+
+const AUDIT = {
+ intro:'The five supplied sources agree on the core architecture but diverge on fast-moving implementation details. The official Bot Mode docs and primary GitHub records are authoritative here. Practitioner reports remain valuable as case studies, not as current command references.',
+ groups:[
+ {label:'Holds up',tag:'holds',items:[
+   {c:'All five sources describe a Bot as an existing Hermes profile rather than a new agent primitive.',f:'Confirmed. Current docs say the roster is a UI over isolated profile config, memory, skills, credentials, and chat history.'},
+   {c:'Bots have persistent chats, per-Bot capabilities and models, routines, @mention handoffs, and group rooms.',f:'Confirmed by current official documentation. The mechanism is more precise than launch summaries: canonical <b>Bot Chat</b>, current profile metadata, and bounded room turns.'},
+   {c:'Groups hold two to six Bots and run up to three serial rounds.',f:'Confirmed. Current docs also specify a 10-message hard cap, pass behavior, silent-round settlement, and <code>@user</code> escalation.'},
+   {c:'Bot Mode was bundled default-on through PR #87886 and the v0.20.3 release line.',f:'Confirmed against the primary GitHub PR and release record. PR #87886 merged with 52 changed files and 10 commits; the v2026.8.16.2 release notes name bundled Bot Mode.'},
+   {c:'The DEV case study reports a failed Risk Analyst to Thesis Editor handoff that required a retry.',f:'Accepted as the author&apos;s observed case, not generalized as a product failure rate. It usefully demonstrates why each handoff needs an acceptance and recovery boundary.'}
+ ]},
+ {label:'Stale or incomplete',tag:'stale',items:[
+   {c:'Launch coverage calls the canonical conversation an Agent Inbox.',f:'Current official docs call it <b>Bot Chat</b>. Operators following the old label may inspect or invoke the wrong session.'},
+   {c:'The X guide tells users to paste an Agent Inbox protocol into every SOUL.md.',f:'Current docs say the backend injects the messaging protocol automatically into canonical Bot Chats and leaves SOUL files untouched.'},
+   {c:'The X guide says profile deletion is CLI-only.',f:'Current Desktop has <b>Delete Profile</b> behind destructive confirmation; only the default profile remains undeletable.'},
+   {c:'MarkTechPost and AIToolsReview show inline query-string handoff commands.',f:'Current local-DM documentation uses a temporary file and <code>--query-file</code>, protecting message text from shell interpretation.'},
+   {c:'AIToolsReview says avatar and pet state is plugin-local.',f:'Current docs say look, title, and description are backend profile metadata and follow every Desktop connected to that backend.'},
+   {c:'Launch articles describe simpler roster groups.',f:'Current Bot Mode supports many group chats per Bot, persistent room identities, multi-gateway mirroring, and cross-machine members.'}
+ ]},
+ {label:'Wrong or unsupported',tag:'wrong',items:[
+   {c:'The X guide implies adding the word everyone is the group-chat broadcast mechanism.',f:'The current documented broadcast behavior is simpler: when nobody is mentioned, every member is eligible. The special <code>everyone</code> keyword is <span class="unv">unverified</span> in current primary docs.'},
+   {c:'The X guide says Bots can run in parallel as a general Bot Mode guarantee.',f:'Current group-room turns are explicitly serial. Separate sessions may overlap operationally, but Bot Mode does not promise general parallel workflow execution or live interruption.'},
+   {c:'Launch coverage implies per-project Bots prevent context from leaking into each other.',f:'Profile Hermes state is isolated, but profiles are not filesystem sandboxes and host tool subprocesses can share OS-user credentials. The stronger isolation claim is false.'},
+   {c:'The X guide says a VPS routine fires whenever the laptop is closed.',f:'Only conditionally true: the owning host and gateway/scheduler path must remain running, reachable where required, and correctly credentialed.'},
+   {c:'The X guide states a live Skill Hub count of 88,000+.',f:'That volatile catalog count was not established from the current primary Bot Mode docs and is <span class="unv">unverified</span>. It is excluded from the curriculum.'}
+ ]},
+ {label:'Missing entirely',tag:'gap',items:[
+   {c:'Profiles are not sandboxes.',f:'This is the most important operator gap. Isolated memory and config do not prevent a Bot from reading or writing host files as the current OS user.'},
+   {c:'Hidden Bots continue to work.',f:'Hiding only changes display and toast behavior. Mentions, groups, routines, and unread activity continue silently.'},
+   {c:'Canonical Bot Chat reset behavior.',f:'Inside the forever-chat, <code>/new</code> and <code>/reset</code> reroute to <code>/compact</code> rather than forking the relationship.'},
+   {c:'Current multi-machine peer routing.',f:'Bots can use <code>hermes peer</code> for Desktop-independent remote DMs, with API server keys separated from peer routing metadata.'},
+   {c:'Room durability and deletion semantics.',f:'Rooms have durable internal identities, are mirrored across gateways, survive some source loss, and do not become the same room when recreated under an old name.'},
+   {c:'The boundary between Bot Mode and Kanban.',f:'Bot Mode does not provide deterministic dependencies, durable retry state, or a task audit trail. Hermes Kanban is the documented primitive for those requirements.'},
+   {c:'Cron fail-closed behavior and one-alert silence.',f:'Preflight, model drift guards, and headless approval defaults can intentionally skip runs. Operators need status inspection because repeated unhealthy ticks may not keep alerting.'}
+ ]}
+ ]
+};
+
+/* ============================================================
+   Bot Roster — app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hermes Flightpath</title>
+
+
+<!-- [PICK] three type roles. Google Fonts is optional; remove these links for offline delivery.
+     Always give every face a real fallback stack. -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☤</text></svg>">
+<style>
+/* =====================================================================
+   TOKENS — light palette lives on the bare :root.
+   >>> CHOOSE PER SUBJECT: the 6 values marked [PICK] below. <<<
+   Derive them from the subject's own world. Keep neutrals biased
+   toward the accent hue. Everything else in this file is structural
+   and should carry over unchanged.
+   ===================================================================== */
+:root{
+  /* [PICK] grounds — page, cards, raised surfaces */
+  --bg:#E9EDF0; --paper:#F7F9FA; --raise:#FFFFFF;
+  --ink:#111923; --body:#263444; --muted:#5A6979; --faint:#8493A2;
+  --line:#D0D8E0; --line-2:#B9C5D0;
+  /* [PICK] structural accent — links, active nav, lab cards */
+  --accent:#176B82; --accent-soft:#D9EAF0; --accent-ink:#0D5164;
+  /* [PICK] signal — current state, eyebrows, the one loud thing */
+  --signal:#C16A18; --signal-soft:#F6E7D4;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#101823; --code-ink:#DCE7F0; --code-line:#273545;
+  --shadow:0 1px 2px rgba(18,26,25,.05), 0 8px 24px -12px rgba(18,26,25,.14);
+  --rail:264px;
+  /* [PICK] type: display / body / mono. Three roles, chosen deliberately. */
+  --f-disp:'Segoe UI Variable Display','Segoe UI',Arial,sans-serif;
+  --f-body:'Segoe UI Variable Text','Segoe UI',Arial,sans-serif;
+  --f-mono:'Cascadia Mono','SFMono-Regular',Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1119; --paper:#111A25; --raise:#172231;
+    --ink:#E8EEF5; --body:#C5D1DE; --muted:#8EA0B2; --faint:#67798B;
+    --line:#263546; --line-2:#35485C;
+    --accent:#58BBD4; --accent-soft:#11313D; --accent-ink:#89D7E8;
+    --signal:#F0A04B; --signal-soft:#392612;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#070C12; --code-ink:#D3E0EC; --code-line:#1D2A38;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1119; --paper:#111A25; --raise:#172231;
+  --ink:#E8EEF5; --body:#C5D1DE; --muted:#8EA0B2; --faint:#67798B;
+  --line:#263546; --line-2:#35485C;
+  --accent:#58BBD4; --accent-soft:#11313D; --accent-ink:#89D7E8;
+  --signal:#F0A04B; --signal-soft:#392612;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#070C12; --code-ink:#D3E0EC; --code-line:#1D2A38;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname"></span><small id="brandtag"></small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search &middot; / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">&#9686;</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"></div>
+    <div class="legend" id="legend"></div>
+  </nav>
+  <main id="view"></main>
+</div>
+
+
+<script>
+/* =====================================================================
+   CONTENT — replace everything below this banner.
+   Three example phases show every field. Delete them and write yours.
+   See the Mastery Site build specification for the full rules. The short version:
+     - 8–14 phases. Phase 00 = read the instrument. Phase 01 = operate it
+       without configuring it. Last = capstone with the exclusions stated.
+     - `id` is STABLE and drives progress keys. `n` is cosmetic.
+     - A gotcha is only a gotcha if it fails SILENTLY.
+     - Every lab has one step that deliberately breaks something.
+     - Quiz items are recall, not recognition. They become the Drill deck.
+     - Assert only what you verified. Mark the rest <span class="unv">unverified</span>.
+   ===================================================================== */
+
+const SITE = {
+  key:'mastery-hermes-flightpath-v1',
+  title:'Hermes Flightpath',
+  tag:'OPERATOR PATH',
+  spine:'Control loop',
+  layers:[
+    {id:'observe',label:'Observe — know the state',token:'warn'},
+    {id:'operate',label:'Operate — direct the loop',token:'accent'},
+    {id:'shape',label:'Shape — change behavior',token:'signal'},
+    {id:'contain',label:'Contain — bound effects',token:'stop'}
+  ],
+  refLede:'Fast decisions for operating Hermes: which file, command, boundary, or recovery move to use. Verified against the official Hermes repository and documentation.',
+  auditTitle:'Crosley guide, checked',
+  verifiedAgainst:'Source audit as of August 21, 2026. Checked against the official Hermes docs, repository, installer, CLI reference, and GitHub releases.'
+};
+
+const C=(...l)=>l.join('\n');
+const K=s=>'<code class="k">'+s+'</code>';
+const D='https://hermes-agent.nousresearch.com/docs/';
+const G='https://github.com/NousResearch/hermes-agent';
+
+const PHASES=[
+{
+ id:'hermes-observe',n:'00',title:'Read the instrument',layer:'observe',layerLabel:'Observe',time:'35 min',pre:'Hermes installed',
+ objective:'You can <b>name the active version, profile, provider, configuration path, and failing subsystem</b> before changing anything.',
+ concepts:[
+  {h:'Start with evidence',p:'<p><code>status</code>, <code>doctor</code>, and <code>dump</code> answer different questions. Status describes the running setup, doctor tests health, and dump produces a shareable summary. Guessing from a symptom often changes the wrong layer.</p>',table:{head:['Question','Instrument','Use it when'],rows:[['What is active?','<code>hermes status --deep</code>','Provider, auth, platform, and service state'],['What is broken?','<code>hermes doctor</code>','Dependencies, configuration, and service health'],['What can I share?','<code>hermes dump</code>','Support-ready setup summary'],['Where is config?','<code>hermes config path</code>','Before editing any file']]}},
+  {h:'Version is part of the diagnosis',p:'<p>Hermes changes quickly. Record <code>hermes --version</code> before trusting a guide, command default, or release-specific behavior. GitHub marks v0.20.5 as latest on August 21, 2026.</p>'},
+  {h:'Safe mode is a control experiment',p:'<p><code>--safe-mode</code> disables user configuration, rule and memory injection, plugins, shell hooks, and MCP servers. If a failure disappears there, your customization layer is implicated. It does not prove which customization is at fault.</p>',code:C('hermes chat --safe-mode -q "Reply with the active provider and whether project rules are loaded."')},
+  {h:'Logs preserve the sequence',p:'<p>Use structured log filters before opening raw files. Time, level, and session filters keep unrelated gateway activity from becoming a false lead.</p>',code:C('hermes logs --level WARNING --since 1h','hermes logs gateway -n 100','hermes logs --session SESSION_ID')}
+ ],
+ lab:{title:'Capture a real baseline',steps:['Run <code>hermes --version</code> and save the value.','Run <code>hermes status --deep</code>; record the active profile, provider, and gateway state.','Run <code>hermes doctor</code>; record every non-green check.','Run <code>hermes config path</code> and confirm the file exists.','<b>Break the customization layer deliberately:</b> run the safe-mode one-shot above and compare its provider and loaded context with the normal run.','Run <code>hermes dump</code> and confirm it does not expose secret values before sharing it.'],verify:'You have a dated baseline containing version, profile, provider, config path, gateway state, and an explicit doctor result.'},
+ gotchas:[
+  {s:'trap',t:'A green chat hides a broken auxiliary path',d:'Text chat can work while vision, web extraction, compression, or memory flush is routed elsewhere and failing.'},
+  {s:'trap',t:'Raw logs mix several sessions',d:'Reading the tail without a session or time filter can make another profile or gateway request look causal.'},
+  {s:'stale',t:'A copied default may already be wrong',d:'The supplied guide says 90 tool iterations in one table; the current CLI reference says 500.'},
+  {s:'cost',t:'Changing config before baselining destroys evidence',d:'Once state changes, you cannot tell whether the original symptom came from provider, context, tool, or service state.'}
+ ],
+ quiz:[{q:'Name the four baseline instruments and the question each answers.',a:'<code>hermes --version</code> identifies the build; <code>hermes status --deep</code> describes active state; <code>hermes doctor</code> tests health; <code>hermes dump</code> creates a shareable setup summary.'},{q:'What does a failure disappearing under <code>--safe-mode</code> prove?',a:'It implicates the disabled customization surface, but it does not identify which config, context file, plugin, hook, memory item, or MCP server caused the failure.'},{q:'Why can successful text chat coexist with broken web or vision?',a:'Auxiliary tasks may use different provider and credential routes from the main conversation model.'}],
+ docs:[['Official CLI reference',D+'reference/cli-commands'],['Troubleshooting',D+'reference/faq'],['Latest release',G+'/releases/latest']]
+},
+{
+ id:'hermes-loop',n:'01',title:'Run the first loop',layer:'operate',layerLabel:'Operate',time:'50 min',pre:'Phase 00',
+ objective:'You can <b>drive one bounded task from prompt to verified artifact</b> without adding configuration.',
+ concepts:[
+  {h:'One core, several surfaces',p:'<p>CLI, TUI, desktop, gateway, cron, and API entry points share the same agent core. Choose a surface for interaction and delivery, not because you expect a different intelligence.</p>'},
+  {h:'Interactive and programmatic runs differ',p:'<p>Use interactive chat when you need steering. Use <code>hermes -z</code> when another program needs final text only. Quiet-looking interactive modes can still emit framing that breaks parsers.</p>',code:C('hermes -z "List the top-level files in this project as JSON."','hermes -z "Summarize the current git diff in five bullets." --usage-file hermes-usage.json')},
+  {h:'A good task carries its verifier',p:'<p>State the target, boundary, and evidence of completion in the same request. Without a verifier, fluent output can end the loop before the work is real.</p>'},
+  {h:'Inspect state during the turn',p:'<p>Use <code>/status</code>, <code>/context</code>, and <code>/diff</code> to inspect model state, context pressure, and file changes. These are observations, not substitutes for domain tests.</p>'}
+ ],
+ lab:{title:'Run one task two ways',steps:['Pick a small real task in your current project with an objective pass condition.','Run it interactively and require the agent to execute the pass condition.','Use <code>/diff</code> or your project diff to inspect actual changes.','Run an equivalent read-only task with <code>hermes -z</code> and capture the output.','<b>Break the task deliberately:</b> repeat the prompt without the target boundary or verifier; compare whether the result still satisfies the original pass condition.','Keep the better prompt as a reusable task pattern.'],verify:'You have one artifact or result that passes an external check, plus captured evidence that the underspecified prompt is less reliable.'},
+ gotchas:[{s:'trap',t:'A polished response is mistaken for completion',d:'The agent can narrate success even when no file, test, or external state proves the target changed.'},{s:'trap',t:'Parser-facing automation uses the chat surface',d:'Banners and progress UI can pollute stdout; <code>hermes -z</code> is the final-text-only interface.'},{s:'cost',t:'You configure before learning the default loop',d:'Speculative settings add state you must debug without proving they solve a recurring problem.'},{s:'trap',t:'A context meter is treated as a quality test',d:'Plenty of remaining context does not prove the right files, model, or instructions were loaded.'}],
+ quiz:[{q:'When should you choose <code>hermes -z</code> over interactive chat?',a:'When a script, CI job, or parent process needs a single prompt in and final response text out without interface noise.'},{q:'What three elements make a task falsifiable?',a:'A concrete target, a scope boundary, and an external verification step.'},{q:'Name three live inspection commands and their jobs.',a:'<code>/status</code> shows session state, <code>/context</code> shows context composition and pressure, and <code>/diff</code> shows file changes.'}],
+ docs:[['CLI usage',D+'user-guide/cli'],['CLI commands',D+'reference/cli-commands'],['Tips',D+'guides/tips']]
+},
+{
+ id:'hermes-provider-route',n:'02',title:'Route the model',layer:'shape',layerLabel:'Shape',time:'75 min',pre:'Phase 01',
+ objective:'You can <b>trace a request from provider choice through credentials, model, auxiliary routes, and fallback</b>.',
+ concepts:[
+  {h:'Setup and switching are different',p:'<p><code>hermes model</code> runs the full provider setup wizard outside a session. <code>/model</code> switches among providers already configured. Expecting the slash command to add credentials leaves the provider absent without changing the current conversation.</p>'},
+  {h:'Credentials have distinct homes',p:'<p>API keys belong in <code>.env</code>, OAuth credentials in <code>auth.json</code>, and custom endpoint/model settings in <code>config.yaml</code>. Use <code>hermes auth</code> and <code>hermes model</code> instead of hand-editing refreshable tokens.</p>'},
+  {h:'Auxiliary models are separate routes',p:'<p>Vision, extraction, compression, and memory work can use auxiliary providers. Main chat success does not validate those paths. Inspect every auxiliary slot used by your workflow.</p>'},
+  {h:'Fallback is not free',p:'<p>Fallback improves availability but can change cost, latency, context size, or behavior. Pin critical automations when a silent route change would be worse than a visible failure.</p>'}
+ ],
+ lab:{title:'Draw your real route',steps:['Run <code>hermes status --deep</code> and record the main provider and model.','Run <code>hermes auth list</code> and note credential types without copying token values.','Run <code>hermes config get model --json</code> and inspect the resolved model config.','Inspect the configured auxiliary and fallback routes used by your normal work.','Run one main-model text task and one auxiliary-backed task such as web extraction or vision.','<b>Break a route deliberately:</b> switch to a configured model that lacks the capability your auxiliary task needs, then verify that the main chat can still succeed while the capability test does not. Restore the original model.'],verify:'You have a route map for main, auxiliary, and fallback calls, with a passing capability test for each route you rely on.'},
+ gotchas:[{s:'trap',t:'<code>/model</code> appears to be a setup wizard',d:'It only exposes already configured providers; no error tells you that the missing provider needs terminal-side setup.'},{s:'trap',t:'Main chat validates the wrong route',d:'Auxiliary features can remain broken behind a healthy conversation model.'},{s:'cost',t:'Fallback changes economics silently',d:'A successful retry can land on a more expensive or slower provider unless routing is intentionally bounded.'},{s:'trap',t:'A copied token stops refreshing',d:'Hand-copying OAuth material into static config can replace a refreshable credential path with a brittle one.'}],
+ quiz:[{q:'Name the three provider-auth paths and their storage locations.',a:'API keys in <code>.env</code>, OAuth managed through Hermes and stored in <code>auth.json</code>, and custom endpoint/model configuration in <code>config.yaml</code>.'},{q:'What is the difference between <code>hermes model</code> and <code>/model</code>?',a:'The terminal command configures providers and credentials; the in-session slash command switches among providers already configured.'},{q:'Why is one successful chat not a provider health check?',a:'It tests only the active main route, not auxiliary models, tool gateways, fallback credentials, or capability compatibility.'}],
+ docs:[['Configuring models',D+'user-guide/configuring-models'],['Providers',D+'integrations/providers'],['Fallback providers',D+'user-guide/features/fallback-providers']]
+},
+{
+ id:'hermes-state-map',n:'03',title:'Map the state',layer:'shape',layerLabel:'Shape',time:'65 min',pre:'Phase 02',
+ objective:'You can <b>put each setting, secret, identity rule, and durable record in its correct state store</b>.',
+ concepts:[
+  {h:'The home directory is the state boundary',p:'<p><code>HERMES_HOME</code> contains configuration, secrets, OAuth, identity, memory, skills, sessions, cron state, and logs. Profiles create separate homes; a backup boundary follows the home, not your project directory.</p>'},
+  {h:'Let the config command route writes',p:'<p><code>hermes config set</code> sends recognized secret keys to <code>.env</code> and other settings to <code>config.yaml</code>. This avoids a setting that looks valid but is read from the wrong layer.</p>',code:C('hermes config get terminal.backend','hermes config set terminal.backend docker','hermes config unset terminal.backend')},
+  {h:'Resolved value beats file inspection',p:'<p>Environment, profile, and defaults can affect the result. Use <code>hermes config get KEY</code> to inspect the resolved value before concluding that a line in one file controls runtime behavior.</p>'},
+  {h:'Backups and profile exports are not equivalent',p:'<p><code>hermes backup</code> captures the full Hermes home including credentials. A profile export excludes credentials by design. Pick based on whether you need migration, sharing, or disaster recovery.</p>'}
+ ],
+ lab:{title:'Prove state ownership',steps:['Run <code>hermes config path</code> and <code>hermes config env-path</code>.','Choose one non-secret setting and record its resolved value.','Change it with <code>hermes config set</code>, verify with <code>get</code>, then restore it with <code>unset</code> or its prior value.','Choose a test secret variable supported by your configured provider and verify that <code>config set</code> routes it to the environment file without displaying its value. Remove the test value immediately.','<b>Break placement deliberately:</b> put a harmless non-secret marker in <code>.env</code> under an unrecognized name and confirm <code>hermes config get</code> does not make it a Hermes setting; then remove it.','Create a quick labeled backup and list it without exposing its contents.'],verify:'You can point to the owning file for one setting, one secret, one identity file, and one backup, and all temporary values are removed.'},
+ gotchas:[{s:'trap',t:'A line exists but is not the resolved value',d:'A higher-priority environment or profile setting can win while the visible file looks authoritative.'},{s:'trap',t:'Profile export is treated as disaster recovery',d:'Credentials are excluded, so the restored profile cannot authenticate until credentials are recreated.'},{s:'cost',t:'Full backups nest operational history',d:'Large homes and session databases make frequent full backups slower than quick state snapshots.'},{s:'trap',t:'A secret is pasted into a shareable config',d:'The setup works, but the credential can leak through diffs, support bundles, or project backups.'}],
+ quiz:[{q:'What belongs in <code>config.yaml</code>, <code>.env</code>, and <code>auth.json</code>?',a:'Settings belong in <code>config.yaml</code>, API keys and other static secrets in <code>.env</code>, and Hermes-managed OAuth credentials in <code>auth.json</code>.'},{q:'Why inspect with <code>hermes config get</code> instead of reading one file?',a:'It reports the resolved value after profile, environment, user config, and defaults are applied.'},{q:'Which operation includes credentials: backup or profile export?',a:'A full <code>hermes backup</code> includes them; profile export excludes them by design.'}],
+ docs:[['Configuration',D+'user-guide/configuration'],['Which file does what',D+'user-guide/which-file-does-what'],['Profiles',D+'user-guide/profiles']]
+},
+{
+ id:'hermes-context',n:'04',title:'Shape the context',layer:'shape',layerLabel:'Shape',time:'80 min',pre:'Phase 03',
+ objective:'You can <b>place identity, user facts, learned facts, and project rules in the right prompt layer</b>.',
+ concepts:[
+  {h:'Identity, user, memory, and project are separate',table:{head:['Need','File','Writer','Refresh'],rows:[['Agent voice and style','<code>SOUL.md</code>','You','New session'],['Facts about you','<code>USER.md</code>','Agent or approved edit','New session'],['Learned environment facts','<code>MEMORY.md</code>','Agent or approved edit','New session'],['Project rules','<code>.hermes.md</code> or <code>AGENTS.md</code>','Project owner','Startup and progressive discovery']]}},
+  {h:'Only one project context family wins',p:'<p>The current priority is <code>.hermes.md</code>, then <code>AGENTS.override.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>, and <code>.cursorrules</code>. A lower-priority file can be perfectly written and silently ignored.</p>'},
+  {h:'Nested AGENTS files specialize',p:'<p>Inside a git repository, Hermes merges the root-to-working-directory <code>AGENTS.md</code> chain, then progressively discovers deeper files as tools enter subdirectories. Deeper instructions are more specific.</p>'},
+  {h:'Memory is a frozen session snapshot',p:'<p>A memory save persists immediately but the injected memory block does not refresh mid-session. Start a new session before testing whether the saved fact is part of startup context.</p>'}
+ ],
+ lab:{title:'Make one rule win',steps:['In a real project, add a harmless, testable instruction to <code>AGENTS.md</code>, such as a required response prefix for one diagnostic question.','Start a new Hermes session in that project and verify the instruction is followed.','Add an <code>AGENTS.override.md</code> with a different prefix and start another session.','Confirm the override wins without editing the committed file.','<b>Break discovery deliberately:</b> rename the override to <code>AGENT.override.md</code>, start a session, and observe the fallback to <code>AGENTS.md</code>.','Restore or remove the temporary files and confirm the working tree is clean.'],verify:'You have observed the winning file change across three fresh sessions, and no temporary context file remains.'},
+ gotchas:[{s:'trap',t:'A lower-priority context file is silently ignored',d:'Hermes loads the first matching project context family, so a valid CLAUDE.md may have no effect beside AGENTS.md.'},{s:'trap',t:'A mid-session edit appears broken',d:'SOUL, memory, and startup context are frozen; the disk changed but the current prompt did not.'},{s:'trap',t:'Facts about the user go into SOUL',d:'The voice changes, but USER.md remains empty because identity and user memory never feed each other.'},{s:'cost',t:'Large context files spend tokens every session',d:'Permanent context is paid repeatedly; procedural detail belongs in an on-demand skill.'}],
+ quiz:[{q:'State the current project-context priority order.',a:'<code>.hermes.md</code> → <code>AGENTS.override.md</code> → <code>AGENTS.md</code> → <code>CLAUDE.md</code> → <code>.cursorrules</code>; SOUL loads independently.'},{q:'Where do agent identity, user facts, learned facts, and project rules belong?',a:'Identity in SOUL.md, user facts in USER.md, learned facts in MEMORY.md, and project rules in .hermes.md or AGENTS.md.'},{q:'When does a saved memory become part of injected startup context?',a:'On the next session; the current session keeps the frozen snapshot captured at start.'}],
+ docs:[['Context files',D+'user-guide/features/context-files'],['Which file does what',D+'user-guide/which-file-does-what'],['Personality',D+'user-guide/features/personality']]
+},
+{
+ id:'hermes-boundaries',n:'05',title:'Bound the tools',layer:'contain',layerLabel:'Contain',time:'90 min',pre:'Phase 04',
+ objective:'You can <b>match toolsets, approvals, checkpoints, and terminal isolation to task risk</b>.',
+ concepts:[
+  {h:'Capability and permission are different',p:'<p>A tool can be installed but not enabled for a platform. An enabled tool can still require approval. A permitted command can still be contained in Docker, SSH, or another backend.</p>'},
+  {h:'Use the least sufficient backend',table:{head:['Backend','Boundary','Choose when'],rows:[['<code>local</code>','Host machine','Trusted work needing host state'],['<code>docker</code>','Container filesystem/processes','Reproducible or risky commands'],['<code>ssh</code>','Remote machine','Keep agent away from local code and secrets'],['Cloud/HPC backends','Remote sandbox','Ephemeral scale or specialized compute']]}},
+  {h:'Approvals and checkpoints solve different failures',p:'<p>Approval asks before a dangerous command. Checkpoints preserve a recoverable filesystem state before destructive file changes. Use both when intent can be correct but execution can still be wrong.</p>'},
+  {h:'<code>--yolo</code> removes a human boundary',p:'<p>It bypasses dangerous-command approvals; it does not make commands safe, isolated, reversible, or correct. Treat it as an explicit risk decision, never a performance default.</p>'}
+ ],
+ lab:{title:'Prove a denied capability',steps:['Run <code>hermes tools --summary</code> and record the enabled toolsets for your active surface.','Choose a real read-only task that requires one non-core toolset.','Run it once and capture the successful evidence.','Disable that toolset through <code>hermes tools</code> or the supported <code>/tools disable</code> command.','<b>Break capability deliberately:</b> repeat the same task and confirm Hermes cannot silently substitute an unapproved route.','Re-enable the toolset and rerun the check.','For a file-changing task, start a checkpoint-enabled session and inspect the created checkpoint before authorizing a change.'],verify:'The task passes when enabled, fails or asks for a new route when disabled, passes again after restoration, and a checkpoint exists for the file-changing test.'},
+ gotchas:[{s:'trap',t:'A tool exists but the platform cannot call it',d:'Toolsets are configured per surface, so CLI success does not prove Telegram or cron has the same capability.'},{s:'trap',t:'Approval is mistaken for isolation',d:'Approving a local command still gives it host reach; only the backend changes the execution boundary.'},{s:'trap',t:'Checkpointing is mistaken for permission',d:'A recoverable snapshot does not authorize the destructive operation or protect external systems.'},{s:'cost',t:'Every tool is enabled everywhere',d:'Large tool surfaces consume context, increase ambiguity, and widen the blast radius of a mistaken call.'}],
+ quiz:[{q:'Distinguish tool availability, approval, checkpointing, and backend isolation.',a:'Availability exposes a tool; approval gates an action; checkpointing preserves file state; backend isolation limits where execution can reach.'},{q:'What does <code>--yolo</code> change and what does it not change?',a:'It skips approval prompts. It does not add isolation, correctness, reversibility, or external-system safeguards.'},{q:'Why test toolsets on each platform?',a:'Hermes can enable different tools for CLI, messaging, and cron, so capability is surface-specific.'}],
+ docs:[['Tools',D+'user-guide/features/tools'],['Security',D+'user-guide/security'],['Checkpoints',D+'user-guide/checkpoints-and-rollback']]
+},
+{
+ id:'hermes-learning',n:'06',title:'Grow durable skill',layer:'shape',layerLabel:'Shape',time:'95 min',pre:'Phase 05',
+ objective:'You can <b>separate facts worth remembering from procedures worth loading on demand</b>.',
+ concepts:[
+  {h:'Memory stores facts; skills store procedures',p:'<p>Use MEMORY.md and USER.md for durable facts and preferences. Use a skill for a repeatable workflow with steps, references, or tooling. Putting a full procedure in memory forces it into every session.</p>'},
+  {h:'Skills use progressive disclosure',p:'<p>Hermes can list compact skill metadata, load a full SKILL.md when matched, and then open referenced files as needed. Good descriptions determine when the procedure appears.</p>'},
+  {h:'Writes can be gated',p:'<p><code>memory.write_approval</code> and <code>skills.write_approval</code> can stage writes for explicit review. This is the right boundary when self-improvement should remain observable.</p>'},
+  {h:'Installed does not mean trusted',p:'<p>Inspect source, permissions, tool requirements, and scanner findings before running a skill. A useful workflow can still carry unsafe instructions or excessive capabilities.</p>'}
+ ],
+ lab:{title:'Turn one repeated task into a skill',steps:['Choose a real procedure you have performed at least twice.','Ask Hermes what stable facts belong in memory and what steps belong in a skill; reject anything project-specific from global memory.','Enable memory and skill write approvals for the exercise.','Stage one harmless memory fact and review it before approval.','Create a minimal skill with a falsifiable completion check and inspect its diff before approval.','<b>Break activation deliberately:</b> weaken the skill description so a realistic request does not match, verify it stays unloaded, then restore a precise description.','Start a fresh session and run the real procedure using the approved skill.'],verify:'A fresh session recalls the approved fact, activates the skill on a matching request, and completes the real procedure with its verifier passing.'},
+ gotchas:[{s:'trap',t:'A saved memory looks absent',d:'The write landed, but the current system prompt still contains the session-start snapshot.'},{s:'trap',t:'A vague skill description prevents activation',d:'The skill exists on disk yet never loads for the requests it was built to handle.'},{s:'cost',t:'Procedures live in global memory',d:'Every session pays for steps that should load only when a matching task appears.'},{s:'trap',t:'A scanner verdict becomes a trust decision',d:'Automated checks can miss intent, dynamic behavior, and excessive permissions; human review remains necessary.'}],
+ quiz:[{q:'What belongs in memory, and what belongs in a skill?',a:'Durable facts and user preferences belong in memory; repeatable procedures, references, and tool instructions belong in a skill.'},{q:'How does skill progressive disclosure reduce context cost?',a:'Hermes starts with compact metadata, loads SKILL.md only on match, and opens referenced resources only when needed.'},{q:'Which settings gate memory and skill writes?',a:'<code>memory.write_approval</code> and <code>skills.write_approval</code>.'}],
+ docs:[['Memory',D+'user-guide/features/memory'],['Skills',D+'user-guide/features/skills'],['Work with skills',D+'guides/work-with-skills']]
+},
+{
+ id:'hermes-isolation',n:'07',title:'Isolate the work',layer:'contain',layerLabel:'Contain',time:'85 min',pre:'Phase 06',
+ objective:'You can <b>separate conversations, profiles, projects, and parallel edits without state bleed</b>.',
+ concepts:[
+  {h:'Sessions preserve conversation; profiles isolate identity',p:'<p>Resume a session when the same work continues. Create a profile when config, secrets, memory, skills, gateway PID, or identity must differ.</p>'},
+  {h:'A profile is a separate Hermes home',p:'<p>Each profile gets an isolated home. A global <code>-p</code> override selects it for one invocation, while <code>profile use</code> changes the sticky default.</p>'},
+  {h:'Worktrees isolate files, not intent',p:'<p>Use <code>--worktree</code> for parallel repository edits. It prevents checkout collisions; it does not coordinate overlapping goals or reconcile incompatible changes.</p>'},
+  {h:'Exports exclude credentials',p:'<p>A shareable profile distribution and a disaster-recovery backup have different trust boundaries. Reauthenticate after importing a profile export.</p>'}
+ ],
+ lab:{title:'Prove profile isolation',steps:['Create a temporary profile named <code>mastery-lab</code> by cloning only the current configuration.','Run <code>hermes profile list</code> and confirm both homes are distinct.','Set a harmless personality or display preference only in the lab profile.','Run one query with <code>hermes -p mastery-lab -z</code> and the same query in the default profile.','<b>Break isolation deliberately:</b> assume the lab setting changed the default, then prove with <code>config get</code> that it did not.','Export the lab profile and verify the export contains no credentials.','Remove the temporary profile only after confirming nothing valuable was created there.'],verify:'The same query produces profile-specific state, the default profile remains unchanged, and the export omits credentials.'},
+ gotchas:[{s:'trap',t:'A sticky profile changes later commands',d:'After <code>profile use</code>, an unqualified command can operate on a different home than you expect.'},{s:'trap',t:'A worktree is treated as coordination',d:'Files are isolated, but two agents can still pursue contradictory goals and create merge conflicts.'},{s:'trap',t:'A profile clone implies a full clone',d:'Basic clone and clone-all copy different state; an apparently familiar profile may lack memory, sessions, or credentials.'},{s:'cost',t:'Every topic becomes a profile',d:'Unnecessary homes multiply config, updates, credentials, backups, and gateway supervision.'}],
+ quiz:[{q:'When do you resume a session, create a profile, or use a worktree?',a:'Resume for the same conversation, create a profile for isolated Hermes state and identity, and use a worktree for isolated repository files.'},{q:'What does <code>-p</code> do compared with <code>profile use</code>?',a:'<code>-p</code> selects a profile for one invocation; <code>profile use</code> changes the sticky default.'},{q:'Why can a profile export be shared more safely than a full backup?',a:'Profile exports exclude credentials; full backups include the Hermes home and its secrets.'}],
+ docs:[['Profiles',D+'user-guide/profiles'],['Sessions',D+'user-guide/sessions'],['Git worktrees',D+'user-guide/git-worktrees']]
+},
+{
+ id:'hermes-gateway',n:'08',title:'Open the gateway',layer:'contain',layerLabel:'Contain',time:'2 h',pre:'Phase 07',
+ objective:'You can <b>run one authorized messaging surface with observable delivery and a bounded toolset</b>.',
+ concepts:[
+  {h:'The gateway is a long-running entry point',p:'<p>It routes messages into the same agent core, but adds service lifecycle, platform credentials, authorization, session routing, and delivery failure modes.</p>'},
+  {h:'Pairing is the default trust boundary',p:'<p>Unknown users receive a pairing challenge rather than agent access. Approve identities deliberately with <code>hermes pairing</code>; a valid platform account is not authorization.</p>'},
+  {h:'Platform toolsets must be reviewed',p:'<p>A messaging surface is remote control over whatever tools you enable. Give it the smallest toolset that satisfies its purpose and keep high-impact tools behind approval.</p>'},
+  {h:'Service state is not delivery state',p:'<p>A running gateway can still fail authentication, routing, or outbound delivery. Verify from the external account and inspect gateway logs for the same session.</p>'}
+ ],
+ lab:{title:'Bring one platform online',steps:['Choose one messaging platform you already control and run its official setup flow.','Start or install the gateway using the method supported by your operating system.','Run <code>hermes gateway status</code> and capture the active profile.','From an unapproved account or test identity, trigger pairing and verify no agent tools run before approval.','Approve the exact pairing code from the local CLI.','Review and reduce the platform toolset.','<b>Break delivery deliberately:</b> stop the gateway, send a harmless test message, observe no reply, restart it, and confirm the queued or new test behavior from logs.'],verify:'An approved identity receives a reply, an unapproved identity cannot run tools, the gateway status names the correct profile, and the delivery test is visible in logs.'},
+ gotchas:[{s:'trap',t:'A running service is called healthy',d:'The process can stay up while platform auth or outbound delivery fails.'},{s:'trap',t:'A platform login is treated as Hermes authorization',d:'Without pairing or an explicit allowlist, the wrong person may reach enabled tools.'},{s:'trap',t:'CLI tools are assumed to match messaging tools',d:'Per-platform toolsets can differ, so a remote request may silently lack a capability tested locally.'},{s:'cost',t:'One gateway carries unrelated identities',d:'Mixing work and personal trust boundaries complicates pairing, logs, secrets, and incident response; separate profiles when boundaries differ.'}],
+ quiz:[{q:'What extra concerns does the gateway add to the shared agent core?',a:'Service lifecycle, platform credentials, user authorization, session routing, per-platform tools, and outbound delivery.'},{q:'What does pairing protect?',a:'It prevents an unknown messaging identity from gaining agent and tool access until explicitly approved.'},{q:'How do you prove gateway health?',a:'Check service status, send a message from an authorized external identity, confirm the reply, and correlate the session in gateway logs.'}],
+ docs:[['Messaging overview',D+'user-guide/messaging'],['Security',D+'user-guide/security'],['Pairing commands',D+'reference/cli-commands#hermes-pairing']]
+},
+{
+ id:'hermes-automation',n:'09',title:'Schedule the loop',layer:'contain',layerLabel:'Contain',time:'2 h',pre:'Phase 08',
+ objective:'You can <b>schedule a pinned, observable, recoverable job with explicit delivery and spend boundaries</b>.',
+ concepts:[
+  {h:'Cron needs a live scheduler',p:'<p>Job definitions persist on disk, but the gateway scheduler must be running for automatic fires. A listed job is not proof that it has executed.</p>'},
+  {h:'Pin unattended economics',p:'<p>Pin provider and model for recurring work. Current Hermes guards unpinned jobs against model drift by failing closed when the global default changes, unless you deliberately disable that guard.</p>'},
+  {h:'Working directory controls project context',p:'<p>Cron runs detached by default. Set <code>--workdir</code> when the job needs project files or AGENTS.md; otherwise a plausible generic answer can hide missing project context.</p>'},
+  {h:'Execution and delivery are separate outcomes',p:'<p>Inspect run history and the destination. A successful inference with failed delivery is not a successful automation.</p>'}
+ ],
+ lab:{title:'Ship one bounded recurring job',steps:['Choose a real low-risk report that can run read-only.','Create it with an explicit schedule, provider, model, working directory, and delivery target.','Run it manually and inspect <code>hermes cron runs</code>.','Confirm the report arrived at the external destination.','<b>Break context deliberately:</b> duplicate the job without <code>--workdir</code> and ask for a project-specific fact; compare the result with the pinned working-directory run. Remove the broken duplicate.','Pause and resume the real job, confirming status each time.','Document the cost ceiling and the condition that should pause the job.'],verify:'The pinned job has one successful run record, one confirmed delivery, a correct project-specific result, and a documented pause condition.'},
+ gotchas:[{s:'trap',t:'A stored job is mistaken for a running scheduler',d:'The JSON survives restarts, but nothing fires automatically when the gateway scheduler is down.'},{s:'trap',t:'Project context vanishes in cron',d:'Without an explicit workdir, the job can run successfully against the wrong directory and omit AGENTS.md.'},{s:'trap',t:'Inference success hides delivery failure',d:'The run ledger can show completed work even though the message never reached its destination.'},{s:'cost',t:'An unpinned recurring model drifts',d:'Global model changes can alter spend and behavior; the current drift guard fails closed unless you opt out.'}],
+ quiz:[{q:'What four things should a production cron job pin?',a:'Its schedule, provider/model economics, working directory/context, and delivery target.'},{q:'Why can a cron job appear healthy but never fire?',a:'Its definition persists while the gateway scheduler is stopped or unhealthy.'},{q:'Why inspect both run history and destination?',a:'Execution and delivery are separate; either can succeed while the other fails.'}],
+ docs:[['Cron jobs',D+'user-guide/features/cron'],['Cron troubleshooting',D+'guides/cron-troubleshooting'],['Automation blueprints',D+'guides/automation-blueprints']]
+},
+{
+ id:'hermes-recovery',n:'10',title:'Recover the system',layer:'observe',layerLabel:'Capstone',time:'Half day',pre:'All phases',
+ objective:'You can <b>ship a bounded Hermes setup, detect drift, and recover state without guessing</b>.',
+ concepts:[
+  {h:'Update is an operational change',p:'<p>Preview with <code>hermes update --check</code> or fleet-aware <code>--plan</code>. For valuable profiles, take a full backup. Afterward, verify doctor, config, gateway, and a real task.</p>'},
+  {h:'Use the narrowest recovery mechanism',table:{head:['Failure','Recovery'],rows:[['One bad file change','Checkpoint rollback'],['Lost config or cron state','Quick snapshot restore'],['Whole Hermes home lost','Full backup import'],['Bad code update','Updater rollback or pinned code revision'],['Unknown customization bug','Safe mode, then binary search layers']]}},
+  {h:'A ship checklist is evidence, not confidence',p:'<p>Require version, health, provider capability tests, context provenance, tool boundaries, one restored checkpoint, one delivered gateway message, and one observed cron run.</p>'},
+  {h:'Boundary of this path',p:'<p>This curriculum stops at a reliable local or single-host power-user setup. It excludes Hermes source development, provider-plugin implementation, RL and trajectory pipelines, enterprise managed scope, fleet orchestration, and production security architecture. Those require the developer and deployment documentation.</p>'}
+ ],
+ lab:{title:'Run the flight check',steps:['Run <code>hermes update --check</code> and <code>hermes update --plan</code>; do not update unless you intend to change the installation.','Create a labeled full backup and verify its archive can be listed.','In a real project, create a harmless file named <code>HERMES-MASTERY-CHECK.txt</code>.','Start a checkpoint-enabled session and have Hermes change the file.','<b>Break it deliberately:</b> have Hermes replace the known marker with a wrong value, then use checkpoint rollback to restore the original.','Run doctor, one main-model task, one auxiliary capability test, one gateway delivery, and one manual cron run.','Delete the harmless check file only after recovery evidence is recorded.'],verify:'The marker was restored from a checkpoint, the backup is readable, doctor passes or has documented exceptions, and main, auxiliary, gateway, and cron checks each have evidence.'},
+ gotchas:[{s:'trap',t:'A backup is never restored',d:'An archive can exist yet be incomplete, unreadable, or missing the state you assumed it covered.'},{s:'trap',t:'An update receipt replaces functional testing',d:'A clean update process does not prove providers, tools, context, delivery, or automation still behave correctly.'},{s:'trap',t:'Safe mode becomes the permanent fix',d:'It hides the customization fault by disabling the layer instead of identifying and repairing the cause.'},{s:'ok',t:'Recovery should be narrower than the failure',d:'Roll back one file before one profile, and one profile before the whole installation.'}],
+ quiz:[{q:'Name the recovery ladder from narrowest to broadest.',a:'Checkpoint rollback for files, quick state snapshot for runtime state, full backup import for the Hermes home, and code rollback or pinned revision for the installation.'},{q:'What must a post-update flight check verify?',a:'Version and doctor, resolved config, main and auxiliary provider capability, context provenance, tool boundaries, gateway delivery, and cron execution.'},{q:'What is explicitly outside this curriculum?',a:'Hermes source development, plugin implementation, RL and trajectory work, enterprise managed scope, fleet orchestration, and production security architecture.'}],
+ docs:[['Updating',D+'getting-started/updating'],['Checkpoints and rollback',D+'user-guide/checkpoints-and-rollback'],['Backup reference',D+'reference/cli-commands#hermes-backup']]
+}
+];
+
+const TREES=[
+ {title:'Where does this knowledge belong?',rows:[['Agent voice or style','<code>SOUL.md</code>','Global identity, loaded independently'],['Fact about the user','<code>USER.md</code>','Agent-maintained user profile'],['Learned environment fact','<code>MEMORY.md</code>','Durable agent memory'],['Project rule','<code>.hermes.md</code> or <code>AGENTS.md</code>','Scoped to the project'],['Personal project override','<code>AGENTS.override.md</code>','Wins over committed AGENTS.md'],['Repeatable procedure','A skill','Loads on demand instead of every session'],['Hard execution boundary','Approval, checkpoint, or backend','Prose does not enforce behavior']]},
+ {title:'The agent feels worse. What do I inspect?',rows:[['First move','<code>/status</code> + <code>/context</code>','Confirm model, provider, and prompt pressure'],['Only customized runs fail','<code>--safe-mode</code>','Isolate user config, rules, plugins, hooks, and MCP'],['Web or vision fails but chat works','Auxiliary routes','Main and auxiliary providers differ'],['It forgot a just-saved fact','Start a new session','Memory injection is frozen at startup'],['Project rules disappeared','Context precedence and workdir','A higher-priority file or wrong directory may win'],['Long work stops early','<code>agent.max_turns</code> and logs','Current CLI default is 500, but config can override it']]},
+ {title:'How should this task be contained?',rows:[['Read-only trusted local work','Local backend, least toolsets','Minimal friction with bounded capability'],['File changes you may undo','Checkpoints + approvals','Review intent and preserve recovery'],['Untrusted commands or dependencies','Docker backend','Contain filesystem and processes'],['Keep work off this machine','SSH or cloud backend','Separate host boundary'],['Parallel repo edits','Worktree per agent','Avoid checkout collisions'],['Remote messaging access','Pairing + platform toolset','Authorize identity and minimize reach'],['Unattended recurring work','Pinned cron + delivery evidence','Bound cost, context, and output']]},
+ {title:'Which interaction surface should I use?',rows:[['Steer a complex task','Interactive CLI, TUI, or desktop','Supports inspection and correction'],['Script needs final text only','<code>hermes -z</code>','No UI noise in output'],['Reach the same agent remotely','Messaging gateway','Adds authorization and delivery'],['Run on a schedule','Cron through a live gateway','Durable definition plus scheduler'],['Integrate an external client','API, ACP, or MCP surface','Use the documented protocol boundary'],['Separate identity and secrets','A new profile','Creates a distinct Hermes home']]},
+ {title:'An automation did not deliver. What next?',rows:[['Job absent','<code>hermes cron list</code>','Confirm definition and active profile'],['Job present, no recent run','Gateway and cron status','Scheduler may be down'],['Run skipped after model change','Model drift guard','Pin or deliberately update provider/model'],['Run used generic context','Set <code>--workdir</code>','Project files and AGENTS.md were missing'],['Run succeeded, no message','Inspect delivery and gateway logs','Execution and delivery are separate'],['Repeated failures','Pause before retrying','Stop uncontrolled spend and noise']]}
+];
+
+const REF=[
+ {id:'ref-diagnosis',title:'Diagnosis ladder',note:'Use top to bottom; stop when evidence identifies the layer.',head:['Order','Check','Evidence'],rows:[['1','<code>hermes --version</code>','Exact build'],['2','<code>hermes status --deep</code>','Profile, provider, platform, services'],['3','<code>hermes doctor</code>','Config and dependency health'],['4','<code>/context</code>','Loaded prompt layers and pressure'],['5','Capability test','Main versus auxiliary route'],['6','Filtered logs','Sequence tied to time/session'],['7','Safe mode','Customization versus core']]},
+ {id:'ref-files',title:'State and instruction map',head:['Item','Purpose','Owner','Refresh'],rows:[['<code>config.yaml</code>','Non-secret settings','You / config CLI','Process or session'],['<code>.env</code>','API keys and static secrets','You / config CLI','Process start'],['<code>auth.json</code>','OAuth credentials','Hermes auth','Automatic refresh'],['<code>SOUL.md</code>','Agent identity','You','New session'],['<code>USER.md</code>','User facts','Agent / approval','New session'],['<code>MEMORY.md</code>','Learned facts','Agent / approval','New session'],['Project context','Rules and conventions','Project owner','Startup + discovery'],['Skill','On-demand procedure','You or agent / approval','On activation']]},
+ {id:'ref-context',title:'Project context precedence',note:'First matching family wins; SOUL loads separately.',head:['Priority','File','Behavior'],rows:[['1','<code>.hermes.md</code> / <code>HERMES.md</code>','Hermes-specific project context'],['2','<code>AGENTS.override.md</code>','Personal per-directory override'],['3','<code>AGENTS.md</code>','Primary project instructions'],['4','<code>CLAUDE.md</code>','Compatibility context'],['5','<code>.cursorrules</code>','Cursor compatibility rules']]},
+ {id:'ref-safety',title:'Safety controls',head:['Control','Stops','Does not stop'],rows:[['Toolset','Tool exposure','Abuse of enabled tools'],['Approval','Unapproved high-risk action','A bad action you approve'],['Checkpoint','Irrecoverable local file change','External side effects'],['Docker/SSH backend','Host reach','Bad work inside the boundary'],['Profile','State and identity bleed','Conflicts inside the same project'],['Worktree','Checkout collisions','Contradictory goals or merge conflicts']]},
+ {id:'ref-commands',title:'Operator command index',head:['Need','Command'],rows:[['Health','<code>hermes status --deep</code> · <code>hermes doctor</code>'],['Shareable diagnostics','<code>hermes dump</code>'],['Resolved config','<code>hermes config get KEY</code>'],['Provider setup','<code>hermes model</code>'],['Credential inventory','<code>hermes auth list</code>'],['Final-text one-shot','<code>hermes -z "PROMPT"</code>'],['Gateway health','<code>hermes gateway status</code>'],['Automation history','<code>hermes cron runs JOB_ID</code>'],['Update preview','<code>hermes update --check</code> · <code>--plan</code>'],['Backup','<code>hermes backup</code>'],['Logs','<code>hermes logs --level WARNING --since 1h</code>']]},
+ {id:'ref-audit-facts',title:'Volatile facts as of 2026-08-21',note:'Re-check the official repo before operational use.',head:['Fact','Verified value','Primary source'],rows:[['Latest release','v0.20.5 / tag v2026.8.19','GitHub releases/latest'],['Installer Node pin','26','<code>scripts/install.sh</code>'],['Installation page Node text','22 (stale relative to installer)','Official installation doc'],['Default max tool iterations','500','Official CLI reference'],['Supported install path','Shell installer, Desktop, Docker, or Nix paths','Official docs and release notes']]}
+];
+
+const AUDIT={
+ intro:'Blake Crosley’s 23,000-word practitioner reference is unusually strong and source-linked. Its mental model, provider/config split, tools, skills, memory, gateway, and cron coverage largely hold. Hermes is moving faster than a static article can: the audit below separates durable guidance from release drift, one concrete contradiction, and important current surfaces absent from the guide.',
+ groups:[
+  {label:'Holds up',tag:'holds',items:[
+   {c:'Hermes is a full agent runtime, not a chat wrapper.',f:'Confirmed. The official docs expose CLI, desktop, messaging, cron, delegation, tools, memory, skills, API, ACP, and MCP surfaces around a shared agent core.'},
+   {c:'Provider authentication has API-key, OAuth, and custom-endpoint paths.',f:'Confirmed. The storage and setup mechanism differ, so the guide is right to make provider resolution an early mental model.'},
+   {c:'Main-model success does not validate auxiliary capabilities.',f:'Confirmed. Vision, extraction, compression, and other auxiliary routes can use different providers and credentials.'},
+   {c:'Profiles isolate config, sessions, skills, memory, and gateway state.',f:'Confirmed. Each profile receives its own Hermes home and can run independently.'},
+   {c:'Skills use progressive disclosure and memory is persistent across sessions.',f:'Confirmed. The official docs distinguish compact skill discovery from on-demand loading, and frozen session-start memory from durable writes.'}
+  ]},
+  {label:'Stale or incomplete',tag:'stale',items:[
+   {c:'v0.20.4 is the newest rollup covered.',f:'Stale on August 21, 2026. GitHub marks v0.20.5 as latest; it rolls up hundreds of additional changes and adds update-plan/receipt, CLI, cron-memory, and delivery work.'},
+   {c:'Messaging-platform counts are presented as stable totals.',f:'The official site, docs index, and article use different totals and counting rules. Treat platform count as volatile; use the current messaging index for supported adapters.'},
+   {c:'The source names Node 26 while the official installation page says Node 22.',f:'The source is correct against the current installer: <code>scripts/install.sh</code> pins Node 26. The official installation prose is stale, which proves that code and installer checks must win over copied requirements.'},
+   {c:'The file map omits <code>AGENTS.override.md</code>.',f:'Current context documentation places it between .hermes.md and AGENTS.md, making it the supported personal per-directory override.'}
+  ]},
+  {label:'Wrong',tag:'wrong',items:[
+   {c:'The CLI table says <code>--max-turns</code> defaults to 90.',f:'Current official CLI reference says 500, or the value of <code>agent.max_turns</code>. The article itself earlier says the default moved to 500, so its two sections contradict each other.'}
+  ]},
+  {label:'Missing entirely',tag:'gap',items:[
+   {c:'Pure programmatic one-shot mode',f:'Current Hermes documents <code>hermes -z</code> for final-response-only output and optional machine-readable usage accounting. This is the cleanest automation boundary.'},
+   {c:'Memory and skill write approvals',f:'Current config can stage every memory or skill write for explicit review. That materially changes the trust model of self-improvement.'},
+   {c:'Update planning and receipts',f:'Current updating supports read-only fleet plans and machine-readable receipts, so operators can preview service impact and verify mixed-version fleets.'},
+   {c:'Cron model-drift guard and workdir discipline',f:'Unpinned jobs can fail closed after a global model change, and jobs without a workdir omit project context. Both are critical to reliable unattended use.'},
+   {c:'Current checkpoint and rollback operating model',f:'The source mentions checkpoints, but a mastery path needs the explicit distinction between approval, checkpoint recovery, quick state snapshots, full backup, and code rollback.'}
+  ]}
+ ]
+};
+
+/* ============================================================
+   Hermes Flightpath — app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+</body>
+</html>

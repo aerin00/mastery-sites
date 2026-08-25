@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clearance Stack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Zilla+Slab:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#F2ECDD; --paper:#FAF7EE; --raise:#FFFFFF;
+  --ink:#201A12; --body:#3A3021; --muted:#7C7057; --faint:#A99C81;
+  --line:#DED2B4; --line-2:#C8B991;
+  --accent:#1D4E6E; --accent-soft:#DCE8EE; --accent-ink:#153A52;
+  --signal:#C9500B; --signal-soft:#F7E3CE;
+  --ok:#3F7A3A; --ok-soft:#E1EEDE;
+  --warn:#A88220; --warn-soft:#F5EDD4;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#1D1712; --code-ink:#E9E1D2; --code-line:#332A20;
+  --shadow:0 1px 2px rgba(32,26,18,.06), 0 8px 24px -12px rgba(32,26,18,.16);
+  --rail:264px;
+  --f-disp:'Big Shoulders Display','Arial Narrow',Arial,sans-serif;
+  --f-body:'Zilla Slab','Iowan Old Style',Georgia,serif;
+  --f-mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15120C; --paper:#1C1811; --raise:#241F17;
+    --ink:#F0E9D8; --body:#D8CEB8; --muted:#9C8F76; --faint:#6E6350;
+    --line:#332B20; --line-2:#443A2A;
+    --accent:#5FA0C4; --accent-soft:#1B2E3A; --accent-ink:#8FC3E0;
+    --signal:#E8853D; --signal-soft:#3A2414;
+    --ok:#7CBE6E; --ok-soft:#1E301B;
+    --warn:#D9B24E; --warn-soft:#332911;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#0F0C08; --code-ink:#E4DAC4; --code-line:#241D14;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15120C; --paper:#1C1811; --raise:#241F17;
+  --ink:#F0E9D8; --body:#D8CEB8; --muted:#9C8F76; --faint:#6E6350;
+  --line:#332B20; --line-2:#443A2A;
+  --accent:#5FA0C4; --accent-soft:#1B2E3A; --accent-ink:#8FC3E0;
+  --signal:#E8853D; --signal-soft:#3A2414;
+  --ok:#7CBE6E; --ok-soft:#1E301B;
+  --warn:#D9B24E; --warn-soft:#332911;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#0F0C08; --code-ink:#E4DAC4; --code-line:#241D14;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.01em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:17px; color:var(--ink); letter-spacing:-.01em; white-space:nowrap; text-transform:uppercase}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:13px; font-weight:600; letter-spacing:.02em; text-transform:uppercase;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:14px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:18px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,42px); font-weight:700; line-height:1.04; margin:7px 0 0; text-transform:uppercase; letter-spacing:-.01em}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:19px; font-weight:600; margin-bottom:6px; letter-spacing:-.005em; text-transform:none}
+.concept p{margin:0 0 9px; max-width:68ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul,.concept ol{margin:9px 0; padding-left:19px; max-width:68ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#C9BC9F; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-body); font-size:14px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.wrong{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:15px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:18px; margin-bottom:4px; color:var(--accent-ink); text-transform:none}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:15px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,26px); font-weight:600; color:var(--ink); line-height:1.25}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink); text-transform:uppercase; letter-spacing:.01em}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px; display:block}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:68ch; color:var(--body); margin:14px 0 0}
+.lede a{color:var(--accent-ink)}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+#view > h3{margin-top:28px; font-size:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname"></span><small id="brandtag"></small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search &middot; / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">&#9686;</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"></div>
+    <div class="legend" id="legend"></div>
+  </nav>
+  <main id="view"></main>
+</div>
+
+<script>
+const SITE = {
+  key:   'mastery-codex-cli',
+  title: 'Clearance Stack',
+  tag:   'CODEX CLI',
+  spine: 'Clearance layer',
+  layers: [
+    { id:'l1', label:'Operating &mdash; the daily loop',        token:'warn'   },
+    { id:'l2', label:'Soft &mdash; instructions &amp; presets', token:'accent' },
+    { id:'l3', label:'Hard &mdash; sandbox &amp; approval',     token:'stop'   },
+    { id:'l4', label:'Scale &mdash; parallel &amp; transfer',   token:'signal' }
+  ],
+  refLede: 'Tables you will come back to, and the branching questions that pick a setting for you. Everything here is verified against OpenAI&rsquo;s own docs and the openai/codex repository.',
+  auditTitle: 'The guide, checked',
+  verifiedAgainst: 'Verified against developers.openai.com/codex, learn.chatgpt.com/docs, and github.com/openai/codex (including the rust-v0.147.0 release notes), August 22, 2026.'
+};
+
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">' + s + '</code>';
+
+const PHASES = [
+{
+  id:'p0', n:'00', title:'Read the Instrument', layer:'l1', layerLabel:'Operating',
+  time:'~30 min', pre:'None',
+  objective:'You can state <b>which surface, model, sandbox, and approval policy</b> a running Codex session is actually using, and where each setting came from &mdash; before you touch anything.',
+  concepts:[
+    {h:'Five surfaces, one agent',
+     p:'<p>Codex CLI is the terminal build: a Rust binary installed via npm, Homebrew, winget, or a curl/PowerShell installer. The same underlying agent also ships as a Desktop app, a VS Code/Cursor/Windsurf IDE extension, a cloud task runner at chatgpt.com/codex, and a Chrome extension. This path covers the terminal surface only &mdash; '+K('codex')+', '+K('codex exec')+', and the TUI &mdash; because that is where config, sandbox, and approval semantics are least abstracted.</p>'},
+    {h:'/status is the dashboard',
+     p:'<p>Run <code>/status</code> inside the TUI to see the active model, reasoning effort, sandbox mode, and approval policy. It is the first command worth running in any unfamiliar session &mdash; it tells you what you are actually authorized to do before you do it. <span class="unv">Whether it also always shows a live estimated credit/cost figure is unverified</span> &mdash; treat that as a bonus if your workspace shows it, not a guarantee.</p>'},
+    {h:'codex doctor diagnoses the install',
+     table:{head:['Flag','Does'],rows:[
+       ['<code>--summary</code>','Short version &mdash; the one to run first'],
+       ['<code>--json</code>','Machine-readable, for scripting'],
+       ['<code>--all</code>','Everything it knows'],
+       ['<code>--ascii</code> / <code>--no-color</code>','Plain-terminal-safe output']]},
+     p2:'<p>It reports environment details, git configuration, terminal/app-server inventory, and MCP setup.</p>'},
+    {h:'Config lives in layers, and later wins',
+     table:{head:['Level','Source'],rows:[
+       ['Highest','CLI flags and <code>-c/--config</code> overrides'],
+       ['','Project <code>.codex/config.toml</code>'],
+       ['','Profile file, via <code>--profile</code>'],
+       ['','User <code>~/.codex/config.toml</code>'],
+       ['','System <code>/etc/codex/config.toml</code> (Unix)'],
+       ['Lowest','Built-in defaults']]}},
+    {h:'Where state actually lives',
+     p:'<p>Credentials and session state live under <code>CODEX_HOME</code>, which defaults to <code>~/.codex/</code> and can be redirected with the <code>CODEX_HOME</code> environment variable &mdash; useful for running multiple isolated identities from one machine.</p>'}
+  ],
+  lab:{title:'Fingerprint your own install',
+    steps:[
+      'Run <code>codex doctor --summary</code> and record the reported version and default sandbox mode.',
+      'Launch <code>codex</code>, run <code>/status</code>, and write down model, reasoning effort, sandbox, and approval policy.',
+      'Open <code>~/.codex/config.toml</code> (create it if missing) and add one harmless override, e.g. <code>personality = "pragmatic"</code>.',
+      'Relaunch and confirm <code>/status</code> (or its visible effect) reflects it &mdash; that proves the user-config layer is actually being read.',
+      '<b>Break it deliberately:</b> launch again with <code>codex -c personality=friendly</code> and confirm the flag overrides the file. If it does not, something in your setup is not following documented precedence, and that is worth knowing now.'],
+    verify:'You can name the exact source of every setting <code>/status</code> shows, not just its value.'},
+  gotchas:[
+    {s:'ok',t:'Five surfaces do not share one settings pane',d:'Confirming a setting in the terminal CLI tells you nothing about the Desktop app, IDE extension, or Cloud runner &mdash; each reads its own local or remote state.'},
+    {s:'cost',t:'codex doctor with no flags is chatty',d:'It prints a full diagnostic block. Use <code>--summary</code> for the fast version or <code>--json</code> to pipe into a script instead of reading a wall of text.'},
+    {s:'trap',t:'A system config file most people never look at',d:'<code>/etc/codex/config.toml</code> (Unix) sits below your user config in precedence but above the built-in defaults &mdash; an admin-managed floor most single-user setups never check exists. On a shared machine, a value you cannot explain may be coming from there.'},
+    {s:'stale',t:'CODEX_HOME is not always ~/.codex',d:'Set the environment variable and every credential, config, session, and hook file relocates with it &mdash; useful for two isolated identities on one shell, but it silently invalidates any path you hardcoded to <code>~/.codex</code>.'},
+    {s:'ok',t:'Profiles are a config layer, not a separate mode',d:'A profile file, activated with <code>--profile</code>, slots into precedence between your project config and your user config. It is one more file that gets merged in, not a parallel settings universe.'}
+  ],
+  quiz:[
+    {q:'What are the six config layers, from highest to lowest precedence?',a:'CLI flags / --config overrides &rarr; project .codex/config.toml &rarr; profile file (--profile) &rarr; user ~/.codex/config.toml &rarr; system /etc/codex/config.toml &rarr; built-in defaults.'},
+    {q:'Which single command should you run first in an unfamiliar Codex session, and why?',a:'/status &mdash; it shows the model, sandbox mode, and approval policy actually in effect, which can differ from what the config file alone would suggest because a higher-precedence layer can override it.'},
+    {q:'What does CODEX_HOME control, and what breaks if you forget you set it?',a:'It relocates the entire ~/.codex/ directory (credentials, config, sessions, hooks) to a new path. Any doc, script, or hook that hardcodes ~/.codex/... will silently miss the real files.'},
+    {q:'Name two things codex doctor reports beyond whether Codex is installed.',a:'Git configuration, terminal/app-server inventory, and MCP server setup.'}
+  ],
+  docs:[['Codex CLI overview','https://developers.openai.com/codex/cli'],['Config basics','https://learn.chatgpt.com/docs/config-file/config-basic'],['CLI command reference','https://learn.chatgpt.com/docs/developer-commands?surface=cli']]
+},
+
+{
+  id:'p1', n:'01', title:'Run the Default Loop', layer:'l1', layerLabel:'Operating',
+  time:'1&ndash;2 h', pre:'Phase 00',
+  objective:'You can run a real task through the interactive TUI end to end &mdash; attach context, steer mid-turn, review the diff &mdash; <b>without touching a single config file</b>.',
+  concepts:[
+    {h:'The composer and @ attach',
+     p:'<p>Launch with <code>codex</code> or <code>codex "prompt"</code>. Inside the composer, type <code>@</code> to fuzzy-search and attach a file directly &mdash; the fastest way to ground Codex in a specific file instead of letting it search the tree on its own.</p>'},
+    {h:'Steering mid-turn',
+     table:{head:['Key','Does'],rows:[
+       ['<code>Enter</code> (while running)','Inject new instructions into the current turn'],
+       ['<code>Esc</code> once','Interrupt / stop the run'],
+       ['<code>Esc</code> twice (idle)','Edit a prior message'],
+       ['<code>Ctrl+G</code>','Open an external editor for the composer'],
+       ['<code>Ctrl+R</code>','Reverse history search'],
+       ['<code>Alt+,</code> / <code>Alt+.</code>','Lower / raise reasoning effort live']]}},
+    {h:'/diff and /review are different signals',
+     p:'<p><code>/diff</code> shows the git diff, including files git is not yet tracking &mdash; the ground truth of what changed. <code>/review</code> asks Codex to review your working tree as a separate pass, independent of whatever it just wrote. Run both; they answer different questions.</p>'},
+    {h:'/model switches mid-session',
+     p:'<p><code>/model</code> changes the active model and reasoning effort without restarting. Drop to a cheaper model for a mechanical step and raise back to the flagship for the hard part, inside the same conversation.</p>'},
+    {h:'/new, /clear, and /compact are not the same reset',
+     p:'<p><code>/new</code> starts a fresh conversation inside the same CLI session. <code>/clear</code> clears the terminal and starts a fresh chat. <code>/compact</code> summarizes the visible conversation to free tokens &mdash; it shrinks history, it does not start over.</p>'}
+  ],
+  lab:{title:'Do one real task three ways',
+    steps:[
+      'Pick a small real fix in a repo you own &mdash; not a toy file.',
+      'Do it the naive way: one long prompt, no attach, no review. Note how many follow-up corrections it took.',
+      'Do it again on a fresh <code>/new</code> conversation: <code>@</code> attach the exact file, and use <code>Enter</code>-while-running once to redirect it mid-turn.',
+      'Run <code>/diff</code>, then <code>/review</code>, before accepting anything.',
+      '<b>Break it deliberately:</b> mid-turn, inject a contradictory instruction (tell it to use a library you know is not installed) and watch whether it catches the contradiction or plows ahead.',
+      'Compare the transcripts. Which needed the fewest corrections?'],
+    verify:'You have a concrete corrections-needed count for at least two approaches on the identical task, not a vibe.'},
+  gotchas:[
+    {s:'trap',t:'Esc twice edits, one Esc does something else',d:'A single Esc while Codex is mid-turn interrupts the run. Esc-Esc while idle opens editing of a prior message. Muscle memory from other tools will fire the wrong one.'},
+    {s:'cost',t:'/compact is lossy, not a checkpoint',d:'It summarizes what is visible to free tokens &mdash; it is not a save point you can roll back to. Use /export or /fork first if you need exact history preserved.'},
+    {s:'trap',t:'/new resets the conversation, not the session',d:'Sandbox mode, approval policy, and CODEX_HOME stay whatever they were. If you meant to also change sandbox for the next task, /new alone will not do it.'},
+    {s:'stale',t:'&ldquo;Type your whole prompt then wait&rdquo; is the old workflow',d:'Enter while a turn is running injects new instructions immediately. Treating Codex as pure request/response wastes the steering the TUI is built around.'},
+    {s:'ok',t:'The default sandbox already lets this work',d:'workspace-write is the default sandbox &mdash; reads, writes, and command execution inside your project, no config change required. That is why this phase comes before any config phase.'}
+  ],
+  quiz:[
+    {q:'What does Enter do while Codex is running a turn, versus a single Esc?',a:'Enter injects new instructions into the current turn without waiting for it to finish. A single Esc interrupts/stops the run instead.'},
+    {q:'Name the difference between /new and /clear.',a:'/new starts a new conversation inside the same CLI session (config/sandbox/approval unchanged); /clear clears the terminal and starts a fresh chat.'},
+    {q:'Why run /diff before accepting a change, when /review exists?',a:'/diff is the raw ground truth, including untracked files git would otherwise hide. /review is Codex&rsquo;s own opinion of that diff &mdash; a different, and fallible, signal.'},
+    {q:'How do you attach a specific file to ground a prompt instead of letting Codex search for it?',a:'Type @ in the composer to fuzzy-search files and attach one directly.'}
+  ],
+  docs:[['CLI features','https://developers.openai.com/codex/cli/features'],['Slash commands','https://developers.openai.com/codex/cli/slash-commands'],['CLI reference','https://learn.chatgpt.com/docs/developer-commands?surface=cli']]
+},
+
+{
+  id:'p2', n:'02', title:'Script It: codex exec', layer:'l1', layerLabel:'Operating',
+  time:'1&ndash;2 h', pre:'Phase 01',
+  objective:'You can run Codex <b>non-interactively</b> &mdash; in CI, a pre-commit hook, or a loop &mdash; with explicit, scriptable control over sandbox and approval instead of a TUI.',
+  concepts:[
+    {h:'The shape of a call',
+     code:C('codex exec "fix the failing tests" --sandbox workspace-write --ask-for-approval never',
+            'codex exec -m gpt-5.6-terra "add input validation" -o result.txt',
+            'codex exec - < task.txt              # read the prompt from stdin'),
+     p2:'<p><code>PROMPT</code> is positional; pass <code>-</code> to read it from stdin instead, and <code>-o/--output-file</code> writes the result to a file rather than stdout.</p>'},
+    {h:'Flags that matter for automation',
+     table:{head:['Flag','Does'],rows:[
+       ['<code>--sandbox, -s</code>','read-only | workspace-write | danger-full-access'],
+       ['<code>--ask-for-approval, -a</code>','untrusted | on-request | never &mdash; never is what makes a script actually unattended'],
+       ['<code>--json</code>','Newline-delimited JSON events instead of prose &mdash; pipe into jq'],
+       ['<code>--profile, -p</code>','Layer a named profile on top of base config for this call'],
+       ['<code>--dangerously-bypass-approvals-and-sandbox, --yolo</code>','Skip every safety control &mdash; the name is the warning']]}},
+    {h:'Resuming and forking a session',
+     code:C('codex exec resume SESSION_ID',
+            'codex exec resume --last',
+            'codex exec fork --output-schema "{ path, status }"'),
+     p2:'<p><code>codex exec resume</code> continues a prior session&rsquo;s context. <code>codex exec fork</code> branches a session and, with <code>--output-schema</code>, constrains the reply to a JSON shape you can parse downstream.</p>'},
+    {h:'--full-auto is gone',
+     p:'<p>Scripts written before August 2026 that pass <code>codex exec --full-auto</code> now error outright. The flag was removed in v0.147.0 (released August 7, 2026); the documented replacement is spelling out the equivalent explicitly: <code>--sandbox workspace-write --ask-for-approval never</code>.</p>'},
+    {h:'never belongs in an already-isolated environment',
+     p:'<p><code>never</code> disables prompts entirely and only respects sandbox constraints &mdash; no human is in the loop at all. That is correct inside a container a CI job already isolates. It is a very different decision on your own laptop against a repo with live credentials in the environment.</p>'}
+  ],
+  lab:{title:'Wire one real script',
+    steps:[
+      'Pick a repeatable chore you currently do by hand in a repo you own (a dependency bump, a changelog entry, a lint-fix pass).',
+      'Write it as <code>codex exec "&lt;task&gt;" --sandbox workspace-write --ask-for-approval on-request</code> first, and see what it asks permission for.',
+      'Once comfortable, switch to <code>--ask-for-approval never</code> for the unattended version.',
+      'Add <code>--json</code> and pipe the output through <code>jq</code> to extract just the outcome.',
+      '<b>Break it deliberately:</b> rerun with <code>--sandbox read-only</code> and confirm it fails to make the edit &mdash; and that the failure is visible in the JSON stream, not silently swallowed.',
+      'Wire it into whatever runs your repeatable chores (a Makefile target, a pre-commit hook, a scheduled job).'],
+    verify:'One task in your own repo runs unattended end to end and produces a result you can check without opening the TUI.'},
+  gotchas:[
+    {s:'trap',t:'--full-auto silently used to work, now hard-errors',d:'Any script or alias built before v0.147.0 (Aug 7 2026) that still passes --full-auto will fail outright the next time it runs. This is a loud failure now, which is the fix &mdash; but until the script is updated, automation you thought was working is dead.'},
+    {s:'trap',t:'--yolo means exactly what it says',d:'--dangerously-bypass-approvals-and-sandbox skips sandbox AND approval simultaneously. There is no scoped version &mdash; it is not &ldquo;trust this one command more,&rdquo; it is &ldquo;remove every guardrail for this run.&rdquo;'},
+    {s:'cost',t:'JSON mode is a different contract than prose mode',d:'Grepping for a phrase in --json output breaks the moment wording changes. Match on the structured event .type field instead.'},
+    {s:'stale',t:'&ldquo;exec always needs a TUI fallback&rdquo; is outdated thinking',d:'exec is a first-class non-interactive surface with its own resume/fork/output-schema machinery &mdash; treat it as the automation API, not a degraded TUI.'},
+    {s:'ok',t:'-o writes the final result; --json streams every event',d:'Use -o/--output-file when you only want the finished artifact. Use --json when you need to observe or react to intermediate steps as they happen.'}
+  ],
+  quiz:[
+    {q:'What replaced --full-auto after its removal in v0.147.0?',a:'Explicit flags: --sandbox workspace-write --ask-for-approval never (or whichever sandbox/approval combination --full-auto used to imply for your setup).'},
+    {q:'Which approval policy makes codex exec genuinely unattended, and where is it safe to use without a second thought?',a:'never &mdash; safe inside an already-isolated environment like a CI container; risky on a machine with live credentials and a shared filesystem.'},
+    {q:'How do you constrain codex exec fork to return parseable output?',a:'--output-schema "{ ... }" &mdash; the reply is constrained to that JSON shape.'},
+    {q:'Why prefer --json event types over parsing prose output in a script?',a:'Prose wording is not a stable contract and will break scripts silently when it changes; the structured event type is.'}
+  ],
+  docs:[['CLI reference &mdash; exec','https://learn.chatgpt.com/docs/developer-commands?surface=cli'],['Codex CLI 0.147.0 release notes','https://github.com/openai/codex/releases/tag/rust-v0.147.0']]
+},
+
+{
+  id:'p3', n:'03', title:'AGENTS.md', layer:'l2', layerLabel:'Soft',
+  time:'1&ndash;2 h', pre:'Phase 01',
+  objective:'You can put standing project instructions somewhere Codex will actually find and merge them, and predict which file wins when two disagree.',
+  concepts:[
+    {h:'Discovery order',
+     table:{head:['Scope','File checked','Wins over'],rows:[
+       ['Global','~/.codex/AGENTS.override.md, else ~/.codex/AGENTS.md','nothing above it &mdash; this is the floor'],
+       ['Project (root &rarr; cwd, each level)','AGENTS.override.md, then AGENTS.md, then a configured fallback name','the same directory&rsquo;s non-override file'],
+       ['Merge','All files found, concatenated root-down','earlier (higher-in-the-tree) guidance, because closer files appear later in the combined prompt']]}},
+    {h:'/init writes the scaffold for you',
+     p:'<p><code>/init</code> generates an AGENTS.md scaffold in the current directory &mdash; the fastest way to start one shaped the way Codex expects to parse it, rather than free-writing a format and hoping.</p>'},
+    {h:'Size cap and override files',
+     p:'<p>The default cap is 32 KiB per file (<code>project_doc_max_bytes</code>), configurable up to 65 KiB. Empty files are skipped during discovery. An <code>AGENTS.override.md</code> at any level always wins over a plain <code>AGENTS.md</code> at that same level &mdash; the escape hatch for &ldquo;ignore what the parent directory says, here.&rdquo;</p>'},
+    {h:'It is an open standard, not a Codex-only file',
+     p:'<p>AGENTS.md is read by tools beyond Codex &mdash; the format&rsquo;s premise is one instructions file multiple agents share. <span class="unv">The exact count of tools or projects supporting it is unverified</span> &mdash; that number moves too fast to assert reliably.</p>'},
+    {h:'Fallback filenames and nested overrides',
+     p:'<p><code>project_doc_fallback_filenames</code> lets you point Codex at an existing doc (e.g. <code>TEAM_GUIDE.md</code>) instead of renaming it. Nested <code>AGENTS.md</code> files let a subdirectory &mdash; say, one service in a monorepo &mdash; override repo-wide guidance without touching the root file.</p>'}
+  ],
+  lab:{title:'Write one that actually gets found',
+    steps:[
+      'In a real project, run <code>/init</code> and read what it scaffolds.',
+      'Fill in one section with a constraint you keep repeating by hand (a lint rule, a forbidden pattern, a required test command).',
+      'Start a fresh Codex session in that directory and ask it to state, unprompted, what your AGENTS.md says &mdash; confirm it is actually being read.',
+      'Add a nested AGENTS.md in a subdirectory with one instruction that contradicts the root file, and confirm the subdirectory&rsquo;s guidance wins there.',
+      '<b>Break it deliberately:</b> pad the root AGENTS.md past 32 KiB with filler text and confirm the tail gets dropped rather than raising an error &mdash; that is the failure mode you are checking for, not proving the feature works.'],
+    verify:'You can point to the exact line in AGENTS.md that changed a specific piece of Codex behavior, and you have confirmed the size ceiling yourself.'},
+  gotchas:[
+    {s:'trap',t:'A repo-root file does not automatically reach every subdirectory task',d:'Discovery walks from the git root to the current working directory. A file placed off that path &mdash; in a sibling directory &mdash; is invisible no matter how relevant it is.'},
+    {s:'trap',t:'Silence past the byte cap, not an error',d:'Content beyond project_doc_max_bytes (32 KiB default) is dropped without a loud failure. An important instruction near the end of a large file can be the exact part the model never sees.'},
+    {s:'cost',t:'Every level concatenates &mdash; it all counts against context',d:'Global plus root plus every intermediate directory&rsquo;s file get combined into the prompt. A verbose AGENTS.md at every level compounds; write for density, not completeness.'},
+    {s:'stale',t:'&ldquo;One AGENTS.md per repo&rdquo; undersells the design',d:'The nested-override model exists specifically so a monorepo does not need one giant file &mdash; service-specific rules belong in that service&rsquo;s own AGENTS.md, not bolted onto the root one.'},
+    {s:'ok',t:'AGENTS.override.md is for exceptions, not defaults',d:'Reach for it when a directory genuinely needs to ignore parent guidance &mdash; a vendored subtree, a legacy module &mdash; not as your primary file.'}
+  ],
+  quiz:[
+    {q:'Codex is launched three directories below your git root. Which AGENTS.md files does it read?',a:'The global ~/.codex/AGENTS.md (or its override), plus AGENTS.md/AGENTS.override.md at the git root and at each directory level down to the current one &mdash; not files in sibling directories off that path.'},
+    {q:'When a root AGENTS.md and a nested subdirectory AGENTS.md disagree, which wins?',a:'The nested one &mdash; files closer to the current directory override earlier guidance because they appear later in the combined, concatenated prompt.'},
+    {q:'What happens to the content of an AGENTS.md file past the byte size cap?',a:'It is dropped silently &mdash; no error, the model never sees it. Default cap is 32 KiB (project_doc_max_bytes), configurable up to 65 KiB.'},
+    {q:'What does AGENTS.override.md do that a same-named AGENTS.md at the same level cannot?',a:'It always takes precedence over a plain AGENTS.md at that directory level &mdash; the designated way to say &ldquo;ignore standard guidance here&rdquo; without editing or deleting the standard file.'}
+  ],
+  docs:[['AGENTS.md guide','https://learn.chatgpt.com/docs/agent-configuration/agents-md'],['AGENTS.md in the repo','https://github.com/openai/codex/blob/main/docs/agents_md.md']]
+},
+
+{
+  id:'p4', n:'04', title:'Profiles &amp; Models', layer:'l2', layerLabel:'Soft',
+  time:'2&ndash;3 h', pre:'Phase 03',
+  objective:'You can pick a model deliberately, not by default, and bundle that choice into a named profile you reuse instead of retyping it.',
+  concepts:[
+    {h:'The August 2026 model line',
+     table:{head:['Model','Best for','Notes'],rows:[
+       ['<code>gpt-5.6-sol</code>','Complex coding, computer use, research, cybersecurity','Flagship'],
+       ['<code>gpt-5.6-terra</code>','Everyday work, strong reasoning + tool use','General-purpose default'],
+       ['<code>gpt-5.6-luna</code>','Extraction, classification, transformation','Fast, cheapest of the three'],
+       ['<code>gpt-5.3-codex-spark</code>','Near-instant iteration','ChatGPT Pro only'],
+       ['<code>gpt-5.5</code>','Previous-generation frontier','Still available'],
+       ['<code>gpt-5.4</code>, <code>gpt-5.4-mini</code>','Legacy','<b>Retire from Codex Aug 31, 2026</b> &mdash; migrate to 5.6-terra / 5.6-luna']]}},
+    {h:'Reasoning effort is a real cost lever',
+     p:'<p><code>model_reasoning_effort</code> trades latency and token cost for depth. ChatGPT&rsquo;s UI exposes Low / Medium (default) / High / Extra High / Max / Ultra, where Ultra runs subagents in parallel. <span class="unv">The exact string values config.toml accepts beyond the confirmed "high" example are unverified</span> &mdash; check your installed version&rsquo;s help output before scripting a specific tier name. <code>Alt+,</code> / <code>Alt+.</code> adjust it live from the TUI.</p>'},
+    {h:'Profiles bundle a whole posture, not one flag',
+     code:C('# ~/.codex/fast.config.toml',
+            'model = "gpt-5.6-luna"',
+            'model_reasoning_effort = "low"',
+            'approval_policy = "never"',
+            'sandbox_mode = "workspace-write"'),
+     p2:'<p>Launch it with <code>codex --profile fast</code>, or lock a script to it with <code>codex exec --profile fast "task"</code>. A profile sits between your project config and your user config in precedence.</p>'},
+    {h:'personality changes tone, not capability',
+     p:'<p><code>personality = "friendly" | "pragmatic" | "none"</code> (also reachable live via <code>/personality</code>) controls how Codex talks to you. It has no bearing on sandbox, approval, or what it is willing to do.</p>'},
+    {h:'web_search has two different knobs, and one is deprecated',
+     p:'<p>A top-level <code>web_search = "cached" | "indexed" | "live" | "disabled"</code> setting controls live behavior. A separate, older <code>[features] web_search</code> flag also exists but is marked deprecated in current docs &mdash; set the top-level key going forward.</p>'}
+  ],
+  lab:{title:'Build your own two-profile setup',
+    steps:[
+      'Define a <code>fast</code> profile: cheapest model, low reasoning, never approval, for mechanical tasks.',
+      'Define a <code>careful</code> profile: flagship model, high reasoning, on-request approval, for anything touching production code.',
+      'Run the same real task under both and time it, noting anywhere &ldquo;fast&rdquo; produced something you had to redo.',
+      '<b>Break it deliberately:</b> put a setting in both the fast profile and your project .codex/config.toml with different values, launch with --profile fast, and confirm the project file wins &mdash; that is the precedence order, not a guess.',
+      'Decide, from evidence, which profile is your new default and which needs the explicit flag.'],
+    verify:'A concrete decision &mdash; &ldquo;fast for X, careful for Y&rdquo; &mdash; backed by at least one timed comparison, not intuition.'},
+  gotchas:[
+    {s:'trap',t:'Retiring models do not retire loudly ahead of time',d:'gpt-5.4 and gpt-5.4-mini keep working right up until Aug 31, 2026, then stop. A hardcoded model = "gpt-5.4" in a profile or CI script is a silent time bomb, not a warning you will see today.'},
+    {s:'cost',t:'Ultra reasoning runs subagents &mdash; it is not just &ldquo;think longer&rdquo;',d:'The highest tier reportedly parallelizes via subagents rather than single-threading a longer chain of thought, changing the cost shape. <span class="unv">Unverified in detail</span> &mdash; test it as a cost multiplier before scripting it into a default.'},
+    {s:'stale',t:'gpt-5.2-codex and gpt-5.1-codex-mini are gone, not just old',d:'Both were shut down for ChatGPT-authenticated Codex usage. A guide or note from before mid-2026 recommending either is stale, not just suboptimal.'},
+    {s:'trap',t:'The web_search feature flag being &ldquo;on&rdquo; is not what you think',d:'It is the deprecated path. Check the top-level web_search config value (cached/indexed/live/disabled) for what is actually controlling search behavior now.'},
+    {s:'ok',t:'A profile is disposable; edit it like one',d:'Because a profile sits below project config, experimenting with an aggressive profile cannot override anything a trusted project has locked down at the project-config layer &mdash; that is what makes trying profiles cheap.'}
+  ],
+  quiz:[
+    {q:'Which two models retire from Codex on August 31, 2026, and what replaces each?',a:'gpt-5.4 &rarr; gpt-5.6-terra; gpt-5.4-mini &rarr; gpt-5.6-luna.'},
+    {q:'Name the three current-generation 5.6 models and one thing each is for.',a:'Sol (flagship &mdash; complex coding, computer use, research); Terra (everyday work, general-purpose default); Luna (fast/cheap &mdash; extraction, classification, transformation).'},
+    {q:'What does a profile file override, and what still overrides the profile?',a:'It overrides your user-level ~/.codex/config.toml. A project .codex/config.toml still wins over the profile, and CLI flags win over everything.'},
+    {q:'Which web_search setting should you actually configure, and why?',a:'The top-level web_search = "cached"|"indexed"|"live"|"disabled" key &mdash; the older [features] web_search flag is deprecated.'}
+  ],
+  docs:[['Config basics','https://learn.chatgpt.com/docs/config-file/config-basic'],['Models','https://learn.chatgpt.com/docs/models']]
+},
+
+{
+  id:'p5', n:'05', title:'Skills &amp; Plugins', layer:'l2', layerLabel:'Soft',
+  time:'1&ndash;2 h', pre:'Phase 04',
+  objective:'You can extend Codex with reusable, on-demand packages of expertise or tooling instead of re-explaining the same domain knowledge in every prompt.',
+  concepts:[
+    {h:'Skills load on demand, not always-on',
+     p:'<p>Skills package reusable workflows &mdash; language packages (Python, Go, Rust), framework packages (React, Django), domain packages (GCP, GitHub) &mdash; stored under <code>~/.codex/skills/</code> or a remote registry, invoked via <code>/skills</code> or by name. Unlike AGENTS.md, which is always in context, a skill loads only when relevant.</p>'},
+    {h:'Plugins extend the CLI itself',
+     p:'<p><code>/plugins</code> browses installed and discoverable plugins from local, personal, workspace, or remote catalogs. Portable Agent Plugins (v0.147.0) use a manifest searchable across all four catalog types, and workspace-level plugin sharing (v0.129.0) lets a team standardize on one set.</p>'},
+    {h:'/import migrates setup from other tools',
+     p:'<p><code>/import</code> brings in Claude Code project files and recent chats (v0.140.0+), and Cursor-managed skills with sync so re-running it does not create duplicates (v0.145.0+). The fastest path if you are moving an existing setup rather than starting from zero.</p>'},
+    {h:'Skills and AGENTS.md solve different problems',
+     p:'<p>AGENTS.md is standing, project-scoped instruction that is always in the prompt. A skill is optional, reusable across projects, and loaded only when the task matches &mdash; reach for a skill when the knowledge is domain-general and AGENTS.md when it is project-specific.</p>'}
+  ],
+  lab:{title:'Import or build one real skill',
+    steps:[
+      'If you have an existing Claude Code or Cursor setup, run <code>/import</code> in a shared project and check what it migrated.',
+      'Otherwise: pick one piece of domain knowledge you re-explain to Codex constantly, and check <code>~/.codex/skills/</code> or <code>/plugins</code> for an existing package before writing your own.',
+      'Run a task that should trigger it and confirm &mdash; by checking what context Codex actually used &mdash; that it loaded, rather than assuming silence means success.',
+      '<b>Break it deliberately:</b> rename or move the skill directory so discovery fails, rerun the task, and observe whether Codex quietly falls back to generic behavior or tells you the skill is missing.'],
+    verify:'You know, for one concrete skill, exactly what triggers it and what happens when it is absent &mdash; not just that it exists.'},
+  gotchas:[
+    {s:'trap',t:'A missing skill can fail silently into generic behavior',d:'If discovery breaks, Codex does not necessarily surface an error &mdash; it may just answer without the domain knowledge you expected, and a plausible-but-generic answer is the hardest kind of gap to notice.'},
+    {s:'cost',t:'Remote plugin catalogs add a network dependency',d:'Remote plugin enablement (default since v0.143.0) means a task that used to be fully offline may now hit the network for catalog discovery.'},
+    {s:'trap',t:'/import duplicating on re-run was a real bug class',d:'v0.145.0 specifically called out avoiding duplicates when re-importing Cursor conversations &mdash; a sign this failure mode existed. Re-running /import on an older version is worth a duplicate-check afterward.'},
+    {s:'ok',t:'Workspace plugin sharing standardizes a team, not just you',d:'Configuring plugins at the workspace level (v0.129.0+) means teammates get the same extension set without individually managing it &mdash; the payoff scales with team size.'}
+  ],
+  quiz:[
+    {q:'What is the practical difference between putting knowledge in AGENTS.md versus building it as a skill?',a:'AGENTS.md is always-in-context and project-scoped; a skill loads on demand and can be reused across projects &mdash; use AGENTS.md for this-repo specifics, a skill for domain-general knowledge.'},
+    {q:'Which tools can /import migrate settings and history from, and since which versions?',a:'Claude Code (project files, recent chats &mdash; v0.140.0+) and Cursor (managed skills, with sync to avoid duplicates &mdash; v0.145.0+).'},
+    {q:'Where do local skills live on disk by default?',a:'~/.codex/skills/.'}
+  ],
+  docs:[['CLI features','https://developers.openai.com/codex/cli/features'],['Slash commands','https://developers.openai.com/codex/cli/slash-commands']]
+},
+
+{
+  id:'p6', n:'06', title:'Sandbox Mode', layer:'l3', layerLabel:'Hard',
+  time:'1&ndash;2 h', pre:'Phase 02',
+  objective:'You can state, for any command Codex is about to run, exactly what the active sandbox mode <b>physically permits</b> &mdash; independent of whether it will be asked or not.',
+  concepts:[
+    {h:'The three sandbox modes',
+     table:{head:['Mode','File access','Network'],rows:[
+       ['read-only','Read only','Blocked'],
+       ['workspace-write (default)','Read/write inside the workspace + /tmp','Blocked by default'],
+       ['danger-full-access','Full machine','Enabled']]}},
+    {h:'Enforcement is OS-level, not a polite request',
+     table:{head:['Platform','Mechanism'],rows:[
+       ['macOS','Apple Seatbelt via sandbox-exec, mode-specific profiles'],
+       ['Linux','Landlock + seccomp + a vendored Bubblewrap (bwrap)'],
+       ['Windows','Native restricted tokens; WSL2 inherits Linux sandbox semantics when configured']]}},
+    {h:'Protected paths stay read-only even in workspace-write',
+     p:'<p><code>.git</code>, <code>.agents</code>, and <code>.codex</code> remain read-only regardless of sandbox mode short of danger-full-access &mdash; the sandbox specifically protects the agent&rsquo;s own config and your version-control history from the agent itself.</p>'},
+    {h:'v0.148.0 changed the failure direction',
+     p:'<p>As of v0.148.0, denied or unreadable paths <b>fail closed</b> (blocked) on Linux and Windows instead of the previous behavior &mdash; a permissions edge case that used to quietly let something through now blocks it.</p>'},
+    {h:'Windows has its own sandbox dial',
+     code:C('[windows]',
+            'sandbox = "elevated"    # recommended',
+            '# sandbox = "unelevated" # fallback'),
+     p2:'<p>This sits alongside, not instead of, sandbox_mode &mdash; it configures how the Windows-native enforcement itself runs.</p>'}
+  ],
+  lab:{title:'Prove the boundary, do not assume it',
+    steps:[
+      'In a scratch repo, set <code>sandbox_mode = "read-only"</code> and ask Codex to make a trivial edit.',
+      'Confirm it refuses or requests approval &mdash; read the exact message it gives you.',
+      'Switch to workspace-write and repeat; also ask it to fetch a URL and confirm network stays blocked.',
+      'Try to have it edit a file inside .git directly while in workspace-write, and confirm the protected-path restriction holds anyway.',
+      '<b>Break it deliberately:</b> switch to danger-full-access for one throwaway task in a disposable directory, watch it succeed at something workspace-write blocked, then switch back immediately.'],
+    verify:'Three first-hand observations &mdash; blocked in read-only, allowed in workspace-write, protected-path holds anyway &mdash; instead of trusting the docs table.'},
+  gotchas:[
+    {s:'trap',t:'Containers can look broken when it is the sandbox fighting the container',d:'Docker and similar environments may need danger-full-access if the sandbox&rsquo;s own namespace operations are blocked by the container runtime &mdash; a workspace-write failure inside a container is not automatically a Codex bug.'},
+    {s:'trap',t:'workspace-write means &ldquo;scoped,&rdquo; not &ldquo;safe&rdquo;',d:'It still lets Codex execute arbitrary commands inside the workspace and /tmp &mdash; a bad instruction can still damage your project, just not the rest of your machine or the network by default.'},
+    {s:'cost',t:'danger-full-access removes the sandbox and the safety net for mistakes',d:'There is no scoped version. Reach for it only when the sandbox itself, not the task, is the actual blocker.'},
+    {s:'stale',t:'&ldquo;Network is available if I need it&rdquo; was never the workspace-write default',d:'Network access is blocked by default even in workspace-write and needs explicit configuration &mdash; a common first surprise for a package install or API call.'},
+    {s:'ok',t:'Fail-closed (v0.148.0) is strictly safer than what it replaced',d:'A denied/unreadable-path edge case that used to potentially let an operation through now blocks it &mdash; loudly, which is the point.'}
+  ],
+  quiz:[
+    {q:'Name the three sandbox modes and what each permits for network access.',a:'read-only (blocked), workspace-write (blocked by default), danger-full-access (enabled).'},
+    {q:'What stays read-only in workspace-write mode no matter what, and why does that matter?',a:'.git, .agents, and .codex &mdash; protecting the agent&rsquo;s own config and your version control history from the agent operating on them.'},
+    {q:'What changed about denied/unreadable paths in v0.148.0?',a:'They now fail closed (blocked) on Linux and Windows, instead of the previous behavior &mdash; a hardening of the default failure direction.'},
+    {q:'What enforces the sandbox on macOS versus Linux?',a:'macOS: Apple Seatbelt via sandbox-exec. Linux: Landlock + seccomp + a vendored Bubblewrap (bwrap).'}
+  ],
+  docs:[['Agent approvals &amp; security','https://developers.openai.com/codex/agent-approvals-security'],['Changelog','https://developers.openai.com/codex/changelog']]
+},
+
+{
+  id:'p7', n:'07', title:'Approval Policy', layer:'l3', layerLabel:'Hard',
+  time:'2 h', pre:'Phase 06',
+  objective:'You can choose <b>when</b> Codex pauses for your permission, as a decision independent from what the sandbox permits, and reduce prompt fatigue without disabling judgment entirely.',
+  concepts:[
+    {h:'The three approval policies',
+     table:{head:['Policy','Behavior'],rows:[
+       ['untrusted','Safe reads auto-run; anything else prompts &mdash; highest barrier'],
+       ['on-request (default)','Approves within the sandbox boundary automatically; prompts only when a command would cross it'],
+       ['never','No prompts at all &mdash; respects sandbox constraints only']]}},
+    {h:'--approve-for-me reduces fatigue without going to never',
+     p:'<p>Introduced in v0.147.0, this flag has an automatic review process adjudicate approval prompts instead of interrupting you for each one &mdash; a middle ground between answering every prompt and turning approval off entirely.</p>'},
+    {h:'Guardian review is a persistent second opinion',
+     p:'<p>Guardian subagent review mode keeps a reviewer active across a session&rsquo;s approvals rather than evaluating each one in isolation &mdash; and it deliberately disables hooks during a guardian review session to prevent interference with its judgment.</p>'},
+    {h:'request_permissions lets the model ask for more, at runtime',
+     p:'<p>Rather than only you deciding sandbox/approval up front, the model can invoke a <code>request_permissions</code> tool mid-task to ask for elevated access when it hits something the current policy blocks &mdash; you still approve or deny, but the ask originates from the run itself.</p>'},
+    {h:'untrusted may be on its way out',
+     p:'<p><span class="unv">Per third-party release tracking, an alpha release (v0.149.0) marks untrusted for retirement</span> &mdash; I could not confirm this directly against an official OpenAI source. If accurate, build new automation around on-request or never rather than depending on untrusted staying available long-term.</p>'}
+  ],
+  lab:{title:'Feel the difference approval policy makes, sandbox held constant',
+    steps:[
+      'Fix <code>sandbox_mode = "workspace-write"</code> for this whole lab so only approval_policy changes.',
+      'Run a real multi-step task under untrusted and count every prompt you had to answer.',
+      'Run the same task under on-request and count again.',
+      'Run it a third time with --approve-for-me and compare what got auto-approved versus what still stopped for you.',
+      '<b>Break it deliberately:</b> under never, ask it to do something that would cross the sandbox boundary (write outside the workspace) and confirm it fails rather than silently succeeding.'],
+    verify:'A prompt-count comparison across at least two policies on the identical task, plus confirmation that never still respects sandbox limits.'},
+  gotchas:[
+    {s:'trap',t:'never disables approval, not capability',d:'It removes every prompt but still operates strictly inside whatever sandbox_mode allows. never + workspace-write cannot touch the network any more than the same sandbox with prompts on could &mdash; the two settings are independent axes.'},
+    {s:'trap',t:'Approving without reading defeats the entire mechanism',d:'The system&rsquo;s value is a human, or the guardian reviewer, actually evaluating the boundary crossing. Reflexively approving every prompt is functionally the same as never, minus the honesty of admitting it.'},
+    {s:'cost',t:'--approve-for-me still has a review cost, just not yours',d:'Automatic review adjudicates instead of interrupting you &mdash; it is a trust delegation, not a performance optimization.'},
+    {s:'stale',t:'Guardian sessions and hooks do not both run',d:'Guardian review disables hooks specifically for that session. A hook you are counting on will not fire while guardian review is active.'},
+    {s:'ok',t:'request_permissions makes the ask legible, at least',d:'When the model requests elevated access mid-task rather than failing silently or working around the restriction, you get a specific, attributable ask to evaluate.'}
+  ],
+  quiz:[
+    {q:'What is the actual difference between never and danger-full-access?',a:'never is an approval policy &mdash; no prompts, but sandbox limits still apply. danger-full-access is a sandbox mode &mdash; no restrictions at all, independent of whether prompts are on. sandbox=workspace-write + approval=never is not the same as danger-full-access.'},
+    {q:'What does --approve-for-me do differently from never?',a:'It routes approval decisions through an automatic review process instead of removing them &mdash; boundary crossings are still evaluated, just not by interrupting you personally.'},
+    {q:'Why does guardian review disable hooks?',a:'To prevent hooks from interfering with the guardian subagent&rsquo;s independent judgment during that review session.'},
+    {q:'What does the request_permissions tool let the model do?',a:'Ask, at runtime, for elevated access beyond the current policy when it hits something blocked &mdash; you still approve or deny, but the model can surface the ask itself instead of silently failing.'}
+  ],
+  docs:[['Agent approvals &amp; security','https://developers.openai.com/codex/agent-approvals-security'],['CLI 0.147.0 release (--approve-for-me)','https://github.com/openai/codex/releases/tag/rust-v0.147.0']]
+},
+
+{
+  id:'p8', n:'08', title:'Hooks', layer:'l3', layerLabel:'Hard',
+  time:'2&ndash;3 h', pre:'Phase 07',
+  objective:'You can wire a real script into Codex&rsquo;s lifecycle at the correct, actual event name &mdash; not the one you would guess from another tool&rsquo;s hook system.',
+  concepts:[
+    {h:'The real lifecycle events',
+     table:{head:['Stage','Events'],rows:[
+       ['Session bracket','SessionStart, SessionEnd'],
+       ['Sub-agents','SubagentStart, SubagentStop'],
+       ['Around a tool call','PreToolUse, PermissionRequest, PostToolUse'],
+       ['Around compaction','PreCompact, PostCompact'],
+       ['Prompt &amp; stop','UserPromptSubmit, Stop']]}},
+    {h:'Config syntax',
+     code:C('[[hooks.PreToolUse]]',
+            'matcher = "^Bash$"',
+            '',
+            '[[hooks.PreToolUse.hooks]]',
+            'type = "command"',
+            'command = \'/usr/bin/python3 "$(git rev-parse --show-toplevel)/.codex/hooks/pre_tool_use_policy.py"\'',
+            'timeout = 30',
+            'statusMessage = "Checking Bash command"'),
+     p2:'<p>Hooks live in <code>hooks.json</code> or inline in <code>config.toml</code> under a <code>[hooks]</code> table, at any of <code>~/.codex/hooks.json</code>, <code>~/.codex/config.toml</code>, <code>&lt;repo&gt;/.codex/hooks.json</code>, or <code>&lt;repo&gt;/.codex/config.toml</code>. <code>matcher</code> filters which tool the hook fires for; a command hook can block or rewrite the call it wraps.</p>'},
+    {h:'Trust is required before a hook can run',
+     p:'<p>Before a non-managed command hook executes, Codex requires you to review and explicitly trust the exact hook definition. Use <code>/hooks</code> to inspect, review, and approve them &mdash; a hook added by editing a shared config file does not get to run without that step.</p>'},
+    {h:'Async execution and MCP calls (v0.147.0)',
+     p:'<p>Hooks gained the ability to run asynchronously and invoke MCP tools directly, rather than only shelling out to a local command &mdash; meaningfully expanding what a hook can do without leaving the hook system.</p>'},
+    {h:'Admins can force managed-only hooks &mdash; but only from one file',
+     p:'<p><code>allow_managed_hooks_only = true</code> in <code>requirements.toml</code> makes Codex ignore user, project, and session hook configs entirely, keeping only managed hooks. The same setting in <code>config.toml</code> does nothing &mdash; it is deliberately not user-settable.</p>'}
+  ],
+  lab:{title:'Wire and then defeat one hook',
+    steps:[
+      'Write a trivial PreToolUse hook that logs every Bash tool call to a local file, using the [[hooks.PreToolUse]] / [[hooks.PreToolUse.hooks]] structure above.',
+      'Trigger it and run <code>/hooks</code> to review and trust the definition before it fires for real.',
+      'Confirm the log file grows on the next Bash call.',
+      'Change the hook to actually block a dangerous pattern and confirm Codex surfaces that block rather than silently retrying around it.',
+      '<b>Break it deliberately:</b> enter a guardian review session and confirm your hook does not fire during it &mdash; direct proof of the guardian/hooks interaction from Phase 07.'],
+    verify:'A hook you wrote fires on the correct real event name, was explicitly trusted through /hooks, and you have directly observed it going silent under guardian review.'},
+  gotchas:[
+    {s:'wrong',t:'The generic &ldquo;before/after shell or tool execute&rdquo; names are not the real event list',d:'The actual events are SessionStart, SessionEnd, SubagentStart, PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, UserPromptSubmit, SubagentStop, and Stop &mdash; a PascalCase, tool-call-and-lifecycle-centric scheme, not a snake_case pre/post-shell pair. A hook config written against the wrong names simply never fires, with no error telling you why.'},
+    {s:'trap',t:'An untrusted hook silently does not run',d:'If you edit a hook definition and forget to re-approve it via /hooks, it stops firing. The symptom looks identical to a typo in the matcher or a wrong event name &mdash; check trust status before you debug the config.'},
+    {s:'cost',t:'Every PreToolUse hook adds latency to every matching tool call',d:'A slow or network-bound hook command runs synchronously in the tool-call path unless you are using v0.147.0+ async hooks &mdash; a heavyweight policy check can make an otherwise-fast tool feel sluggish across the whole session.'},
+    {s:'stale',t:'&ldquo;Hooks are always local shell commands&rdquo; stopped being true in v0.147.0',d:'They can now invoke MCP tools directly and run asynchronously &mdash; a hook system designed around only local, synchronous execution is working from an outdated model of what is possible.'},
+    {s:'ok',t:'requirements.toml, not config.toml, is the only place admin lockdown works',d:'allow_managed_hooks_only = true is deliberately inert in config.toml &mdash; the design forces that control into the admin-managed file so a user cannot grant themselves the lockdown, or accidentally break it, from their own config.'}
+  ],
+  quiz:[
+    {q:'List the real Codex hook lifecycle events, grouped by what they bracket.',a:'Session: SessionStart, SessionEnd. Subagents: SubagentStart, SubagentStop. Tool calls: PreToolUse, PermissionRequest, PostToolUse. Compaction: PreCompact, PostCompact. Prompt/stop: UserPromptSubmit, Stop.'},
+    {q:'Why might a correctly-written hook simply never fire?',a:'Either the event name is wrong (a common mistake if assuming another tool&rsquo;s pre/post-shell naming), or the hook definition changed and has not been re-approved via /hooks since &mdash; both fail silently with no error.'},
+    {q:'Where must allow_managed_hooks_only = true be set to actually take effect, and why does the other location not work?',a:'requirements.toml only &mdash; the same key in config.toml is deliberately a no-op, so a user cannot grant or defeat the admin lockdown from their own file.'},
+    {q:'What does guardian review mode do to your hooks during that session?',a:'Disables them, specifically to prevent hooks from interfering with the guardian subagent&rsquo;s independent review judgment.'}
+  ],
+  docs:[['Hooks','https://learn.chatgpt.com/docs/hooks']]
+},
+
+{
+  id:'p9', n:'09', title:'MCP Servers', layer:'l3', layerLabel:'Hard',
+  time:'1&ndash;2 h', pre:'Phase 07',
+  objective:'You can add an external tool server to Codex with the correct table syntax, and control exactly which of its tools run automatically versus need approval.',
+  concepts:[
+    {h:'Servers are keyed tables, not an array',
+     code:C('[mcp_servers.context7]',
+            'command = "npx"',
+            'args = ["-y", "@upstash/context7-mcp"]',
+            'env_vars = ["LOCAL_TOKEN"]',
+            '',
+            '[mcp_servers.figma]',
+            'url = "https://mcp.figma.com/mcp"',
+            'bearer_token_env_var = "FIGMA_OAUTH_TOKEN"',
+            'enabled_tools = ["read", "write"]',
+            'default_tools_approval_mode = "prompt"'),
+     p2:'<p>Each server gets its own <code>[mcp_servers.&lt;name&gt;]</code> table &mdash; the name is the table key itself, not a separate <code>name = "..."</code> field inside an array of tables.</p>'},
+    {h:'STDIO vs HTTP servers',
+     table:{head:['Kind','Required key','Notable optional keys'],rows:[
+       ['Local process (STDIO)','command','args, env, env_vars, cwd'],
+       ['Remote (HTTP)','url','bearer_token_env_var, http_headers, env_http_headers']]}},
+    {h:'Per-server tool restriction',
+     p:'<p><code>enabled_tools</code> acts as an allow-list; <code>disabled_tools</code> as a deny-list applied after it. <code>default_tools_approval_mode</code> sets the server-wide default, and <code>tools.&lt;tool&gt;.approval_mode</code> overrides it per tool &mdash; values are <code>auto</code>, <code>prompt</code>, or <code>approve</code>.</p>'},
+    {h:'/mcp lists what is actually configured',
+     p:'<p>Run <code>/mcp</code> in the TUI to see active servers rather than re-reading config.toml to reconstruct the current state by hand.</p>'},
+    {h:'The protocol itself moved in v0.147.0',
+     p:'<p>Support for MCP protocol version 2026-07-28 added paginated discovery, multi-round requests, and non-blocking server startup &mdash; a slow or unresponsive MCP server used to be able to stall Codex&rsquo;s own startup; non-blocking startup specifically addresses that.</p>'}
+  ],
+  lab:{title:'Add a real server and restrict it',
+    steps:[
+      'Pick one MCP server you actually want and add it under its own [mcp_servers.&lt;name&gt;] table.',
+      'Run /mcp and confirm it shows as configured.',
+      'Set default_tools_approval_mode = "prompt" first, run a task that uses it, and read exactly what it asks permission for.',
+      'Once you have seen the real tool calls it makes, narrow enabled_tools to only what you actually want available.',
+      '<b>Break it deliberately:</b> misname the table using the old [[mcp_servers]] + name = "..." array-of-tables shape and confirm Codex either ignores it or errors, proving which syntax is actually load-bearing.'],
+    verify:'A working MCP server whose tool surface you have deliberately narrowed based on what you observed it actually call, not what it advertises.'},
+  gotchas:[
+    {s:'wrong',t:'The old array-of-tables-with-a-name-field shape is not what current Codex reads',d:'Current config uses [mcp_servers.&lt;server-name&gt;] &mdash; a table keyed by name. Copying an older [[mcp_servers]] + name = "github" example is a common source of &ldquo;I configured it and it does not show up in /mcp.&rdquo;'},
+    {s:'trap',t:'A stalled MCP server used to be able to stall you too',d:'Before non-blocking startup (v0.147.0, MCP protocol 2026-07-28), a slow-to-respond server could hold up Codex&rsquo;s own startup. Add a slow server with caution on an older version.'},
+    {s:'cost',t:'default_tools_approval_mode = "auto" trades review for speed at the whole-server level',d:'Setting it broadly instead of scoping per-tool means every tool the server exposes &mdash; including ones you never intended to use &mdash; inherits the same low-friction default.'},
+    {s:'ok',t:'enabled_tools and disabled_tools compose, they do not just override',d:'disabled_tools is applied after the allow-list &mdash; think of it as a carve-out from whatever enabled_tools already permits, not a competing, independent list.'}
+  ],
+  quiz:[
+    {q:'What is wrong with configuring an MCP server as [[mcp_servers]] with a name = "..." field?',a:'It is outdated syntax &mdash; current Codex reads servers as [mcp_servers.&lt;server-name&gt;], a table keyed by the server&rsquo;s own name, not an array of tables with a name field inside each.'},
+    {q:'What changed about MCP server startup in v0.147.0, and why did it matter?',a:'Startup became non-blocking under the MCP 2026-07-28 protocol &mdash; previously a slow or unresponsive server could stall Codex&rsquo;s own startup.'},
+    {q:'How do you restrict an MCP server to only the tools you actually want available?',a:'enabled_tools as an allow-list, optionally narrowed with disabled_tools, and per-tool approval_mode for anything needing its own friction level.'}
+  ],
+  docs:[['Model Context Protocol','https://developers.openai.com/codex/mcp']]
+},
+
+{
+  id:'p10', n:'10', title:'Running Things in Parallel', layer:'l4', layerLabel:'Scale',
+  time:'1&ndash;2 h', pre:'Phase 08',
+  objective:'You can run more than one Codex thread at once &mdash; forked, background, or as subagents &mdash; and know which isolation mechanism actually prevents them from stepping on each other.',
+  concepts:[
+    {h:'/fork branches a conversation, not the filesystem',
+     p:'<p><code>/fork</code> (and <code>codex exec fork</code> non-interactively) creates a new thread from the current conversation&rsquo;s point &mdash; useful for trying two approaches to the same problem without losing shared context. It does not itself isolate the files each branch touches.</p>'},
+    {h:'Background terminals: /ps and /stop',
+     p:'<p><code>/ps</code> shows experimental background terminals and their recent output; <code>/stop</code> halts all of them at once. This is a way to kick off a long-running command without blocking the composer, distinct from forking the conversation itself.</p>'},
+    {h:'multi_agent is a stable feature flag, not a separate product',
+     p:'<p>Multi-agent collaboration (<code>[features] multi_agent</code>) is enabled like any other feature flag &mdash; subagent-based work, including the Ultra reasoning tier from Phase 04, runs inside the same session rather than requiring a different tool.</p>'},
+    {h:'/agent switches which thread you are looking at',
+     p:'<p>When more than one agent thread exists &mdash; forked, subagent, or otherwise &mdash; <code>/agent</code> switches your active view between them, so you can navigate the multiplicity instead of losing track of which thread said what.</p>'}
+  ],
+  lab:{title:'Run two approaches at once, honestly',
+    steps:[
+      'Pick a task with a genuine design choice &mdash; two viable implementations, not one obviously-right answer.',
+      'Fork the conversation right before you would normally commit to one approach.',
+      'Let each fork run to a finished diff independently, using /agent to check on each.',
+      '<b>Break it deliberately:</b> have both forks touch the same file in overlapping ways, then try to apply both diffs &mdash; confirm forking the conversation did not fork or lock the filesystem, so you get a real merge conflict.',
+      'Pick a winner based on the actual diffs, not on which one sounded more confident while running.'],
+    verify:'Two completed, comparable diffs for the same problem, plus a first-hand conflict from step 4 proving forking is conversational, not filesystem-isolated.'},
+  gotchas:[
+    {s:'trap',t:'Forking a conversation does not fork or lock the working directory',d:'Two forks racing to edit the same files can collide exactly like two humans editing the same file without communicating &mdash; the git-worktree isolation the Desktop app gets is a different mechanism this CLI-only path does not give you for free.'},
+    {s:'cost',t:'Parallel threads multiply spend, not just save wall-clock time',d:'Running the same task two ways to compare roughly doubles the cost of running it once &mdash; worth it when the decision matters, wasteful as a habit for routine work.'},
+    {s:'trap',t:'/stop halts every background terminal, not just one',d:'There is no documented per-terminal stop &mdash; if you need to kill one long-running background command without affecting others, you may need to track it outside /ps and /stop entirely.'},
+    {s:'ok',t:'/agent is your map when the multiplicity gets real',d:'Once you are several forks or subagents deep, the failure mode is losing track of which thread has which state, not the tooling. Checking in via /agent regularly keeps parallel work legible instead of just fast.'}
+  ],
+  quiz:[
+    {q:'What isolation does forking a Codex conversation NOT give you, that you might assume it does?',a:'Filesystem isolation &mdash; two forks can still race to edit the same files with no automatic conflict prevention; forking is conversational, not a workspace copy.'},
+    {q:'What is the difference between /fork and a background terminal (/ps)?',a:'/fork branches the conversation thread itself, sharing prior context; a background terminal runs a command without blocking the composer, tracked and stopped separately via /ps and /stop.'},
+    {q:'How do you navigate between multiple active agent threads?',a:'/agent switches your active view between them.'}
+  ],
+  docs:[['Slash commands','https://developers.openai.com/codex/cli/slash-commands']]
+},
+
+{
+  id:'p11', n:'11', title:'Ship It: Capstone', layer:'l1', layerLabel:'Capstone',
+  time:'Half a day', pre:'All phases',
+  objective:'You have one working setup &mdash; profile, AGENTS.md, sandbox/approval posture, hooks, and MCP servers &mdash; that you could hand to a teammate cold, and a clear, stated map of what this path deliberately left out.',
+  concepts:[
+    {h:'The invariants that survive every specific technique',
+     p:'<ol><li>Sandbox mode and approval policy are independent axes &mdash; always check both, never assume one implies the other.</li><li>Every silent-failure gotcha in this guide traces to a wrong name, a stale assumption, or a byte/precedence ceiling you did not know existed &mdash; <code>/status</code>, <code>/hooks</code>, and <code>/mcp</code> exist specifically so you can check state instead of assuming it.</li><li>Configuration is a response to a specific thing that went wrong twice, not speculation &mdash; a profile or hook you cannot trace to a real incident is one you probably will not maintain.</li></ol>'},
+    {h:'Ship checklist',
+     table:{head:['Layer','Check'],rows:[
+       ['Operating','codex doctor --summary is clean; /status shows the model/sandbox/approval you intend'],
+       ['Soft','AGENTS.md exists, is under the size cap, and you have confirmed &mdash; not assumed &mdash; it is being read'],
+       ['Hard','sandbox_mode and approval_policy are both deliberate choices, not defaults you never looked at; any hooks are reviewed and trusted via /hooks'],
+       ['Scale','If you run parallel work, you know it is not filesystem-isolated and you have a plan for collisions']]}},
+    {h:'What this path deliberately does not cover',
+     p:'<p>This path stops at the CLI power user. Four adjacent horizons, each with its own real depth: the <b>Desktop app</b> (git worktree isolation per task, visual diffs, automations &mdash; the filesystem isolation Phase 10 explicitly lacks); the <b>IDE extension</b> (VS Code/Cursor/Windsurf inline edit mode); <b>Codex Cloud</b> and CI/CD (<code>codex cloud</code>, <code>codex apply</code>, the GitHub Action, async PR-creating tasks); and <b>enterprise deployment</b> (<code>requirements.toml</code> policy enforcement, centralized MCP servers, OpenTelemetry audit export, custom provider routing to Bedrock/Azure/on-prem). The Python SDK for programmatic access is a fifth, for anyone embedding Codex rather than running it interactively or via exec.</p>'},
+    {h:'The gap this research surfaced is the real deliverable',
+     p:'<p>Building this path against the primary docs, not just the source guide, surfaced a wrong hooks vocabulary, an outdated MCP config shape, and a slash-command list roughly a third the size of what is actually documented &mdash; see the Audit tab. That gap, more than any single fact here, is the reason to verify a fast-moving CLI&rsquo;s behavior against its own docs rather than a guide&rsquo;s snapshot of them.</p>'}
+  ],
+  lab:{title:'Hand it to someone else, cold',
+    steps:[
+      'Assemble your final profile, AGENTS.md, sandbox/approval settings, and any hooks/MCP servers into one project.',
+      'Write the ship checklist above into your own notes or AGENTS.md as a literal checklist.',
+      'Hand the project to a teammate, or your future self a week from now with no memory of today, with zero verbal explanation.',
+      'Watch where they get stuck or ask a question &mdash; every stumble is a missing line in your AGENTS.md or a config choice you never wrote down anywhere.',
+      'Fix the gap you found, and re-check it against the ship checklist.'],
+    verify:'Someone else got productive in the project without asking you a question you had not already answered in the project itself.'},
+  gotchas:[
+    {s:'ok',t:'A checklist you did not write down is a checklist you will skip under pressure',d:'The ship checklist only works if it lives somewhere you will actually look &mdash; in the project&rsquo;s own AGENTS.md or README, not just in your head from having read this once.'},
+    {s:'trap',t:'Silent failures compound across layers, not just within one',d:'A wrong hook name (Phase 08) plus an unverified profile precedence assumption (Phase 04) plus an AGENTS.md past the byte cap (Phase 03) can all be true in the same project at once, each individually invisible &mdash; the ship checklist exists because no single phase catches a combination.'},
+    {s:'cost',t:'Scope creep into the excluded horizons is the most common way this setup gets messy',d:'Reaching for codex cloud or a Desktop-specific feature mid-project without deliberately deciding to add that surface tends to produce config that only half-applies &mdash; decide to expand scope explicitly, the same way you decided the CLI-only scope to start with.'}
+  ],
+  quiz:[
+    {q:'Name the four (or five, including the SDK) horizons this path explicitly excludes.',a:'Desktop app, IDE extension, Codex Cloud/CI, enterprise deployment (requirements.toml, centralized MCP, audit export, custom providers) &mdash; and the Python SDK for programmatic embedding.'},
+    {q:'What isolation does the Desktop app give you that this CLI-only path does not?',a:'Git worktree isolation per task &mdash; the filesystem isolation Phase 10 showed forking a conversation does not provide on its own.'},
+    {q:'State the capstone&rsquo;s central invariant about sandbox mode and approval policy in one sentence.',a:'They are independent axes &mdash; sandbox sets what is physically possible, approval sets when you are asked, and neither implies the other.'}
+  ],
+  docs:[['Codex CLI overview','https://developers.openai.com/codex/cli'],['GitHub repository','https://github.com/openai/codex']]
+},
+
+{
+  id:'p12', n:'12', title:'Transfer: Claude Code', layer:'l4', layerLabel:'Transfer',
+  time:'1 h', pre:'Phase 11',
+  objective:'You can take the same control-layer framework &mdash; operating, soft, hard, scale &mdash; and apply it cold to an adjacent agent, tabulating what transfers unchanged and what has to be rebuilt.',
+  concepts:[
+    {h:'What transfers unchanged',
+     table:{head:['Concept','Codex CLI','Claude Code'],rows:[
+       ['Standing project instructions','AGENTS.md, walked root&rarr;cwd, override files','CLAUDE.md, same walk-and-merge shape'],
+       ['Two-axis control','sandbox_mode &times; approval_policy','A comparable permission-mode &times; tool-approval split'],
+       ['Lifecycle hooks named the same way','PreToolUse, PostToolUse, SessionStart, UserPromptSubmit, Stop, SubagentStop&hellip;','The same event names appear &mdash; <span class="unv">exact full-set parity is unverified</span>'],
+       ['Non-interactive scripting surface','codex exec, --sandbox, --ask-for-approval','A comparable headless/print-mode flag set']]}},
+    {h:'The hooks naming overlap is the single most surprising verified fact in this guide',
+     p:'<p>Both systems use PreToolUse, PostToolUse, SessionStart, SessionEnd, UserPromptSubmit, Stop, and SubagentStop as literal event names &mdash; confirmed directly against Codex&rsquo;s official docs. Whether this is a shared convention, convergent design, or direct influence in one direction is <span class="unv">unverified</span> &mdash; but a hook script written for one system&rsquo;s event names is far closer to portable to the other than either tool&rsquo;s own marketing suggests.</p>'},
+    {h:'What has to be rebuilt, not just renamed',
+     p:'<p>Model names, credit/pricing structure, the specific slash-command set, and skills/plugin marketplace mechanics are each their own system &mdash; porting a Codex profile or a Claude Code settings file to the other tool means re-deriving the equivalent, not translating syntax.</p>'},
+    {h:'Why this matters practically',
+     p:'<p>If you operate both tools, the control-layer framework &mdash; not the command syntax &mdash; is the mental model worth keeping fixed. Learning &ldquo;where do sandboxing and approval live in this tool&rsquo;s config&rdquo; transfers; memorizing either tool&rsquo;s exact flag spelling does not.</p>'}
+  ],
+  lab:{title:'Port one real AGENTS.md to CLAUDE.md',
+    steps:[
+      'Take the AGENTS.md you built in Phase 03&rsquo;s lab.',
+      'Rewrite it as a CLAUDE.md for the same project, keeping every substantive instruction but adapting anything tool-specific.',
+      'Note exactly which sections needed real rework versus a pure rename.',
+      '<b>Break it deliberately:</b> try using the AGENTS.md file as-is, unrenamed and unedited, in a Claude Code session in the same repo, and observe whether it is read at all.'],
+    verify:'A working CLAUDE.md derived from your AGENTS.md, plus a concrete list of what needed rework versus what was a pure rename.'},
+  gotchas:[
+    {s:'trap',t:'Assuming full hook-vocabulary parity because the overlap you saw is real',d:'Confirming several event names match is not the same as confirming the complete set matches, or that they fire at identical points in each tool&rsquo;s execution model. Treat the overlap as worth checking first, not safe to assume.'},
+    {s:'stale',t:'&ldquo;These are basically the same tool with different branding&rdquo; undersells real differences',d:'Model families, pricing/credit models, and the specific slash-command surface diverge completely &mdash; the transferable part is the control-layer shape, not the implementation.'},
+    {s:'ok',t:'The framework, not the flags, is what is worth memorizing',d:'&ldquo;Check the sandbox-equivalent, check the approval-equivalent, check where standing instructions live&rdquo; applies to the next agentic CLI you pick up too &mdash; not just these two.'}
+  ],
+  quiz:[
+    {q:'What is the single most surprising verified cross-tool finding in this guide?',a:'Codex&rsquo;s hook lifecycle event names (PreToolUse, PostToolUse, SessionStart, UserPromptSubmit, Stop, SubagentStop, etc.) overlap substantially, by name, with Claude Code&rsquo;s &mdash; confirmed against Codex&rsquo;s official docs, though the reason for the overlap is unverified.'},
+    {q:'Name two things that do NOT transfer between Codex and Claude Code, even though the control-layer shape does.',a:'Model names/families and the specific slash-command set (also: pricing/credit structure, skills/plugin marketplace mechanics).'},
+    {q:'Why does renaming AGENTS.md to CLAUDE.md unedited fail, even though both are standing project instructions files?',a:'Discovery is file-name-based per tool &mdash; a Claude Code session does not read a file named AGENTS.md just because its content shape matches what CLAUDE.md would contain.'}
+  ],
+  docs:[['AGENTS.md guide','https://learn.chatgpt.com/docs/agent-configuration/agents-md']]
+}
+];
+
+const TREES = [
+{title:'Where does this setting actually go?', rows:[
+  ['Needed for every task, every project, forever','System config or your user <code>~/.codex/config.toml</code>','Lowest-maintenance layer for a true default'],
+  ['Needed for this one project only','Project <code>.codex/config.toml</code>','Travels with the repo, applies to anyone who clones it (trusted projects)'],
+  ['A named posture you switch between (fast vs careful)','A profile file, activated with <code>--profile</code>','Bundles multiple settings as one reusable choice'],
+  ['Needed for this single invocation only','A CLI flag or <code>-c key=value</code>','Highest precedence, zero persistence'],
+  ['Standing instruction the model should read every session','AGENTS.md (project) or <code>~/.codex/AGENTS.md</code> (global)','Prompt content, not config &mdash; a different mechanism entirely'],
+  ['A programmatic gate that must fire on a specific event','A hook in <code>hooks.json</code> or <code>[hooks]</code> in config.toml','Enforcement, not instruction &mdash; cannot be argued away by the model']
+]},
+{title:'It did not do what you told it to. Why?', rows:[
+  ['It refused or asked for approval','Working as designed &mdash; check sandbox_mode and approval_policy','This is the boundary system functioning, not a bug'],
+  ['It appeared to succeed but nothing changed','Check AGENTS.md size (32 KiB cap) and hook trust status via /hooks','Both fail silently past their limit'],
+  ['It used an MCP tool inconsistently or not at all','Check /mcp for the server&rsquo;s actual config shape','The old [[mcp_servers]] + name field syntax silently does not register'],
+  ['It ignored a project convention you were sure you documented','Confirm the file is AGENTS.md/AGENTS.override.md at a directory on the root&rarr;cwd path','A sibling directory&rsquo;s file is invisible no matter how relevant'],
+  ['It behaved differently than an identical prompt did yesterday','Run /status &mdash; a profile, model, or reasoning-effort change persists across sessions','Config drift, not model inconsistency, is the first suspect'],
+  ['A hook you just edited stopped firing','Re-check /hooks &mdash; edited hooks need to be re-trusted','Looks identical to a typo in the matcher or event name']
+]},
+{title:'Your approval prompts are exhausting. What do you cut?', rows:[
+  ['You trust the task but not unattended everything','<code>--approve-for-me</code>','Automatic review instead of removing evaluation entirely'],
+  ['The task is fully unattended (CI, a container)','<code>approval_policy = "never"</code> (sandbox still applies)','Correct where isolation already exists elsewhere'],
+  ['You keep approving the same class of command','A hook, or a tighter <code>tools.&lt;tool&gt;.approval_mode</code>','Scope the fix to the actual repeated ask, not the whole policy'],
+  ['You are about to switch to danger-full-access to stop the prompts','Stop &mdash; that removes the sandbox too, not just approval','The two axes are independent; you likely only meant to change one'],
+  ['A specific MCP server&rsquo;s tools are the noisy ones','<code>default_tools_approval_mode</code> or a per-tool override on that server','Scoped to the source of the noise, not global']
+]},
+{title:'Picking a model for a task', rows:[
+  ['Complex coding, research, or anything you would hand to your best engineer','<code>gpt-5.6-sol</code>','Flagship &mdash; pay for it when the task warrants it'],
+  ['Everyday work &mdash; most tasks, most days','<code>gpt-5.6-terra</code>','General-purpose default, cheaper than Sol'],
+  ['Extraction, classification, high-volume mechanical work','<code>gpt-5.6-luna</code>','Fastest and cheapest of the current line'],
+  ['Near-instant iteration, ChatGPT Pro','<code>gpt-5.3-codex-spark</code>','Text-only, built for tight loops'],
+  ['You inherited a script pinned to gpt-5.4 or gpt-5.4-mini','Migrate now, not by August 31, 2026','Retirement date, not a suggestion &mdash; 5.6-terra / 5.6-luna are the named replacements']
+]},
+{title:'Choosing sandbox_mode', rows:[
+  ['You just want Codex to answer questions about the code','<code>read-only</code>','No write path exists to misuse'],
+  ['Normal development inside this project','<code>workspace-write</code>','The default for a reason &mdash; scoped, not permissive'],
+  ['You need it to reach the network or files outside the workspace','workspace-write + explicit network config, or reconsider the task','Network is blocked by default even here'],
+  ['The sandbox itself is the blocker, in a container','<code>danger-full-access</code>, scoped to a disposable environment','Only when isolation is colliding with isolation, not as a default escape hatch']
+]}
+];
+
+const REF = [
+{id:'r1', title:'Config precedence, highest to lowest', note:'The chain that decides which value of a setting actually wins.',
+ head:['Level','Source'],
+ rows:[['1','CLI flags and -c/--config overrides'],
+       ['2','Project config, .codex/config.toml (trusted projects)'],
+       ['3','Profile file, ~/.codex/&lt;name&gt;.config.toml (via --profile)'],
+       ['4','User config, ~/.codex/config.toml'],
+       ['5','System config, /etc/codex/config.toml (Unix)'],
+       ['6','Built-in defaults']],
+ foot:'AGENTS.md is a separate mechanism (prompt content) with its own root&rarr;cwd walk &mdash; it does not sit in this same precedence chain.'},
+{id:'r2', title:'Sandbox modes', note:'What each mode physically permits.',
+ head:['Mode','Files','Network','Enforcement'],
+ rows:[['read-only','Read only','Blocked','Seatbelt / Landlock+seccomp+Bubblewrap / restricted tokens'],
+       ['workspace-write (default)','Workspace + /tmp, read/write','Blocked by default','Same as above'],
+       ['danger-full-access','Full machine','Enabled','None']],
+ foot:'.git, .agents, .codex stay read-only in workspace-write regardless.'},
+{id:'r3', title:'Real hook event names', note:'Not pre_shell_execute / post_shell_execute / pre_tool_execute / post_tool_execute &mdash; see the Audit tab.',
+ head:['Event','Fires'],
+ rows:[['SessionStart','Session begins'],
+       ['SessionEnd','Session ends'],
+       ['SubagentStart','A subagent begins'],
+       ['SubagentStop','A subagent finishes'],
+       ['UserPromptSubmit','You submit a prompt'],
+       ['PreToolUse','Before a tool call'],
+       ['PermissionRequest','A permission boundary is hit'],
+       ['PostToolUse','After a tool call'],
+       ['PreCompact','Before context compaction'],
+       ['PostCompact','After context compaction'],
+       ['Stop','The turn/session stops']]},
+{id:'r4', title:'Model line, August 2026', note:'Reasoning tiers shown in the ChatGPT UI: Low, Medium (default), High, Extra High, Max, Ultra (subagents). Exact config.toml string values beyond &ldquo;high&rdquo; are <span class="unv">unverified</span>.',
+ head:['Model','Notes'],
+ rows:[['gpt-5.6-sol','Flagship'],
+       ['gpt-5.6-terra','General-purpose default'],
+       ['gpt-5.6-luna','Fast/cheap'],
+       ['gpt-5.3-codex-spark','Pro only, near-instant'],
+       ['gpt-5.5','Previous-gen frontier'],
+       ['gpt-5.4 / gpt-5.4-mini','Retire Aug 31, 2026 &rarr; migrate to 5.6-terra / 5.6-luna']]},
+{id:'r5', title:'Slash commands you will actually reach for', note:'The working subset for the workflows in this path &mdash; the full documented set runs to roughly 45 commands.',
+ head:['Command','Does'],
+ rows:[['/status','Session config + token usage'],
+       ['/model','Choose model + reasoning effort'],
+       ['/permissions','Set what Codex can do without asking first'],
+       ['/hooks','View, manage, and trust lifecycle hooks'],
+       ['/mcp','List configured MCP servers'],
+       ['/agent','Switch the active agent thread'],
+       ['/fork','Fork the current conversation into a new thread'],
+       ['/ps','Show background terminals and recent output'],
+       ['/stop','Stop all background terminals'],
+       ['/init','Generate an AGENTS.md scaffold'],
+       ['/diff','Git diff, including untracked files'],
+       ['/review','Review your working tree'],
+       ['/compact','Summarize the visible conversation to free tokens'],
+       ['/export','Export the conversation to Markdown'],
+       ['/import','Migrate setup from Claude Code or Cursor'],
+       ['/debug-config','Print config layer and requirements diagnostics'],
+       ['/experimental','Toggle experimental features'],
+       ['/personality','Choose a communication style']]},
+{id:'r6', title:'MCP server config keys', note:'Servers are declared as [mcp_servers.&lt;name&gt;] &mdash; a table keyed by name, not an array of tables with a name field.',
+ head:['Key','For'],
+ rows:[['command / args / env / env_vars / cwd','Local (STDIO) servers'],
+       ['url / bearer_token_env_var / http_headers / env_http_headers','Remote (HTTP) servers'],
+       ['enabled_tools','Allow-list'],
+       ['disabled_tools','Deny-list, applied after enabled_tools'],
+       ['default_tools_approval_mode','Server-wide: auto / prompt / approve'],
+       ['tools.&lt;tool&gt;.approval_mode','Per-tool override']]}
+];
+
+const AUDIT = {
+ intro:'The source (blakecrosley.com/guides/codex, a roughly 39,000-word Codex CLI reference dated to August 18, 2026 / v0.148.0) is broad and mostly directionally correct on sandbox modes, the shape of config precedence, and the AGENTS.md model. Checked against developers.openai.com/codex, learn.chatgpt.com/docs, and the openai/codex GitHub repository, three categories of problem stand out: one flatly wrong technical detail (hook event names), one structurally wrong example (MCP config syntax), and a slash-command list roughly a third the size of what is actually documented. Findings below are sorted; anything I could not independently confirm is marked unverified rather than asserted either way.',
+ groups:[
+ {label:'Holds up', tag:'holds', items:[
+   {c:'Sandbox modes are read-only, workspace-write, and danger-full-access, with workspace-write as the safe default and network blocked by default.',f:'Confirmed word-for-word against official docs, including the platform enforcement mechanisms (Seatbelt / Landlock+seccomp+Bubblewrap / native Windows tokens).'},
+   {c:'Approval policies are untrusted, on-request, and never, with on-request as the default balance.',f:'Confirmed. The source&rsquo;s further claim that untrusted is being retired in an alpha (v0.149.0) could not be independently confirmed against an official source &mdash; see Phase 07.'},
+   {c:'gpt-5.4 and gpt-5.4-mini retire from Codex on August 31, 2026, migrating to 5.6-terra and 5.6-luna.',f:'Confirmed against the official models page, exact date match.'},
+   {c:'--full-auto was removed in v0.147.0.',f:'Confirmed directly in the GitHub release notes for rust-v0.147.0 (released August 7, 2026): the deprecated flag was removed, with --sandbox workspace-write as the stated replacement path.'},
+   {c:'AGENTS.md discovery walks from a global file down through the project tree, with override files and closer files winning.',f:'Confirmed, including the 32 KiB default size cap (configurable to 65 KiB) and empty-file-skipping behavior, which the source did not mention.'},
+   {c:'Codex CLI is built in Rust.',f:'Confirmed verbatim on the official CLI overview page.'}
+ ]},
+ {label:'Stale or incomplete', tag:'stale', items:[
+   {c:'The source describes web_search as a single &ldquo;live mode&rdquo; setting.',f:'Current docs show two things: a top-level web_search config value (cached/indexed/live/disabled) and a separate, older [features] web_search flag now marked deprecated. The source&rsquo;s framing collapses a two-part, partially-deprecated system into one current setting.'},
+   {c:'The source presents its roughly 24-command slash-command table as effectively the command surface.',f:'The official slash-commands page documents roughly 45 commands. Missing entirely: /ide, /keymap, /sandbox-add-read-dir, /agent, /clear, /archive, /copy, /experimental, /approve, /memories, /init, /logout, /mention, /fast, /ps, /stop, /side, /raw, /debug-config, /statusline, /title, /theme &mdash; several of which (/init, /agent, /ps, /debug-config) are load-bearing for the workflows this guide covers.'},
+   {c:'The source lists reasoning effort levels as minimal/low/medium/high/xhigh.',f:'Current models documentation shows Low/Medium (default)/High/Extra High/Max/Ultra (Ultra using subagents) &mdash; a different tier count and at least one different name. Config.toml&rsquo;s exact accepted string tokens are separately unverified; treat both the source&rsquo;s and this site&rsquo;s naming as provisional until checked against a live --help.'}
+ ]},
+ {label:'Wrong', tag:'wrong', items:[
+   {c:'The source&rsquo;s example hooks are pre_shell_execute, post_shell_execute, pre_tool_execute, and post_tool_execute, described as &ldquo;four points.&rdquo;',f:'The real lifecycle events, confirmed against official docs, are SessionStart, SessionEnd, SubagentStart, SubagentStop, UserPromptSubmit, PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, and Stop &mdash; eleven PascalCase events, not four snake_case ones. A hook config built from the source&rsquo;s names will never fire, silently.'},
+   {c:'The source&rsquo;s MCP example uses [[mcp_servers]] with a name = "github" field inside each array entry.',f:'Current config keys each server as its own [mcp_servers.&lt;server-name&gt;] table. The array-of-tables-with-a-name-field shape is not what current Codex reads; config written to the source&rsquo;s example silently fails to register the server.'},
+   {c:'The source&rsquo;s config precedence list has five levels (session/project/user/system/defaults) with no separate profile layer.',f:'Official docs show six levels, with profile files (~/.codex/&lt;name&gt;.config.toml, via --profile) sitting between project config and user config &mdash; omitting it is not just incomplete, it puts project and user config adjacent when a profile can sit between them.'}
+ ]},
+ {label:'Missing entirely', tag:'gap', items:[
+   {c:'Not mentioned: the hooks async-execution and MCP-invocation capability added in v0.147.0.',f:'Hooks can now run asynchronously and call MCP tools directly, not only shell out to local commands &mdash; a meaningful capability the source omits entirely.'},
+   {c:'Not mentioned: requirements.toml&rsquo;s allow_managed_hooks_only setting and that it is inert in config.toml.',f:'A specific, easy-to-get-wrong admin control the source&rsquo;s enterprise section does not cover at all.'},
+   {c:'Not mentioned: guardian review mode disables hooks for that session.',f:'A real interaction between two features the source documents separately (guardian review, hooks) without noting they affect each other.'},
+   {c:'Not mentioned: MCP&rsquo;s per-server and per-tool approval-mode granularity (enabled_tools, disabled_tools, tools.&lt;tool&gt;.approval_mode).',f:'The source treats MCP config as a single disabled/enabled toggle rather than the tool-level access control it actually offers.'},
+   {c:'Not mentioned: /debug-config, /init, /agent, and /ps &mdash; commands this guide&rsquo;s own workflows depend on.',f:'A gap in the source&rsquo;s command coverage that is not just incompleteness &mdash; these are specifically the commands a power user configuring sandbox/approval/hooks/parallel work would reach for.'}
+ ]}
+ ]
+};
+
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">&#10003;</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' &middot; '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' &#8599;</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','&larr; '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' &rarr;'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">&rarr;</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' &middot; '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip &mdash; the gap between &ldquo;that looks familiar&rdquo; and &ldquo;I can state it&rdquo; is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card &rarr;');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip &middot; <kbd>&rarr;</kbd> next'));
+}
+
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha &middot; Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint &middot; Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit &middot; '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for &ldquo;'+esc(term)+'&rdquo;</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a slash command.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Control Stack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* ---------- tokens: light is the bare :root ---------- */
+:root{
+  --bg:#EDF0EE; --paper:#F9FBFA; --raise:#FFFFFF;
+  --ink:#121A19; --body:#25322F; --muted:#5C6B67; --faint:#849490;
+  --line:#D3DAD7; --line-2:#BCC6C2;
+  --accent:#0E6A60; --accent-soft:#DCEBE7; --accent-ink:#0A4F47;
+  --signal:#B94A16; --signal-soft:#F7E4D8;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#111A19; --code-ink:#DCE7E4; --code-line:#24322F;
+  --shadow:0 1px 2px rgba(18,26,25,.05), 0 8px 24px -12px rgba(18,26,25,.14);
+  --rail:264px;
+  --f-disp:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --f-body:'Source Serif 4','Iowan Old Style',Georgia,serif;
+  --f-mono:'JetBrains Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+    --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+    --signal:#F09055; --signal-soft:#3A2114;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+  --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+  --signal:#F09055; --signal-soft:#3A2114;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.soft{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.hard{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.meta2{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.scale{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>Control Stack<small>CLAUDE&nbsp;CODE</small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search · / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">◐</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"></div>
+    <div class="legend">
+      <h4>Control layer</h4>
+      <div class="row"><span class="swatch" style="background:var(--warn)"></span>Operating — you, live</div>
+      <div class="row"><span class="swatch" style="background:var(--accent)"></span>Soft — instruction</div>
+      <div class="row"><span class="swatch" style="background:var(--stop)"></span>Hard — enforcement</div>
+      <div class="row"><span class="swatch" style="background:var(--signal)"></span>Scale — isolation</div>
+    </div>
+  </nav>
+  <main id="view"></main>
+</div>
+<script>
+/* ============================================================
+   Claude Code Control Stack — content model
+   Verified against code.claude.com/docs, August 2026.
+   ============================================================ */
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">' + s + '</code>';
+
+const PHASES = [
+{
+  id:'p0', n:'00', title:'Read the machine', layer:'meta', layerLabel:'Operating',
+  time:'~30 min', pre:'None',
+  objective:'At any moment in a session you can say <b>what is in the context window and why it got there</b>. Everything else in this path is an intervention on that answer.',
+  concepts:[
+    {h:'The loop you are configuring',
+     p:'<p>Claude Code runs one loop: you prompt, the model picks tools, tools run, results come back, repeat until it stops. Every primitive you will learn is an intervention at exactly one point in that loop. Knowing which point tells you which primitive to reach for.</p><ul><li><b>Before the loop starts</b> — CLAUDE.md, rules, auto memory, skill descriptions, MCP tool names</li><li><b>Between turns</b> — skills loading, subagents spawning, compaction</li><li><b>At each tool call</b> — hooks, permission rules, permission mode, sandbox</li><li><b>At the end</b> — Stop hooks, checkpoints, verification</li></ul>'},
+    {h:'What actually loads at session start',
+     p:'<p>Before your first word, the window already holds: the system prompt and tool definitions, every CLAUDE.md and CLAUDE.local.md from the filesystem root down to your working directory, unscoped ' + K('.claude/rules/*.md') + ', the first 200 lines (or 25KB) of auto memory ' + K('MEMORY.md') + ', the <b>descriptions</b> of every discoverable skill, and MCP tool names.</p><p>Skill bodies do not load. Path-scoped rules do not load. Subdirectory CLAUDE.md files do not load until Claude reads a file there.</p>'},
+    {h:'Context is the constraint, not cost',
+     p:'<p>The failure mode is not hitting the limit — auto-compaction handles that. The failure mode is <b>degradation well before the limit</b>: skills stop triggering, conventions get dropped, the model picks the wrong tool. Treat every always-on byte as a tax on reasoning quality.</p>'},
+    {h:'The three commands you should run reflexively',
+     code:C(
+      '/context      # live breakdown: system prompt, tools, memory files, messages',
+      '/status       # model, effort, cwd, permission mode, sandbox state',
+      '/doctor       # setup checkup; proposes CLAUDE.md trims (v2.1.206+)'),
+     p:'<p>' + K('/context') + ' is the instrument. It names which memory files loaded — if a file you wrote is not listed there, Claude cannot see it, and no amount of rewording will help.</p>'}
+  ],
+  lab:{title:'Baseline your worst repo',
+    steps:[
+      'Open Claude Code in the messiest project you own.',
+      'Run <code>/context</code>. Write down the token count for each category: system prompt, tools, memory files, messages.',
+      'Run <code>/status</code> and note the model, effort level, and permission mode you are actually running.',
+      'Run <code>/mcp</code> and note the per-server context cost.',
+      'Run <code>/doctor</code> and read what it wants to trim.'],
+    verify:'You can state your startup context budget as a number, and name the single largest contributor.'},
+  gotchas:[
+    {s:'cost',t:'MCP tool definitions are deferred now',d:'Tool search means only tool <i>names</i> cost context until a tool is first used. Older advice that "every MCP server bloats your baseline" overstates it — but ' + K('/mcp') + ' still shows real per-server cost, and subagents inherit every definition from the parent.'},
+    {s:'trap',t:'A memory file that is not in /context does not exist',d:'Wrong location, excluded by <code>claudeMdExcludes</code>, or in a subdirectory that has not been touched yet. Check before rewriting.'}
+  ],
+  quiz:[
+    {q:'Name the five things loaded into context before your first prompt.',a:'System prompt + tool definitions; CLAUDE.md / CLAUDE.local.md hierarchy from root down to cwd; unscoped <code>.claude/rules/*.md</code>; auto memory <code>MEMORY.md</code> (first 200 lines or 25KB); skill <b>descriptions</b> (not bodies). Plus MCP tool names.'},
+    {q:'Which command tells you whether your CLAUDE.md actually loaded?',a:'<code>/context</code> — check the list under <b>Memory files</b>. <code>/memory</code> lists file <i>locations</i>, which is not the same as what loaded this session.'}
+  ],
+  docs:[['How Claude Code works','https://code.claude.com/docs/en/how-claude-code-works'],['Explore the context window','https://code.claude.com/docs/en/context-window'],['Debug your configuration','https://code.claude.com/docs/en/debug-your-config']]
+},
+
+{
+  id:'p1', n:'01', title:'Drive the session', layer:'meta', layerLabel:'Operating',
+  time:'1–2 h', pre:'Phase 00',
+  objective:'Run <b>Explore → Plan → Implement → Verify → Commit</b> fluently, and recover from a bad turn, without editing a single config file. Most of the leverage in Claude Code is here, before any customization.',
+  concepts:[
+    {h:'Plan mode is the default opening for anything non-trivial',
+     p:'<p>Plan mode is read-only exploration that ends in a proposal you approve. File edits are <b>never</b> auto-approved in plan mode, even when an allow rule matches — they route to a prompt. Since v2.1.212 shell commands that modify files (<code>touch</code>, <code>rm</code>) are gated the same way.</p>',
+     code:C('Shift+Tab           # cycle permission modes, including plan',
+            '/plan <description> # enter plan mode from the prompt',
+            'claude --permission-mode plan')},
+    {h:'Context hygiene is a habit, not a setting',
+     code:C(
+      '/clear                          # new conversation, empty context — between unrelated tasks',
+      '/compact focus on the auth bug   # summarize, keeping what YOU choose',
+      '/autocompact 500k                # raise/lower the trigger point; /autocompact auto to reset',
+      '/btw does this repo use pnpm?    # side question that never enters history',
+      '/context                         # check before and after'),
+     p:'<p>The single highest-value habit: <b>' + K('/clear') + ' between unrelated tasks</b>. A clean session with a better prompt beats a long session full of accumulated corrections, almost every time.</p>'},
+    {h:'Checkpoints: every prompt is an undo point',
+     p:'<p>Claude snapshots files before each change. <kbd>Esc Esc</kbd> or ' + K('/rewind') + ' opens the menu: restore conversation only, code only, or both. The same menu offers <b>Summarize from here</b> (condense forward, keep earlier context) and <b>Summarize up to here</b> (condense earlier, keep recent in full) — partial compaction, which most people never discover.</p><p>' + K('/undo') + ' is an alias for ' + K('/rewind') + '.</p>'},
+    {h:'Model and effort are a first-class lever',
+     table:{head:['Level','Use it for'],rows:[
+       ['<code>low</code>','Short, scoped, latency-sensitive work that is not intelligence-sensitive'],
+       ['<code>medium</code>','Cost-sensitive work that can trade some capability'],
+       ['<code>high</code>','<b>Default on every model except Opus 4.7.</b> Balanced'],
+       ['<code>xhigh</code>','Deeper reasoning, higher spend. Default on Opus 4.7'],
+       ['<code>max</code>','Demanding tasks. Diminishing returns and prone to overthinking — test first. Session-only unless set via env var'],
+       ['<code>ultracode</code>','Not a model level: a Claude Code setting that sends <code>xhigh</code> <i>and</i> orchestrates dynamic workflows. Session-only']]},
+     code:C('/model opus            # aliases: default best fable sonnet opus haiku opusplan sonnet[1m] opus[1m]',
+            '/effort xhigh          # or /effort with no args for the slider, /effort auto to reset',
+            '/fast on               # fast mode',
+            '',
+            '# one-off deep reasoning without changing the session level:',
+            'ultrathink and then refactor the token refresh path'),
+     p:'<p>Precedence: <code>CLAUDE_CODE_EFFORT_LEVEL</code> beats everything, then your configured level, then the model default. Frontmatter <code>effort:</code> on a skill or subagent overrides the session level but not the env var.</p>'},
+    {h:'Verification surface',
+     code:C(
+      '/verify                         # run tests and checks (you invoke it; Claude cannot)',
+      '/code-review high --fix         # levels: low medium high xhigh max ultra',
+      '/security-review pr#142',
+      '/simplify high --fix            # cleanup without behavior change',
+      '/diff                           # interactive diff viewer, per-turn diffs'),
+     p:'<p>As of v2.1.215 Claude no longer runs ' + K('/verify') + ' or ' + K('/code-review') + ' on its own. You invoke them. That is deliberate: verification you did not ask for is verification you will not read.</p>'}
+  ],
+  lab:{title:'The same bug, three ways',
+    steps:[
+      'Pick a real bug in a real repo.',
+      'Round 1 — fix it conversationally, no plan mode. Note the turn count and run <code>/context</code>.',
+      'Round 2 — <code>/rewind</code> back to the start, then <code>/clear</code>, then <code>/plan fix &lt;bug&gt;</code>. Approve the plan, implement, then <code>/verify</code> and <code>/code-review high</code>.',
+      'Round 3 — <code>/clear</code>, then the same task at <code>/effort low</code>. Then at <code>max</code>.',
+      'Compare turn count, context consumed, and quality of the diff across all three.'],
+    verify:'You have a personal, evidence-based default for when plan mode and higher effort are worth their cost.'},
+  gotchas:[
+    {s:'trap',t:'"think hard" and "think more" are not keywords',d:'Only <code>ultrathink</code> is recognized. Everything else passes through as ordinary prompt text. This is one of the most widely repeated pieces of wrong Claude Code folklore.'},
+    {s:'trap',t:'max effort is session-only',d:'Unless you set it through <code>CLAUDE_CODE_EFFORT_LEVEL</code>. <code>low</code>/<code>medium</code>/<code>high</code>/<code>xhigh</code> persist across sessions when set interactively; <code>max</code> and <code>ultracode</code> do not.'},
+    {s:'cost',t:'Switching models mid-conversation re-reads history uncached',d:'<code>/model</code> now warns you. On a long session this is a real bill.'},
+    {s:'stale',t:'/clear does not exist in cloud sessions',d:'Start a new session from the sidebar instead. <code>/compact</code> and <code>/context</code> do work there.'}
+  ],
+  quiz:[
+    {q:'Which effort levels persist across sessions?',a:'<code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code> — when set in an interactive session. <code>max</code> and <code>ultracode</code> are session-only unless <code>max</code> comes from <code>CLAUDE_CODE_EFFORT_LEVEL</code>.'},
+    {q:'What does <code>ultrathink</code> actually change?',a:'It adds an in-context instruction requesting deeper reasoning for that turn. <b>The effort level sent to the API is unchanged.</b>'},
+    {q:'Name the two partial-compaction options in the rewind menu.',a:'<b>Summarize from here</b> (condense messages forward, keep earlier context intact) and <b>Summarize up to here</b> (condense earlier messages, keep recent ones in full).'},
+    {q:'Are file edits auto-approved in plan mode if an allow rule matches?',a:'No. Plan mode routes file edits to a permission prompt regardless of allow rules. Since v2.1.212, file-modifying shell commands too.'}
+  ],
+  docs:[['Best practices','https://code.claude.com/docs/en/best-practices'],['Permission modes','https://code.claude.com/docs/en/permission-modes'],['Checkpointing','https://code.claude.com/docs/en/checkpointing'],['Model configuration','https://code.claude.com/docs/en/model-config']]
+},
+
+{
+  id:'p2', n:'02', title:'Persistent instruction', layer:'soft', layerLabel:'Soft',
+  time:'2–3 h', pre:'Phase 00',
+  objective:'Get a project\u2019s always-on context <b>under 200 lines</b> without losing a single rule — by moving procedures into skills and file-specific rules into path-scoped rules.',
+  concepts:[
+    {h:'Three mechanisms, not one',
+     table:{head:['Mechanism','Loads','Scope','Use for'],rows:[
+       ['<code>CLAUDE.md</code>','Every session, in full','Whole project','Build commands, architecture, "always do X"'],
+       ['<code>.claude/rules/*.md</code>','Every session, <i>or</i> only when matching files are opened','Path-scoped via <code>paths:</code>','Language- or directory-specific guidelines'],
+       ['Skills','On demand, when invoked or matched','Task-specific','Procedures, reference material, workflows']]},
+     p:'<p>These are not stylistic alternatives. They are three different <b>load timings</b>, and picking the wrong one is the entire cause of CLAUDE.md bloat.</p>'},
+    {h:'Load order and precedence',
+     table:{head:['Scope','Location'],rows:[
+       ['Managed policy','<code>/Library/Application Support/ClaudeCode/CLAUDE.md</code> (macOS)<br><code>/etc/claude-code/CLAUDE.md</code> (Linux/WSL)<br><code>C:\\Program Files\\ClaudeCode\\CLAUDE.md</code> (Windows)'],
+       ['User','<code>~/.claude/CLAUDE.md</code>'],
+       ['Project','<code>./CLAUDE.md</code> or <code>./.claude/CLAUDE.md</code>'],
+       ['Local (gitignored)','<code>./CLAUDE.local.md</code>']]},
+     p:'<p>Claude walks <b>up</b> the tree from your cwd, then concatenates everything from filesystem root down — so instructions closer to where you launched are read <i>last</i>. Nothing overrides anything; it all accumulates. Within a directory, <code>CLAUDE.local.md</code> is appended after <code>CLAUDE.md</code>.</p><p>Critically: CLAUDE.md is delivered as a <b>user message after the system prompt</b>. It is context, not enforcement. There is no compliance guarantee. If something must happen, it is a hook.</p>'},
+    {h:'Imports do not save context',
+     p:'<p>' + K('@path/to/file') + ' imports are expanded and loaded at launch alongside the file that references them. Splitting a 400-line CLAUDE.md into five imports gives you five tidy files and <b>exactly the same token cost</b>. Only ' + K('paths:') + '-scoped rules actually reduce startup context.</p><ul><li>Relative paths resolve against the importing file, not cwd</li><li>Maximum four hops of recursion</li><li>Import parsing skips code spans and fences — write <code>`@README`</code> in backticks to mention a path literally</li><li>An import resolving outside your working directory triggers a one-time approval dialog</li></ul>'},
+    {h:'Path-scoped rules: the actual fix',
+     code:C('---',
+            'paths:',
+            '  - "src/api/**/*.ts"',
+            '  - "tests/**/*.test.{ts,tsx}"',
+            '---',
+            '',
+            '# API rules',
+            '- Every endpoint validates input at the boundary',
+            '- Errors use the standard envelope in src/api/errors.ts'),
+     p:'<p>Drop it at ' + K('.claude/rules/api.md') + '. Discovery is recursive, so ' + K('.claude/rules/frontend/') + ' works. Rules <b>without</b> a <code>paths:</code> field load at launch with the same priority as <code>.claude/CLAUDE.md</code>. Rules <b>with</b> one load only when Claude reads a matching file.</p><p>User-level rules live in <code>~/.claude/rules/</code> and load before project rules, giving project rules higher priority. The directory supports symlinks, so a shared company ruleset can be linked into many repos.</p>'},
+    {h:'Auto memory: what Claude writes about your project',
+     code:C('~/.claude/projects/<project>/memory/',
+            '├── MEMORY.md          # index — first 200 lines or 25KB loaded every session',
+            '├── debugging.md       # topic file — read on demand only',
+            '└── api-conventions.md',
+            '',
+            '/memory                          # browse, edit, toggle auto memory',
+            'CLAUDE_CODE_DISABLE_AUTO_MEMORY=1'),
+     p:'<p>On by default. Machine-local, shared across all worktrees of the same repo, and excluded from the transcript retention sweep. Subagents do <b>not</b> inherit the parent\u2019s auto memory unless they are a fork or set their own <code>memory:</code> field.</p>'},
+    {h:'AGENTS.md is not read',
+     p:'<p>Claude Code reads <code>CLAUDE.md</code>, full stop. If your repo already has an <code>AGENTS.md</code> for other agents, import it — and then you get one source of truth plus a place for Claude-specific additions.</p>',
+     code:C('# CLAUDE.md',
+            '@AGENTS.md',
+            '',
+            '## Claude Code',
+            'Use plan mode for changes under src/billing/.')},
+  ],
+  lab:{title:'The 200-line diet',
+    steps:[
+      'Run <code>/init</code> in a project that has no CLAUDE.md, or <code>/doctor</code> in one that does.',
+      'Run <code>/context</code> and record the <b>Memory files</b> token count.',
+      'Go through the file line by line and sort every entry into one of three buckets: <b>always true</b> (stays), <b>true for certain files</b> (becomes a rule with <code>paths:</code>), <b>a procedure</b> (becomes a skill — Phase 03).',
+      'Create <code>.claude/rules/</code> and move the second bucket out, one topic per file.',
+      'Add block-level HTML comments <code>&lt;!-- maintainer note --&gt;</code> for anything humans need but Claude does not — they are stripped before injection and cost zero tokens.',
+      'Re-run <code>/context</code>.'],
+    verify:'Memory files consume noticeably less of the window, root CLAUDE.md is under 200 lines, and nothing you relied on was deleted — only relocated.'},
+  gotchas:[
+    {s:'trap',t:'Nested CLAUDE.md and path-scoped rules do not survive compaction',d:'Project-root CLAUDE.md is re-read from disk and re-injected after <code>/compact</code>. Subdirectory CLAUDE.md files and rules with <code>paths:</code> are not — they reload only the next time Claude touches a matching file. If an instruction "disappeared after compaction", this is usually why.'},
+    {s:'trap',t:'Conflicting instructions resolve arbitrarily',d:'Two levels of the hierarchy disagreeing means Claude may pick either. Audit across user, project, nested, and rules files periodically.'},
+    {s:'cost',t:'Brace expansion in paths: has a budget',d:'A rule\u2019s whole <code>paths:</code> list shares 1,000 expanded patterns and 4 MiB. Over-budget patterns are used <i>unexpanded</i>, and their literal braces match no files — the rule silently stops working.'},
+    {s:'trap',t:'A [ that is not a bracket expression is an invalid glob',d:'<code>photos [2024/**</code> matches nothing. Escape it: <code>photos \\[2024/**</code>. The rule\u2019s other patterns keep working.'}
+  ],
+  quiz:[
+    {q:'Which reduces startup context: splitting CLAUDE.md into <code>@imports</code>, or moving content into path-scoped rules?',a:'Path-scoped rules. Imports are expanded and loaded at launch — organization only, zero context savings.'},
+    {q:'Does Claude Code read AGENTS.md?',a:'No. Import it from CLAUDE.md with <code>@AGENTS.md</code>, or symlink <code>CLAUDE.md → AGENTS.md</code>.'},
+    {q:'What survives <code>/compact</code>?',a:'Project-root CLAUDE.md (re-read from disk and re-injected). Nested CLAUDE.md files and <code>paths:</code>-scoped rules do not; they reload on the next matching file read.'},
+    {q:'Where do organization-wide instructions live, and can a user exclude them?',a:'The managed policy path (or the <code>claudeMd</code> key in managed settings). They cannot be excluded by <code>claudeMdExcludes</code>.'}
+  ],
+  docs:[['How Claude remembers your project','https://code.claude.com/docs/en/memory'],['Monorepos and large repos','https://code.claude.com/docs/en/large-codebases'],['Extend Claude Code','https://code.claude.com/docs/en/features-overview']]
+},
+
+{
+  id:'p3', n:'03', title:'Skills', layer:'soft', layerLabel:'Soft',
+  time:'3–4 h', pre:'Phase 02',
+  objective:'Turn every prompt you have typed three times into a discoverable, cheap-to-load procedure — and understand the <b>lifecycle</b> well enough to know why a skill stopped working.',
+  concepts:[
+    {h:'Anatomy and discovery',
+     code:C('.claude/skills/            # project — checked in',
+            '~/.claude/skills/          # user — all your projects',
+            '  ship/',
+            '    SKILL.md               # entrypoint',
+            '    checklist.md           # supporting file, read on demand',
+            '',
+            '# precedence: managed > user > project. Plugin skills are namespaced.',
+            '# skills hot-reload since v2.1.0 — no restart needed'),
+     p:'<p>The slash name comes from the <b>directory name</b>, not the <code>name:</code> field. In a personal or project skill, <code>name:</code> is only the display label in listings. (Plugin skills are the exception: there <code>name:</code> sets the last segment after the plugin prefix.)</p>'},
+    {h:'Progressive disclosure is the whole point',
+     table:{head:['Frontmatter','You invoke','Claude invokes','What is in context'],rows:[
+       ['(default)','Yes','Yes','Description always; body on invoke'],
+       ['<code>disable-model-invocation: true</code>','Yes','<b>No</b>','Nothing until you invoke it'],
+       ['<code>user-invocable: false</code>','<b>No</b>','Yes','Description always; body on invoke']]},
+     p:'<p>Use <code>disable-model-invocation: true</code> for anything with side effects (<code>/deploy</code>, <code>/release</code>) — it both prevents accidental automation <i>and</i> keeps the description out of context until needed. Use <code>user-invocable: false</code> for background knowledge like a legacy-system explainer that is not a meaningful action.</p>'},
+    {h:'Frontmatter reference',
+     table:{head:['Field','Effect'],rows:[
+       ['<code>description</code>','<b>The single most important field.</b> Drives auto-invocation. Weak description = never triggered'],
+       ['<code>name</code>','Display label only (except plugin skills)'],
+       ['<code>disable-model-invocation</code>','User-only. Removes it from Claude\u2019s context entirely'],
+       ['<code>user-invocable</code>','Set <code>false</code> to hide from the <code>/</code> menu'],
+       ['<code>allowed-tools</code>','Pre-approves tools <b>for the invoking turn only</b>'],
+       ['<code>disallowed-tools</code>','Removes tools from the pool while active; clears on your next message'],
+       ['<code>context: fork</code>','Run the skill body as a subagent prompt in isolation'],
+       ['<code>agent</code>','Which agent type the fork uses — <code>Explore</code>, <code>Plan</code>, <code>general-purpose</code>, or a custom one'],
+       ['<code>background</code>','<code>false</code> makes a fork block the turn instead of backgrounding'],
+       ['<code>model</code>, <code>effort</code>','Override for the duration of this skill'],
+       ['<code>argument-hint</code>','Autocomplete hint for arguments']]},
+     p:'<p>Booleans accept <code>yes/no/on/off/1/0</code> in any case since v2.1.218. Arguments: <code>$ARGUMENTS</code> for everything, <code>$0</code>/<code>$1</code> for positional. Shell output injects with <code>!`git diff $ARGUMENTS`</code>.</p>'},
+    {h:'Lifecycle — why your skill "stopped working"',
+     p:'<p>When invoked, the rendered SKILL.md enters the conversation as <b>one message and stays for the rest of the session</b>. Claude Code does not re-read the file on later turns. So write standing instructions, not one-time steps.</p><p>After auto-compaction, the most recent invocation of each skill is re-attached — but only the <b>first 5,000 tokens</b> of each, sharing a <b>25,000-token combined budget</b>, filled newest-first. Invoke many skills in one session and the oldest are dropped entirely.</p><p>If a skill seems to stop influencing behavior after the first response, the content is usually still there and the model is simply choosing other tools. Strengthen the description, or move the requirement into a hook.</p>'},
+    {h:'context: fork — a skill that runs as a subagent',
+     code:C('---',
+            'name: deep-research',
+            'description: Research a topic thoroughly across the codebase',
+            'context: fork',
+            'agent: Explore',
+            '---',
+            '',
+            'Research $ARGUMENTS thoroughly:',
+            '1. Find relevant files with Glob and Grep',
+            '2. Read and analyze',
+            '3. Summarize with specific file:line references'),
+     p:'<p>The skill body becomes the subagent\u2019s prompt. It backgrounds by default (set <code>background: false</code> to wait). With <code>agent: Explore</code> the fork skips CLAUDE.md and git status, so it sees only the skill content and the agent\u2019s own system prompt — the leanest possible research worker.</p>'},
+    {h:'Controlling skills you did not write',
+     code:C('// .claude/settings.local.json — the /skills menu writes this for you',
+            '{ "skillOverrides": {',
+            '    "noisy-shared-skill": "off",           // hidden everywhere',
+            '    "deploy": "user-invocable-only",       // hidden from Claude, in your / menu',
+            '    "big-reference": "name-only"           // name listed, description not',
+            '} }'),
+     p:'<p>In <code>/skills</code>, highlight a skill and press <kbd>Space</kbd> to cycle states, <kbd>Enter</kbd> to save.</p>'}
+  ],
+  lab:{title:'Build two skills that fail differently',
+    steps:[
+      'Build <code>.claude/skills/ship/SKILL.md</code> with <code>disable-model-invocation: true</code> and <code>allowed-tools: Bash(git add *) Bash(git commit *) Bash(git status *)</code>. Add a bundled <code>checklist.md</code> and reference it by name from the body.',
+      'Invoke <code>/ship</code>. Confirm git runs without prompts. Then send any other message and invoke a git command directly — confirm the grant has expired.',
+      'Build a second, <b>reference</b> skill (your API conventions, say) with a deliberately vague description like "API stuff". Work on an API file and see whether Claude picks it up.',
+      'Rewrite the description to name the concrete triggers: file paths, symptom words, the task phrasing you actually use. Retry.',
+      'Run <code>/context</code> and observe the cost of the skill body sitting in your session.'],
+    verify:'You can articulate why one skill triggered and the other did not, and the <code>allowed-tools</code> grant expiry is no longer a surprise.'},
+  gotchas:[
+    {s:'trap',t:'The description is the discovery mechanism',d:'Auto-invocation depends entirely on it. Write it as when-to-use, in the words you actually type, not as a summary of what the skill contains. This is the number one cause of unused skills.'},
+    {s:'cost',t:'A loaded skill is a recurring cost for the whole session',d:'It never unloads. Keep the body short and push bulk into supporting files that Claude reads on demand.'},
+    {s:'trap',t:'context: fork on a guidelines-only skill returns nothing',d:'The subagent receives your API conventions and no task, then exits. Forks need an imperative body.'},
+    {s:'trap',t:'A forked background skill\u2019s edits are outside checkpoints',d:'<code>/rewind</code> will not undo them. Use git.'},
+    {s:'trap',t:'Project skills grant themselves tools in untrusted folders',d:'Workspace trust does not gate <code>allowed-tools</code> — a project skill\u2019s grant applies even in a folder you have never trusted, including in <code>-p</code> runs. Read the skills in a repo before running Claude Code there.'},
+    {s:'stale',t:'when_to_use is not a field',d:'The field is <code>description</code>. Outside Claude Code only six spec fields validate at all: <code>name, description, license, compatibility, metadata, allowed-tools</code>.'}
+  ],
+  quiz:[
+    {q:'What determines the slash command name of a project skill?',a:'The <b>directory name</b>. The <code>name:</code> frontmatter field is only a display label (plugin skills are the exception).'},
+    {q:'What is the skill budget after auto-compaction?',a:'The most recent invocation of each skill is re-attached, keeping the first <b>5,000 tokens</b> of each, within a <b>25,000-token</b> combined budget, filled newest-first. Older skills can be dropped entirely.'},
+    {q:'When does an <code>allowed-tools</code> grant expire?',a:'When you send your next message. The skill <i>content</i> stays in context; the <i>permission</i> grant does not. Re-invoking re-applies it.'},
+    {q:'Which skills cannot be preloaded into a subagent?',a:'Any with <code>disable-model-invocation: true</code>, since preloading draws from the set Claude can invoke. That includes the bundled <code>/verify</code>.'}
+  ],
+  docs:[['Extend Claude with skills','https://code.claude.com/docs/en/skills'],['Explore the .claude directory','https://code.claude.com/docs/en/claude-directory']]
+},
+
+{
+  id:'p4', n:'04', title:'Permissions and sandbox', layer:'hard', layerLabel:'Hard',
+  time:'2–3 h', pre:'Phase 00',
+  objective:'Make "never do X" <b>true</b> regardless of what the model decides, and stop paying the permission-prompt tax without reaching for <code>--dangerously-skip-permissions</code>.',
+  concepts:[
+    {h:'The evaluation order — memorize this',
+     table:{head:['#','Step','Can it approve?','Can it block?'],rows:[
+       ['1','<b>Hooks</b> (<code>PreToolUse</code>)','Yes — skips the prompt','<b>Yes</b>'],
+       ['2','<b>Deny</b> rules','No','<b>Yes</b> — in every mode, including bypass'],
+       ['3','<b>Ask</b> rules','No','Routes to a prompt'],
+       ['4','<b>Permission mode</b>','<code>bypassPermissions</code>, <code>acceptEdits</code>','<code>dontAsk</code> denies'],
+       ['5','<b>Allow</b> rules','Yes','No'],
+       ['6','Prompt / <code>canUseTool</code>','Yes','Yes']]},
+     p:'<p>This ordering is the foundation of the whole determinism story: <b>hooks run before the permission mode is even consulted</b>, so a hook deny holds under <code>--dangerously-skip-permissions</code>. And a hook <code>allow</code> only skips the interactive prompt — it does not override a deny rule, an enterprise managed deny list, or an <code>ask</code> rule.</p>'},
+    {h:'The six modes',
+     table:{head:['Mode','Behavior'],rows:[
+       ['<code>default</code> (alias <code>manual</code>)','Prompts for anything not pre-approved'],
+       ['<code>acceptEdits</code>','Auto-approves file edits and common filesystem commands'],
+       ['<code>plan</code>','Read-only. File edits and file-modifying shell commands always prompt, allow rules notwithstanding'],
+       ['<code>auto</code>','<b>A model classifier approves or denies prompts.</b> The right answer to "too many prompts"'],
+       ['<code>dontAsk</code>','Every prompt becomes a denial. Fixed, explicit tool surface for headless runs'],
+       ['<code>bypassPermissions</code>','Approves everything that reaches step 4. Cannot be entered mid-session; refuses to run as root']]},
+     p:'<p>Your friend\u2019s map lists four modes. There are six, and the two missing ones — <code>auto</code> and <code>dontAsk</code> — are exactly the two that make autonomous operation safe.</p>'},
+    {h:'Nothing auto-approves these, in any mode',
+     p:'<ul><li>Tools matched by an explicit <b>ask</b> rule</li><li>Connector tools your organization set to <code>ask</code></li><li>Tools requiring user interaction: <code>AskUserQuestion</code>, MCP tools marked <code>requiresUserInteraction</code></li><li><code>rm</code> / <code>rmdir</code> targeting a <b>critical path</b> — no allow rule and no <code>PreToolUse</code> hook <code>allow</code> clears this</li><li>Cross-session messaging safeguards</li></ul>'},
+    {h:'Rule syntax',
+     code:C('// .claude/settings.json',
+            '{ "permissions": {',
+            '    "deny":  ["Read(./.env*)", "Read(./secrets/**)", "Bash(curl *)", "WebFetch"],',
+            '    "ask":   ["Bash(git push *)", "Bash(gh pr merge *)"],',
+            '    "allow": ["Bash(npm run *)", "Bash(pytest *)", "Read(./src/**)"]',
+            '} }',
+            '',
+            '# other specifier forms:',
+            '#   WebFetch(domain:example.com)   Skill(deploy *)   Agent(Explore)',
+            '#   mcp__github                    mcp__*'),
+     p:'<p>Rules evaluate deny → ask → allow, and <b>the first match wins regardless of specificity</b>. A broad deny beats a narrow allow.</p>'},
+    {h:'Sandbox is a different layer, not a stronger rule',
+     p:'<p>Permission rules control what Claude <i>attempts</i>. The sandbox is OS-level enforcement on the <b>Bash tool and its child processes</b> — filesystem and network. Use both.</p><ul><li><code>sandbox.filesystem</code> merges with your Read/Edit deny rules into one boundary</li><li>Network restrictions merge WebFetch rules with <code>allowedDomains</code>/<code>deniedDomains</code></li><li><code>autoAllowBashIfSandboxed</code> (default <code>true</code>) lets a sandboxed command substitute the boundary for a bare <code>Bash</code> ask rule — <b>except in plan mode</b>, where it does not</li><li>Content-scoped ask rules like <code>Bash(git push *)</code> still prompt even when sandboxed</li></ul>'},
+    {h:'Reducing prompts the safe way',
+     code:C('/permissions               # manage allow / ask / deny interactively',
+            '/fewer-permission-prompts  # scans transcripts, proposes a prioritized allowlist',
+            '/add-dir ../shared         # file access only — does NOT load that dir\u2019s config',
+            '',
+            'claude --permission-mode auto   # classifier-gated, not blind')}
+  ],
+  lab:{title:'Prove the boundary holds',
+    steps:[
+      'Write <code>.claude/settings.json</code> with <code>deny: ["Read(./.env*)", "Bash(rm -rf *)"]</code>.',
+      'Ask Claude to read <code>.env</code>. Confirm the denial.',
+      'Restart with <code>claude --dangerously-skip-permissions</code> and ask again. <b>Confirm the deny still holds.</b> This is the determinism lesson, felt rather than read.',
+      'Now try to defeat your own <code>Bash(rm -rf *)</code> deny with a compound command: <code>cd /tmp &amp;&amp; rm -rf ./scratch</code>. Note whether the prefix matcher catches it.',
+      'Enable the sandbox and re-run the compound command. Note the difference between "Claude was not allowed to try" and "the process could not reach it".',
+      'Run <code>/fewer-permission-prompts</code> and read the allowlist it proposes before accepting.'],
+    verify:'You can state, for your own repo, which rules are advisory and which are enforced — and you have never needed to type <code>--dangerously-skip-permissions</code> to get work done.'},
+  gotchas:[
+    {s:'trap',t:'Allow rules have no effect under bypassPermissions',d:'The mode approves everything that reaches step 4. <code>allowed_tools</code> does not constrain it — every tool is approved, not just the listed ones.'},
+    {s:'trap',t:'Bash pattern matching is prefix-based and defeatable',d:'Compound commands, shell expansion, and quoting all evade naive string matchers. For real logic, use a <code>PreToolUse</code> hook that parses <code>tool_input.command</code>.'},
+    {s:'stale',t:'auto mode is the answer to prompt fatigue, not bypass',d:'<code>bypassPermissions</code> offers no protection against prompt injection or unintended actions. <code>auto</code> runs a safety classifier and eliminates most prompts. Admins can block bypass entirely with <code>permissions.disableBypassPermissionsMode: "disable"</code>.'},
+    {s:'cost',t:'--add-dir grants file access, not configuration',d:'CLAUDE.md, rules, and settings from an added directory are not loaded unless you set <code>CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1</code>.'}
+  ],
+  quiz:[
+    {q:'What runs first — a <code>PreToolUse</code> hook or a deny rule?',a:'The hook. Order is hooks → deny → ask → mode → allow → prompt. That is why a hook deny holds even under <code>--dangerously-skip-permissions</code>.'},
+    {q:'Which mode turns every permission prompt into a denial?',a:'<code>dontAsk</code>. Pre-approved tools still run; everything else is denied without prompting.'},
+    {q:'Can an allow rule approve <code>rm -rf</code> on a critical path?',a:'No. Neither an allow rule nor a <code>PreToolUse</code> hook <code>allow</code> clears a critical-path removal, in any mode.'},
+    {q:'What does the sandbox restrict that permission rules do not?',a:'It is OS-level and applies to the Bash tool and its child processes — filesystem and network reachability, enforced even if a prompt injection gets past Claude\u2019s decision-making.'}
+  ],
+  docs:[['Choose a permission mode','https://code.claude.com/docs/en/permission-modes'],['Configure permissions','https://code.claude.com/docs/en/permissions'],['Configure the sandboxed Bash tool','https://code.claude.com/docs/en/sandboxing'],['Claude Code settings','https://code.claude.com/docs/en/settings']]
+},
+
+{
+  id:'p5', n:'05', title:'Hooks', layer:'hard', layerLabel:'Hard',
+  time:'3–4 h', pre:'Phase 04',
+  objective:'Encode "always run Y after Z" and "never X" as executable shell, not as prose in a markdown file that the model may or may not honor.',
+  concepts:[
+    {h:'Where they live and what they are',
+     code:C('// .claude/settings.json  (also user, local, managed — all merge, all fire)',
+            '{ "hooks": {',
+            '    "PreToolUse": [{',
+            '      "matcher": "Bash",',
+            '      "hooks": [{ "type": "command", "command": "./.claude/guard.sh", "timeout": 5 }]',
+            '    }],',
+            '    "PostToolUse": [{',
+            '      "matcher": "Edit|Write",',
+            '      "hooks": [{ "type": "command", "command": "npx prettier --write $CLAUDE_FILE_PATHS" }]',
+            '    }]',
+            '} }'),
+     p:'<p>Handler types: <code>command</code>, <code>http</code>, and <code>mcp_tool</code>. Hooks from every settings scope <b>merge</b> — unlike skills and subagents, which override by name. Subagents can also carry their own <code>hooks:</code> frontmatter.</p>'},
+    {h:'Three cadences',
+     p:'<ul><li><b>Once per session</b> — <code>SessionStart</code>, <code>SessionEnd</code></li><li><b>Once per turn</b> — <code>UserPromptSubmit</code>, <code>Stop</code>, <code>StopFailure</code></li><li><b>Every tool call</b> — <code>PreToolUse</code>, <code>PostToolUse</code></li></ul><p>Plus a long tail of situational events: <code>Setup</code>, <code>InstructionsLoaded</code>, <code>UserPromptExpansion</code>, <code>PermissionRequest</code>, <code>PermissionDenied</code>, <code>PostToolUseFailure</code>, <code>PostToolBatch</code>, <code>SubagentStart</code>, <code>SubagentStop</code>, <code>TaskCreated</code>, <code>TaskCompleted</code>, <code>TeammateIdle</code>, <code>Elicitation</code>, <code>ElicitationResult</code>, <code>MessageDisplay</code>, <code>PreCompact</code>, <code>PostCompact</code>, <code>Notification</code>, <code>ConfigChange</code>, <code>CwdChanged</code>, <code>DirectoryAdded</code>, <code>FileChanged</code>, <code>WorktreeCreate</code>, <code>WorktreeRemove</code>.</p>'},
+    {h:'Exit codes — the trap everyone hits',
+     table:{head:['Exit','Meaning'],rows:[
+       ['<code>0</code>','No objection. For <code>PreToolUse</code> this is <b>not</b> an approval — the normal permission flow still runs. For <code>UserPromptSubmit</code> / <code>SessionStart</code>, stdout is added to context'],
+       ['<code>2</code>','<b>Block.</b> stderr is the reason. Where it goes depends on the event'],
+       ['anything else','<b>Non-blocking error.</b> The action proceeds — unless stdout carries valid JSON that passes schema validation, in which case the JSON decides']]},
+     p:'<p>Read that last row again: <b><code>exit 1</code> does not block.</b> The conventional Unix failure code silently lets the action through. If your hook enforces policy, it must <code>exit 2</code>. The one exception is <code>WorktreeCreate</code>, where any non-zero exit aborts creation.</p>'},
+    {h:'A blocking guard, both ways',
+     code:C('#!/bin/bash',
+            'input=$(cat)',
+            'command=$(jq -r \'.tool_input.command\' <<<"$input")',
+            '',
+            'if [[ "$command" == *"rm -rf"* ]]; then',
+            '  echo "Blocked: rm -rf is not permitted. Move to _trash/ instead." >&2',
+            '  exit 2',
+            'fi',
+            'exit 0   # no decision — normal permission flow applies'),
+     p:'<p>Or exit 0 with structured JSON for richer control. Pick one style per hook; do not mix.</p>',
+     code2:C('{ "hookSpecificOutput": {',
+             '    "hookEventName": "PreToolUse",',
+             '    "permissionDecision": "deny",',
+             '    "permissionDecisionReason": "Use rg instead of grep in this repo"',
+             '} }',
+             '',
+             '// permissionDecision: "allow" | "deny" | "ask"  ("defer" only in -p mode)',
+             '// allow  = skip the interactive prompt. Deny and ask rules STILL apply.')},
+    {h:'Which events can actually block',
+     table:{head:['Event','Blocks?','Effect of exit 2'],rows:[
+       ['<code>PreToolUse</code>','Yes','Blocks the tool call'],
+       ['<code>UserPromptSubmit</code>','Yes','Blocks processing and erases the prompt'],
+       ['<code>UserPromptExpansion</code>','Yes','Blocks the expansion'],
+       ['<code>Stop</code>','Yes','Prevents Claude from stopping — continues the conversation'],
+       ['<code>SubagentStop</code>','Yes','Prevents the subagent from stopping'],
+       ['<code>TaskCreated</code> / <code>TaskCompleted</code>','Yes','Prevents creation / completion, sends feedback'],
+       ['<code>TeammateIdle</code>','Yes','Keeps the teammate working'],
+       ['<code>PermissionRequest</code>','<b>No</b>','Exit 2 is ignored — deny via the <code>decision</code> object'],
+       ['<code>SessionStart</code>, <code>Setup</code>, <code>SubagentStart</code>','No','stderr shown, execution continues']]}},
+    {h:'Rewriting, not just blocking',
+     p:'<p>A few events can transform content rather than only gate it:</p><ul><li><code>PreToolUse</code> — <code>updatedInput</code> replaces the tool\u2019s arguments before it runs</li><li><code>PostToolUse</code> — <code>updatedToolOutput</code> replaces the result Claude sees</li><li><code>PermissionRequest</code> — <code>updatedInput</code> inside the <code>decision</code> object</li><li><code>UserPromptSubmit</code> — cannot replace the prompt, only inject <code>additionalContext</code> alongside it</li><li><code>MessageDisplay</code> — <code>displayContent</code> changes what is on screen only; the transcript and what Claude sees keep the original</li></ul><p>For redaction: intercept outbound at <code>PreToolUse</code>, inbound at <code>PostToolUse</code>.</p>'}
+  ],
+  lab:{title:'A guard you can trust and a guard you cannot',
+    steps:[
+      'Write the <code>rm -rf</code> guard above as <code>.claude/guard.sh</code>. <code>chmod +x</code> it. Register it on <code>PreToolUse</code> with matcher <code>Bash</code>.',
+      'Verify with <code>/hooks</code>, then trigger it.',
+      'Change <code>exit 2</code> to <code>exit 1</code> and trigger it again. <b>Watch the command run anyway.</b>',
+      'Restore <code>exit 2</code>. Now break the path in settings.json (typo the filename) and trigger it. Look for <code>Failed with non-blocking status code:</code> in the transcript — your gate is now silently off.',
+      'Add a <code>PostToolUse</code> hook on <code>Edit|Write</code> that runs your formatter.',
+      'Add a <code>Stop</code> hook that exits 2 if <code>git status --porcelain</code> shows uncommitted changes to a protected path, with a reason on stderr. Watch Claude receive the feedback and keep working.',
+      'Run <code>claude --debug</code> and inspect the hook log.'],
+    verify:'You have seen a hook fail open, and you know what that looks like in the transcript.'},
+  gotchas:[
+    {s:'trap',t:'exit 1 does not block',d:'Only <code>exit 2</code> blocks through the exit code alone. Exit 1 is a non-blocking error and the action proceeds. The lone exception: <code>WorktreeCreate</code> aborts on any non-zero exit.'},
+    {s:'trap',t:'A timed-out hook renders no decision',d:'A <code>command</code>, <code>http</code>, or <code>mcp_tool</code> hook that hits its <code>timeout</code> is cancelled, its output discarded, and the tool call <b>continues through the normal permission flow</b>. Never build a gate on a slow hook. (Agent SDK callback hooks are the opposite: a timeout blocks.)'},
+    {s:'trap',t:'A mistyped path silently disables the gate',d:'The shell exits ~127 and you get a non-blocking error notice, then the action proceeds. Watch the first run of every policy hook.'},
+    {s:'cost',t:'Hooks are the right home for "never do X"',d:'CLAUDE.md is context, not enforcement. Any instruction that must run at a fixed point — before every commit, after each edit — belongs here. If you find yourself writing "ALWAYS" in caps in CLAUDE.md, you want a hook.'},
+    {s:'ok',t:'For truly non-bypassable rules, go below the agent',d:'Hooks are strong, but the strongest boundary is the one the process cannot reach at all: the sandbox, a container, or OS-level policy.'}
+  ],
+  quiz:[
+    {q:'What does <code>exit 0</code> mean for a <code>PreToolUse</code> hook?',a:'"No objection" — <b>not</b> an approval. The normal permission flow still runs afterward.'},
+    {q:'A <code>PreToolUse</code> hook times out. What happens to the tool call?',a:'It proceeds through the normal permission flow. The hook renders no decision and its output is discarded. Do not build gates on slow hooks.'},
+    {q:'Your hook exits 1 with a message on stderr. Is the action blocked?',a:'No. Exit 1 is a non-blocking error; the action proceeds. Use <code>exit 2</code>.'},
+    {q:'Which event ignores exit 2 entirely?',a:'<code>PermissionRequest</code>. Deny through the <code>decision</code> object instead.'},
+    {q:'How do hooks from different settings scopes combine?',a:'They <b>merge</b> — all registered hooks fire for their matching events regardless of source. (Skills and subagents override by name; MCP servers override by name; CLAUDE.md files are additive.)'}
+  ],
+  docs:[['Automate actions with hooks','https://code.claude.com/docs/en/hooks-guide'],['Hooks reference','https://code.claude.com/docs/en/hooks']]
+},
+
+{
+  id:'p6', n:'06', title:'Subagents and isolation', layer:'scale', layerLabel:'Scale',
+  time:'3–4 h', pre:'Phases 03, 04',
+  objective:'Move expensive reading out of your context window, and design the <b>return contract</b> — because the summary is all you will ever see.',
+  concepts:[
+    {h:'Scope and precedence',
+     table:{head:['Location','Scope','Priority'],rows:[
+       ['Managed settings','Organization','1 (highest)'],
+       ['<code>--agents</code> CLI flag','This session','2'],
+       ['<code>.claude/agents/</code>','Project — check this in','3'],
+       ['<code>~/.claude/agents/</code>','All your projects','4'],
+       ['Plugin <code>agents/</code>','Where the plugin is enabled','5 (lowest)']]}},
+    {h:'The full frontmatter surface',
+     code:C('---',
+            'name: reviewer                 # required, lowercase and hyphens',
+            'description: Adversarial review of a diff for correctness bugs',
+            'tools: Read, Grep, Glob, Bash  # allowlist',
+            'disallowedTools: Write, Edit   # denylist',
+            'model: sonnet                  # sonnet|opus|haiku|fable|inherit|full ID',
+            'effort: high                   # low|medium|high|xhigh|max',
+            'permissionMode: default        # default|acceptEdits|auto|dontAsk|bypassPermissions|plan|manual',
+            'maxTurns: 12',
+            'skills: [api-conventions]      # FULL content injected at startup',
+            'mcpServers: [github]           # named or inline definition',
+            'memory: project                # user|project|local — persistent agent memory',
+            'hooks: { }                     # lifecycle hooks scoped to this subagent',
+            'isolation: worktree            # run in its own git worktree',
+            'background: false',
+            'initialPrompt: "..."',
+            'color: blue',
+            '---',
+            '',
+            'System prompt goes here. Specify the OUTPUT FORMAT explicitly —',
+            'the summary is the only thing the parent will ever see.'),
+     p:'<p>Note how much of this is missing from the usual summaries: <code>maxTurns</code>, <code>memory</code>, <code>mcpServers</code>, per-agent <code>hooks</code>, and <code>isolation: worktree</code> are all real levers.</p>'},
+    {h:'What loads — and what does not',
+     p:'<p><b>Loads at startup:</b> the agent\u2019s own system prompt (not the full Claude Code one), the delegation message, the full CLAUDE.md hierarchy, git status, the full content of any <code>skills:</code> listed, and a roster of sibling agents reachable via <code>SendMessage</code>.</p><p><b>Does not load:</b> conversation history, skills already invoked in the parent, output style settings, the parent\u2019s auto memory, the main conversation\u2019s context window size.</p><p><b>Exception:</b> the built-in <code>Explore</code> and <code>Plan</code> agents skip CLAUDE.md and git status, deliberately, to stay small.</p>'},
+    {h:'Foreground, background, and forks',
+     table:{head:['','Regular subagent','Fork (<code>/subtask</code>)'],rows:[
+       ['Context','Fresh','Full parent conversation'],
+       ['System prompt','From definition','Same as main'],
+       ['Tools','From definition (reduced if background)','Same as main'],
+       ['Model','From definition','Same as main'],
+       ['Prompt cache','Separate','Shared'],
+       ['Can spawn more','Yes, to the depth limit','<b>No</b>']]},
+     p:'<p>Background subagents get a <b>reduced built-in tool set</b>: Read, Grep, Glob, Bash, PowerShell, Edit, Write, NotebookEdit, WebFetch, WebSearch, TodoWrite, Skill, ToolSearch, EnterWorktree, ExitWorktree, Monitor, TaskStop, SendMessage — plus all MCP tools. Everything else is removed. If your agent needs a tool outside that list, run it in the foreground.</p>'},
+    {h:'Hard limits',
+     code:C('CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH   # default 3 layers deep',
+            'CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS   # default 20 simultaneous',
+            '',
+            '# at the depth limit the Agent tool is removed entirely',
+            '# exceeding concurrency returns: "Concurrent subagent limit reached"'),
+     p:'<p>"Several levels" is 3. "Practical limits" is 20. Both are configurable via <code>env</code> in settings.</p>'},
+    {h:'Designing the return contract',
+     p:'<p>Context isolation is the point, and it is also the constraint: the parent never sees intermediate steps. So the agent\u2019s system prompt must specify the output shape, not just the task. A good one names the format, the required fields, and what to do when there is nothing to report.</p>',
+     code:C('Return your findings as a markdown list. For each finding:',
+            '  - file:line',
+            '  - one-sentence description of the defect',
+            '  - a concrete failure scenario (inputs -> wrong output)',
+            'Rank most-severe first. If you found nothing, say exactly: NO FINDINGS.',
+            'Do not include your search process, files you ruled out, or a summary of the codebase.')}
+  ],
+  lab:{title:'A reviewer that returns something you can act on',
+    steps:[
+      'Create <code>.claude/agents/reviewer.md</code> with <code>tools: Read, Grep, Glob, Bash</code>, <code>disallowedTools: Write, Edit</code>, and a system prompt that mandates the output format above.',
+      'Add <code>skills: [your-conventions-skill]</code> from Phase 03 and <code>memory: project</code>.',
+      'Run it against a real diff. Note what came back and what you wish had.',
+      'Tighten the output contract based on that gap. Run again.',
+      'Now run the same review three ways: one subagent, three parallel subagents with different lenses, and inline in your main session. Compare <code>/context</code> impact and <code>/usage</code>.',
+      'Before the parallel run, try <code>/mcp disable</code> on servers you do not need and note the difference in subagent startup context.'],
+    verify:'Your agent returns a consistent, parseable format, and you have measured what isolation actually saved you.'},
+  gotchas:[
+    {s:'trap',t:'Subagents inherit every MCP tool definition from the parent',d:'This can fill a subagent\u2019s window before its first turn. Run <code>/mcp disable &lt;name&gt;</code> for servers the worker does not need, or scope with the per-agent <code>mcpServers:</code> field.'},
+    {s:'trap',t:'Background subagents lose most built-in tools',d:'A backgrounded <code>context: fork</code> skill hits this too — the fork exemption does not cover it. Set <code>background: false</code> to keep the full set.'},
+    {s:'cost',t:'Fan-out is real money and can thrash',d:'Three focused workers beat five scattered ones. Concurrency and depth limits exist because over-fanning is the common failure.'},
+    {s:'trap',t:'You cannot see the trace',d:'If you need to watch the reasoning, do not isolate it. Isolation trades visibility for context.'}
+  ],
+  quiz:[
+    {q:'What is the default subagent nesting depth?',a:'3 layers (main → 1 → 2 → 3). At the limit the Agent tool is removed. Configure with <code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code>.'},
+    {q:'What do the built-in Explore and Plan agents skip at startup?',a:'CLAUDE.md and git status — deliberately, to keep their context small.'},
+    {q:'What does a fork inherit that a regular subagent does not?',a:'The full parent conversation, the same system prompt, tools, and model, and a shared prompt cache. A fork cannot spawn further forks.'},
+    {q:'How many subagents can run at once by default?',a:'20. Exceeding it returns "Concurrent subagent limit reached". Set <code>CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</code>.'}
+  ],
+  docs:[['Create custom subagents','https://code.claude.com/docs/en/sub-agents'],['Run agents in parallel','https://code.claude.com/docs/en/agents'],['Manage multiple agents with agent view','https://code.claude.com/docs/en/agent-view']]
+},
+
+{
+  id:'p7', n:'07', title:'Scale out', layer:'scale', layerLabel:'Scale',
+  time:'2–3 h', pre:'Phase 06',
+  objective:'Know when parallelism pays for itself and when it just multiplies your bill — and keep teams from forming when you did not ask for one.',
+  concepts:[
+    {h:'Agent teams (experimental)',
+     code:C('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1   # in settings.json env, or your shell',
+            '',
+            '# then, in the session:',
+            'Spawn three teammates to review PR #142:',
+            '  - one on security implications',
+            '  - one on performance impact',
+            '  - one validating test coverage',
+            'Have them each review and report findings.'),
+     p:'<p>Off by default. Without the variable, no team is set up, no team directories are written, and Claude will not spawn teammates. One session is the lead; teammates each get their own context window and can message <b>each other</b>, not just the lead.</p>'},
+    {h:'Teams vs subagents, in one line each',
+     table:{head:['','Subagents','Agent teams'],rows:[
+       ['Communication','Report only to the parent; never to each other','Shared task list + direct teammate-to-teammate messaging'],
+       ['You can talk to them','No','Yes — any teammate directly'],
+       ['Coordination','Parent orchestrates','File-locked task claiming, self-claim or lead-assigned'],
+       ['Cost','One extra window per agent','Scales with active teammates — significantly more'],
+       ['Best for','Isolated reads, parallel independent work','Research, review, competing hypotheses, cross-layer features']]}},
+    {h:'Quality gates for teams',
+     p:'<p>Three hook events exist specifically for teams. Each blocks on exit 2 and sends feedback:</p><ul><li><code>TeammateIdle</code> — fires as a teammate is about to go idle. Exit 2 keeps it working</li><li><code>TaskCreated</code> — exit 2 prevents creation</li><li><code>TaskCompleted</code> — exit 2 prevents marking complete</li></ul><p>This is how you enforce "no task is complete until tests pass" across a team without trusting prose.</p>'},
+    {h:'Dynamic workflows and ultracode',
+     p:'<p><code>/effort ultracode</code> sends <code>xhigh</code> to the model <b>and</b> has Claude orchestrate a dynamic workflow for each substantive task — planning and fanning out subagents at scale. Session-only. It is not accepted by the persisted <code>effortLevel</code> setting or by <code>CLAUDE_CODE_EFFORT_LEVEL</code>.</p>'},
+    {h:'Worktrees and parallel sessions',
+     code:C('# an agent that works in its own git worktree:',
+            'isolation: worktree',
+            '',
+            '/batch <instruction>    # large-scale parallel changes across a codebase',
+            '/background [prompt]    # detach this session, free the terminal',
+            '/fork [prompt]          # copy the conversation into a new background session',
+            '/subtask [prompt]       # side task in a fork that reports back here',
+            '/tasks                  # list background work, including finished subagents',
+            '/list-agents            # names you can message'),
+     p:'<p>Worktrees are the answer to "two agents editing the same file". Give each worker its own checkout instead of coordinating writes.</p>'}
+  ],
+  lab:{title:'Measure whether the team was worth it',
+    steps:[
+      'Pick a PR with genuinely separable review dimensions.',
+      'Run <code>/usage</code> and note the baseline.',
+      'Review it with three <b>subagents</b>, one lens each. Record <code>/usage</code>.',
+      'Enable teams, <code>/clear</code>, and review the same PR with three <b>teammates</b> instructed to challenge each other. Record <code>/usage</code>.',
+      'Compare cost against findings actually worth acting on.',
+      'Add a <code>TaskCompleted</code> hook that exits 2 unless the test suite passed, and watch a teammate get sent back to work.'],
+    verify:'You have a number for what a team costs you, and a rule of thumb for when it earns it.'},
+  gotchas:[
+    {s:'trap',t:'Teams can form when you did not ask',d:'While teams are enabled, any subagent Claude <i>names</i> launches as a teammate — and Claude names subagents on its own so it can message them. If you wanted subagents, turn teams off.'},
+    {s:'cost',t:'Token usage scales with active teammates',d:'Each has its own window. Worth it for research and review; wasteful for routine or sequential work.'},
+    {s:'trap',t:'Two teammates on one file overwrite each other',d:'Split by file ownership, or give each one a worktree.'},
+    {s:'trap',t:'A teammate\u2019s model and fast mode are fixed at spawn',d:'<code>/model</code> and <code>/fast</code> only change the lead. <code>/effort</code> does apply to the viewed teammate\u2019s later turns.'}
+  ],
+  quiz:[
+    {q:'What enables agent teams?',a:'<code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> in settings.json <code>env</code> or the environment. They are off by default and experimental.'},
+    {q:'One sentence: teams vs subagents.',a:'Subagents report only to the parent and never talk to each other; teammates share a task list, claim work, and message each other directly — and you can talk to any of them.'},
+    {q:'Which three hook events gate team work?',a:'<code>TeammateIdle</code>, <code>TaskCreated</code>, <code>TaskCompleted</code>. Each blocks on exit 2 and returns feedback.'}
+  ],
+  docs:[['Orchestrate teams of Claude Code sessions','https://code.claude.com/docs/en/agent-teams'],['Dynamic workflows','https://code.claude.com/docs/en/workflows'],['Run parallel sessions with worktrees','https://code.claude.com/docs/en/worktrees'],['Cross-session messaging','https://code.claude.com/docs/en/cross-session-messaging']]
+},
+
+{
+  id:'pA', n:'08', title:'Run it unattended', layer:'scale', layerLabel:'Scale',
+  time:'3–4 h', pre:'Phases 04, 05',
+  objective:'Pick the right autonomy mechanism for <b>what you are actually waiting on</b> — a condition, a clock, or an event — and bound it so a forgotten loop cannot run all night.',
+  concepts:[
+    {h:'Four ways to keep working without you',
+     table:{head:['Mechanism','Next turn starts when','Stops when'],rows:[
+       ['<code>/goal &lt;condition&gt;</code>','The previous turn finishes','A model confirms the condition is met, or judges it impossible'],
+       ['<code>/loop [interval] [prompt]</code>','A time interval elapses','You press <kbd>Esc</kbd>, Claude decides it is done, or 7 days pass'],
+       ['A <code>Stop</code> hook','The previous turn finishes','Your own script or prompt decides'],
+       ['A channel','An external event is pushed in','Event-driven — nothing to stop']]},
+     p:'<p>Pick by <b>what starts the next turn</b>. That single question resolves almost every "which one do I want" argument.</p><p>Note what is <i>not</i> on this list: <code>auto</code> mode. Auto mode approves tool calls <i>within</i> a turn but never starts a new one — Claude still stops when it judges the work done. It is complementary, not an alternative: auto mode removes per-tool prompts, <code>/goal</code> removes per-turn prompts. Run them together.</p>'},
+
+    {h:'/goal — work toward a condition',
+     code:C('/goal all tests in test/auth pass and the lint step is clean',
+            '',
+            '/goal            # status: condition, duration, turns evaluated, token spend,',
+            '                 #         and the evaluator’s most recent reason',
+            '/goal clear      # aliases: stop, off, reset, none, cancel',
+            '                 # /clear (new conversation) also removes an active goal'),
+     p:'<p>One goal per session; a new one replaces the old. Setting it <b>starts a turn immediately</b> with the condition as the directive — no separate prompt needed. A <code>◎ /goal active</code> indicator shows how long it has been running, and <kbd>Ctrl+O</kbd> reveals the reason behind each verdict.</p><p>Conditions can be up to 4,000 characters. A goal still active when a session ends is restored by <code>--resume</code> or <code>--continue</code>; the condition carries over but the turn count, timer, and token baseline all reset. An achieved or cleared goal is not restored.</p>'},
+
+    {h:'How the evaluator actually works — and its one hard limit',
+     p:'<p><code>/goal</code> is a wrapper around a <b>session-scoped prompt-based <code>Stop</code> hook</b>. After every turn, Claude Code sends the condition plus the conversation so far to your configured small fast model (Haiku by default on the Claude API). It returns one of three verdicts with a reason:</p><ul><li><b>Not yet met</b> — Claude keeps working and takes the reason as guidance for the next turn</li><li><b>Met</b> — goal cleared, achieved entry recorded</li><li><b>Impossible</b> — the condition can never be satisfied. Goal cleared, failed entry recorded. You do not need to clear it yourself</li></ul><p><b>The evaluator does not call tools.</b> It cannot run commands or read files. It judges only what Claude has already surfaced in the conversation. This single fact determines whether your condition will ever resolve — see the next concept.</p><p>Two more behaviors worth knowing: if a subagent or background shell command is still running when a turn ends, evaluation is skipped for that turn. And if Claude answers the evaluator several turns in a row with no tool use, Claude Code stops the loop, prints a warning, and hands control back with the goal still set — evaluation resumes on your next prompt.</p>'},
+
+    {h:'Writing a condition that resolves',
+     p:'<p>A condition that holds up across many turns has three parts:</p><ul><li><b>One measurable end state</b> — a test result, a build exit code, a file count, an empty queue</li><li><b>A stated check</b> — how Claude should prove it, so the proof lands in the transcript where the evaluator can read it</li><li><b>Constraints that matter</b> — anything that must not change on the way there</li></ul><p>And a bound, so it cannot run forever.</p>',
+     code:C('# Will not resolve — nothing Claude outputs can demonstrate this',
+            '/goal the authentication module is clean',
+            '',
+            '# Resolves — every clause is visible in the transcript',
+            '/goal every call site in src/auth/ uses the v2 client:',
+            '  prove it with "npm test -- src/auth" exiting 0 and "npx tsc --noEmit" clean.',
+            '  Do not modify files outside src/auth/ or any test fixture.',
+            '  Report turn count each turn and stop after 20 turns.')},
+
+    {h:'/loop — repeat on a clock',
+     table:{head:['What you provide','Example','What happens'],rows:[
+       ['Interval and prompt','<code>/loop 5m check the deploy</code>','Runs on a fixed cron schedule'],
+       ['Prompt only','<code>/loop check the deploy</code>','Claude picks the interval each iteration, 1 min to 1 hour, and prints the delay and its reason'],
+       ['Interval only, or nothing','<code>/loop</code>','Runs the built-in maintenance prompt, or your <code>loop.md</code> if one exists']]},
+     p:'<p>The interval can lead as a bare token (<code>30m</code>) or trail as a clause (<code>every 2 hours</code>). Units: <code>s</code>, <code>m</code>, <code>h</code>, <code>d</code>. Seconds round up to a minute (cron granularity), and intervals that do not map to a clean cron step — <code>7m</code>, <code>90m</code> — are rounded to one that does, and Claude tells you what it picked.</p><p>In self-paced mode Claude may reach for the <b>Monitor tool</b> instead: it runs a background script and streams each output line back, which beats re-running a prompt on a timer on both tokens and latency.</p><p>Stop a waiting loop with <kbd>Esc</kbd> — that clears the pending wakeup. A self-paced loop can also end itself by calling <code>ScheduleWakeup</code> with <code>stop: true</code>. Tasks you scheduled by asking Claude directly are <i>not</i> affected by <kbd>Esc</kbd>.</p>'},
+
+    {h:'The bare /loop maintenance prompt, and loop.md',
+     p:'<p><code>/loop</code> with no prompt runs a built-in maintenance prompt that works, in order: continue unfinished work from the conversation → tend the current branch’s PR (review comments, failed CI, merge conflicts) → run cleanup passes such as bug hunts or simplification when nothing else is pending. It does not start new initiatives, and irreversible actions like pushing only proceed when they continue something the transcript already authorized.</p><p>Replace that default with your own:</p>',
+     code:C('# .claude/loop.md      (project — wins when both exist)',
+            '# ~/.claude/loop.md    (user — applies where no project file exists)',
+            '',
+            'Check the release/next PR. If CI is red, pull the failing job log,',
+            'diagnose, and push a minimal fix. If new review comments have arrived,',
+            'address each one and resolve the thread. If everything is green and',
+            'quiet, say so in one line.'),
+     p2:'<p>It defines the single default for bare <code>/loop</code>, not a list of tasks, and is ignored whenever you supply a prompt on the command line. Edits take effect on the <b>next iteration</b>, so you can refine it while a loop runs. Content past 25,000 bytes is truncated.</p>'},
+
+    {h:'Passing a skill to /loop',
+     code:C('/loop 20m /review-pr 1234'),
+     p:'<p>A scheduled fire only runs skills <b>Claude is allowed to invoke on its own</b>. These reach Claude as <i>plain text</i> instead of executing:</p><ul><li>Built-in commands such as <code>/permissions</code>, <code>/model</code>, <code>/clear</code></li><li>Skills with <code>disable-model-invocation: true</code> — <b>including the bundled <code>/verify</code></b></li><li>Skills withheld by <code>skillOverrides</code> or a <code>Skill</code> deny rule</li><li>MCP prompts such as <code>/mcp__github__list_prs</code></li></ul><p>This is the trap: <code>/loop 30m /verify</code> looks like a self-testing loop and is actually Claude reading the string "/verify" every half hour.</p>'},
+
+    {h:'Session-scoped scheduled tasks',
+     code:C('# ask in natural language — Claude drives the tools',
+            'remind me at 3pm to push the release branch',
+            'in 45 minutes, check whether the integration tests passed',
+            'what scheduled tasks do I have?',
+            'cancel the deploy check job',
+            '',
+            '# under the hood:  CronCreate | CronList | CronDelete',
+            '# 8-character task IDs. 50 tasks max per session.',
+            '',
+            '# 5-field cron, LOCAL timezone: minute hour day-of-month month day-of-week',
+            '*/5 * * * *     every 5 minutes',
+            '0 9 * * 1-5     weekdays at 9am local',
+            '30 14 15 3 *    March 15 at 2:30pm local'),
+     p:'<p>Wildcards, single values, steps (<code>*/15</code>), ranges (<code>1-5</code>), and lists (<code>1,15,30</code>) all work. Extended syntax does not: no <code>L</code>, <code>W</code>, <code>?</code>, or name aliases like <code>MON</code>. When both day-of-month and day-of-week are constrained, a date matches if <i>either</i> does — standard vixie-cron semantics.</p><p>Tasks fire <b>between turns</b>, never mid-response, and there is no catch-up: a fire missed while Claude was busy runs once when it goes idle, not once per missed interval.</p>'},
+
+    {h:'Two behaviors that will surprise you: jitter and expiry',
+     p:'<p><b>Jitter.</b> So every session does not hit the API at the same wall-clock moment, the scheduler adds a deterministic offset derived from the task ID:</p><ul><li>Recurring tasks fire up to <b>30 minutes late</b> — or up to half the interval, for sub-hourly tasks. An hourly job set for <code>:00</code> may fire anywhere up to <code>:30</code></li><li>One-shot tasks scheduled for the top or bottom of the hour fire up to <b>90 seconds early</b></li></ul><p>If exact timing matters, pick a minute that is not <code>:00</code> or <code>:30</code> — <code>3 9 * * *</code> instead of <code>0 9 * * *</code> — and the one-shot jitter does not apply.</p><p><b>Seven-day expiry.</b> Recurring tasks expire 7 days after creation: one final fire, then self-delete. This bounds how long a forgotten loop can run. For anything durable, use cloud routines, Desktop scheduled tasks, or GitHub Actions.</p>'},
+
+    {h:'Where should it run?',
+     table:{head:['','Cloud routines','Desktop tasks','<code>/loop</code>'],rows:[
+       ['Runs on','Cloud, Anthropic-managed','Your machine','Your machine'],
+       ['Machine must be on','No','Yes','Yes'],
+       ['Open session required','No','No','<b>Yes</b>'],
+       ['Survives restarts','Yes','Yes','Restored on <code>--resume</code> if unexpired'],
+       ['Local file access','No — fresh clone','Yes','Yes'],
+       ['MCP','Connectors per task','Config files and connectors','Inherits from session'],
+       ['Permission prompts','None — runs autonomously','Configurable per task','Inherits from session'],
+       ['Minimum interval','1 hour','1 minute','1 minute']]},
+     p:'<p>Rule of thumb: <b>cloud</b> for work that must run whether or not your laptop is open. <b>Desktop</b> when it needs your local files and tools. <b><code>/loop</code></b> for quick polling inside a session you are already in.</p>'},
+
+    {h:'Channels — react instead of poll',
+     code:C('/plugin install telegram@claude-plugins-official',
+            '/telegram:configure <bot-token>',
+            '',
+            'claude --channels plugin:telegram@claude-plugins-official',
+            '',
+            '/telegram:access pair <code-from-bot>',
+            '/telegram:access policy allowlist'),
+     p:'<p>A channel is an MCP server that <b>pushes events into a running session</b>, so your CI failure arrives where Claude already has your files open and remembers what you were debugging — instead of being discovered by a poll. Channels can be two-way, so you can ask Claude something from your phone and get the answer back in the same chat while the work runs on your machine.</p><p>Research preview. Telegram, Discord, iMessage, and a <code>fakechat</code> localhost demo are included. Requires Anthropic authentication (claude.ai or a Console API key); not available on Bedrock, Google Cloud’s Agent Platform, or Microsoft Foundry; Team and Enterprise organizations must set <code>channelsEnabled</code>. Being in <code>.mcp.json</code> is not enough — a server must also be named in <code>--channels</code>.</p>'},
+
+    {h:'Bounding autonomy — the part people skip',
+     p:'<p>Everything above starts turns without you. Four controls keep that from becoming a problem:</p><ul><li><b>A goal does not change your permission mode.</b> In Manual mode Claude still asks before every unallowed tool call, so an unattended goal stalls on the first prompt. Run <code>/goal</code> in <a href="https://code.claude.com/docs/en/auto-mode-config" target="_blank" rel="noopener">auto mode</a> — classifier-gated — not bypass.</li><li><b>The <code>Stop</code> hook block cap.</b> Claude Code overrides a Stop hook after it blocks <b>eight times in a row</b> without progress. Your script must parse <code>stop_hook_active</code> from the JSON input and exit early when it is <code>true</code>, or you will hit the cap. Raise it with <code>CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</code> if a hook legitimately needs more iterations to converge.</li><li><b>A turn or time clause in the condition.</b> "…or stop after 20 turns." Claude reports progress against it each turn and the evaluator judges it from the conversation.</li><li><b>The kill switches.</b> <code>CLAUDE_CODE_DISABLE_CRON=1</code> disables the scheduler and <code>/loop</code> entirely. <code>/goal</code> is unavailable when <code>disableAllHooks</code> is true or <code>allowManagedHooksOnly</code> is set in managed settings — and it tells you why rather than silently doing nothing.</li></ul>',
+     code:C('#!/bin/bash',
+            'INPUT=$(cat)',
+            'if [ "$(echo "$INPUT" | jq -r \'.stop_hook_active\')" = "true" ]; then',
+            '  exit 0   # already triggered a continuation — let Claude stop',
+            'fi',
+            '# ... your real check here; exit 2 to keep Claude working')},
+
+    {h:'Rolling your own: prompt and agent hooks',
+     p:'<p>When <code>/goal</code>’s single session-scoped condition is not enough, write the Stop hook yourself. Two non-shell hook types exist for judgment calls:</p><ul><li><code>type: "prompt"</code> — a single LLM call (Haiku by default; override with <code>model</code>). Returns <code>{"ok": true|false, "reason": "..."}</code>. On <code>Stop</code>, <code>ok: false</code> feeds the reason back so Claude keeps working — unless it also sets <code>"impossible": true</code>, which allows the stop. This is exactly what <code>/goal</code> is built on.</li><li><code>type: "agent"</code> — spawns a subagent that can read files and run commands before deciding. Use it when the hook input alone is not enough to judge. <b>Experimental.</b> 60-second default timeout, up to 50 tool-use turns, no <code>continueOnBlock</code> field.</li></ul>',
+     code:C('{ "hooks": { "Stop": [{ "hooks": [{',
+            '  "type": "agent",',
+            '  "prompt": "Verify that all unit tests pass. Run the suite and check results. $ARGUMENTS",',
+            '  "timeout": 120',
+            '}]}]}}'),
+     p2:'<p>Unlike <code>/goal</code>, a hook in your settings file applies to every session in its scope — which is what you want once a completion standard is a team rule rather than a one-off.</p>'}
+  ],
+  lab:{title:'Make a goal fail, then make it converge',
+    steps:[
+      'Set a deliberately unverifiable goal: <code>/goal the auth module is clean</code>. Watch it churn. Press <kbd>Ctrl+O</kbd> and read the evaluator’s reason each turn.',
+      '<code>/goal clear</code>. Rewrite it with a stated check, a constraint, and a turn bound — the resolving example above is the template.',
+      'Restart in auto mode (<code>claude --permission-mode auto</code>) and set the rewritten goal. Compare how far it gets before needing you.',
+      'Run <code>/goal</code> with no arguments mid-run and read the status: turns evaluated, token spend, latest reason.',
+      'Now <code>/loop 5m check whether CI passed on the current branch</code>. Note the job ID it confirms.',
+      'Stop it with <kbd>Esc</kbd>, then run the same prompt with <b>no interval</b>. Watch Claude pick a delay and print its reason — and see whether it reaches for the Monitor tool instead of polling.',
+      'Write a <code>.claude/loop.md</code> for your repo, then run bare <code>/loop</code>. Edit the file mid-run and confirm the next iteration picks it up.',
+      'Write the <code>stop_hook_active</code> guard above as a real Stop hook. Then <b>remove the guard</b> and let it block eight times to see the cap warning.',
+      'Schedule two one-shots five minutes out: one at <code>:00</code> and one at a minute like <code>:03</code>. Compare actual fire times against jitter.'],
+    verify:'You can state, for any waiting task, whether you want <code>/goal</code>, <code>/loop</code>, a Stop hook, or a channel — and every autonomous thing you start has a bound on it.'},
+  gotchas:[
+    {s:'trap',t:'The goal evaluator cannot run anything',d:'It reads the conversation. It does not call tools, read files, or execute commands. A condition Claude’s own output cannot demonstrate will never resolve — it just burns turns. Always name the check that produces the evidence.'},
+    {s:'trap',t:'/loop with a user-only skill runs nothing',d:'<code>/loop 30m /verify</code> does not run verification. <code>/verify</code> is <code>disable-model-invocation: true</code>, so it arrives as plain text. Same for built-in commands, <code>skillOverrides</code>-withheld skills, and MCP prompts.'},
+    {s:'trap',t:'Stop hooks are overridden after 8 consecutive blocks',d:'Parse <code>stop_hook_active</code> and exit 0 when it is true. Otherwise Claude keeps working, hits the cap, and the turn ends with a warning. Raise it with <code>CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</code> only if convergence genuinely needs more.'},
+    {s:'trap',t:'Scheduled tasks are session-scoped and expire in 7 days',d:'They fire only while Claude Code is running and idle. <code>/clear</code> wipes them; <code>--resume</code> restores unexpired ones. Recurring tasks self-delete after 7 days. For durable scheduling, use cloud routines, Desktop scheduled tasks, or GitHub Actions.'},
+    {s:'cost',t:'Jitter means your 9am job is not a 9am job',d:'Up to 30 minutes late for recurring tasks. Pick a minute that is not <code>:00</code> or <code>:30</code> when timing matters.'},
+    {s:'trap',t:'ANTHROPIC_DEFAULT_HAIKU_MODEL is not scoped to /goal',d:'Setting it changes the small fast model <b>everywhere</b> — the <code>haiku</code> alias resolves to it, and background work like conversation summarization runs on it too.'},
+    {s:'trap',t:'A goal does not change your permission mode',d:'In Manual mode an unattended goal stalls on the first tool prompt. Pair it with auto mode. Not with <code>--dangerously-skip-permissions</code>, which offers no protection against prompt injection while running unattended.'},
+    {s:'cost',t:'A headless goal looks stuck',d:'<code>claude -p "/goal ..."</code> prints nothing until the whole run ends. Add <code>--output-format stream-json --verbose</code> to see each message as the loop runs. <kbd>Ctrl+C</kbd> to interrupt.'},
+    {s:'trap',t:'Symlinked .claude directories break scheduling',d:'The task list lives in the project’s <code>.claude</code> directory. Scheduling fails with an error when that directory, or the task file inside it, is a symlink.'},
+    {s:'stale',t:'/goal and /loop are not files in .claude/commands/',d:'A widely circulated write-up describes them as custom slash commands you author as markdown. They are not. <code>/goal</code> is a built-in command wrapping a session-scoped prompt-based <code>Stop</code> hook; <code>/loop</code> is a bundled skill backed by the cron tools. What you <i>can</i> author is <code>.claude/loop.md</code>, which replaces the default prompt for bare <code>/loop</code> only.'}
+  ],
+  quiz:[
+    {q:'Pick between <code>/goal</code>, <code>/loop</code>, and a Stop hook in one question.',a:'<b>What starts the next turn?</b> The previous turn finishing → <code>/goal</code> (session-scoped, model-evaluated) or a Stop hook (settings-scoped, your logic). A time interval elapsing → <code>/loop</code>. An external event arriving → a channel.'},
+    {q:'What can the <code>/goal</code> evaluator actually inspect?',a:'Only the conversation. It does not call tools, run commands, or read files. Write conditions whose proof lands in the transcript — name the command and the expected result.'},
+    {q:'What are the three verdicts, and what happens on each?',a:'<b>Not yet met</b> — Claude keeps working, reason becomes next-turn guidance. <b>Met</b> — goal cleared, achieved entry. <b>Impossible</b> — goal cleared, failed entry, no action needed from you.'},
+    {q:'How many times can a Stop hook block before Claude Code overrides it?',a:'Eight consecutive times without progress. Guard with <code>stop_hook_active</code>; raise the cap with <code>CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</code>.'},
+    {q:'You scheduled a recurring task for <code>0 9 * * *</code>. When does it actually fire, and for how many days?',a:'Anywhere from 9:00 to 9:30 local — deterministic jitter derived from the task ID, up to 30 minutes for recurring tasks. It expires 7 days after creation: one final fire, then self-delete. Use <code>3 9 * * *</code> if timing matters.'},
+    {q:'Does <code>/loop 30m /verify</code> run your tests every 30 minutes?',a:'No. <code>/verify</code> is <code>disable-model-invocation: true</code>, so a scheduled fire delivers it as plain text. Only skills Claude may self-invoke actually execute.'},
+    {q:'What does <code>/goal</code> turn out to be, mechanically?',a:'A session-scoped <b>prompt-based <code>Stop</code> hook</b>. Writing the hook yourself in settings.json gets you the same evaluation loop, applied to every session in that scope.'}
+  ],
+  docs:[['Keep Claude working toward a goal','https://code.claude.com/docs/en/goal'],['Run prompts on a schedule','https://code.claude.com/docs/en/scheduled-tasks'],['Push events into a session with channels','https://code.claude.com/docs/en/channels'],['Configure auto mode','https://code.claude.com/docs/en/auto-mode-config'],['Automate work with routines','https://code.claude.com/docs/en/routines']]
+},
+
+{
+  id:'p8', n:'09', title:'External capability (MCP)', layer:'soft', layerLabel:'Soft',
+  time:'2 h', pre:'Phase 03',
+  objective:'Add real external capability without paying a context tax on every turn — and pair every server with the knowledge of how to use it correctly.',
+  concepts:[
+    {h:'Adding and scoping servers',
+     code:C('claude mcp add <name> -- <command> [args]     # stdio',
+            'claude mcp add --transport http <name> <url>  # remote',
+            '',
+            '/mcp                       # status, per-server context cost, OAuth',
+            '/mcp disable <name>        # drop its definitions from context',
+            '/mcp reconnect <name>',
+            '',
+            '# scope precedence: local > project > user'),
+     p:'<p>MCP tools appear alongside built-ins and are addressed as <code>mcp__&lt;server&gt;__&lt;tool&gt;</code> in permission rules — so <code>deny: ["mcp__github"]</code> removes a whole server and <code>mcp__*</code> removes them all.</p>'},
+    {h:'Tool search changes the old cost calculus',
+     p:'<p>MCP tool definitions are <b>deferred by default</b>. Only tool names consume context until Claude actually uses one, at which point the schema is fetched. The old advice — "too many servers bloat your baseline" — is now only partly true. Check the real number with <code>/mcp</code> rather than guessing.</p><p>The place it still bites: <b>subagents inherit every definition from the parent</b>, which can fill a worker\u2019s window before its first turn.</p>'},
+    {h:'Pair every server with a skill',
+     p:'<p>An MCP server gives Claude the ability to call your database. It does not give Claude your schema, your query conventions, which tables are safe to touch, or what a good result looks like. That is a skill.</p><ul><li><b>MCP</b> — the connection and the verbs</li><li><b>Skill</b> — the nouns, the conventions, the standards, the worked examples</li></ul><p>This pairing is the highest-leverage MCP practice and the one most often skipped.</p>'},
+    {h:'Scoping a server to one worker',
+     code:C('---',
+            'name: pr-triager',
+            'description: Triage open PRs and label them',
+            'mcpServers:',
+            '  - github                       # by name, from your existing config',
+            '  - internal-tracker:            # or inline',
+            '      type: stdio',
+            '      command: npx',
+            '      args: ["-y", "@acme/tracker-mcp"]',
+            'disallowedTools: mcp__*          # then re-allow via tools: if you want a tight surface',
+            '---'),
+     p:'<p>Note: <code>mcpServers</code> and per-agent <code>hooks</code> are <b>ignored for plugin subagents</b>.</p>'}
+  ],
+  lab:{title:'Measure, then teach',
+    steps:[
+      'Run <code>/context</code> and <code>/mcp</code>. Record the baseline.',
+      'Add one server you actually need. Re-run both. Record the delta.',
+      'Use a tool from it once, then re-run <code>/context</code> — observe the schema loading on demand.',
+      'Write a companion skill: what this server is for, which tools to prefer, the output format your team expects, and one worked example.',
+      'Spawn a subagent that does not need the server. Note its startup context. Then <code>/mcp disable</code> and spawn again. Compare.'],
+    verify:'You have a per-server context number, and every server you keep has a skill next to it.'},
+  gotchas:[
+    {s:'cost',t:'Subagents inherit every MCP definition',d:'Disable unused servers before spawning workers, or scope with per-agent <code>mcpServers:</code>.'},
+    {s:'trap',t:'Auth and network boundaries are yours',d:'A remote MCP server is a network dependency with credentials. Prefer remote for shared team tools, local (stdio) for anything holding secrets or high privilege.'},
+    {s:'trap',t:'Some MCP tools always prompt',d:'Tools marked <code>requiresUserInteraction</code>, and connector tools your organization set to <code>ask</code>, are never auto-approved — not by an allow rule, not by <code>bypassPermissions</code>, not by a hook <code>allow</code>.'}
+  ],
+  quiz:[
+    {q:'What is the MCP scope precedence?',a:'local &gt; project &gt; user. Servers override by name.'},
+    {q:'Why pair an MCP server with a skill?',a:'MCP supplies the capability; the skill supplies the knowledge of how to use it correctly — schema, conventions, output format, worked examples.'},
+    {q:'Where does MCP context cost still hurt after tool search?',a:'Subagents, which inherit every tool definition from the parent and can fill their window before the first turn.'}
+  ],
+  docs:[['Connect Claude Code to tools via MCP','https://code.claude.com/docs/en/mcp'],['MCP quickstart','https://code.claude.com/docs/en/mcp-quickstart']]
+},
+
+{
+  id:'p9', n:'10', title:'Package and distribute', layer:'scale', layerLabel:'Scale',
+  time:'2 h', pre:'Phases 03, 05, 06',
+  objective:'Make one repo\u2019s hard-won setup reproducible in the next twenty, without copy-pasting a <code>.claude/</code> directory ever again.',
+  concepts:[
+    {h:'What a plugin is',
+     p:'<p>A plugin bundles <b>skills, hooks, subagents, and MCP servers</b> into one installable unit. Plugin skills are namespaced (<code>/my-plugin:review</code>) so multiple plugins coexist without collisions. Reach for one the moment a second repository needs the same setup.</p>',
+     code:C('/plugin                  # manage plugins; the installed tab groups plugins and MCPs by scope',
+            '/reload-plugins          # apply pending changes without restarting',
+            '',
+            '# distribution: a marketplace is a hosted collection of plugins')},
+    {h:'How everything layers when you install one',
+     table:{head:['Feature','How multiple sources combine'],rows:[
+       ['CLAUDE.md','<b>Additive.</b> Every level contributes; Claude reconciles conflicts by judgment'],
+       ['Skills','<b>Override by name.</b> managed &gt; user &gt; project. Plugin skills are namespaced instead'],
+       ['Subagents','<b>Override by name.</b> managed &gt; CLI flag &gt; project &gt; user &gt; plugin'],
+       ['MCP servers','<b>Override by name.</b> local &gt; project &gt; user'],
+       ['Hooks','<b>Merge.</b> All registered hooks fire for matching events, from every source']]}},
+    {h:'The build-it-over-time triggers',
+     p:'<p>You do not configure everything up front. Each feature has a recognizable trigger:</p>',
+     table:{head:['When this happens','Add'],rows:[
+       ['Claude gets a convention wrong twice','A line in CLAUDE.md'],
+       ['You keep typing the same prompt to start a task','A user-invocable skill'],
+       ['You paste the same playbook a third time','A skill'],
+       ['You keep copying data from a browser tab','An MCP server'],
+       ['A side task floods your conversation with output','A subagent'],
+       ['You want something to happen every time, without asking','A hook'],
+       ['A second repository needs the same setup','A plugin']]},
+     p:'<p>The same triggers tell you when to <i>update</i> what you have. A recurring review comment is a CLAUDE.md edit, not a one-off correction in chat.</p>'}
+  ],
+  lab:{title:'Ship your setup',
+    steps:[
+      'Take the <code>.claude/</code> directory you have built across Phases 02–08.',
+      'Package it as a plugin: skills, hooks, the reviewer subagent, and any MCP server definitions.',
+      'Install it in a different repository and run <code>/plugin</code> to confirm scope grouping.',
+      'Confirm the namespacing: your skill should be <code>/&lt;plugin&gt;:&lt;skill&gt;</code>.',
+      'Deliberately create a name collision with a project-level subagent and confirm the project version wins.'],
+    verify:'A fresh clone of any repo gets your full setup with one install, and you know which layer wins in a collision.'},
+  gotchas:[
+    {s:'trap',t:'Plugin subagents ignore several frontmatter fields',d:'<code>permissionMode</code>, <code>mcpServers</code>, and <code>hooks</code> are ignored for plugin subagents. Configure those at the project or user level instead.'},
+    {s:'cost',t:'Plugins are the lowest-priority source',d:'For both skills and subagents. A project definition with the same name silently wins — which is usually what you want, but check when a plugin "stops working".'}
+  ],
+  quiz:[
+    {q:'Which four things can a plugin bundle?',a:'Skills, hooks, subagents, and MCP servers.'},
+    {q:'Which features override by name, and which merge?',a:'Skills, subagents, and MCP servers override by name. Hooks merge — every registered hook fires. CLAUDE.md files are additive.'},
+    {q:'What is the subagent precedence chain?',a:'managed &gt; CLI <code>--agents</code> flag &gt; project &gt; user &gt; plugin.'}
+  ],
+  docs:[['Create plugins','https://code.claude.com/docs/en/plugins'],['Plugin marketplaces','https://code.claude.com/docs/en/plugin-marketplaces'],['Extend Claude Code','https://code.claude.com/docs/en/features-overview']]
+},
+
+{
+  id:'p10', n:'11', title:'The hardened repo', layer:'meta', layerLabel:'Capstone',
+  time:'Half a day', pre:'All phases',
+  objective:'Assemble everything into one repository where the soft layer is small, the hard layer is proven, and verification is something the agent runs rather than something it claims.',
+  concepts:[
+    {h:'Three invariants, restated with teeth',
+     p:'<ol><li><b>Determinism over instruction.</b> Hooks, permission rules, and the sandbox supersede CLAUDE.md and skill text — and they are evaluated in that order, before the permission mode is even consulted. If a rule matters, it is not prose.</li><li><b>Context hygiene.</b> Progressive disclosure (skills), path scoping (rules), and isolation (subagents), plus aggressive <code>/clear</code>. Degradation starts well before the limit.</li><li><b>Non-bypassable verification.</b> Give the agent runnable checks. Prefer a <code>Stop</code> hook or a dedicated reviewer subagent over the model\u2019s own "looks good".</li></ol>'},
+    {h:'The finished layout',
+     code:C('your-repo/',
+            '├── CLAUDE.md                   # < 200 lines. Always-true facts only',
+            '├── .claude/',
+            '│   ├── settings.json           # permissions, sandbox, hooks — committed',
+            '│   ├── settings.local.json     # skillOverrides, claudeMdExcludes — gitignored',
+            '│   ├── rules/',
+            '│   │   ├── api.md              # paths: ["src/api/**/*.ts"]',
+            '│   │   ├── frontend.md         # paths: ["src/ui/**/*.tsx"]',
+            '│   │   └── testing.md          # paths: ["**/*.test.ts"]',
+            '│   ├── skills/',
+            '│   │   ├── ship/SKILL.md       # disable-model-invocation, allowed-tools',
+            '│   │   ├── conventions/SKILL.md',
+            '│   │   └── deep-research/SKILL.md   # context: fork, agent: Explore',
+            '│   ├── agents/',
+            '│   │   └── reviewer.md         # read-only tools, fixed output contract',
+            '│   └── hooks/',
+            '│       ├── guard.sh            # PreToolUse, exit 2',
+            '│       └── gate.sh             # Stop, exit 2 unless checks pass',
+            '└── CLAUDE.local.md             # gitignored, personal')},
+    {h:'Ship checklist',
+     p:'<ul><li>Root CLAUDE.md under 200 lines; everything file-specific moved to <code>paths:</code>-scoped rules</li><li><code>/context</code> memory files are a small fraction of the window</li><li>Deny rules cover secrets, destructive commands, and network egress you did not sanction</li><li>Sandbox on, with an explicit filesystem and domain boundary</li><li>At least one <code>PreToolUse</code> hook doing logic a glob cannot express, verified to <code>exit 2</code></li><li>A <code>Stop</code> hook or reviewer subagent gating "done"</li><li>Every side-effect skill has <code>disable-model-invocation: true</code></li><li>Every MCP server has a companion skill</li><li>The whole thing is a plugin</li><li>Every autonomous mechanism you use is bounded: a turn clause on goals, a <code>stop_hook_active</code> guard on Stop hooks, and an interval you would be happy to forget about</li><li>You have tested it under <code>--dangerously-skip-permissions</code> and the deny rules still held</li></ul>'},
+    {h:'What is deliberately out of scope here',
+     p:'<p>This path stops at the CLI power user. The next horizons, each with its own docs: the <b>Agent SDK</b> for building your own agents (agent loop, custom tools, structured outputs, session persistence, hosting); <b>headless <code>-p</code> mode</b> beyond the <code>/goal</code> use in Phase 08; <b>GitHub Actions and GitLab CI</b>; <b>Claude Code on the web</b> and cloud routines for durable scheduling; and <b>enterprise deployment</b> — managed settings, gateways, Bedrock/Vertex/Foundry, analytics, zero data retention.</p>'}
+  ],
+  lab:{title:'Build it for real',
+    steps:[
+      'Take one repository you work in weekly.',
+      'Work the ship checklist above, top to bottom.',
+      'Then hand the repo to a colleague and have them run Claude Code in it cold, without you explaining anything.',
+      'Watch what they hit. Every stumble is a missing line in CLAUDE.md, a missing rule, or a missing hook.'],
+    verify:'Someone else got productive in your repo, with Claude, without asking you a question.'},
+  gotchas:[
+    {s:'ok',t:'Configuration is a response to evidence, not a project',d:'Every entry should trace back to a specific thing that went wrong twice. A configuration you wrote speculatively is a configuration you will not maintain.'},
+    {s:'cost',t:'Audit quarterly',d:'Stale and conflicting instructions are worse than no instructions — conflicts resolve arbitrarily. <code>/doctor</code> will propose trims.'}
+  ],
+  quiz:[
+    {q:'State the determinism invariant precisely.',a:'Hooks, permission rules, and the sandbox supersede CLAUDE.md and skill text — and hooks are evaluated <i>first</i>, before deny rules and before the permission mode, so a hook deny survives <code>--dangerously-skip-permissions</code>.'},
+    {q:'What is the one test that proves your hard layer works?',a:'Run the session with <code>--dangerously-skip-permissions</code> and confirm your deny rules and <code>PreToolUse</code> hooks still block.'}
+  ],
+  docs:[['Best practices','https://code.claude.com/docs/en/best-practices'],['Security','https://code.claude.com/docs/en/security'],['Choose a sandbox environment','https://code.claude.com/docs/en/sandbox-environments']]
+},
+
+{
+  id:'pV', n:'12', title:'A vault as substrate', layer:'meta', layerLabel:'Case study',
+  time:'3–4 h', pre:'Phases 03, 04, 05, 09, 11',
+  objective:'Transfer the whole stack to a target that is <b>not a codebase</b> — a large Obsidian vault — and find out which controls carry over unchanged, which need rewriting, and where the blast radius is genuinely worse than in a git repo.',
+  concepts:[
+    {h:'Why a vault is the interesting test',
+     p:'<p>Every phase before this one leaned, somewhere, on the fact that code tells you when you broke it. <code>npm test</code> exits non-zero. The compiler complains. CI goes red. Phase 01’s verification surface, Phase 08’s goal conditions, Phase 11’s "give the agent runnable checks" — all of it assumes a target with an opinion about its own correctness.</p><p>A vault has none. It is plain markdown files on disk: no build step, no test suite, no linter that knows what a good note is. An agent that silently rewrites two hundred notes produces zero failing anything.</p><p>That makes it the right place to find out which of your controls were real and which were borrowed from the toolchain.</p><p><b>Before anything else in this phase: <code>git init</code> the vault.</b> It is the single highest-value action here, and it is the substitute for the test suite you no longer have.</p>'},
+
+    {h:'Three ways to connect, and what each costs',
+     table:{head:['Approach','How','What you get','What it costs'],rows:[
+       ['<b>Filesystem</b>','Point Claude Code at the vault folder','Full built-in tools. Grep and Glob work. Obsidian need not be running','The coarsest permission surface — every file is a file'],
+       ['<b>File-based MCP</b>','<code>npx -y obsidian-mcp /path/to/vault</code> (StevenStavrakis). No plugin','Vault-shaped tools: notes, tags, not raw paths','Another tool surface to scope, and its README says testing is not thorough'],
+       ['<b>REST-backed MCP</b>','Local REST API plugin + <code>OBSIDIAN_API_KEY</code>','Live app state: run commands, open files in the UI, use the app’s own search','Obsidian must be running, and the key is full read/write on your notes']]},
+     p:'<p>There is a fourth option most write-ups miss: the <b>Local REST API plugin serves MCP itself</b>, at <code>https://127.0.0.1:27124/mcp/</code> over Streamable HTTP with the same bearer token. A separate bridge server is optional. HTTP on <code>27123</code> is available if you enable it; the HTTPS certificate is self-signed, so you either trust it from <code>/obsidian-local-rest-api.crt</code> or skip verification for <code>127.0.0.1</code>.</p>'},
+
+    {h:'The npm collision — Phase 09 with teeth',
+     table:{head:['Package','Author','Architecture','Needs the plugin?'],rows:[
+       ['<code>obsidian-mcp</code>','StevenStavrakis','<b>File-based</b> — reads the vault directory','No'],
+       ['<code>obsidian-mcp-server</code>','cyanheads','<b>REST-backed</b> — talks to the plugin','<b>Yes</b>, plus an API key'],
+       ['<code>mcp-obsidian</code>','MarkusPfundstein','REST-backed, Python via <code>uvx</code>','Yes, plus an API key']]},
+     p:'<p>Three names within one word of each other, three different architectures, three different prerequisite sets. Install the wrong one and you get a server that cannot connect and an error that does not explain why.</p><p>The generalizable rule, which is really a Phase 09 rule: <b>the name of an MCP server tells you nothing about its transport, its prerequisites, or its blast radius.</b> Read the README before you install, every time. This is the same discipline as reading a repo’s skills before running Claude Code in it (Phase 03) — you are granting capability to code you did not write.</p>'},
+
+    {h:'Defense in depth, three independent layers',
+     p:'<p>Phase 04 said use permission rules and the sandbox together because they fail differently. A vault adds a third layer above both, and the point is that none of them depends on the others.</p><ul><li><b>At the server.</b> <code>obsidian-mcp-server</code> exposes <code>OBSIDIAN_READ_PATHS</code> and <code>OBSIDIAN_WRITE_PATHS</code>. Scope there first: what the server cannot reach, Claude cannot ask for, and no prompt injection can talk it into.</li><li><b>At Claude Code.</b> Deny rules on the same paths anyway, plus the ones the server does not know about.</li><li><b>At the OS.</b> The sandbox filesystem boundary, which holds even if a Bash command goes somewhere unexpected.</li></ul>',
+     code:C('// .claude/settings.json',
+            '{ "permissions": {',
+            '    "deny": [',
+            '      "Read(./.obsidian/**)",      // plugin config — holds API keys and tokens',
+            '      "Read(./Personal/**)",',
+            '      "Edit(./Archive/**)",',
+            '      "Read(./**/*.env)"',
+            '    ],',
+            '    "ask": ["Bash(git push *)"]',
+            '} }'),
+     p2:'<p>Two things people miss. <b><code>.obsidian/</code> is a secrets directory</b> — plugin configuration lives there, including the Local REST API key itself, so an agent reading the vault can read the credential that grants it write access. And <b>the API key belongs in the environment</b>, not in a committed <code>.mcp.json</code>.</p><p>Then start read-only. A retrieval agent needs zero write tools:</p>',
+     code2:C('---',
+             'name: vault-researcher',
+             'description: Answer questions from the vault. Read-only.',
+             'tools: Read, Grep, Glob',
+             'disallowedTools: Write, Edit',
+             'model: sonnet',
+             '---',
+             '',
+             'Answer from the vault only. Cite every claim as [[note name]].',
+             'If the vault does not contain the answer, say so. Do not infer.')},
+
+    {h:'The knowledge gap MCP does not close',
+     p:'<p>Connecting the vault gives Claude the ability to write a file. It does not give Claude <b>Obsidian Flavored Markdown</b>, <code>.base</code> YAML, or JSON Canvas. That gap is exactly what Phase 09 said to fill with a skill — and there is a reference implementation worth reading whether or not you use Obsidian.</p><p><code>kepano/obsidian-skills</code>, from Obsidian’s own CEO, ships five skills following the Agent Skills spec and targeting Claude Code, Codex, and OpenCode:</p><ul><li><code>obsidian-markdown</code> — wikilinks, embeds, callouts, properties</li><li><code>obsidian-bases</code> — <code>.base</code> files with views, filters, formulas, summaries</li><li><code>json-canvas</code> — <code>.canvas</code> nodes, edges, groups</li><li><code>obsidian-cli</code> — driving vaults from the command line</li><li><code>defuddle</code> — clean markdown out of web pages, to cut token cost</li></ul><p>Note the Phase 03 constraint at work: because these follow the portable Agent Skills spec, they use only the six fields that validate outside Claude Code — <code>name</code>, <code>description</code>, <code>license</code>, <code>compatibility</code>, <code>metadata</code>, <code>allowed-tools</code>. No <code>argument-hint</code>, no <code>context: fork</code>. That is the tax on portability, and it is a good worked example of when to pay it.</p><p>It is also distributed as a marketplace plugin, which is Phase 10 arriving exactly where the docs said it would: a second target needed the same setup.</p>'},
+
+    {h:'Provenance is a hook, not a convention',
+     p:'<p>Here is the failure mode that makes this case study worth doing. Agent-written notes sit in the vault next to human-written ones. Your retrieval layer indexes and embeds all of them equally. A month later a search returns an unreviewed AI paraphrase, and it looks exactly as authoritative as the note you wrote by hand. It then becomes the source for the next generated note. <b>Nothing fails. The corpus just quietly degrades.</b></p><p>Writing "always mark AI-generated notes" in CLAUDE.md will not hold, for the reason Phase 02 gave: CLAUDE.md is context, not enforcement. This is a hook.</p>',
+     code:C('#!/bin/bash',
+            '# .claude/hooks/stamp.sh  —  PostToolUse, matcher: Edit|Write',
+            'input=$(cat)',
+            'path=$(jq -r \'.tool_input.file_path // empty\' <<<"$input")',
+            '',
+            '[[ "$path" == *.md ]] || exit 0',
+            '[[ "$path" == *"/vault/"* ]] || exit 0',
+            '',
+            '# stamp, or re-invalidate a note that was previously reviewed',
+            'if head -1 "$path" | grep -q \'^---$\'; then',
+            '  python3 - "$path" <<\'PY\'',
+            'import sys, re, datetime',
+            'p = sys.argv[1]; s = open(p).read()',
+            'end = s.index("\\n---", 3) + 1',
+            'fm, body = s[4:end], s[end:]',
+            'fm = re.sub(r"^reviewed:.*$", "reviewed: false", fm, flags=re.M)',
+            'if "reviewed:" not in fm:',
+            '    fm += "generated_by: claude-code\\nreviewed: false\\n"',
+            'fm = re.sub(r"^modified:.*$", "", fm, flags=re.M).strip()',
+            'fm += "\\nmodified: " + datetime.date.today().isoformat()',
+            'open(p, "w").write("---\\n" + fm + "\\n" + body)',
+            'PY',
+            'fi',
+            'exit 0'),
+     p2:'<p>Then close the loop with a <code>Stop</code> hook that refuses to finish while anything in your permanent folder carries <code>reviewed: false</code> — with the Phase 08 <code>stop_hook_active</code> guard, so it cannot loop past the eight-block cap. Promotion out of <code>inbox/</code> stays a human decision. The agent generates candidates; you accept them.</p>'},
+
+    {h:'Verification with no test suite',
+     p:'<p><code>git diff</code> <b>is</b> your test suite. That is not a metaphor — it is the only mechanical signal you have about whether the agent did what it said.</p><ul><li><b>One sync engine, always.</b> obsidian-git alongside iCloud, Dropbox, or Syncthing produces <code>.md.conflict</code> files and non-deterministic state. Pick one, and pause it during bulk agent writes.</li><li><b>Rewrite your goal conditions.</b> Phase 08 taught you to name the check that produces the evidence. Here there are no exit codes to point at, so point at the diff instead.</li><li><b>The reviewer subagent replaces the linter.</b> Read-only tools, a fixed output contract, run against the diff.</li></ul>',
+     code:C('# does not port to a vault — nothing produces this evidence',
+            '/goal all tests pass and lint is clean',
+            '',
+            '# ports — every clause is visible in the transcript',
+            '/goal every note created this session lives under inbox/ and carries a',
+            '  reviewed: false property. Prove it with "git status --porcelain"',
+            '  showing only inbox/ paths, and "grep -L \'reviewed:\' inbox/*.md"',
+            '  returning nothing. Do not modify any file outside inbox/.',
+            '  Report progress each turn and stop after 15 turns.')},
+
+    {h:'Funnel every write through one door',
+     p:'<p>Vault corruption almost never comes from one agent. It comes from three write paths — a capture bot, a research agent, a browser extension — landing in the same folder with different conventions and no shared gate.</p><p>The fix is the Phase 09 principle applied to writes instead of tools: <b>narrow the surface, then enforce at the narrow point.</b></p><ul><li>One <code>inbox/</code> folder. Every automated write lands there and nowhere else.</li><li>One sync engine on that folder.</li><li>One provenance stamp, applied by the hook, regardless of which pipeline wrote the file.</li><li>Promotion out of <code>inbox/</code> is the only path into the indexed permanent set, and it is manual.</li></ul><p>Deny rules make this real rather than aspirational: <code>"Edit(./Permanent/**)"</code> in deny means no pipeline can skip the gate, including the one you write next month and forget about.</p>'},
+
+    {h:'What transferred and what did not',
+     table:{head:['Control','Transfers?','Notes'],rows:[
+       ['Deny rules and sandbox','<b>Unchanged</b>','And they matter more — no compiler catches a bad write'],
+       ['<code>PreToolUse</code> hooks','<b>Unchanged</b>','Same evaluation order, same exit-2 semantics'],
+       ['Subagent isolation','<b>Unchanged</b>','A large vault is the archetypal case. Never read it in the main window'],
+       ['Skills','<b>Unchanged</b>, and more necessary','File formats are not general knowledge the way a popular framework is'],
+       ['<code>/context</code> discipline','<b>Unchanged</b>','Measure before and after connecting each server'],
+       ['Tests, build, lint','<b>Does not transfer</b>','Substitute: git diff + a read-only reviewer + provenance gates'],
+       ['<code>/goal</code> conditions','<b>Need rewriting</b>','No exit codes to point at. Point at the diff'],
+       ['Checkpoints','<b>Partial</b>','<code>/rewind</code> covers session edits; a backgrounded forked skill’s writes are outside it. Git is the real net']]},
+     p:'<p>The two rows that say "does not transfer" are the lesson. Everything you built in the hard layer — Phases 04 and 05 — moved across untouched, because it never depended on the target being code. Everything in the verification layer had to be rebuilt, because it did.</p><p>That is a useful thing to know before you point an agent at any target that cannot tell you when you broke it: a database, a CMS, a design system, a wiki, an ops runbook.</p>'}
+  ],
+  lab:{title:'Point an agent at a vault without regretting it',
+    steps:[
+      '<code>git init</code> a <b>copy</b> of a vault. Never the live one on a first run. Commit it clean.',
+      'Connect it three ways in turn — filesystem, <code>npx -y obsidian-mcp &lt;path&gt;</code>, and the Local REST API plugin’s built-in MCP endpoint. Record <code>/context</code> cost and the tool surface each gives you.',
+      'Write the deny rules above, including <code>Read(./.obsidian/**)</code>. Verify they hold under <code>--dangerously-skip-permissions</code>.',
+      'If you are using <code>obsidian-mcp-server</code>, set <code>OBSIDIAN_READ_PATHS</code> and <code>OBSIDIAN_WRITE_PATHS</code> too, and confirm the server refuses a path the deny rules would also have caught. Two independent layers, verified independently.',
+      'Read the five SKILL.md files in <code>kepano/obsidian-skills</code>. Note which frontmatter fields they use and which they avoid, and why (Phase 03).',
+      'Install the provenance <code>PostToolUse</code> hook. Have an agent write five notes. Confirm all five carry <code>reviewed: false</code>.',
+      '<b>Break it deliberately:</b> remove the hook, have it write five more, then try to tell the two batches apart from the vault alone. That is what an unguarded month looks like.',
+      'Add the <code>Stop</code> hook that refuses to finish while <code>Permanent/</code> holds anything unreviewed. Include the <code>stop_hook_active</code> guard.',
+      'Write a <code>/goal</code> for this target that never mentions tests, and run it in auto mode.',
+      'Build the read-only <code>vault-researcher</code> subagent and have it report which notes changed and whether each carries provenance. Compare its answer to <code>git diff --stat</code>.'],
+    verify:'You can hand an agent a vault and state, before it runs, exactly what it can reach, what it will stamp, and how you will undo it.'},
+  gotchas:[
+    {s:'trap',t:'<code>.obsidian/</code> is a secrets directory',d:'Plugin configuration lives there, including the Local REST API key. An agent with read access to the vault can read the credential that grants it write access to the vault. Deny it explicitly — it is not obvious from the folder name.'},
+    {s:'trap',t:'obsidian-mcp and obsidian-mcp-server are different products',d:'One is file-based and needs no plugin; the other is REST-backed and needs the plugin plus an API key. Also <code>mcp-obsidian</code>, which is a third thing. Read the README before installing any MCP server — the name carries no information about prerequisites or blast radius.'},
+    {s:'trap',t:'Two sync engines produce .md.conflict files',d:'obsidian-git alongside iCloud, Dropbox, or Syncthing on the same folder is non-deterministic state. Pick one and pause it during bulk agent writes.'},
+    {s:'trap',t:'Unreviewed AI notes get indexed as authoritative',d:'They are chunked, embedded, and returned by retrieval exactly like human-written notes, then become the source for the next generated note. Nothing fails; the corpus degrades. Provenance frontmatter plus a review gate is the only thing that stops it, and it has to be a hook.'},
+    {s:'trap',t:'REST-backed servers need Obsidian actually running',d:'Filesystem access and file-based MCP do not care. If your automation fires on a schedule (Phase 08) and the app is closed, a REST-backed server fails and a file-based one does not.'},
+    {s:'cost',t:'A large vault is the archetypal subagent case',d:'Reading thousands of notes in the main window is exactly the failure Phase 06 exists to prevent. Delegate retrieval; keep the summary.'},
+    {s:'trap',t:'Backgrounded forked-skill writes are outside /rewind',d:'Phase 03 flagged this. On a vault it matters more, because there is no failing test to tell you it happened. Git is the real undo.'},
+    {s:'stale',t:'Third-party version numbers age in weeks',d:'This phase deliberately asserts only what was verified against the source repositories: transports, prerequisites, environment variables, and the skill names. Pinned versions and plugin-ecosystem rankings from any guide, including a good one, should be treated as of its publication date and re-checked.'},
+    {s:'ok',t:'This phase is not an Obsidian tutorial',d:'It teaches Claude Code against a target that is not code. Nothing here requires you to adopt Obsidian, and everything here transfers to a CMS, a wiki, a runbook repo, or a database — any target with no opinion about its own correctness.'}
+  ],
+  quiz:[
+    {q:'Which of your controls stop working when the target is not code?',a:'Only the verification layer. Tests, build, and lint have no analogue, so <code>/goal</code> conditions and Stop-hook checks must be rebuilt around <code>git diff</code>, provenance properties, and a read-only reviewer subagent. Deny rules, sandbox, <code>PreToolUse</code> hooks, subagent isolation, and skills all transfer untouched.'},
+    {q:'What is the first thing you do before pointing an agent at a vault?',a:'<code>git init</code> and commit. It is the substitute for the test suite you do not have — mtime, diff, and rollback. On a first run, do it to a copy.'},
+    {q:'Why is <code>Read(./.obsidian/**)</code> a deny rule and not a nice-to-have?',a:'That directory holds plugin configuration, including the Local REST API key. An agent that can read the vault can otherwise read the credential granting it write access to the vault.'},
+    {q:'You installed <code>obsidian-mcp</code> and it will not connect to your Local REST API plugin. Why?',a:'It is the file-based server (StevenStavrakis) and does not talk to the plugin at all — it reads the vault directory. You wanted <code>obsidian-mcp-server</code> (cyanheads) or <code>mcp-obsidian</code> (MarkusPfundstein), both REST-backed and both requiring <code>OBSIDIAN_API_KEY</code>.'},
+    {q:'Why does "always mark AI-generated notes" belong in a hook rather than CLAUDE.md?',a:'CLAUDE.md is context, not enforcement — Phase 02. A missed stamp has no symptom: the note is indexed and returned as authoritative like any other. A <code>PostToolUse</code> hook on <code>Edit|Write</code> makes the stamp unconditional, and it can re-invalidate <code>reviewed</code> on every agent edit.'},
+    {q:'Give a <code>/goal</code> condition that works on a vault.',a:'One whose proof is a command whose output lands in the transcript: "<code>git status --porcelain</code> shows only <code>inbox/</code> paths and <code>grep -L \'reviewed:\' inbox/*.md</code> returns nothing." Not "the notes are good" — the evaluator reads the conversation and cannot run anything.'},
+    {q:'Where do three write pipelines into one vault go wrong, and what is the fix?',a:'Different conventions, no shared gate, and conflicts when more than one sync engine touches the folder. Funnel all of them into one <code>inbox/</code> with one sync engine and one hook-applied provenance stamp, and make promotion out of <code>inbox/</code> manual — enforced by <code>Edit(./Permanent/**)</code> in deny.'}
+  ],
+  docs:[['Local REST API plugin','https://github.com/coddingtonbear/obsidian-local-rest-api'],['kepano/obsidian-skills','https://github.com/kepano/obsidian-skills'],['obsidian-mcp (file-based)','https://github.com/StevenStavrakis/obsidian-mcp'],['obsidian-mcp-server (REST)','https://github.com/cyanheads/obsidian-mcp-server'],['mcp-obsidian (Python, REST)','https://github.com/MarkusPfundstein/mcp-obsidian'],['Agent Skills spec','https://agentskills.io']]
+}
+];
+
+/* ---------------- decision trees ---------------- */
+const TREES = [
+{title:'Where does this instruction go?', rows:[
+  ['Claude must know it in <i>every</i> session','<code>CLAUDE.md</code>','Build commands, architecture, always-do-X'],
+  ['Only true when touching certain files','<code>.claude/rules/*.md</code> with <code>paths:</code>','Loads on match. The real fix for bloat'],
+  ['Needed sometimes, on demand','A skill','Description in context, body on invoke'],
+  ['A multi-step procedure you trigger','A skill with <code>disable-model-invocation: true</code>','Not even the description costs context'],
+  ['It must happen, every time, no exceptions','A hook','CLAUDE.md is context, not enforcement'],
+  ['It must never happen','A deny rule + a <code>PreToolUse</code> hook','Rules for patterns, hooks for logic'],
+  ['It floods your context with output you will not reread','A subagent','Only the summary returns'],
+  ['A second repo needs it too','A plugin','Bundles skills, hooks, agents, MCP']
+]},
+{title:'Too many permission prompts', rows:[
+  ['Same read-only commands over and over','<code>/fewer-permission-prompts</code>','Scans transcripts, proposes an allowlist'],
+  ['You want safety without prompts','<code>--permission-mode auto</code>','Classifier-gated. The right default for autonomy'],
+  ['Isolated container or CI','<code>bypassPermissions</code> + deny rules','Deny rules still hold. Never on a dev machine'],
+  ['Headless, fixed tool surface','<code>dontAsk</code>','Prompts become denials'],
+  ['Bash specifically','Enable the sandbox','<code>autoAllowBashIfSandboxed</code> substitutes for a bare Bash ask rule'],
+  ['You typed <code>--dangerously-skip-permissions</code>','Stop','It offers no protection against prompt injection. Use <code>auto</code>']
+]},
+{title:'Context is filling up', rows:[
+  ['First move, always','<code>/context</code>','Find the actual category. Do not guess'],
+  ['Memory files are large','Path-scope rules, trim CLAUDE.md','<code>@imports</code> save nothing'],
+  ['MCP tools are large','<code>/mcp disable &lt;name&gt;</code>','Especially before spawning subagents'],
+  ['Messages are large, task is done','<code>/clear</code>','Between unrelated tasks, every time'],
+  ['Messages are large, task continues','<code>/compact focus on X</code>','You choose what survives, not the summarizer'],
+  ['One big file keeps refilling it','Delegate the read to a subagent','Auto-compact will thrash otherwise'],
+  ['You need an answer without keeping it','<code>/btw &lt;question&gt;</code>','Never enters history']
+]},
+{title:'Claude is ignoring my instruction', rows:[
+  ['Step 1','<code>/context</code> → Memory files','If the file is not listed, Claude cannot see it'],
+  ['It loaded, but is vague','Rewrite concretely','"Use 2-space indentation", not "format properly"'],
+  ['It loaded, and is specific','Look for a conflict','Two levels disagreeing resolves arbitrarily'],
+  ['It disappeared after <code>/compact</code>','Nested CLAUDE.md or a <code>paths:</code> rule','Only project-root CLAUDE.md is re-injected'],
+  ['It is a skill that stopped mattering','Strengthen the <code>description</code>','Or check the 25k post-compaction budget'],
+  ['None of the above','Make it a hook','Stop asking prose to be enforcement']
+]},
+{title:'Target has no test suite. What replaces verification?', rows:[
+  ['Did the agent change what it said?','<code>git diff</code> / <code>git status --porcelain</code>','Git-init the target first. This is the substitute'],
+  ['Is generated content marked?','A <code>PostToolUse</code> stamp hook','Provenance frontmatter. Re-invalidate on every agent edit'],
+  ['Is the work actually done?','A read-only reviewer subagent','Fixed output contract, <code>disallowedTools: Write, Edit</code>'],
+  ['Should the turn be allowed to end?','A <code>Stop</code> hook on the gate condition','Guard with <code>stop_hook_active</code>'],
+  ['What should the <code>/goal</code> condition point at?','A command whose output lands in the transcript','Not "it is good". The evaluator runs nothing'],
+  ['Can I undo it?','Git, not <code>/rewind</code>','Backgrounded forked-skill writes are outside checkpoints']
+]},
+{title:'What should keep the session working?', rows:[
+  ['A verifiable end state you can name','<code>/goal &lt;condition&gt;</code>','Evaluator checks after every turn. Session-scoped'],
+  ['The same completion standard, every session','A <code>Stop</code> hook in settings','Script for deterministic checks, <code>type: "prompt"</code> for judgment'],
+  ['Verification that must read files or run commands','A <code>type: "agent"</code> Stop hook','Experimental. 60s default timeout, 50 tool turns'],
+  ['Polling something on a clock','<code>/loop &lt;interval&gt; &lt;prompt&gt;</code>','Session-scoped, 7-day expiry, jittered'],
+  ['Polling where the cadence should adapt','<code>/loop &lt;prompt&gt;</code> with no interval','Claude picks 1 min to 1 hour, may use Monitor instead'],
+  ['Streaming output from a long-running command','The Monitor tool','Beats polling on tokens and latency'],
+  ['An external system should push to you','A channel (<code>--channels</code>)','CI, chat, webhooks land in the open session'],
+  ['It must run with your laptop closed','Cloud routines','Or GitHub Actions. <code>/loop</code> needs an open session'],
+  ['It needs local files but not an open session','Desktop scheduled tasks','1-minute minimum, configurable permissions']
+]},
+{title:'Which worker do I need?', rows:[
+  ['Reusable knowledge or a workflow','Skill','Loads into whatever context invokes it'],
+  ['A big read that would flood your window','Subagent','Fresh context, summary returns'],
+  ['A side task that needs your conversation so far','Fork — <code>/subtask</code>','Full history, same tools and model, cannot nest'],
+  ['Several independent workers that must talk','Agent team','Experimental. Needs the env var'],
+  ['Workers that would edit the same files','Worktrees — <code>isolation: worktree</code>','Coordination beats conflict resolution'],
+  ['A skill that should run in isolation','<code>context: fork</code> + <code>agent:</code>','Skill body becomes the subagent prompt']
+]}
+];
+
+/* ---------------- reference tables ---------------- */
+const REF = [
+{id:'r1', title:'Permission evaluation order', note:'The most important table in Claude Code. First match wins.',
+ head:['#','Step','Approves','Blocks'],
+ rows:[['1','PreToolUse hooks','Skips the prompt','Yes — survives bypass mode'],
+       ['2','Deny rules','No','Yes — every mode'],
+       ['3','Ask rules','No','Routes to a prompt'],
+       ['4','Permission mode','bypass / acceptEdits','dontAsk denies'],
+       ['5','Allow rules','Yes','No'],
+       ['6','Prompt or canUseTool','Yes','Yes']]},
+{id:'r2', title:'Permission modes', note:'Six, not four.',
+ head:['Mode','What runs without a prompt'],
+ rows:[['<code>default</code> / <code>manual</code>','Only pre-approved tools'],
+       ['<code>acceptEdits</code>','File edits and common filesystem commands'],
+       ['<code>plan</code>','Read-only tools. Edits always prompt'],
+       ['<code>auto</code>','Whatever a safety classifier approves'],
+       ['<code>dontAsk</code>','Only pre-approved. Everything else denied'],
+       ['<code>bypassPermissions</code>','Everything reaching step 4. Cannot enter mid-session; no root']]},
+{id:'r3', title:'Hook exit codes', note:'Exit 1 does not block. This is the most common hook bug.',
+ head:['Exit','PreToolUse effect'],
+ rows:[['<code>0</code>','No decision. Normal permission flow continues'],
+       ['<code>2</code>','Blocks. stderr becomes the reason Claude sees'],
+       ['<code>1</code> or other','Non-blocking error — <b>the action proceeds</b> — unless stdout holds valid JSON'],
+       ['timeout','Output discarded, no decision, action proceeds'],
+       ['127 (bad path)','Non-blocking error. Your gate is silently off']]},
+{id:'r4', title:'Which hook events can block', note:'Exit 2 semantics by event.',
+ head:['Event','Blocks','On exit 2'],
+ rows:[['<code>PreToolUse</code>','Yes','Blocks the tool call'],
+       ['<code>UserPromptSubmit</code>','Yes','Blocks and erases the prompt'],
+       ['<code>UserPromptExpansion</code>','Yes','Blocks the expansion'],
+       ['<code>Stop</code>','Yes','Claude keeps working'],
+       ['<code>SubagentStop</code>','Yes','Subagent keeps working'],
+       ['<code>TaskCreated</code>','Yes','Prevents creation'],
+       ['<code>TaskCompleted</code>','Yes','Prevents completion'],
+       ['<code>TeammateIdle</code>','Yes','Teammate keeps working'],
+       ['<code>PermissionRequest</code>','No','Ignored — use the <code>decision</code> object'],
+       ['<code>WorktreeCreate</code>','Yes','<b>Any</b> non-zero exit aborts creation'],
+       ['<code>SessionStart</code>, <code>Setup</code>, <code>SubagentStart</code>','No','stderr shown, execution continues']]},
+{id:'r5', title:'Skill frontmatter', note:'All optional. Only description is strongly recommended.',
+ head:['Field','Effect'],
+ rows:[['<code>description</code>','Drives auto-invocation. The single most consequential field'],
+       ['<code>name</code>','Display label. Does <b>not</b> set the slash name (except plugin skills)'],
+       ['<code>disable-model-invocation</code>','User-only; keeps the description out of context'],
+       ['<code>user-invocable</code>','<code>false</code> hides it from the <code>/</code> menu'],
+       ['<code>allowed-tools</code>','Pre-approves tools for the invoking turn only'],
+       ['<code>disallowed-tools</code>','Removes tools while active; clears on your next message'],
+       ['<code>context: fork</code>','Runs the body as a subagent prompt'],
+       ['<code>agent</code>','Agent type for the fork: Explore, Plan, general-purpose, custom'],
+       ['<code>background</code>','<code>false</code> makes a fork block the turn'],
+       ['<code>model</code>, <code>effort</code>','Override while the skill runs'],
+       ['<code>argument-hint</code>','Autocomplete hint']]},
+{id:'r6', title:'Subagent frontmatter', note:'Everything after maxTurns is routinely missed.',
+ head:['Field','Effect'],
+ rows:[['<code>name</code>, <code>description</code>','Required. Description drives delegation'],
+       ['<code>tools</code> / <code>disallowedTools</code>','Allowlist / denylist. Supports <code>mcp__*</code> patterns'],
+       ['<code>model</code>','sonnet, opus, haiku, fable, inherit, or a full ID'],
+       ['<code>effort</code>','Overrides the session level (not the env var)'],
+       ['<code>permissionMode</code>','Ignored for plugin subagents'],
+       ['<code>maxTurns</code>','Hard stop on agentic turns'],
+       ['<code>skills</code>','Preloads <b>full content</b> at startup'],
+       ['<code>mcpServers</code>','Named or inline. Ignored for plugin subagents'],
+       ['<code>hooks</code>','Scoped to this subagent. Ignored for plugin subagents'],
+       ['<code>memory</code>','user / project / local — persistent agent memory directory'],
+       ['<code>isolation: worktree</code>','Runs in its own git worktree'],
+       ['<code>background</code>, <code>color</code>, <code>initialPrompt</code>','Behavior and display']]},
+{id:'r7', title:'Effort levels', note:'Default is high on every model except Opus 4.7 (xhigh).',
+ head:['Level','Persists?','Use for'],
+ rows:[['<code>low</code>','Yes','Short, scoped, latency-sensitive'],
+       ['<code>medium</code>','Yes','Cost-sensitive work'],
+       ['<code>high</code>','Yes','Default. Balanced'],
+       ['<code>xhigh</code>','Yes','Deeper reasoning, higher spend'],
+       ['<code>max</code>','Session only*','Demanding tasks. Prone to overthinking'],
+       ['<code>ultracode</code>','Session only','xhigh + dynamic workflow orchestration']],
+ foot:'* unless set via <code>CLAUDE_CODE_EFFORT_LEVEL</code>. Precedence: env var &gt; configured level &gt; model default. Frontmatter <code>effort:</code> beats the session level but not the env var.'},
+{id:'r8', title:'How sources layer', note:'The rule differs per feature. Getting this wrong causes silent "it stopped working".',
+ head:['Feature','Combination rule'],
+ rows:[['CLAUDE.md','<b>Additive.</b> All levels contribute simultaneously'],
+       ['Skills','<b>Override by name:</b> managed &gt; user &gt; project. Plugin skills namespaced'],
+       ['Subagents','<b>Override by name:</b> managed &gt; CLI flag &gt; project &gt; user &gt; plugin'],
+       ['MCP servers','<b>Override by name:</b> local &gt; project &gt; user'],
+       ['Hooks','<b>Merge.</b> Every registered hook fires']]},
+{id:'r8b', title:'Keeping a session working', note:'Pick by what starts the next turn.',
+ head:['Mechanism','Next turn starts when','Stops when','Scope'],
+ rows:[['<code>/goal</code>','Previous turn finishes','Model says met or impossible','This session'],
+       ['<code>Stop</code> hook','Previous turn finishes','Your script or prompt decides','Every session in the settings scope'],
+       ['<code>/loop</code>','Interval elapses','<kbd>Esc</kbd>, Claude decides, or 7-day expiry','This session'],
+       ['Channel','An event is pushed in','Event-driven','This session, via <code>--channels</code>'],
+       ['<code>auto</code> mode','<b>Never</b> — approves within a turn only','n/a','Session or settings']]},
+{id:'r8c', title:'Scheduling: where it runs', note:'Cloud routines vs Desktop tasks vs /loop.',
+ head:['','Cloud','Desktop','<code>/loop</code>'],
+ rows:[['Machine must be on','No','Yes','Yes'],
+       ['Open session required','No','No','Yes'],
+       ['Survives restarts','Yes','Yes','Only via <code>--resume</code>, if unexpired'],
+       ['Local file access','No — fresh clone','Yes','Yes'],
+       ['Permission prompts','None','Configurable','Inherits from session'],
+       ['Minimum interval','1 hour','1 minute','1 minute']]},
+{id:'r8d', title:'Autonomy limits and kill switches', note:'Every number that bounds an unattended run.',
+ head:['Limit','Value'],
+ rows:[['<code>Stop</code> hook consecutive blocks','<b>8</b>, then overridden. Guard with <code>stop_hook_active</code>; raise via <code>CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</code>'],
+       ['<code>/goal</code> condition length','4,000 characters. One goal per session'],
+       ['Recurring task lifetime','<b>7 days</b> — one final fire, then self-delete'],
+       ['Scheduled tasks per session','50. IDs are 8 characters'],
+       ['Recurring task jitter','Up to 30 min late, or half the interval if sub-hourly'],
+       ['One-shot jitter','Up to 90 s early, only at <code>:00</code> and <code>:30</code>'],
+       ['Self-paced <code>/loop</code> delay','1 minute to 1 hour, chosen per iteration'],
+       ['<code>loop.md</code> size','25,000 bytes, then truncated'],
+       ['Agent hook','60 s default timeout, up to 50 tool-use turns'],
+       ['Disable the scheduler','<code>CLAUDE_CODE_DISABLE_CRON=1</code> — also disables <code>/loop</code>'],
+       ['Disable <code>/goal</code>','<code>disableAllHooks: true</code> or <code>allowManagedHooksOnly</code> in managed settings']]},
+{id:'r11', title:'Transferring the stack to a non-code target', note:'Vault, CMS, wiki, runbook, database — anything with no opinion about its own correctness.',
+ head:['Control','Transfers?','Substitute'],
+ rows:[['Deny rules, sandbox','Unchanged','—'],
+       ['<code>PreToolUse</code> hooks','Unchanged','—'],
+       ['Subagent isolation','Unchanged','—'],
+       ['Skills','Unchanged, more necessary','—'],
+       ['<code>/context</code> discipline','Unchanged','—'],
+       ['Tests, build, lint','<b>No</b>','<code>git diff</code> + read-only reviewer + provenance gates'],
+       ['<code>/goal</code> conditions','<b>Rewrite</b>','Point at diff output, not exit codes'],
+       ['Checkpoints','Partial','Git — background fork writes are outside <code>/rewind</code>']]},
+{id:'r9', title:'Session commands worth knowing', note:'The subset that changes how you work.',
+ head:['Command','Does'],
+ rows:[['<code>/context [all]</code>','Live context breakdown with optimization suggestions'],
+       ['<code>/status</code>','Model, effort, cwd, permission mode'],
+       ['<code>/doctor</code>','Setup checkup; proposes CLAUDE.md trims'],
+       ['<code>/clear</code>','New conversation, empty context'],
+       ['<code>/compact [focus]</code>','Summarize, keeping what you name'],
+       ['<code>/autocompact [auto|tokens]</code>','Set the compaction trigger point'],
+       ['<code>/rewind</code> (<code>/undo</code>)','Restore code, conversation, or both; partial summarize'],
+       ['<code>/btw &lt;q&gt;</code>','Side question that never enters history'],
+       ['<code>/plan [desc]</code>','Enter plan mode from the prompt'],
+       ['<code>/effort [level]</code>','low / medium / high / xhigh / max / ultracode / auto'],
+       ['<code>/permissions</code>','Manage allow, ask, deny rules'],
+       ['<code>/fewer-permission-prompts</code>','Propose an allowlist from your transcripts'],
+       ['<code>/hooks</code>','View hook configuration'],
+       ['<code>/skills</code>','Toggle skill visibility; writes <code>skillOverrides</code>'],
+       ['<code>/agents</code>, <code>/list-agents</code>','Manage subagents; list messageable names'],
+       ['<code>/subtask &lt;task&gt;</code>','Fork a side task that reports back here'],
+       ['<code>/tasks</code>','Background work, including finished subagents'],
+       ['<code>/mcp [disable &lt;name&gt;]</code>','Server status, per-server context cost'],
+       ['<code>/verify</code>','Run tests and checks. You invoke it; Claude cannot'],
+       ['<code>/code-review [level] [--fix]</code>','low / medium / high / xhigh / max / ultra'],
+       ['<code>/security-review</code>, <code>/simplify</code>','Targeted review passes'],
+       ['<code>/memory</code>','Edit CLAUDE.md files, toggle auto memory'],
+       ['<code>/goal &lt;cond&gt;</code> / <code>/goal</code> / <code>/goal clear</code>','Set, check, clear a completion condition'],
+       ['<code>/loop [interval] [prompt]</code>','Repeat on a clock; <kbd>Esc</kbd> stops a waiting loop'],
+       ['<code>/usage</code>','Token usage for this session'],
+       ['<code>/debug</code>','Enable debug logging and troubleshoot']]},
+{id:'r10', title:'Environment variables', note:'The ones that change behavior you will care about.',
+ head:['Variable','Effect'],
+ rows:[['<code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>','Enables agent teams. Off by default'],
+       ['<code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code>','Nesting depth. Default 3'],
+       ['<code>CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</code>','Parallel subagents. Default 20'],
+       ['<code>CLAUDE_CODE_EFFORT_LEVEL</code>','Beats every other effort setting'],
+       ['<code>CLAUDE_CODE_AUTO_COMPACT_WINDOW</code>','Compaction threshold; beats command, flag, and setting'],
+       ['<code>CLAUDE_CODE_DISABLE_AUTO_MEMORY=1</code>','Turns auto memory off'],
+       ['<code>CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1</code>','Load memory files from <code>--add-dir</code> paths'],
+       ['<code>CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1</code>','Removes the built-in Explore and Plan agents'],
+       ['<code>CLAUDE_CODE_FORK_SUBAGENT</code>','1 / 0 to control fork mode'],
+       ['<code>CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1</code>','Turns off all background task features'],
+       ['<code>CLAUDE_CODE_NEW_INIT=1</code>','Interactive multi-phase <code>/init</code>']]}
+];
+
+/* ---------------- audit of the source map ---------------- */
+const AUDIT = {
+ intro:'Your friend\u2019s six-primitive map is a good mental model and most of it holds. Below is every claim I could check against the current docs, sorted by what you need to do about it. Anything I could not verify is labelled rather than repeated.',
+ groups:[
+ {label:'Holds up', tag:'holds', items:[
+   {c:'Hooks run before permission-mode checks; a hook deny holds under <code>--dangerously-skip-permissions</code>.',f:'Correct, and stronger than stated. Hooks are step 1 of a six-step flow: hooks → deny → ask → mode → allow → prompt. The mode is not consulted until step 4.'},
+   {c:'A <code>PreToolUse</code> allow does not override a settings deny.',f:'Correct. <code>"allow"</code> only skips the interactive prompt. Deny and ask rules, enterprise managed deny lists, org-<code>ask</code> connector tools, and <code>requiresUserInteraction</code> MCP tools all still apply.'},
+   {c:'CLAUDE.md is hierarchical, supports <code>@path</code> imports, keep root under ~200 lines, run <code>/init</code> then prune.',f:'All correct. Docs give the same 200-line target and the same "new joiner brief" framing.'},
+   {c:'Skills use progressive disclosure: description always visible, body on invoke.',f:'Correct. Subagents with <code>skills:</code> are the documented exception — full content injected at startup.'},
+   {c:'Weak descriptions cause under-use; shared token budget, oldest dropped under pressure.',f:'Correct and now quantifiable: after compaction, the most recent invocation of each skill is re-attached at the first 5,000 tokens each, within a 25,000-token combined budget, filled newest-first.'},
+   {c:'Compound bash commands evade naive string matchers.',f:'Correct. Docs call out prefix-matching limits explicitly and point to <code>PreToolUse</code> hooks for logic patterns cannot express.'},
+   {c:'Subagent context isolation is the point; design the return contract.',f:'Correct. The parent receives the summary and metadata only.'},
+   {c:'Pair every MCP connection with a skill that teaches how to use it.',f:'Correct, and it is the documented "Skill + MCP" pattern.'},
+   {c:'Determinism over instruct; context hygiene; non-bypassable verification.',f:'All three invariants map cleanly onto how the docs describe the system.'}
+ ]},
+ {label:'Stale or incomplete', tag:'stale', items:[
+   {c:'Permission modes: <code>default</code>, <code>acceptEdits</code>, <code>bypassPermissions</code>, <code>plan</code>.',f:'<b>Two missing, and they are the important ones.</b> The full set is <code>default</code> (alias <code>manual</code>), <code>acceptEdits</code>, <code>plan</code>, <code>auto</code>, <code>dontAsk</code>, <code>bypassPermissions</code>. <code>auto</code> uses a safety classifier and is the documented answer to prompt fatigue — the thing his "start restrictive, expand via allowlists" advice is actually reaching for. <code>dontAsk</code> converts prompts to denials for headless runs.'},
+   {c:'Nesting "up to several levels"; concurrency has "practical limits".',f:'Both are exact numbers: depth <b>3</b> (<code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code>), <b>20</b> concurrent (<code>CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</code>). At the depth limit the Agent tool is removed.'},
+   {c:'Critical hook events: <code>PreToolUse</code>, <code>PostToolUse</code>, <code>UserPromptSubmit</code>, <code>Stop</code>, <code>SubagentStop</code>, <code>PreCompact</code>.',f:'That is roughly a fifth of the current set. Notably missing: <code>PermissionRequest</code> (which ignores exit 2 entirely), <code>PostToolUseFailure</code>, <code>PostToolBatch</code>, <code>SubagentStart</code>, <code>TaskCreated</code> / <code>TaskCompleted</code> / <code>TeammateIdle</code> (the team quality gates), <code>Elicitation</code>, <code>MessageDisplay</code>, <code>InstructionsLoaded</code>, <code>WorktreeCreate</code> / <code>WorktreeRemove</code>, <code>PostCompact</code>, <code>CwdChanged</code>, <code>FileChanged</code>, <code>DirectoryAdded</code>, <code>ConfigChange</code>, <code>Setup</code>, <code>SessionEnd</code>, <code>StopFailure</code>.'},
+   {c:'"Prefer exit-2 + stderr so the model receives the reason."',f:'Right advice, missing the trap that costs people real incidents: <b><code>exit 1</code> does not block.</b> Any non-zero code other than 2 is a non-blocking error and the action proceeds. <code>WorktreeCreate</code> is the sole exception.'},
+   {c:'"Custom commands have largely merged into Skills."',f:'Understated — <code>.claude/commands/</code> no longer appears in the current documentation at all. Skills are the mechanism: a skill in <code>.claude/skills/&lt;name&gt;/SKILL.md</code> is invoked as <code>/&lt;name&gt;</code>, and the name comes from the directory, not the <code>name:</code> field. <span class="unv">Whether legacy <code>.claude/commands/</code> files still load is not stated in current docs — unverified.</span>'},
+   {c:'MCP: "tool definitions consume context; too many servers bloat the baseline."',f:'Partly superseded. MCP tool definitions are now <b>deferred by default</b> via tool search — only names cost context until first use. Where it still bites: subagents inherit every definition from the parent and can fill their window before turn one.'},
+   {c:'Effort framed as a general lever analogous to model variants.',f:'Right instinct, no specifics. The actual scale is <code>low</code> / <code>medium</code> / <code>high</code> / <code>xhigh</code> / <code>max</code>, plus <code>ultracode</code> (a Claude Code setting, not a model level). Default is <code>high</code>. <code>max</code> and <code>ultracode</code> are session-only. <code>CLAUDE_CODE_EFFORT_LEVEL</code> beats everything.'}
+ ]},
+ {label:'Wrong', tag:'wrong', items:[
+   {c:'Skill frontmatter includes <code>when_to_use</code>.',f:'No such field. It is <code>description</code>. Worth fixing because it is the field that drives auto-invocation — writing it under the wrong key means it silently does nothing. (Outside Claude Code, only six fields validate at all: <code>name</code>, <code>description</code>, <code>license</code>, <code>compatibility</code>, <code>metadata</code>, <code>allowed-tools</code>.)'},
+   {c:'"Subagents inherit or restrict tools; zero-tool configs fail to launch."',f:'The inheritance half is right — subagents inherit from the parent pool, filtered twice (always: <code>Agent</code> at depth limit, <code>AskUserQuestion</code>, <code>EndConversation</code>, <code>EnterPlanMode</code>, <code>ExitPlanMode</code>, <code>ScheduleWakeup</code>, <code>TaskOutput</code>, <code>WaitForMcpServers</code>, <code>Workflow</code>; and for background agents, a further reduction to a fixed built-in list). <span class="unv">The zero-tool launch failure is not documented — unverified.</span>'},
+   {c:'"Reliability drops inside some subagent/MCP/pipe paths."',f:'<span class="unv">Not supported by current docs — unverified as stated.</span> Docs describe hooks working <i>for</i> subagents, including per-subagent <code>hooks:</code> frontmatter. The documented reliability caveats are different and more specific: a timed-out hook renders no decision and the call proceeds; a hook whose path does not exist fails non-blocking. His conclusion still stands — put truly non-bypassable rules below the agent — but for these reasons, not that one.'},
+   {c:'"Stack them (<code>/skill1 /skill2 args</code>)."',f:'<span class="unv">Not documented — unverified.</span> Skills do compose in the sense that invoked content accumulates in the session, but the chained-invocation syntax is not in the reference.'}
+ ]},
+ {label:'Missing entirely', tag:'gap', items:[
+   {c:'<code>.claude/rules/</code> with <code>paths:</code> frontmatter',f:'The single biggest omission. His CLAUDE.md advice is "keep it under 200 lines and move procedures to skills" — but the mechanism that actually solves per-directory and per-language rules is path-scoped rules, which load only when Claude touches matching files. He mentions "path-scoped rules" in one clause without naming the directory or the frontmatter.'},
+   {c:'Auto memory',f:'Claude writes its own notes to <code>~/.claude/projects/&lt;project&gt;/memory/</code>, on by default, and the first 200 lines of <code>MEMORY.md</code> load every session. It is a second always-on context source his map does not account for at all.'},
+   {c:'Agent teams',f:'A whole coordination layer above subagents: shared task list, file-locked claiming, direct teammate messaging, plan-approval gating, and three dedicated hook events. Experimental and off by default (<code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>), but it changes the "isolated workers" picture — and while enabled, a <i>named</i> subagent silently launches as a teammate.'},
+   {c:'Forks (<code>/subtask</code>)',f:'A third worker type between "same context" and "fresh context": full parent conversation, same system prompt, tools, and model, shared prompt cache, cannot nest. Often the right answer when a plain subagent lacks context and inline work would bloat the window.'},
+   {c:'Plugins and marketplaces',f:'The distribution layer. Bundles skills, hooks, subagents, and MCP servers into one installable, namespaced unit — the answer to "a second repo needs this setup".'},
+   {c:'Checkpointing and <code>/rewind</code>',f:'Every prompt is a checkpoint; files are snapshotted before each change. Restore code, conversation, or both — plus partial compaction via Summarize-from-here / Summarize-up-to-here.'},
+   {c:'The sandbox as a distinct layer',f:'He folds it into "Permissions + Sandbox". It is a separate OS-level enforcement mechanism with its own filesystem and network configuration, its own modes, and specific interactions with ask rules and plan mode.'},
+   {c:'The layering rules',f:'How multiple sources combine differs per feature: CLAUDE.md is additive, hooks merge, and skills / subagents / MCP servers override by name with different precedence chains. This is the cause of most "it stopped working after I installed X".'},
+   {c:'Compaction survival',f:'Project-root CLAUDE.md is re-read and re-injected after <code>/compact</code>. Nested CLAUDE.md files and path-scoped rules are not. Skills get a 5k-per / 25k-total re-attachment budget. This explains most mid-session behavior drift.'},
+   {c:'<code>/context</code>',f:'The measuring instrument. Every claim about context hygiene is unfalsifiable without it.'}
+ ]}
+ ]
+};
+
+/* ============================================================
+   Control Stack — app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem('ccstack')||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem('ccstack',JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem('ccstack')||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem('ccstack-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem('ccstack-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+(p.layer==='meta'?'meta2':p.layer)+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">Tables you will come back to, and the branching questions that pick a primitive for you. Everything here is verified against the Claude Code documentation as of August 2026.</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">The source map, checked</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">Verified against code.claude.com/docs and the project’s synced docs mirror, August 2026. Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else renderAudit();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+
+</body>
+</html>

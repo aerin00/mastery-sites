@@ -1,0 +1,1616 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Handoff Logic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2314181E'/%3E%3Cpath d='M7 16h6l3-7 4 14 3-7h6' fill='none' stroke='%235EC4C8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&amp;family=IBM+Plex+Mono:wght@400;500;700&amp;display=swap">
+<style>
+/* =====================================================================
+   TOKENS — light palette lives on the bare :root.
+   >>> CHOOSE PER SUBJECT: the 6 values marked [PICK] below. <<<
+   Derive them from the subject's own world. Keep neutrals biased
+   toward the accent hue. Everything else in this file is structural
+   and should carry over unchanged.
+   ===================================================================== */
+:root{
+  /* dispatch desk: blue-grey paper, radio teal, filament amber */
+  --bg:#E6EBEF; --paper:#F3F6F8; --raise:#FFFFFF;
+  --ink:#14181E; --body:#2C3340; --muted:#5A6472; --faint:#84909C;
+  --line:#D0D7DE; --line-2:#B8C2CC;
+  --accent:#1A5C66; --accent-soft:#D7E8EA; --accent-ink:#0E454C;
+  --signal:#C05612; --signal-soft:#F6E4D4;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#11161C; --code-ink:#DCE6EC; --code-line:#24303A;
+  --shadow:0 1px 2px rgba(20,24,30,.05), 0 8px 24px -12px rgba(20,24,30,.14);
+  --rail:264px;
+  --f-disp:'Barlow','Helvetica Neue',Arial,sans-serif;
+  --f-body:'Literata','Iowan Old Style',Georgia,serif;
+  --f-mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1216; --paper:#141B21; --raise:#1B242C;
+    --ink:#E8EEF2; --body:#C5CED6; --muted:#8B98A4; --faint:#6A7784;
+    --line:#26303A; --line-2:#33404C;
+    --accent:#5EC4C8; --accent-soft:#143338; --accent-ink:#9ADFE0;
+    --signal:#F08A4B; --signal-soft:#3A2214;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#0A0E12; --code-ink:#D0DCE4; --code-line:#1D2A33;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+    --rail:264px;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1216; --paper:#141B21; --raise:#1B242C;
+  --ink:#E8EEF2; --body:#C5CED6; --muted:#8B98A4; --faint:#6A7784;
+  --line:#26303A; --line-2:#33404C;
+  --accent:#5EC4C8; --accent-soft:#143338; --accent-ink:#9ADFE0;
+  --signal:#F08A4B; --signal-soft:#3A2214;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#0A0E12; --code-ink:#D0DCE4; --code-line:#1D2A33;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  --rail:264px;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail, 264px) minmax(0,1fr); gap:0; align-items:stretch; min-height:calc(100dvh - 52px)}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+@media (max-width:640px){
+  table{min-width:0; font-size:12.5px}
+  th,td{padding:8px 10px}
+}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar" data-protonpass-form="">
+  <div class="brand"><span class="dot"></span><span id="brandname">Handoff Logic</span><small id="brandtag">HERMES BOT MODE</small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search · / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">◖</button>
+  <button class="iconbtn" id="savepage" title="Download standalone HTML">save</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"><a class="on" href="#p0"><span class="n">00</span><span>Read the fleet</span><span class="tick">✓</span></a><a href="#p1"><span class="n">01</span><span>One specialist</span><span class="tick">✓</span></a><a href="#p2"><span class="n">02</span><span>A Bot is a profile</span><span class="tick">✓</span></a><a href="#p3"><span class="n">03</span><span>Name the roles</span><span class="tick">✓</span></a><a href="#p4"><span class="n">04</span><span>Owner, mention, pass</span><span class="tick">✓</span></a><a href="#p5"><span class="n">05</span><span>Direct vs delegate</span><span class="tick">✓</span></a><a href="#p6"><span class="n">06</span><span>Cascade and the round cap</span><span class="tick">✓</span></a><a href="#p7"><span class="n">07</span><span>The group room</span><span class="tick">✓</span></a><a href="#p8"><span class="n">08</span><span>Fire-and-forget DMs</span><span class="tick">✓</span></a><a href="#p9"><span class="n">09</span><span>Challenge and @user</span><span class="tick">✓</span></a><a href="#p10"><span class="n">10</span><span>Four surfaces</span><span class="tick">✓</span></a><a href="#p11"><span class="n">11</span><span>Capture, then stop</span><span class="tick">✓</span></a><a href="#p12"><span class="n">12</span><span>Ship the operating system</span><span class="tick">✓</span></a></div>
+    <div class="legend" id="legend"><h4>Coordination layer</h4><div class="row"><span class="swatch" style="background:var(--warn)"></span>Observe — read the fleet</div><div class="row"><span class="swatch" style="background:var(--accent)"></span>Operate — default loop</div><div class="row"><span class="swatch" style="background:var(--stop)"></span>Enforce — caps and gates</div><div class="row"><span class="swatch" style="background:var(--signal)"></span>Persist — durable surfaces</div></div>
+  </nav>
+  <main id="view"><div class="prog"><div class="top"><span class="lbl">Path progress</span><span class="pct">0%</span></div><div class="bar"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div></div><div><div class="eyebrow">Phase 00 · Observe layer</div><h1 class="ptitle">Read the fleet</h1><div class="meta"><span class="chip l1">Observe</span><span class="chip">25–40 min</span><span class="chip">prereq: None</span></div></div><div class="objective">At any moment you can say <b>who is on the roster, who is busy, which rooms are open, and which hard caps bound the next send</b>.</div><h2 class="sec">Concepts <span class="cnt">5</span></h2><div class="concept"><h3>Bot Mode is a UI over profiles</h3><p>There is no second primitive. A Bot <b>is</b> a Hermes profile: isolated config, memory, skills, credentials, and chat history under <code>~/.hermes/profiles/<name>/</name></code>. The default profile lives at <code>~/.hermes</code> with internal id <code>default</code> and cannot be deleted. Bot Mode ships built into Hermes Desktop and is on by default. The CLI is the same agent: <code class="k">hermes -p <bot> chat</bot></code> opens that Bot, and its routines appear in <code class="k">hermes cron list</code>.</p><p>If you treat “Bot” as a different kind of thing from “profile,” you will look for a daemon that does not exist and miss the files that actually hold state.</p></div><div class="concept"><h3>What the roster is showing you</h3><p>The Bots pane is an activity-ordered list of <b>DM rows and group-room rows</b>. Click a Bot and you land in its canonical <b>Bot Chat</b>, created and pinned the moment the Bot is born. Groups are standalone rows with member count, latest message, and a <b>needs you</b> badge when someone used <code class="k">@user</code>.</p><div class="tablewrap"><table><thead><tr><th>Signal</th><th>Means</th><th>Does not mean</th></tr></thead><tbody><tr><td><b>Active now</b> strip</td><td>Gateway-busy profile, plus any Bot that wrote in the last <b>90 seconds</b></td><td>A work queue, a lock, or “this Bot is assigned”</td></tr><tr><td>Hidden Bot</td><td>Display-only. Unread still accumulates; the eye badges a dot</td><td>Stopped. @mentions still resolve, memberships stand, routines keep running</td></tr><tr><td>Presence chip</td><td>Opens that Bot’s chat. The strip never reorders the roster</td><td>Priority. Idle fleet: the strip disappears</td></tr><tr><td>Group row</td><td>A room, not a Bot. One Bot keeps a single DM row even in several groups</td><td>That the room is the Bot’s only memory</td></tr></tbody></table></div></div><div class="concept"><h3>The three numbers that bound every group send</h3><p>Official Bot Mode docs put hard caps on group rooms so they cannot spin. You cannot operate a cascade, a review board, or a “let them pull each other in” loop unless these numbers are in your head <b>before</b> you press send.</p><div class="tablewrap"><table><thead><tr><th>Cap</th><th>Value</th><th>What happens at the wall</th></tr></thead><tbody><tr><td>Bots in a room</td><td><b>2–6</b></td><td>You cannot seat a seventh specialist in that room</td></tr><tr><td>Serial rounds per user send</td><td><b>3</b></td><td>Further @pulls in the same send do not get another round</td></tr><tr><td>Messages per send</td><td><b>10</b></td><td>The room stops, even if the thesis is unfinished</td></tr><tr><td>Settle condition</td><td>A <b>full round stays silent</b></td><td>Passing is how the room ends, not a failure</td></tr></tbody></table></div></div><div class="concept"><h3>The forever-chat invariant</h3><p>Typing <code>/new</code> or <code>/reset</code> inside a Bot’s canonical chat would fork the relationship into a scratch session — the one thing Bot Mode promises never happens. The composer <b>reroutes it to <code>/compact</code></b>: fresh working context, same conversation. Regular sessions on the same profile keep full <code>/new</code> freedom. If you wanted a clean slate with that Bot, you compacted; you did not start over.</p></div><div class="concept"><h3>CLI is not a different fleet</h3><p>Inventory the same roster from a terminal. If Desktop and CLI disagree, you are looking at two homes or two machines, not two products.</p><div class="codewrap"><pre><code>hermes profile list
+hermes -p default chat
+hermes cron list
+ls ~/.hermes/profiles</code></pre><button class="copy">copy</button></div></div><h2 class="sec">Lab</h2><div class="lab"><h3>Baseline your real roster</h3><ol><li>Open Hermes Desktop → <b>Bots</b> tab. Write down every visible Bot, every group row, and whether Active now is showing anyone.</li><li>From a terminal, run <code>hermes profile list</code> and <code>hermes cron list</code>. Match each Desktop Bot to a profile directory and each routine to a <code>[bot:<name>]</name></code> job.</li><li>Note the three caps on a card or a sticky: <b>2–6 / 3 rounds / 10 messages</b>.</li><li><b>Break it deliberately:</b> right-click a Bot you actually use → Hide Bot. The row disappears. @mention that Bot from another chat anyway. Confirm the mention still resolves and that any routine on it is still listed in <code>hermes cron list</code>. Then Unhide.</li><li>Open that Bot’s canonical chat and type <code>/new</code>. Watch it become <code>/compact</code> instead of a fresh session.</li></ol><p style="margin:14px 0 0"><b>Done when:</b> You have a written inventory (names, paths, rooms, routines) and a confirmed observation that Hide does not stop work.</p><div class="done-line"><label for="lab-p0"><input type="checkbox" id="lab-p0">Lab complete</label></div></div><h2 class="sec">Gotchas <span class="cnt">4</span></h2><div class="gotcha"><span class="sev trap">trap</span><span><b>Hide looks like off</b>Hidden Bots never toast, so a quiet fleet can still be burning tokens on routines and still answer @mentions. Display is not a kill switch. Delete Profile is the destructive one; the default profile cannot be deleted at all.</span></div><div class="gotcha"><span class="sev trap">trap</span><span><b>/new in canonical chat does not mean new</b>The composer succeeds and you get a compacted forever-chat. It looks like a reset. It is not. History is still the same conversation.</span></div><div class="gotcha"><span class="sev cost">cost</span><span><b>Active now is a 90-second ghost</b>A Bot that finished 91 seconds ago is gone from the strip. Do not use presence as “who owns this.” Owner lives in your prompt or in a Kanban row, not in the chip.</span></div><div class="gotcha"><span class="sev ok">ok</span><span><b>The roster is working memory, not the archive</b>Latest-message previews are for navigation. Decisions that must survive compaction belong on Kanban, in a note, or in a skill — Phase 10.</span></div><h2 class="sec">Checkpoint <span class="cnt">4</span></h2><details class="qa"><summary>Name the three hard caps of a Hermes Bot Mode group send, and the settle condition.</summary><div class="ans">2–6 Bots per room. Up to 3 serial rounds of member turns per user send. 10 messages per send. The room settles when a full round stays silent.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><details class="qa"><summary>Where does a named Bot’s config, memory, skills, and chat history live on disk? What is the exception?</summary><div class="ans">Under ~/.hermes/profiles/<name>/. The default profile is not in profiles/; it lives at ~/.hermes with internal id default, and it cannot be deleted.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></name></div></details><details class="qa"><summary>What happens when you type /new or /reset inside a Bot’s canonical Bot Chat?</summary><div class="ans">The composer reroutes it to /compact: fresh working context, same conversation. Bot Mode refuses to fork the canonical relationship into a scratch session.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><details class="qa"><summary>Name three things that keep happening after you Hide a Bot.</summary><div class="ans">@mentions still resolve. Group memberships are untouched. Routines keep running. Hidden Bots also keep accumulating unread activity without toasting.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><h2 class="sec">Source docs</h2><div class="docs"><a href="https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode" target="_blank" rel="noopener">Bot Mode ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/profiles" target="_blank" rel="noopener">Profiles ↗</a><a href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noopener">Hermes Agent docs index ↗</a></div><div class="done-line" style="border-top: 1px solid var(--line); margin-top: 40px;"><button class="btn prime">One specialist →</button></div></main>
+</div>
+
+
+<script>
+/* =====================================================================
+   CONTENT — replace everything below this banner.
+   Three example phases show every field. Delete them and write yours.
+   Rules live in ../reference/build-spec.md. The short version:
+     - 8–14 phases. Phase 00 = read the instrument. Phase 01 = operate it
+       without configuring it. Last = capstone with the exclusions stated.
+     - `id` is STABLE and drives progress keys. `n` is cosmetic.
+     - A gotcha is only a gotcha if it fails SILENTLY.
+     - Every lab has one step that deliberately breaks something.
+     - Quiz items are recall, not recognition. They become the Drill deck.
+     - Assert only what you verified. Mark the rest <span class="unv">unverified</span>.
+   ===================================================================== */
+
+const SITE = {
+  key:   'mastery-handoff-logic',
+  title: 'Handoff Logic',
+  tag:   'HERMES BOT MODE',
+  spine: 'Coordination layer',
+  layers: [
+    { id:'l1', label:'Observe — read the fleet',     token:'warn'   },
+    { id:'l2', label:'Operate — default loop',       token:'accent' },
+    { id:'l3', label:'Enforce — caps and gates',     token:'stop'   },
+    { id:'l4', label:'Persist — durable surfaces',   token:'signal' }
+  ],
+  refLede: 'The tables you keep on a second monitor: hard caps, isolation, which surface to use, and the prompts worth pasting. Asserted facts were checked against Hermes Agent docs on 24 Aug 2026.',
+  auditTitle: 'The runbook, checked',
+  verifiedAgainst: 'Verified against the Hermes Agent Bot Mode page, Profiles, Kanban, Memory, Security, Context Files, GitHub NousResearch/hermes-agent (v0.20.5, 19 Aug 2026), and x.ai/news/introducing-grok-bot. Source document: the Bot Mode Operating Runbook pasted into this session. As of 24 Aug 2026.'
+};
+
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">' + s + '</code>';
+
+const PHASES = [
+
+{
+  id:'p0', n:'00', title:'Read the fleet', layer:'l1', layerLabel:'Observe',
+  time:'25–40 min', pre:'None',
+  objective:'At any moment you can say <b>who is on the roster, who is busy, which rooms are open, and which hard caps bound the next send</b>.',
+  concepts:[
+    {h:'Bot Mode is a UI over profiles',
+     p:'<p>There is no second primitive. A Bot <b>is</b> a Hermes profile: isolated config, memory, skills, credentials, and chat history under <code>~/.hermes/profiles/<name>/</code>. The default profile lives at <code>~/.hermes</code> with internal id <code>default</code> and cannot be deleted. Bot Mode ships built into Hermes Desktop and is on by default. The CLI is the same agent: '+K('hermes -p <bot> chat')+' opens that Bot, and its routines appear in '+K('hermes cron list')+'.</p><p>If you treat “Bot” as a different kind of thing from “profile,” you will look for a daemon that does not exist and miss the files that actually hold state.</p>'},
+    {h:'What the roster is showing you',
+     p:'<p>The Bots pane is an activity-ordered list of <b>DM rows and group-room rows</b>. Click a Bot and you land in its canonical <b>Bot Chat</b>, created and pinned the moment the Bot is born. Groups are standalone rows with member count, latest message, and a <b>needs you</b> badge when someone used '+K('@user')+'.</p>',
+     table:{head:['Signal','Means','Does not mean'],rows:[
+       ['<b>Active now</b> strip','Gateway-busy profile, plus any Bot that wrote in the last <b>90 seconds</b>','A work queue, a lock, or “this Bot is assigned”'],
+       ['Hidden Bot','Display-only. Unread still accumulates; the eye badges a dot','Stopped. @mentions still resolve, memberships stand, routines keep running'],
+       ['Presence chip','Opens that Bot’s chat. The strip never reorders the roster','Priority. Idle fleet: the strip disappears'],
+       ['Group row','A room, not a Bot. One Bot keeps a single DM row even in several groups','That the room is the Bot’s only memory']]}},
+    {h:'The three numbers that bound every group send',
+     p:'<p>Official Bot Mode docs put hard caps on group rooms so they cannot spin. You cannot operate a cascade, a review board, or a “let them pull each other in” loop unless these numbers are in your head <b>before</b> you press send.</p>',
+     table:{head:['Cap','Value','What happens at the wall'],rows:[
+       ['Bots in a room','<b>2–6</b>','You cannot seat a seventh specialist in that room'],
+       ['Serial rounds per user send','<b>3</b>','Further @pulls in the same send do not get another round'],
+       ['Messages per send','<b>10</b>','The room stops, even if the thesis is unfinished'],
+       ['Settle condition','A <b>full round stays silent</b>','Passing is how the room ends, not a failure']
+     ]}},
+    {h:'The forever-chat invariant',
+     p:'<p>Typing <code>/new</code> or <code>/reset</code> inside a Bot’s canonical chat would fork the relationship into a scratch session — the one thing Bot Mode promises never happens. The composer <b>reroutes it to <code>/compact</code></b>: fresh working context, same conversation. Regular sessions on the same profile keep full <code>/new</code> freedom. If you wanted a clean slate with that Bot, you compacted; you did not start over.</p>'},
+    {h:'CLI is not a different fleet',
+     p:'<p>Inventory the same roster from a terminal. If Desktop and CLI disagree, you are looking at two homes or two machines, not two products.</p>',
+     code:C('hermes profile list',
+            'hermes -p default chat',
+            'hermes cron list',
+            'ls ~/.hermes/profiles')}
+  ],
+  lab:{title:'Baseline your real roster',
+    steps:[
+      'Open Hermes Desktop → <b>Bots</b> tab. Write down every visible Bot, every group row, and whether Active now is showing anyone.',
+      'From a terminal, run <code>hermes profile list</code> and <code>hermes cron list</code>. Match each Desktop Bot to a profile directory and each routine to a <code>[bot:<name>]</code> job.',
+      'Note the three caps on a card or a sticky: <b>2–6 / 3 rounds / 10 messages</b>.',
+      '<b>Break it deliberately:</b> right-click a Bot you actually use → Hide Bot. The row disappears. @mention that Bot from another chat anyway. Confirm the mention still resolves and that any routine on it is still listed in <code>hermes cron list</code>. Then Unhide.',
+      'Open that Bot’s canonical chat and type <code>/new</code>. Watch it become <code>/compact</code> instead of a fresh session.'],
+    verify:'You have a written inventory (names, paths, rooms, routines) and a confirmed observation that Hide does not stop work.'},
+  gotchas:[
+    {s:'trap',t:'Hide looks like off',d:'Hidden Bots never toast, so a quiet fleet can still be burning tokens on routines and still answer @mentions. Display is not a kill switch. Delete Profile is the destructive one; the default profile cannot be deleted at all.'},
+    {s:'trap',t:'/new in canonical chat does not mean new',d:'The composer succeeds and you get a compacted forever-chat. It looks like a reset. It is not. History is still the same conversation.'},
+    {s:'cost',t:'Active now is a 90-second ghost',d:'A Bot that finished 91 seconds ago is gone from the strip. Do not use presence as “who owns this.” Owner lives in your prompt or in a Kanban row, not in the chip.'},
+    {s:'ok',t:'The roster is working memory, not the archive',d:'Latest-message previews are for navigation. Decisions that must survive compaction belong on Kanban, in a note, or in a skill — Phase 10.'}
+  ],
+  quiz:[
+    {q:'Name the three hard caps of a Hermes Bot Mode group send, and the settle condition.',a:'2–6 Bots per room. Up to 3 serial rounds of member turns per user send. 10 messages per send. The room settles when a full round stays silent.'},
+    {q:'Where does a named Bot’s config, memory, skills, and chat history live on disk? What is the exception?',a:'Under ~/.hermes/profiles/<name>/. The default profile is not in profiles/; it lives at ~/.hermes with internal id default, and it cannot be deleted.'},
+    {q:'What happens when you type /new or /reset inside a Bot’s canonical Bot Chat?',a:'The composer reroutes it to /compact: fresh working context, same conversation. Bot Mode refuses to fork the canonical relationship into a scratch session.'},
+    {q:'Name three things that keep happening after you Hide a Bot.',a:'@mentions still resolve. Group memberships are untouched. Routines keep running. Hidden Bots also keep accumulating unread activity without toasting.'}
+  ],
+  docs:[['Bot Mode','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Profiles','https://hermes-agent.nousresearch.com/docs/user-guide/profiles'],['Hermes Agent docs index','https://hermes-agent.nousresearch.com/docs/']]
+},
+
+{
+  id:'p1', n:'01', title:'One specialist', layer:'l2', layerLabel:'Operate',
+  time:'40–70 min', pre:'Phase 00',
+  objective:'Run the default loop well — <b>one Bot, one canonical chat, one outcome</b> — before you seat a team.',
+  concepts:[
+    {h:'The unit of work is no longer a prompt',
+     p:'<p>The old chatbot model is You → AI → Answer. Bot Mode’s useful unit is:</p><p><b>Objective → roles → handoff → verification → decision → stop.</b></p><p>That is a team operation, and it is more expensive than a prompt. Most tasks do not deserve it. If the question has an obvious specialist, you @ that Bot and you are done. Involving the whole roster because you can is how you get three intelligent mini-answers instead of one piece of work.</p>'},
+    {h:'The default loop, done well',
+     p:'<p>Open one Bot’s canonical chat. State the outcome, the stop condition, and how you will verify. Let it work. Review. That loop is where most of Hermes’s leverage lives: persistent memory, skills, tools, routines, a model pin, a SOUL. Group rooms, @pulls, and cascades are interventions on top of this loop, not a replacement for it.</p>'},
+    {h:'A group send is an expensive machine',
+     p:'<p>One user message in a 4-Bot room can spend 3 rounds × 4 speakers before the caps cut it off — and each speaker is a full agent turn with tools. You pay that cost even when three of them are repeating the first. The product already tells members to pass when they have nothing new; your job is not to make passing necessary by inviting everyone.</p>'},
+    {h:'Build a specialist once',
+     p:'<p>The point of Bot Mode is durability. A researcher Bot with a pinned model, a tight SOUL, and the browse/search toolset enabled is an asset. Recreating “a research prompt” every morning is the old chatbot habit wearing a roster UI.</p>'}
+  ],
+  lab:{title:'The same job, one Bot vs a crowd',
+    steps:[
+      'Pick a real question you actually need answered this week. Not a toy.',
+      'Give it to <b>one</b> obvious specialist in its canonical Bot Chat. Time it. Save the answer.',
+      'Create or open a 3-Bot group that includes that specialist. Paste the <b>same</b> question with no owner and no @mentions.',
+      'Count speakers, rounds, and duplicate claims. Compare quality to the solo run.',
+      '<b>Break it deliberately:</b> in the group, add “everyone own the final answer.” Watch three mini-answers appear where you needed one.'],
+    verify:'You have a side-by-side: solo transcript vs group transcript, with speaker count and a one-line verdict on which was actually better.'},
+  gotchas:[
+    {s:'trap',t:'A quiet group looks like consensus',d:'If nobody was @mentioned, everyone may speak — or everyone may pass. Silence is not agreement. It is “a full round stayed silent.” You still need a named owner to say the decision out loud.'},
+    {s:'cost',t:'Seating the roster “just in case”',d:'Each extra member multiplies turns up to the 10-message wall. A Scribe who was not asked to capture will still be offered a turn. Keep unused specialists out of the room; @mention them later if evidence creates a question.'},
+    {s:'ok',t:'Passing is a successful turn',d:'Official docs: a Bot replies only when it has something new to add and passes otherwise. A room full of PASSes is the settle condition, not a bug.'},
+    {s:'stale',t:'“Bot Mode will sequence the work for me”',d:'Desktop will run up to three serial rounds and honour @mentions. It will not infer a five-phase research → decide → implement → verify pipeline. That is your job (Phase 06).'}
+  ],
+  quiz:[
+    {q:'State the useful unit of work in Bot Mode, as a six-step chain.',a:'Objective → roles → handoff → verification → decision → stop. The prompt is not the unit.'},
+    {q:'When do you not seat a group at all?',a:'When the question has an obvious specialist. Direct that Bot in its canonical chat. Group rooms are for work that needs disagreement, handoff, or multiple roles in one visible transcript.'},
+    {q:'Why is “everyone own the final answer” a bad instruction?',a:'Without one owner you get several intelligent mini-answers instead of one coherent piece of work. Official group mechanics also let every un-mentioned member speak, which amplifies the pile-up.'}
+  ],
+  docs:[['Bot Mode — who speaks','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Learning path: specialist Bots','https://hermes-agent.nousresearch.com/docs/getting-started/learning-path']]
+},
+
+{
+  id:'p2', n:'02', title:'A Bot is a profile', layer:'l2', layerLabel:'Operate',
+  time:'45–75 min', pre:'Phase 01',
+  objective:'You can <b>create, pin, isolate, and inspect</b> a Bot as a Hermes profile, and you know what is not isolated.',
+  concepts:[
+    {h:'What is actually isolated',
+     p:'<p>Each profile is a separate Hermes home: <code>config.yaml</code>, <code>.env</code>, <code>SOUL.md</code>, memories, sessions, skills, cron, <code>state.db</code>. Memory does not leak across Bots unless you point them at the same external provider. That is the feature you are buying with a roster.</p>',
+     table:{head:['Thing','Isolated per Bot?','What that costs you'],rows:[
+       ['config.yaml, model pin, toolsets, MCP','Yes','A researcher can run a reasoning model; a scribe can run a cheap one'],
+       ['SOUL.md, skills, sessions, cron','Yes','Persona and habits do not bleed — unless you clone them on purpose'],
+       ['MEMORY.md / USER.md','Yes. Frozen snapshot at session start','Mid-session memory writes hit disk but do not update the prompt until the next session'],
+       ['Host filesystem via terminal','<b>No</b>','Same OS user. Profiles are not a sandbox'],
+       ['CLI identity (git, ssh)','Only if <code>terminal.home_mode: profile</code>','Default is <code>global</code>: tools share your real HOME'],
+       ['OAuth / token pool','Shared by default on new Bots','Credential refresh is not supposed to invalidate siblings. Older gateways copy (fork) instead']
+     ]}},
+    {h:'Create, clone, duplicate, delete',
+     p:'<p>Desktop: <b>New Agent</b> with Name, Title, Description is enough. Advanced adds clone-from, empty (no bundled skills), model pin, custom SOUL, per-skill / toolset / MCP ticks, and a <b>Create on</b> picker when you have multiple Connections.</p><p><b>Duplicate</b> clones config, skills, SOUL, memory, and look. CLI <code>--clone</code> copies config, .env, SOUL, skills with fresh memory; <code>--clone-all</code> copies nearly everything except history. Never run two live agents against the same profile directory — concurrent writes corrupt state.</p>',
+     code:C('hermes profile create researcher --description "External evidence lead"',
+            'hermes profile create researcher --clone',
+            'hermes profile create researcher --clone-all --clone-from default',
+            'hermes profile rename researcher x-research',
+            'hermes -p x-research chat')},
+    {h:'SOUL.md is the Bot, not the room',
+     p:'<p><code>SOUL.md</code> loads from that profile’s <code>HERMES_HOME</code>, not from the project directory. It is slot #1 of the prompt. Changing it does <b>not</b> rewrite sessions that are already open. Title and description are not decoration: in canonical Bot Chat, the teammate roster — names <b>and roles</b> from each profile’s title/description — is injected so Bots know who does what before they pick a recipient.</p>'},
+    {h:'Memory is small and frozen',
+     p:'<p>Built-in memory is <code>MEMORY.md</code> (2,200 characters) and <code>USER.md</code> (1,375). There is no auto-compaction. Session search (FTS5 on <code>state.db</code>) is how you recall old transcripts; memory is for facts that must be in every prompt. A Bot that “remembers the project” is either hitting session history, a skill, or Honcho — not a shared brain with its teammates.</p>'},
+    {h:'Skills, tools, MCP — tick only what the specialist needs',
+     p:'<p>A Coder that cannot reach the repo is theatre. A Researcher with shell and file-write enabled is a different, more dangerous employee than you think. Per-Bot enablement exists so the roster is not “one god agent wearing four hats.”</p>'}
+  ],
+  lab:{title:'Birth a throwaway specialist and look under the hood',
+    steps:[
+      'Create a Bot named <code>probe</code> with a distinctive Title and a one-line SOUL: “You always start replies with the word PROBE.” Pin a cheaper model than your default if you have one.',
+      'Chat with it in Bot Chat. Confirm the SOUL line fires and that Desktop and <code>hermes -p probe chat</code> are the same agent.',
+      'Open <code>~/.hermes/profiles/probe/</code> (or your Hermes home equivalent on Windows) and identify <code>config.yaml</code>, <code>SOUL.md</code>, and the memories directory.',
+      '<b>Break it deliberately:</b> edit <code>SOUL.md</code> to a different first word while that chat is still open. Send another message. Observe that the old session does not pick up the new SOUL. Start a fresh regular session on the same profile (not <code>/new</code> on the canonical chat) and confirm the new SOUL applies there.',
+      'Delete the probe profile when you are done. Confirm <code>default</code> offers no delete.'],
+    verify:'You have seen, on disk, that a Bot is a profile, and you have felt SOUL changes not applying to an already-open session.'},
+  gotchas:[
+    {s:'trap',t:'Profiles do not sandbox the filesystem',d:'Two Bots on the local backend are the same OS user. A “read-only researcher” can still shell into your repo unless you constrain toolsets, approvals, or a container backend. Isolation of memory is not isolation of disk.'},
+    {s:'trap',t:'SOUL.md edits look like they saved and nothing changes',d:'They did save. The open session was built with the old prompt. New sessions pick it up. Canonical Bot Chat is a forever-chat, so you may need a regular session or a compact-plus-new-session strategy to test persona changes.'},
+    {s:'cost',t:'--clone-all copies memory you did not mean to share',d:'A duplicated Coder that still believes it is the Researcher will confidently mis-file facts. Prefer --clone (fresh memory) unless you want the scars.'},
+    {s:'trap',t:'Never two writers on one profile directory',d:'Hermes docs: concurrent writes corrupt state. “I’ll just open the same Bot in CLI and Desktop” is the silent version of this if both are live agents on the same home.'},
+    {s:'ok',t:'Shared tokens are a feature until they are not',d:'New Bots share one OAuth/token pool so refreshes do not invalidate each other. That also means a leaked specialist is a leaked pool. Older gateways copy credentials instead — forked, still functional.'}
+  ],
+  quiz:[
+    {q:'Name four things a Hermes profile isolates, and two things it does not.',a:'Isolates: config/model pin, SOUL.md, memory, sessions, skills, cron, per-profile .env. Does not isolate: host filesystem via terminal (same OS user), and — on default terminal.home_mode: global — git/ssh identity under your real HOME.'},
+    {q:'What is the difference between hermes profile create --clone and --clone-all?',a:'--clone copies config.yaml, .env, SOUL.md, and skills, with fresh memory and sessions. --clone-all copies nearly everything except history (state.db, backups). Duplicate in Desktop includes memory and look.'},
+    {q:'When does a SOUL.md change take effect?',a:'On new sessions. Existing sessions keep the prompt they were built with. Canonical Bot Chat is a forever-chat, so a persona edit may appear not to apply until you use a session that is actually new.'},
+    {q:'How large are MEMORY.md and USER.md, and when do writes show up in the prompt?',a:'2,200 and 1,375 characters. Memory is a frozen snapshot at session start; mid-session writes persist to disk but do not update the prompt until the next session. No auto-compaction.'}
+  ],
+  docs:[['Profiles','https://hermes-agent.nousresearch.com/docs/user-guide/profiles'],['Memory','https://hermes-agent.nousresearch.com/docs/user-guide/features/memory'],['SOUL.md / personality','https://hermes-agent.nousresearch.com/docs/user-guide/features/personality'],['Security','https://hermes-agent.nousresearch.com/docs/user-guide/security']]
+},
+
+{
+  id:'p3', n:'03', title:'Name the roles', layer:'l2', layerLabel:'Operate',
+  time:'40–60 min', pre:'Phase 02',
+  objective:'You have a <b>named roster with one decision owner</b>, and each Bot’s title/description/SOUL encode a job rather than a vibe.',
+  concepts:[
+    {h:'Roles are a convention. The product ships none of them',
+     p:'<p>Hermes gives you profiles, mentions, rooms, and a teammate roster in the prompt. It does not ship Coordinator, X-Researcher, Coder, or Scribe. Those names are an operating system you put on top. If you skip this phase, Bot Mode is just a prettier session list.</p>'},
+    {h:'The four-role core',
+     p:'<p>Give one Bot ownership of the final answer. Usually that is Coordinator, mapped to <code>default</code> if you want the undeletable profile to be the team lead.</p>',
+     table:{head:['Bot','Think of it as','Best use','Keep it out of'],rows:[
+       ['Coordinator / Default','Team lead, decision owner','Scope, routing, synthesis, final call','Doing the research itself “to be helpful”'],
+       ['X-Researcher','Evidence lead','External evidence, competing explanations, what is actually new','Implementation proposals'],
+       ['Coder','Engineering lead','Repo inspection, feasibility, implementation, tests','Product-strategy debates'],
+       ['Scribe','Durable recorder','Capture after the work is done','Every debate. Scribe-in-the-room will chatter']
+     ]}},
+    {h:'Title and description are the org chart the Bots can see',
+     p:'<p>Canonical Bot Chat injects names <b>and roles</b> from title/description into the system prompt so a Bot can pick a recipient. A Title of “Bot 2” and a Description of “helpful assistant” is how you get everyone answering everything. Write the job in the Title (“Evidence lead”) and the boundaries in the Description (“Do not propose implementation. Return findings to the room.”).</p>'},
+    {h:'SOUL.md encodes standing orders, not this week’s task',
+     p:'<p>Standing orders: pass when you have nothing new; do not duplicate another Bot’s work; challenge assumptions; escalate to @user only for preference, authorization, destruction, or a genuinely missing requirement. This week’s objective belongs in the room message, not in SOUL. If you put the project in SOUL, every future job inherits last week’s war.</p>'},
+    {h:'Four is a team. Six is the product ceiling. One is still legal',
+     p:'<p>A room cannot exceed 6 Bots. That is enough for owner + two specialists + a critic + a scribe + a spare, and it is not enough for “every persona I ever made.” Hide the rest. Do not seat them.</p>'}
+  ],
+  lab:{title:'Install the four-role org chart on your real fleet',
+    steps:[
+      'For each of Coordinator, Researcher, Coder, Scribe: set Title, Description, and a short SOUL standing-orders block (pass, no duplication, challenge, @user rules). Use the pasteable templates in this phase’s code block, edited to your names.',
+      'Confirm the teammate roster: in Coordinator’s Bot Chat, ask “Who is on this team and what is each Bot for?” The answer must come from titles/descriptions, not from your current message.',
+      'Pin models on purpose: reasoning model on Researcher if you have one; cheaper/faster on Scribe.',
+      'Enable toolsets per job: Researcher gets search/browse; Coder gets the repo tools; Scribe gets write to your notes path only, if you can constrain it.',
+      '<b>Break it deliberately:</b> add Scribe to a group with no “capture only when asked” line, ask a small question, and watch it narrate. Then tighten Description/SOUL and retry.'],
+    verify:'Four Bots exist with job-shaped titles, and Coordinator can name the other three’s jobs without you pasting an org chart into the message.'},
+  gotchas:[
+    {s:'trap',t:'A “generalist” Coordinator that also researches and also codes',d:'The owner who does the work cannot review the work. You will get a fluent answer with no disagreement. Make Coordinator synthesize, not retrieve.'},
+    {s:'trap',t:'Scribe joins the debate',d:'Then you have a fourth opinion and no recording. Scribe’s SOUL should say: speak only to capture a finished decision; otherwise PASS.'},
+    {s:'cost',t:'Identical models on every Bot',d:'You paid for per-Bot pins. A scribe-summarizer on a frontier reasoning model is how a “cheap capture step” becomes the expensive one.'},
+    {s:'ok',t:'X-Researcher is a name, not an X integration',d:'Unless you enabled X/search tools on that profile, it is just a research persona. Name it for the job it can actually do.'}
+  ],
+  quiz:[
+    {q:'What is the most important staffing rule in this runbook?',a:'Give one Bot ownership of the final answer. Usually Coordinator. Without an owner you get several mini-answers instead of one coherent piece of work.'},
+    {q:'Which two profile fields become the org chart other Bots can see in canonical Bot Chat?',a:'Title and description. The teammate roster — names and roles from those fields — is injected into the Bot Chat system prompt.'},
+    {q:'What belongs in SOUL.md vs in the room message?',a:'SOUL.md: standing orders (pass, no duplication, challenge, escalation rules, job boundary). Room message: this job’s objective, sequence, stop condition. Project-of-the-week does not belong in SOUL.'}
+  ],
+  docs:[['Bot Mode — creating a Bot','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Personality and SOUL.md','https://hermes-agent.nousresearch.com/docs/user-guide/features/personality']]
+},
+
+{
+  id:'p4', n:'04', title:'Owner, mention, pass', layer:'l3', layerLabel:'Enforce',
+  time:'40–60 min', pre:'Phase 03',
+  objective:'You can <b>control who speaks in a round</b> with @mentions, and you treat PASS as a successful move.',
+  concepts:[
+    {h:'@mention is a scope control, not a courtesy',
+     p:'<p>In a group room: @-mentioned Bots respond; <b>everyone may respond when nobody is mentioned</b>; @-mentioning specific members scopes the round to them. Speaking is each member’s own choice — reply if you have something new, otherwise pass. The room settles when a full round stays silent.</p><p>If you wanted only Coder, and you did not @coder, you asked the whole room. That is the silent failure mode of Pattern A.</p>'},
+    {h:'How a mention actually travels',
+     p:'<p>Type '+K('@researcher')+' in any chat. Autocomplete resolves against the live roster (profile, friendly name, device). On send, the active Bot is told exactly who you mean. <b>Your text is never forwarded verbatim</b> — the Bot composes its own message and sends it with <code>message_agent</code> (in canonical Bot Chat) or as a room pull-in (in groups). An email address or an unknown @ passes through untouched.</p>'},
+    {h:'Names you can type',
+     p:'<p>Rename a Bot (pencil in the chat header, or <code>hermes profile rename</code>) and it becomes taggable by the friendly name: a Bot titled Research Buddy answers to '+K('@research-buddy')+' and '+K('@researchbuddy')+'. Autocomplete also matches the old profile name. Cross-machine duplicates are '+K('@name-device')+' so two researchers on two boxes never blur.</p>'},
+    {h:'@user is the only human escalation the room understands',
+     p:'<p>Bots pull each other in with @name and escalate judgment calls with '+K('@user')+'. The group row shows a <b>needs you</b> badge. If you did not teach them when to use it, they will either never ping you or ping you for “Python or PowerShell.” Phase 09 writes the rule.</p>'},
+    {h:'Weak group vs strong group',
+     p:'<p>Weak: Default speaks, Researcher repeats, Coder repeats, Default summarizes the repetitions. Strong: Default scopes, Researcher contributes evidence, Coder contributes feasibility, Researcher PASSes, Default decides. Add this line until it is muscle memory: <i>If another Bot has already covered your contribution and you have nothing materially new to add, pass.</i></p>'}
+  ],
+  lab:{title:'Measure mention-scoping on a live room',
+    steps:[
+      'Open a 3-Bot group (Coordinator, Researcher, Coder).',
+      'Send a short question with <b>no</b> @mentions. Count who spoke and who passed.',
+      'Send a follow-up that @mentions only the specialist who should answer. Count again.',
+      'Send a third message that @mentions Coordinator and says the others should pass unless they see a factual error.',
+      '<b>Break it deliberately:</b> @mention all three and also say “you all own the final answer.” Save that transcript. It is the picture of the failure mode this whole site exists to prevent.'],
+    verify:'You have three counts (no mention / one mention / everyone-owns) written down, and they are not the same number.'},
+  gotchas:[
+    {s:'trap',t:'Unscoped @everyone energy',d:'No mentions means every member is invited to the round. A “quick check-in” to a 5-Bot room is five agent turns, three times, up to ten messages. Scope the round or pay the cap.'},
+    {s:'trap',t:'You think you CC’d a Bot; you typed an unknown @',d:'Unknown @ and email addresses pass through untouched. The Bot was never told. Autocomplete is not optional on a live roster with device suffixes.'},
+    {s:'cost',t:'Pulling a Bot in “so it has context”',d:'Membership plus a pass still spends a turn deciding to pass. If they do not need to speak this round, do not seat them, or do not mention them when you are scoping.'},
+    {s:'ok',t:'PASS is how rooms end',d:'A full silent round is the documented settle condition. Training Bots to “always add something” fights the product and burns the 10-message cap on noise.'}
+  ],
+  quiz:[
+    {q:'In a Hermes group room, who responds when you @mention nobody? Who responds when you @mention one Bot?',a:'Nobody mentioned: every member is invited and each may reply or pass. One Bot mentioned: the round is scoped to that member (others stay quiet unless a later pull-in brings them in, still inside the 3-round cap).'},
+    {q:'Does @mentioning a Bot forward your exact words to it?',a:'No. The mention is resolved against the live roster; the active Bot is told who you mean; that Bot composes its own message. Your text is never forwarded verbatim.'},
+    {q:'What does @user do in a group row?',a:'It escalates a judgment call to you. The group row shows a needs-you badge. Use it for preference, authorization, destructive actions, or genuinely missing requirements — not for questions the team can resolve from evidence.'}
+  ],
+  docs:[['Bot Mode — @mentions and who speaks','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode']]
+},
+
+{
+  id:'p5', n:'05', title:'Direct vs delegate', layer:'l2', layerLabel:'Operate',
+  time:'35–55 min', pre:'Phase 04',
+  objective:'You can choose, on purpose, between <b>assigning a specialist</b> and <b>giving Coordinator an outcome</b>.',
+  concepts:[
+    {h:'Pattern A — Direct specialist',
+     p:'<p>Use when you already know who should do the work. You are the router. The other Bots should not even be in the room.</p>',
+     code:C('@x-research',
+            '',
+            'Investigate [QUESTION].',
+            '',
+            'Focus on:',
+            '- evidence',
+            '- competing explanations',
+            '- what is actually new',
+            '',
+            'Do not propose implementation.',
+            'Return your findings to the room.')},
+    {h:'Pattern A for engineering',
+     code:C('@coder',
+            '',
+            'Inspect [PROJECT / PROBLEM].',
+            '',
+            'Do not modify anything.',
+            '',
+            'Determine:',
+            '- current state',
+            '- likely cause',
+            '- smallest viable change',
+            '- how we would verify it')},
+    {h:'Pattern B — Delegation',
+     p:'<p>Tell Coordinator the outcome. Let it assign. This is the more advanced habit: managing a team rather than prompting several models.</p>',
+     code:C('@default',
+            '',
+            'I want to determine whether [IDEA] is worth pursuing.',
+            '',
+            'You are the decision owner.',
+            'Use the other Bots where useful.',
+            'Do not let this become a general brainstorm.',
+            '',
+            'Return:',
+            '1. Decision',
+            '2. Evidence',
+            '3. Main risk',
+            '4. Smallest next action')},
+    {h:'Who decides who speaks',
+     p:'<p>You assign when the workflow is obvious (research → Coder feasibility → Default decides). You let Coordinator decide when you know the outcome but not which expertise is needed. You let Bots @mention each other when the next expert depends on what gets discovered — knowing that a single send still dies at 3 rounds / 10 messages.</p>',
+     table:{head:['Maturity','You do','Risk if you skip the next level'],rows:[
+       ['Beginner','Manually assign every Bot','You become the paste-router'],
+       ['Intermediate','Write an explicit cascade (Phase 06)','One send, five phases, the cap cuts you off'],
+       ['Advanced','Coordinator owns routing','Coordinator does the specialist work itself'],
+       ['Best use','Bots pull specialists as evidence creates questions','Infinite loop against the round cap; no owner']
+     ]}}
+  ],
+  lab:{title:'One outcome, two management styles',
+    steps:[
+      'Pick a real “is this worth it?” question.',
+      'Run Pattern A: you @ the specialist, then you @ Coordinator with the findings. You are the middleman on purpose. Time it.',
+      'Run Pattern B on a similar question: @default owns it, may pull others.',
+      'Compare: did Coordinator actually pull a specialist, or did it answer solo? Did Pattern A produce tighter evidence?',
+      '<b>Break it deliberately:</b> send Pattern B without “You are the decision owner” and without “do not brainstorm.” Watch a committee form.'],
+    verify:'You have a written rule for your fleet: which class of job is Pattern A, which is Pattern B, and one example of each from today.'},
+  gotchas:[
+    {s:'trap',t:'Delegation without an owner',d:'“Use the other Bots where useful” with no decision owner is a brainstorm with extra steps. Coordinator must be told it owns the final answer.'},
+    {s:'trap',t:'Direct-assigning everyone in one message',d:'That is not Pattern A. That is an unscoped group send with a to-do list. Pattern A names one specialist and keeps the others out.'},
+    {s:'cost',t:'Being the paste-router forever',d:'If you copy X’s findings into Coder’s chat by hand every time, you have declined the product’s @mention path. Use it, then add gates so the 3-round cap does not amputate the pipeline.'},
+    {s:'ok',t:'Solo Coordinator is sometimes correct',d:'If the job needs no specialist evidence, Pattern B should return a decision without pulling anyone. That is delegation working, not a lazy Bot.'}
+  ],
+  quiz:[
+    {q:'When do you assign a Bot yourself, and when do you let Coordinator route?',a:'Assign (Pattern A) when the specialist is obvious and others should stay out. Delegate (Pattern B) when you know the outcome but not which expertise is required. Write an explicit cascade when order matters (Phase 06).'},
+    {q:'What four things should a Pattern B return include?',a:'Decision. Evidence. Main risk. Smallest next action. Plus an explicit decision owner in the prompt, or you will get a brainstorm.'},
+    {q:'Name the four-step maturity progression of Bot Mode management.',a:'You manually assign every Bot → you define a cascade → Coordinator owns routing → Bots dynamically pull specialists as evidence creates questions. The last step still needs an owner, gates, and a stop condition, because the product will not infer them.'}
+  ],
+  docs:[['Bot Mode','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode']]
+},
+
+{
+  id:'p6', n:'06', title:'Cascade and the round cap', layer:'l3', layerLabel:'Enforce',
+  time:'45–70 min', pre:'Phase 05',
+  objective:'You can run a multi-phase workflow <b>without pretending one send can finish it</b>, and you put a gate between expensive phases.',
+  concepts:[
+    {h:'The product will not infer your pipeline',
+     p:'<p>Research → decision → implementation proposal → verification is a real agent workflow. Bot Mode will run at most <b>three serial rounds</b> and <b>ten messages</b> per user send. A five-phase cascade pasted as one message is a wish. The room will do what it can, then go silent, and it will look finished.</p>'},
+    {h:'Gates beat hopes',
+     p:'<p>Instead of research → design → code → test → docs regardless of evidence:</p><p>research → <b>GATE: worth pursuing?</b> → design → <b>GATE: technically sound?</b> → implementation.</p><p>Each gate is a <b>new user send</b> (or a stop). That is how you stay inside 3 rounds and how you prevent the team from dutifully building a bad idea.</p>'},
+    {h:'Reusable cascade — split across sends',
+     p:'<p>Keep the phase language. Do not keep the fantasy that it is one shot. Send Phase 1 only. Then you send Phase 2 after X replies. The Coordinator still owns the sequence; you own the gates.</p>',
+     code:C('@default',
+            '',
+            'Own this task: [OBJECTIVE]',
+            'You are the decision owner. Stop if the idea is not worth pursuing.',
+            '',
+            'THIS SEND IS PHASE 1 ONLY — RESEARCH.',
+            'Ask @x-research to investigate external evidence and return only',
+            'findings that materially affect the decision.',
+            'Do not start implementation. Do not call this done.',
+            '',
+            'After this room settles I will send PHASE 2 (decision),',
+            'then PHASE 3 (feasibility via @coder) only if we are still a GO.')},
+    {h:'The one-shot cascade, for when you insist',
+     p:'<p>If you paste all five phases in one message anyway, the honest expectation is: you will get research plus a partial decision, and you will lose implementation/verification to the cap. Read the last round. If it did not reach FINAL, it is not final.</p>',
+     code:C('@default Own this task: [OBJECTIVE]',
+            'Use this sequence, knowing the room caps at 3 rounds / 10 messages.',
+            'If you cannot finish, say which phase you reached and stop.',
+            '',
+            'PHASE 1 — RESEARCH. Ask @x-research for material findings only.',
+            'PHASE 2 — DECISION. If not worth pursuing, stop.',
+            'PHASE 3 — FEASIBILITY. If it survives, ask @coder for the smallest experiment.',
+            'PHASE 4 — REVIEW. Does the experiment test the original thesis?',
+            'PHASE 5 — FINAL: Decision, Evidence, Proposed action, Verification,',
+            'What would change the decision.')},
+    {h:'Stop the cascade when evidence kills it',
+     p:'<p>A team that continues mechanically after a NO-GO is not thorough. It is wasting the remaining rounds. Instruction: <i>If new evidence invalidates the original direction, stop the cascade instead of continuing.</i></p>'}
+  ],
+  lab:{title:'Feel the round cap, then install gates',
+    steps:[
+      'Pick a real idea that would need research, a go/no-go, and a technical check.',
+      'Paste the one-shot five-phase cascade into a 3-Bot room in a <b>single</b> send. When the room settles, mark which phase it actually reached. Count messages.',
+      'Run the same objective again as gated sends: Phase 1 only. Then you send Phase 2. Then Phase 3 only if GO.',
+      'Compare completeness and whether a NO-GO could have saved the later turns.',
+      '<b>Break it deliberately:</b> on a question you already know is a NO-GO, omit the stop instruction and watch the team keep designing.'],
+    verify:'You have a counted one-shot run that did not finish all five phases, and a gated run that either stopped at NO-GO or reached a real FINAL.'},
+  gotchas:[
+    {s:'trap',t:'The room went silent, so the cascade finished',d:'Silence is the settle condition or the cap, not a certificate of completeness. Read the last message and name the phase. If it is not FINAL, you still owe another send — or a stop.'},
+    {s:'trap',t:'Five phases, one send, “Coordinator will sort it”',d:'Coordinator cannot spend rounds the product will not give. This is the highest-value correction to the original runbook.'},
+    {s:'cost',t:'Skipping the GO/NO-GO gate',d:'Implementation turns are the expensive ones (Coder, tools, repo). A weak research phase that is allowed to proceed is how you burn a afternoon on a bad idea the Researcher already doubted.'},
+    {s:'ok',t:'A two-phase job should not be written as five',d:'The cascade template is for when order matters. Direct specialist (Pattern A) is still the default for a one-hop question.'}
+  ],
+  quiz:[
+    {q:'Why can a five-phase cascade not be trusted as a single group send?',a:'Group rooms hard-cap at 3 serial rounds and 10 messages per user send, then settle on a silent round. Phases 4–5 are routinely amputated while the room looks finished. Split phases across user sends (gates).'},
+    {q:'What is a gate, in this runbook?',a:'A forced stop between expensive phases: after research, is it worth pursuing? After feasibility, is a minimal implementation sound? Each gate is a new user send, or a NO-GO that ends the work.'},
+    {q:'What should Coordinator do if evidence invalidates the original direction mid-cascade?',a:'Stop. Do not continue mechanically through remaining phases. Return a NO-GO with the evidence that killed it.'}
+  ],
+  docs:[['Bot Mode — group rounds and caps','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode']]
+},
+
+{
+  id:'p7', n:'07', title:'The group room', layer:'l3', layerLabel:'Enforce',
+  time:'40–60 min', pre:'Phase 06',
+  objective:'You treat a group room as a <b>shared decision workspace with a durable identity and a short working memory</b>, not as a channel that magically remembers forever.',
+  concepts:[
+    {h:'How a room is built',
+     p:'<p>Right-click a local Bot → Manage groups, or use New Group Chat. Local membership is stored in backend-synced profile metadata and follows that profile across desktops. Connections Bots join through the New Group Chat picker and stay source-qualified. Open chat on a group row of 2–6 Bots.</p>'},
+    {h:'Each member has its own Group: name session',
+     p:'<p>This is easy to miss. The room looks like one transcript. Under the hood, <b>each member keeps a persistent <code>Group: <name></code> session</b> on its own machine. Room context survives like any other conversation — per Bot, not as a single shared brain. Compaction, memory, and skills remain per profile.</p>'},
+    {h:'Rooms follow gateways, not one Desktop window',
+     p:'<p>Recent transcript, members, picture, and name are mirrored into shared profile metadata of every gateway your Desktop is connected to, with per-gateway versioning so two Desktops merge instead of overwriting. Open another Desktop against the same gateway and the room appears. Durable internal identity: <b>rename changes the display name; disband removes it permanently on every client, including ones that were offline; recreating a same-name group starts a genuinely fresh room.</b></p>'},
+    {h:'Cross-machine rooms',
+     p:'<p>New Group Chat can seat Bots from any registered connection. Each member’s turns run on its own machine. Members carry a device badge. Use '+K('@name-device')+' when names collide. Always-on machine-to-machine without a Desktop is <code>hermes peer</code>, not the Desktop relay.</p>'},
+    {h:'Keep the room while the objective holds',
+     p:'<p>The group transcript is shared working memory for <i>this</i> decision. Do not start a brand-new group for every follow-up to the same problem. Do start a fresh room when the objective genuinely changes — and remember that a same-name recreate is empty.</p>'},
+    {h:'Four reusable group modes',
+     p:'<p>Pick a mode, then add the problem. Do not invent a new social contract every time.</p>',
+     table:{head:['Mode','Workflow','Use when'],rows:[
+       ['Decision Room','Evidence → disagreement → decision','Go / no-go, buy vs build, scope cuts'],
+       ['Build Council','Research → scope → feasibility → implementation plan','New projects, architecture, automations — no writes yet'],
+       ['Incident Room','Symptoms → hypotheses → tests → diagnosis','Behavior changed, outage, “why did Hermes do that”'],
+       ['Review Board','Proposal → adversarial critique → revision','PRs, purchases, workflow redesigns']
+     ]}}
+  ],
+  lab:{title:'Birth, use, kill, and reincarnate a room',
+    steps:[
+      'Create a 3-Bot group named after a real decision you are in. Run one Decision Room round with an owner and a stop condition.',
+      'On each member’s profile, find the <code>Group: …</code> session (Desktop session list or the profile’s session store). Confirm it is per-Bot.',
+      'Rename the room. Confirm identity held (history still there) and only the display name changed.',
+      '<b>Break it deliberately:</b> disband the group, then create a new group with the <b>same name</b>. Confirm you are in a genuinely fresh room — the previous transcript is not there.',
+      'Write the rule you will actually use: when you keep a room, when you disband, when you start a new one.'],
+    verify:'You have felt that same-name recreate is a new room, and you know where each member’s Group session lives.'},
+  gotchas:[
+    {s:'trap',t:'Recreating “the same group” to continue last week’s work',d:'Disband is permanent, even for clients that were offline. A new group with the same display name is empty. If you needed the transcript, you disbanded the wrong object.'},
+    {s:'trap',t:'One transcript means one memory',d:'Each member has its own Group: name session, own MEMORY.md, own skills. Coordinator does not automatically know what Coder learned in a different DM unless someone said it in the room or wrote it down.'},
+    {s:'cost',t:'A new group per follow-up',d:'You throw away working context and spend the first round re-explaining the objective. Keep the room for the life of the decision.'},
+    {s:'ok',t:'The full orchestration log is local',d:'Docs: the shared mirror is a bounded recent-history projection; the full orchestration log stays in each Desktop’s local storage. Do not treat the other machine’s view as a complete archive.'}
+  ],
+  quiz:[
+    {q:'What is the Bot count range for a Hermes group room, and what session does each member keep?',a:'2–6 Bots. Each member keeps its own persistent Group: <name> session, so room context survives per Bot rather than as one shared brain.'},
+    {q:'What is the difference between renaming a room, disbanding it, and creating a new room with the same name?',a:'Rename changes the display name; durable identity and history remain. Disband removes it permanently on every client, including offline ones. Recreating a same-name group starts a genuinely fresh room.'},
+    {q:'Name the four reusable group modes and their workflows.',a:'Decision Room: evidence → disagreement → decision. Build Council: research → scope → feasibility → implementation plan. Incident Room: symptoms → hypotheses → tests → diagnosis. Review Board: proposal → adversarial critique → revision.'}
+  ],
+  docs:[['Bot Mode — groups and group chats','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Multi-connection Desktop','https://hermes-agent.nousresearch.com/docs/user-guide/multi-connection-desktop']]
+},
+
+{
+  id:'p8', n:'08', title:'Fire-and-forget DMs', layer:'l3', layerLabel:'Enforce',
+  time:'40–60 min', pre:'Phase 07',
+  objective:'You know when work should be a <b>group @mention</b> and when it should be a <b>canonical-chat DM</b>, and you do not wait for a reply that is not coming on this turn.',
+  concepts:[
+    {h:'message_agent exists in one kind of session',
+     p:'<p>Every canonical Bot Chat carries <code>message_agent(target=..., message=...)</code>. The tool validates the target against the live roster, prefixes <code>Message from robot <sender> (@<sender>):</code>, and delivers into the teammate’s canonical Bot Chat. It exists <b>only</b> in canonical Bot Chat sessions on Bot-Mode-managed installs. Regular chats, <b>group-room member sessions</b>, and CLI sessions never see it.</p>'},
+    {h:'Delivery is fire-and-forget',
+     p:'<p>The sender gets an acknowledgement, finishes its turn, and the reply arrives later as a background completion notification. There is <b>no live interrupt</b> of a Bot mid-conversation. The receiving Bot picks the message up when it next runs. If you write a linear script “X messages Coder, waits, then messages Default” inside one turn, you invented blocking RPC. That is <code>delegate_task</code> or a group round, not <code>message_agent</code>.</p>'},
+    {h:'The protocol is injected, not a SOUL trick',
+     p:'<p>Controlled by <code>agent.bot_mode_protocol</code> in <code>config.yaml</code> (default on). Only the canonical Bot Chat gets the protocol section; regular sessions and SOUL.md stay untouched. Disable it and the roster can still exist while DMs stop making sense to the model.</p>',
+     code:C('agent:',
+            '  bot_mode_protocol: true   # default on')},
+    {h:'Cross-machine DMs need a relay',
+     p:'<p>Desktop relays bot-to-bot DMs across Connections automatically. If Desktop closes mid-delivery, the sender is told the reply did not arrive. For always-on machine-to-machine without Desktop, register a peer:</p>',
+     code:C('hermes peer add spark --url http://spark.lan:8377 --key <API_SERVER_KEY>',
+            'hermes peer list',
+            'hermes peer dm spark < /tmp/dm.txt',
+            'hermes peer dm spark/researcher < /tmp/dm.txt'),
+     p2:'<p>Peer config also lives under <code>bot_peers</code> in <code>config.yaml</code>. Failed deliveries retry at most once for transient errors (offline, timeout, rate limit, server error). Context overflow retries with compaction. Auth, quota, and config failures do not auto-retry. Reason codes include <code>provider_auth_or_access</code>, <code>context_overflow</code>, <code>runtime_offline</code>, <code>delivery_timeout</code>, <code>target_busy</code>.</p>'},
+    {h:'Group @mention vs DM vs delegate_task',
+     p:'<p>Use the group when you want a visible shared transcript and serial rounds. Use canonical DMs when one Bot should hand a packet to another without seating a room. Use <code>delegate_task</code> when the parent must <b>block</b> on a short answer before continuing — anonymous, gone when the call ends, not a named Bot.</p>'}
+  ],
+  lab:{title:'Send a DM, then try it from the wrong session',
+    steps:[
+      'In Coordinator’s <b>canonical Bot Chat</b>, ask it to message your Researcher with a one-question brief using whatever tool it has (it should call <code>message_agent</code>).',
+      'Watch the ack. Do not stare at Coordinator’s turn for the answer. Open Researcher’s Bot Chat (or wait for the background notification) and read the attributed delivery.',
+      'Note the prefix: Message from robot … The words will not be your original sentence verbatim.',
+      '<b>Break it deliberately:</b> in a group-room session, ask Coordinator to “use message_agent to DM Coder.” Observe that the tool is not in that session. The legal move in a room is @coder.',
+      'If you run two machines, send one cross-connection DM with Desktop open, then optionally repeat with Desktop closed mid-flight if you can afford a failed delivery.'],
+    verify:'You have one successful fire-and-forget DM with attribution, and a confirmed observation that group sessions do not get message_agent.'},
+  gotchas:[
+    {s:'trap',t:'Waiting on this turn for the DM reply',d:'Sender finished. Reply is a later notification. Linear “then Coder will answer, then Default will decide” inside one Bot Chat turn will not happen. Use a group round or a second user send.'},
+    {s:'trap',t:'Asking a group member to message_agent',d:'The tool is not in group-room member sessions, regular chats, or CLI. The Bot may hallucinate a send, or do nothing useful. @mention in the room, or go to canonical Bot Chat.'},
+    {s:'trap',t:'Desktop closed, cross-machine DM “queued”',d:'Cross-connection delivery requires an active Desktop. There is no magic queue. hermes peer is the always-on path.'},
+    {s:'cost',t:'DM ping-pong instead of one room',d:'Two specialists arguing across DMs produces two transcripts and no shared working memory. If they need to disagree in public, seat a room.'}
+  ],
+  quiz:[
+    {q:'Where does the message_agent tool exist, and where does it not?',a:'Only in canonical Bot Chat sessions on Bot-Mode-managed installs. Not in regular chats, group-room member sessions, or CLI sessions.'},
+    {q:'What does fire-and-forget mean for bot-to-bot DMs?',a:'The sender gets an acknowledgement, finishes its turn, and the reply arrives later as a background completion notification. No live interrupt. The receiver picks it up when it next runs.'},
+    {q:'How do you do always-on machine-to-machine messaging if Desktop is not running?',a:'Register a peer with hermes peer add, then hermes peer dm. Desktop relay is not available once Desktop is closed; failed cross-connection deliveries notify the sender rather than queueing forever.'}
+  ],
+  docs:[['Bot Mode — bot-to-bot messaging','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Multi-connection Desktop','https://hermes-agent.nousresearch.com/docs/user-guide/multi-connection-desktop']]
+},
+
+{
+  id:'p9', n:'09', title:'Challenge and @user', layer:'l3', layerLabel:'Enforce',
+  time:'40–60 min', pre:'Phase 08',
+  objective:'You can run an adversarial loop that <b>does not fake consensus</b>, and you escalate to yourself only for decisions the team cannot make.',
+  concepts:[
+    {h:'Pattern E — Review / challenge',
+     p:'<p>Do not always use specialists sequentially. Sometimes they should attack each other’s work. Do not converge merely to reach agreement.</p>',
+     code:C('@default',
+            '',
+            'We are reviewing this proposal:',
+            '[PROPOSAL]',
+            '',
+            'Assign:',
+            '- @x-research to challenge external assumptions.',
+            '- @coder to challenge technical assumptions.',
+            '- yourself to challenge scope and necessity.',
+            '',
+            'Each Bot should identify the single biggest weakness it sees.',
+            'Then respond to each other\'s objections.',
+            'Do not converge merely to reach agreement.',
+            '',
+            'When the important disagreements are resolved or clearly identified,',
+            'give me the final decision.',
+            '',
+            'THIS SEND: one round of weaknesses only. I will gate the rebuttal.')},
+    {h:'Human escalation should be rare',
+     p:'<p>Good: “A is more secure, B is more convenient. We cannot know which tradeoff you prefer. @user: which matters more, isolation or convenience?” Bad: “@user: should we use Python or PowerShell?” The team should resolve technical choices when evidence exists.</p>',
+     table:{head:['Escalate (@user)','Do not escalate'],rows:[
+       ['Preference (taste, voice, brand)','Tool/language choice with enough evidence'],
+       ['Authorization (access, spend, publish)','Which file to edit'],
+       ['Destructive actions (delete, force-push, drop)','Routine refactors'],
+       ['Genuinely missing requirements','Questions the repo or the web can answer']
+     ]}},
+    {h:'One decision question',
+     p:'<p>When you escalate, ask exactly one decision question. A laundry list of @user pings is how needs-you becomes noise and you start ignoring the badge.</p>'},
+    {h:'Exploration is not execution',
+     p:'<p>Deliberation rooms: research, challenge, compare, decide. No writes. After the decision, a separate send to Coder: implement the approved plan, with scope and acceptance criteria, and do not redesign unless evidence forces it. Mixing them is how a Review Board “helpfully” starts editing the repo.</p>'}
+  ],
+  lab:{title:'Run a Review Board that is allowed to disagree',
+    steps:[
+      'Take a real proposal you are tempted to rubber-stamp (a tool purchase, a refactor, an automation).',
+      'Run Pattern E as <b>gated</b> sends: this send, one biggest weakness each. Next send, rebuttals. Final send, Coordinator decides, including a list of unresolved disagreements.',
+      'Force one preference question to @user. Answer it. Confirm the needs-you badge behaved as you expect.',
+      '<b>Break it deliberately:</b> in a copy of the room, add “come to consensus” and omit “do not converge merely to agree.” Save the false-peace transcript next to the adversarial one.'],
+    verify:'You have a decision that still lists at least one unresolved disagreement, or an explicit statement that there are none — not a vibe of agreement.'},
+  gotchas:[
+    {s:'trap',t:'“Come to consensus” as a success metric',d:'Bots are extremely good at agreeing. That is not review. Require the single biggest weakness per specialist, and require Coordinator to list unresolved disagreements in FINAL.'},
+    {s:'trap',t:'@user for technical coin-flips',d:'You trained the team to stop. They will. Then you are the bottleneck again. Escalate only preference, authorization, destruction, missing requirements.'},
+    {s:'trap',t:'Review Board with write tools live',d:'A Coder who can edit will “just fix it” mid-critique. Exploration rooms: no writes. Execution is a later, scoped send.'},
+    {s:'cost',t:'Unlimited rebuttal rounds',d:'You still have 3 rounds per send. Gate: weaknesses, then rebuttals, then decision. Otherwise the cap hits in the middle of the argument and silence looks like settlement.'}
+  ],
+  quiz:[
+    {q:'Name the four classes of decision that should escalate to @user.',a:'Preference decisions. Authorization decisions. Destructive actions. Genuinely missing requirements. Not technical choices the team can resolve from evidence.'},
+    {q:'What instruction prevents a Review Board from faking consensus?',a:'Each Bot identifies the single biggest weakness it sees; they respond to objections; they must not converge merely to reach agreement; Coordinator’s FINAL lists unresolved disagreements explicitly.'},
+    {q:'Why separate exploration rooms from execution sends?',a:'Deliberation Bots with write tools will wander into modifications. Research/challenge/decide with no writes; then a scoped @coder implement send with acceptance criteria, which must not redesign the approved plan unless evidence forces it.'}
+  ],
+  docs:[['Bot Mode — @user and needs you','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Security — approvals','https://hermes-agent.nousresearch.com/docs/user-guide/security']]
+},
+
+{
+  id:'p10', n:'10', title:'Four surfaces', layer:'l4', layerLabel:'Persist',
+  time:'50–80 min', pre:'Phase 09',
+  objective:'You can pick, for a given job, <b>group room, canonical DM, Kanban, cron, or delegate_task</b> — and you know what each forgets.',
+  concepts:[
+    {h:'The scarce resource is state that survives',
+     p:'<p>Group transcripts compact. Canonical chats compact (<code>/new</code> is <code>/compact</code>). Memory is 2,200 characters. <code>delegate_task</code> children disappear when the call ends. If the work must be findable after a restart, it does not belong only in a room.</p>'},
+    {h:'Pick the surface on purpose',
+     table:{head:['Surface','Shape','Survives restart?','Human in the loop?','Use it for'],rows:[
+       ['Group room','3 rounds, 10 messages, 2–6 Bots, visible transcript','As per-Bot Group: name sessions, until compacted','@user badge','Deliberation, challenge, one decision'],
+       ['Canonical DM (<code>message_agent</code>)','Fire-and-forget packet into a Bot Chat','In that Bot’s forever-chat','Indirectly','Handoff packets, not debates'],
+       ['Kanban','SQLite rows any profile or human can read/write','Yes. That is the point','block / comment / review tools','Work that crosses agents, needs audit, may pause'],
+       ['Routine / cron','<code>[bot:<name>]</code> job, result lands in that Bot’s chat','Yes, the job; the chat still compacts','On failure, depending on setup','Inbox summaries, audits, anything that should happen without a room'],
+       ['delegate_task','Blocking RPC, anonymous child','No','No','Short reasoning the parent must have before continuing']
+     ]}},
+    {h:'Kanban is not a group chat with extra steps',
+     p:'<p>Official comparison: <code>delegate_task</code> is a function call; Kanban is a work queue where every handoff is a row any profile (or human) can see and edit. Use Kanban when work crosses agent boundaries, must survive restarts, might need a human, might be picked up by a different role, or must be discoverable after the fact. Workers get a kanban toolset via <code>HERMES_KANBAN_TASK</code>; they should not shell out to <code>hermes kanban</code>. Running a standalone <code>hermes kanban daemon</code> plus the gateway dispatcher against the same db is unsupported (claim races).</p>'},
+    {h:'Routines attach to the Bot that does them',
+     p:'<p>The Routines pane docks beside chat while the Bots tab is active. Jobs are plain Hermes cron, namespaced <code>[bot:<name>] <routine></code>, visible in <code>hermes cron list</code>. Runs land in that Bot’s own chat history. “Summarize my inbox every morning” is a routine on the inbox Bot, not a standing group room that you ping at 7am.</p>'},
+    {h:'Hermes also learns; that is a different kind of persist',
+     p:'<p>Skills are procedural memory the agent writes from experience (agentskills.io compatible). They are per profile. A Coder that figured out your test command should write a skill, not hope the group transcript still contains it next Tuesday. Memory nudges after turns may save facts; they will not save a project plan.</p>'}
+  ],
+  lab:{title:'The same job on two surfaces',
+    steps:[
+      'Take a recurring job you actually want (weekly changelog, inbox triage, dependency audit).',
+      'Run it once in a group room. Note what would vanish if the room compacted tomorrow.',
+      'Attach it as a Routine on the responsible Bot. Confirm the job shows as <code>[bot:<name>]</code> in <code>hermes cron list</code>.',
+      'If the job is a multi-step project rather than a pulse, create a Kanban task assigned to a named profile instead of (or in addition to) the room.',
+      '<b>Break it deliberately:</b> put a long project only in a group room, then compact Coordinator’s Group session. Try to reconstruct owners, acceptance criteria, and unfinished work from memory. Write down what died.'],
+    verify:'You have one job living on cron or Kanban, and a written list of what a compacted room failed to keep.'},
+  gotchas:[
+    {s:'trap',t:'The room is the project tracker',d:'After compaction you have vibes. Kanban rows and skills survive. Rooms are for deciding; trackers are for remaining work.'},
+    {s:'trap',t:'delegate_task to a named Bot',d:'delegate_task children are anonymous and vanish. Named durable workers are profiles, rooms, or Kanban assignees. Do not confuse blocking RPC with a teammate.'},
+    {s:'trap',t:'Two kanban dispatchers on one db',d:'Gateway-embedded dispatcher plus a standalone hermes kanban daemon causes claim races and is not supported. Daemon is deprecated.'},
+    {s:'cost',t:'A 24/7 group room for a heartbeat job',d:'You will pay group rounds forever for something cron would drop in one Bot’s chat. Match surface to pulse vs decision vs project.'},
+    {s:'ok',t:'Skills are how Coder remembers how you build',d:'If you keep re-explaining test commands in rooms, you are declining the learning loop the product is built around.'}
+  ],
+  quiz:[
+    {q:'When do you use Kanban instead of a Bot Mode group chat?',a:'When work crosses agent boundaries, must survive restarts, might need a human, might be picked up by a different role, or must be discoverable after the fact. Group chats are deliberation with a 3-round cap; they are not a durable queue.'},
+    {q:'How are Bot routines named in hermes cron list, and where do runs land?',a:'Namespaced [bot:<name>] <routine>. Runs land in that Bot’s own chat history.'},
+    {q:'Why is delegate_task the wrong tool for a named teammate handoff?',a:'It is a blocking RPC to an anonymous child that disappears when the call ends. No persistent identity, no human-in-the-loop, no audit row. Use message_agent, a group @mention, or Kanban depending on whether you need a packet, a visible debate, or durable work.'},
+    {q:'Name one thing a compacted group room forgets that a Kanban row does not.',a:'Owner, remaining work, comments, blockers, and the audit trail of transitions. The room keeps a per-Bot session until compacted; the board is SQLite rows designed to outlive that.'}
+  ],
+  docs:[['Kanban','https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban'],['Cron','https://hermes-agent.nousresearch.com/docs/user-guide/features/cron'],['Skills','https://hermes-agent.nousresearch.com/docs/user-guide/features/skills'],['Bot Mode — routines','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode']]
+},
+
+{
+  id:'p11', n:'11', title:'Capture, then stop', layer:'l4', layerLabel:'Persist',
+  time:'35–55 min', pre:'Phase 10',
+  objective:'After a decision you can <b>lift durable knowledge out of the room</b> and halt the team so it does not invent a sequel.',
+  concepts:[
+    {h:'Group chat is working context',
+     p:'<p>When something important emerges: group deliberation → final synthesis → durable capture. That is Scribe’s job, on request, after the work — not during it.</p>',
+     code:C('@default',
+            '',
+            'Distill this completed discussion into a durable note containing only:',
+            '- decision',
+            '- reasoning',
+            '- evidence',
+            '- rejected alternatives',
+            '- next action',
+            '- unresolved questions',
+            '',
+            'Do not include conversational filler.',
+            'Then stop. Do not generate follow-up projects.')},
+    {h:'The compact everyday prompt',
+     p:'<p>You do not need the huge master prompt every time. This is the sweet spot:</p>',
+     code:C('@default',
+            '',
+            'Own this outcome:',
+            '[OBJECTIVE]',
+            '',
+            'Use @x-research for external evidence and @coder for technical',
+            'feasibility or implementation when useful.',
+            '',
+            'Delegate rather than having everyone answer independently.',
+            'Bots may @mention each other when a finding creates a question',
+            'for another role.',
+            '',
+            'Challenge assumptions, avoid duplicate work, and pass when you',
+            'have nothing new to add.',
+            '',
+            'Do prerequisite work before downstream work.',
+            'Escalate to @user only for a decision the team genuinely cannot make.',
+            '',
+            'Finish with:',
+            'Decision',
+            'Why',
+            'Next action',
+            'Verification',
+            '',
+            'Then stop.')},
+    {h:'Stop is a management decision',
+     p:'<p>Once the objective is resolved, stop. Do not generate additional ideas, tasks, or follow-up projects unless asked. Bot Mode will happily keep being helpful until the cap. Helpful sequels are scope creep with attribution.</p>'},
+    {h:'Where the note goes',
+     p:'<p>A Scribe dump in the room is still in the room. Put it in the place you actually look: a skill for standing procedure, MEMORY.md for a 2,200-character fact, a Kanban comment for remaining work, or a file you own. If you cannot say where the note will live before you ask for it, you are not capturing, you are summarizing for the scrollback.</p>'}
+  ],
+  lab:{title:'Close a real room like an operator',
+    steps:[
+      'Take a group discussion you already finished (or finish a small one now).',
+      'Run the distill prompt. Move the note out of the room into its real home (file, Kanban, skill, MEMORY).',
+      'Send the stop line. Confirm the team does not tack on a “next project.”',
+      '<b>Break it deliberately:</b> omit “then stop” and add nothing else. Count the unsolicited follow-up ideas. That number is why the stop condition exists.',
+      'Delete or archive filler from the durable store so only the six fields remain.'],
+    verify:'A durable note exists outside the room with decision, evidence, rejected alternatives, next action, and unresolved questions — and the room did not spawn a sequel after stop.'},
+  gotchas:[
+    {s:'trap',t:'The synthesis stayed in the room',d:'You will lose it to compact. Capture means a home that is not the transcript.'},
+    {s:'trap',t:'Scribe ran during the debate',d:'You get a live blog, not a decision record. Capture after Coordinator’s FINAL.'},
+    {s:'cost',t:'Asking for “action items and also a roadmap and also related ideas”',d:'That is how stop fails. Six fields, then halt.'},
+    {s:'ok',t:'Unresolved questions are first-class output',d:'A clean decision that hides disagreement is a Review Board failure. Keep the unresolved list.'}
+  ],
+  quiz:[
+    {q:'Name the six fields of a durable capture note.',a:'Decision. Reasoning. Evidence. Rejected alternatives. Next action. Unresolved questions. No conversational filler.'},
+    {q:'When should Scribe speak?',a:'After the work, to capture a finished decision into a home outside the room. Not during the debate, and not in every group by default.'},
+    {q:'What is the stop condition for a Bot Mode work session?',a:'Once the objective is resolved, stop. Do not generate additional ideas, tasks, or follow-up projects unless asked. Owner, gates, and stop are management decisions the product will not guess.'}
+  ],
+  docs:[['Bot Mode','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Memory','https://hermes-agent.nousresearch.com/docs/user-guide/features/memory'],['Skills','https://hermes-agent.nousresearch.com/docs/user-guide/features/skills']]
+},
+
+{
+  id:'p12', n:'12', title:'Ship the operating system', layer:'l4', layerLabel:'Persist',
+  time:'1–2 h', pre:'All phases',
+  objective:'You can run one real job through the stack and <b>state what this path refuses to cover</b>.',
+  concepts:[
+    {h:'The invariants, with teeth',
+     p:'<ol><li><b>One owner of the final answer.</b> Usually Coordinator. No owner, no piece of work.</li><li><b>@mention is a scope control.</b> No mention invites everyone. PASS is a successful turn.</li><li><b>The round cap is physics.</b> 2–6 Bots, 3 rounds, 10 messages. Multi-phase work is gated across sends.</li><li><b>message_agent is fire-and-forget and canonical-chat-only.</b> Groups @mention. Blocking RPC is delegate_task. Durable work is Kanban or cron.</li><li><b>Profiles isolate memory, not the filesystem.</b> Hide is not stop. /new in Bot Chat is /compact.</li><li><b>Capture leaves the room. Then stop.</b> Owner, gates, and stop are management decisions. Do not ask the Bots to invent them.</li></ol>'},
+    {h:'Ship checklist against one live objective',
+     p:'<p>Work this top to bottom on something you actually need this week.</p>',
+     table:{head:['#','Check'],rows:[
+       ['1','Roster inventory exists; three caps are written down'],
+       ['2','One specialist can finish a solo job in canonical chat'],
+       ['3','Four roles have job-shaped titles, descriptions, SOULs, and toolsets'],
+       ['4','You have a Pattern A and a Pattern B that you have actually run'],
+       ['5','A cascade is split by gates; a one-shot five-phase send has been felt and retired'],
+       ['6','A Review Board listed disagreements instead of faking peace'],
+       ['7','Recurring work is on cron or Kanban, not only in a room'],
+       ['8','The last finished decision has a durable note outside the transcript'],
+       ['9','Stop is in the prompt; sequels are opt-in']
+     ]}},
+    {h:'What this path deliberately does not cover',
+     p:'<p>This instrument is <b>Bot Mode operations</b>: how a human runs a named team inside Hermes Desktop. It is not:</p><ul><li>Hermes installation, providers, or first-time setup</li><li>Writing MCP servers, plugins, or the Bot Mode plugin itself (archived; now bundled)</li><li>RL / trajectory training, batch evals</li><li>Gateway platform setup in depth (Telegram, Discord, Slack, Teams, …)</li><li>Voice Mode, HUD Mode, pixel pets, blob-face cosmetics — except as flavour you may ignore</li><li>Kanban internals and the v1 spec PDF</li><li>Grok Bot as a product you operate (it is a cousin, below)</li></ul><p>Next horizons, each with its own docs: <a href="https://hermes-agent.nousresearch.com/docs/getting-started/installation">Install</a>, <a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging">Messaging gateway</a>, <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp">MCP</a>, <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban">Kanban</a>, <a href="https://x.ai/news/introducing-grok-bot">Grok Bot</a>.</p>'},
+    {h:'Transfer: Grok Bot is the same metaphor with different physics',
+     p:'<p>xAI launched Grok Bot on 11 Aug 2026 as always-on agents with their own cloud computer, able to message each other, sit in group chats, pass work, assign ownership, and pull you in for judgment calls. Hermes Bot Mode is the self-hosted, MIT, model-agnostic version of that metaphor: a Bot is a profile on <b>your</b> machine, you pin any model, memory stays on disk you control.</p><p>Do not copy this runbook onto Grok Bot without checking isolation. Third-party writeups claim Grok Bots share one user-scoped VM (so named Bots are not security boundaries). Treat that as <span class="unv">unverified here against xAI primary docs</span> and verify before you put secrets on “the researcher.” The operating advice still transfers: one owner, scoped mentions, gates, stop, capture out of the room.</p>'},
+    {h:'The rule to remember',
+     p:'<p>Don’t prompt the Bots for answers. Give the team an outcome, assign ownership, define the handoff logic, and let specialists contribute only where they add information. That is the difference between three chatbots and a small agent team. Bot Mode will handle more of the middle over time — @mentions, passing, follow-up rounds — but <b>objective, owner, gates, and stop stay explicit</b>. Those are management decisions, not things you want the Bots guessing.</p>'}
+  ],
+  lab:{title:'Run one real job through the whole stack',
+    steps:[
+      'Pick a live objective that needs at least two roles (evidence + a decision, or diagnosis + a patch plan).',
+      'Work the ship checklist. Skip nothing. If a row is false, that is the next phase to repeat, not a row to tick.',
+      'Use gates. Capture out of the room. Stop.',
+      'Hand the durable note to future-you (or to a human) cold. Every question they ask is a missing field.',
+      '<b>Break it deliberately:</b> on a throwaway copy, run the same job with no owner, no gates, no stop. Keep that transcript as the before-picture.'],
+    verify:'Someone else (or you, tomorrow) can act from the durable note without reading the group transcript.'},
+  gotchas:[
+    {s:'ok',t:'Configuration is a response to evidence',d:'Every SOUL line and every extra Bot should trace to a specific failure you have now felt: unscoped rooms, fake consensus, amputated cascades, compacted project trackers. Speculative staffing is a roster you will not maintain.'},
+    {s:'trap',t:'Porting the runbook onto a product whose caps you have not read',d:'Grok Bot, Claude chats, and Hermes rooms share a metaphor. They do not share 2–6 / 3 / 10, message_agent, or profile isolation. Re-read the instrument (Phase 00) on the other product before you paste these prompts.'},
+    {s:'cost',t:'A twelve-Bot “org”',d:'A room maxes at 6. Hide the rest. The operating system is small on purpose.'},
+    {s:'stale',t:'Installing Hermes-Bot-Mode as a plugin',d:'The GitHub repo is archived. Bot Mode ships bundled and default-on in Hermes Desktop (toggle in Settings → Plugins) as of hermes-agent v0.20.x. No manual plugin install on current Desktop builds.'}
+  ],
+  quiz:[
+    {q:'State the central invariant of this site in one sentence.',a:'Give the team an outcome, assign one owner, define handoff logic (mentions, gates, stop), and let specialists speak only where they add information — because the product will not infer sequence, ownership, or when to halt.'},
+    {q:'Recite the six teeth-invariants of the operating system.',a:'(1) One owner of the final answer. (2) @mention scopes the round; PASS is success. (3) 2–6 / 3 rounds / 10 messages is physics; gate multi-phase work. (4) message_agent is fire-and-forget and canonical-only. (5) Profiles isolate memory, not the filesystem; hide is not stop; /new is /compact. (6) Capture leaves the room, then stop.'},
+    {q:'Name three things this path explicitly excludes.',a:'Any three of: Hermes install/providers, MCP/plugin authoring, RL training, messaging-gateway setup in depth, Voice/HUD/pets, Kanban internals, operating Grok Bot as a product.'}
+  ],
+  docs:[['Bot Mode','https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode'],['Hermes Agent docs','https://hermes-agent.nousresearch.com/docs/'],['Introducing Grok Bot','https://x.ai/news/introducing-grok-bot'],['hermes-agent GitHub','https://github.com/NousResearch/hermes-agent']]
+}
+
+];
+
+const TREES = [
+{title:'Which surface do I use?', rows:[
+  ['One obvious specialist, one answer','Canonical Bot Chat (Pattern A)','Cheapest loop; no round cap politics'],
+  ['Need visible disagreement or a shared decision','Group room (2–6)','Serial rounds, @mention scope, then capture out'],
+  ['Order matters: research then go/no-go then build','Gated group sends','One phase per send; the 3-round cap is physics'],
+  ['A packet from Bot A to Bot B, no debate','message_agent in canonical chat','Fire-and-forget; not in group sessions'],
+  ['Parent must have a short answer before continuing','delegate_task','Blocking RPC; anonymous child; vanishes'],
+  ['Work must survive restart, change owners, or wait on a human','Kanban','SQLite row, not a transcript'],
+  ['It should happen even if you do not open a room','Routine / cron on that Bot','[bot:name] job; result lands in that Bot’s chat']
+]},
+{title:'Who should speak in this round?', rows:[
+  ['You already know the specialist','@that-bot only','Unscoped rooms invite everyone'],
+  ['Coordinator must decide, specialists on call','@default, plus “pull X only if …”','Owner first; pull is optional'],
+  ['You want a fight','@ each critic with one weakness each','Pattern E; gate the rebuttal send'],
+  ['Someone already said it','PASS','A silent round is settle, not failure'],
+  ['Only you can prefer, authorize, or destroy','@user, one question','Needs-you badge; do not dump a list'],
+  ['Scribe is in the room and the decision is not final','Scribe PASSES','Capture after FINAL, in a home outside the room']
+]},
+{title:'Direct, delegate, cascade, or organic pull?', rows:[
+  ['Specialist is obvious','Pattern A — you assign','Keep the others out of the room'],
+  ['Outcome is clear, expertise is not','Pattern B — Coordinator routes','Say who owns the final answer'],
+  ['Sequence itself is the risk','Explicit cascade with gates','Do not paste five phases in one send'],
+  ['Next expert depends on a finding','Allow @pulls, still gated','Organic pull still dies at 3 rounds'],
+  ['You want them to attack a proposal','Pattern E — Review Board','Forbid fake consensus']
+]},
+{title:'The room is spinning or went quiet. What now?', rows:[
+  ['Hit 10 messages or 3 rounds mid-thought','New user send, or stop','Silence is not FINAL; name the phase you reached'],
+  ['Three mini-answers, no decision','Name an owner, resend','“Everyone owns this” is the bug'],
+  ['Repeating each other','Add the PASS standing order','Duplicate work is a SOUL failure'],
+  ['Helpful sequels after the decision','“Then stop.”','Stop is management, not a vibe'],
+  ['Needs-you badge, you have been ignoring it','Answer one question or tell them to proceed','A ignored @user trains bad escalation'],
+  ['Work must continue tomorrow','Kanban row + durable note','Do not reincarnate a disbanded same-name room and expect history']
+]},
+{title:'Where does this instruction go?', rows:[
+  ['Standing job boundary, pass/escalation rules','That Bot’s SOUL.md','Not the project-of-the-week'],
+  ['This job’s objective, sequence, stop','The room message','SOUL should not inherit last week’s war'],
+  ['Org chart other Bots must see','Title + description','Injected into canonical Bot Chat roster'],
+  ['How we always build/test this repo','A skill on Coder','Procedural memory, per profile'],
+  ['A 2,200-character fact for every session','MEMORY.md','Frozen at session start; no auto-compact'],
+  ['Remaining work, owner, blocker','Kanban row','Transcripts compact; rows do not'],
+  ['Project conventions for any agent in this repo','AGENTS.md / .hermes.md','Loaded as project context; one type wins']
+]},
+{title:'Hermes Bot Mode or Grok Bot?', rows:[
+  ['You need model choice, local disk, MIT, self-host','Hermes Bot Mode','Any model per Bot; profiles on your machine'],
+  ['You want a managed cloud computer and zero install','Grok Bot','xAI cloud, xAI models; launched 11 Aug 2026'],
+  ['You need Bots on different machines, different models','Hermes, plus Connections / hermes peer','Grok Bot is not this'],
+  ['You are writing operating prompts (owner, gates, stop)','Either, after you re-read that product’s caps','Metaphor transfers; physics do not'],
+  ['Secrets on a “researcher” Bot','Check isolation first','Hermes: memory isolated, disk not. Grok Bot VM sharing is unverified here']
+]}
+];
+
+const REF = [
+{id:'r-caps', title:'Hard caps and defaults',
+ note:'The numbers that bound behaviour. Volatile product numbers are dated.',
+ head:['Thing','Value','As of'],
+ rows:[
+   ['Bots per group room','2–6','Bot Mode docs, 24 Aug 2026'],
+   ['Serial rounds per user send','3','same'],
+   ['Messages per send','10','same'],
+   ['Settle condition','A full round stays silent','same'],
+   ['Active-now window','Wrote within 90 seconds, plus gateway-busy','same'],
+   ['MEMORY.md / USER.md','2,200 / 1,375 characters','Memory docs'],
+   ['Subdirectory context file cap','8,000 characters per file','Context files docs'],
+   ['message_agent retries (transient)','At most once','Bot Mode docs'],
+   ['agent.bot_mode_protocol','true (default)','config.yaml'],
+   ['Bot Mode in Desktop','Bundled, default-on','v0.20.x; plugin repo archived'],
+   ['hermes-agent latest noted here','v0.20.5 (19 Aug 2026)','GitHub releases — will rot']
+ ],
+ foot:'Caps are the reason gated sends exist. Version numbers are the first fact to distrust on a later visit.'},
+
+{id:'r-iso', title:'Profile isolation matrix',
+ note:'A Bot is a profile. This table is the whole security conversation most people skip.',
+ head:['Asset','Per-profile?','Notes'],
+ rows:[
+   ['config.yaml, model pin, toolsets, MCP','Yes','Different brains, different tools'],
+   ['SOUL.md, skills, sessions, cron, state.db','Yes','Duplicate copies memory; --clone does not'],
+   ['MEMORY.md, USER.md','Yes','Frozen at session start'],
+   ['.env / tokens','Per-profile file; new Bots share OAuth pool by default','Older gateways copy/fork instead'],
+   ['Host filesystem (local terminal)','No','Same OS user; not a sandbox'],
+   ['git/ssh HOME','No unless terminal.home_mode: profile','Default global'],
+   ['Project context (AGENTS.md, .hermes.md)','By cwd, not by Bot','First match wins among context types'],
+   ['Kanban board','Shared across profiles unless you make boards','Named workers, one queue']
+ ]},
+
+{id:'r-patterns', title:'The five interaction patterns',
+ note:'From the source runbook, with the round-cap correction applied.',
+ head:['Pattern','You say','Product physics to remember'],
+ rows:[
+   ['A Direct specialist','@coder / @x-research only','Do not seat the others'],
+   ['B Delegation','@default owns the outcome','Owner required or it becomes a brainstorm'],
+   ['C Explicit cascade','Phase N only, then you gate','5 phases in 1 send die at 3 rounds'],
+   ['D Bot-to-bot follow-up','Allow @pulls; or message_agent','DMs are async; groups are serial rounds'],
+   ['E Review / challenge','Biggest weakness each; no fake peace','Gate weaknesses → rebuttal → FINAL']
+ ]},
+
+{id:'r-modes', title:'Four group modes',
+ head:['Mode','Workflow','No-writes?'],
+ rows:[
+   ['Decision Room','Evidence → disagreement → decision','Yes, until a later execution send'],
+   ['Build Council','Research → scope → feasibility → implementation plan','Yes — plan, do not patch'],
+   ['Incident Room','Symptoms → hypotheses → tests → diagnosis','Tests may run; production writes stay gated'],
+   ['Review Board','Proposal → adversarial critique → revision','Yes until revision is approved']
+ ]},
+
+{id:'r-tools', title:'Handoff primitives compared',
+ head:['Primitive','Blocking?','Named Bot?','Visible to the room?','Lives in'],
+ rows:[
+   ['Group @mention','Serial rounds, then settle','Yes','Yes','Per-Bot Group: name session'],
+   ['message_agent','No (fire-and-forget)','Yes','No — target’s Bot Chat','Canonical Bot Chat only'],
+   ['delegate_task','Yes','No (anonymous)','No','Parent context, then gone'],
+   ['Kanban assign','No','Yes (assignee profile)','Board, not room','SQLite row'],
+   ['cron / routine','No','Yes (namespaced job)','Bot’s own chat','Hermes cron']
+ ]},
+
+{id:'r-cli', title:'CLI index for Bot Mode operators',
+ head:['Command','Does'],
+ rows:[
+   ['hermes -p <bot> chat','Same agent as that Bot’s Desktop chat'],
+   ['hermes profile list / create / rename / delete','Roster, on disk'],
+   ['hermes profile create x --clone','Config, .env, SOUL, skills; fresh memory'],
+   ['hermes profile create x --clone-all','Almost everything except history'],
+   ['hermes cron list','Includes [bot:name] routines'],
+   ['hermes peer add / list / dm','Always-on cross-machine DMs without Desktop'],
+   ['hermes pets','Pixel-pet gallery (cosmetic; ignore if you want)']
+ ]},
+
+{id:'r-mentions', title:'@mention resolution',
+ head:['You type','Resolves?'],
+ rows:[
+   ['@profile-name','Yes, live roster'],
+   ['@friendly-title slugs (@research-buddy, @researchbuddy)','Yes, after rename'],
+   ['Old profile name after rename','Yes — autocomplete still matches'],
+   ['@name-device','Yes — disambiguates cross-machine duplicates'],
+   ['@user','Escalation; group row needs-you badge'],
+   ['Unknown @ or an email address','Passes through untouched — nobody is told']
+ ]},
+
+{id:'r-context', title:'What loads into a session (not Bot-specific)',
+ note:'Context files are a Hermes-wide prompt stack. Bots still load them from cwd / HERMES_HOME.',
+ head:['Slot','File','Rule'],
+ rows:[
+   ['Always, slot #1','SOUL.md in HERMES_HOME','Persona; not from the project directory'],
+   ['One project context wins',' .hermes.md → AGENTS.override.md → AGENTS.md → CLAUDE.md → .cursorrules','First match at startup'],
+   ['Progressive','Same set, up to 5 parents from tool paths','Appended to tool results; 8k cap; once per directory per session'],
+   ['Memory snapshot','MEMORY.md, USER.md','Frozen at session start'],
+   ['Bot Chat extra','Teammate roster + bot_mode_protocol','Canonical Bot Chat only']
+ ]},
+
+{id:'r-final', title:'FINAL output shape (Coordinator)',
+ note:'Paste this as the required ending of any owned session.',
+ head:['Field','Contains'],
+ rows:[
+   ['Decision','The call. Not a summary of opinions.'],
+   ['Evidence','Only what actually moved the call'],
+   ['Risks','Material risks only'],
+   ['Next action','One concrete action'],
+   ['Verification','How we know it worked'],
+   ['Would change the decision','The kill-criteria'],
+   ['Unresolved','Disagreements still live'],
+   ['Stop','No sequels unless asked']
+ ]},
+
+{id:'r-master', title:'MASTER session prompt',
+ note:'The long form. Everyday use the compact prompt in Phase 11.',
+ head:['Section','Text to paste'],
+ rows:[
+   ['Header','BOT MODE WORK SESSION'],
+   ['OBJECTIVE','[What outcome do I actually want?]'],
+   ['DECISION OWNER','@default owns the final result.'],
+   ['TEAM','Use specialist Bots only when their expertise materially helps.'],
+   ['RULES','(1) Do not have every Bot answer independently. (2) Delegate by role. (3) If one Bot’s answer creates a question, @mention that specialist. (4) Challenge assumptions; do not simply agree. (5) Pass if nothing new. (6) Do not duplicate completed work. (7) Prerequisite work before downstream work. (8) If evidence kills the direction, stop the cascade. (9) Escalate to @user only for preference, authorization, destruction, or missing requirements — one question. (10) Do not expand scope.'],
+   ['PHYSICS','Group sends cap at 3 rounds / 10 messages / 2–6 Bots. Multi-phase work is gated across sends. message_agent is canonical-chat only and fire-and-forget.'],
+   ['FINAL','Decision, Evidence, Risks, Next action, Verification. Then STOP.']
+ ]}
+];
+
+const AUDIT = {
+ intro:'The source is a Bot Mode Operating Runbook written as management advice for a four-role Hermes team (Coordinator, X-Researcher, Coder, Scribe). As operating advice it is strong: owner, gates, pass, stop, capture. As a description of Hermes Bot Mode it is incomplete, and in one place mechanically wrong — it writes five-phase cascades as if one group send could finish them. Official Bot Mode caps are 3 serial rounds and 10 messages per send. That gap is the reason this site exists.',
+ groups:[
+ {label:'Holds up', tag:'holds', items:[
+   {c:'Stop thinking “I am chatting with several assistants.” Think “I am operating a small team with roles, handoffs, review, and escalation.”',
+    f:'Correct, and it matches how Nous documents Bot Mode: named Bots, group rooms, @mentions, passing, @user. The product is a roster, not a better chatbot.'},
+   {c:'Give one Bot ownership of the final answer. Usually Coordinator.',
+    f:'Correct as operating advice. The product will not assign an owner. Without one, unscoped rooms produce several mini-answers. Mapping Coordinator to the undeletable default profile is a solid convention.'},
+   {c:'Do not assume Bots will infer an exact dependency chain. Tell them.',
+    f:'Correct, and stronger than the source knew: there is no cascade engine at all. Desktop will run up to three serial rounds and honour @mentions. Sequence is on you.'},
+   {c:'If another Bot has already covered your contribution, pass.',
+    f:'Documented product behaviour. A Bot replies only when it has something new; a full silent round settles the room. PASS is success.'},
+   {c:'@user only for preference, authorization, destruction, or missing requirements.',
+    f:'Matches the product’s @user / needs-you badge, and is good management. The product does not enforce the taxonomy; SOUL and the room prompt do.'},
+   {c:'Keep a room while the decision context is the same; start a fresh room when the objective changes.',
+    f:'Correct. Add the product warning the source omitted: disband is permanent, and a same-name recreate is a new empty room.'},
+   {c:'Capture durable knowledge out of the room (Scribe after FINAL, not during).',
+    f:'Correct. Group sessions compact; MEMORY.md is tiny; Kanban and skills are the durable stores.'},
+   {c:'Exploration rooms should not write; execution is a later scoped send to Coder.',
+    f:'Correct. A Coder with write tools in a Review Board will “just fix it” mid-critique.'}
+ ]},
+ {label:'Stale or incomplete', tag:'stale', items:[
+   {c:'“Group rooms can continue for multiple rounds before settling.”',
+    f:'True but uncapped in the source. Official cap: <b>3 serial rounds</b> and <b>10 messages per send</b>, then settle on a silent round. “Multiple rounds” is not “until the cascade is done.”'},
+   {c:'Pattern C’s five-phase reusable cascade as a single prompt.',
+    f:'Good phase language, wrong packaging. One send cannot be trusted to finish research → decision → feasibility → review → FINAL. Gate across user sends. This is the source’s most expensive omission.'},
+   {c:'Pattern D’s linear “X then Coder then Default” flow via @mentions.',
+    f:'In a group, mentioned Bots speak in serial rounds, not as blocking RPC. In DMs, message_agent is fire-and-forget — the sender finishes its turn before the reply exists. The diagram in the source is a desired protocol, not a product guarantee.'},
+   {c:'Roles named X-Researcher / Coder / Scribe as if they were part of the setup.',
+    f:'User convention only. Hermes ships profiles, not this org chart. Title, description, SOUL, and tool ticks are how you install it (Phase 03).'},
+   {c:'“Bot Mode will do some coordination automatically.”',
+    f:'Partly. Speak-or-pass, @pulls, and three rounds are automatic. Ownership, gates, stop, and surface choice (room vs Kanban vs cron) are not.'}
+ ]},
+ {label:'Wrong', tag:'wrong', items:[
+   {c:'Implied: a five-phase cascade, fully run, in one group conversation started by one user message.',
+    f:'Mechanically false against current Bot Mode docs. 3 rounds / 10 messages. Treat any one-shot FINAL as a claim to verify, not a result to trust.'},
+   {c:'Implied: bot-to-bot DMs can stage a synchronous pipeline (X waits for Coder waits for Default) inside one turn.',
+    f:'message_agent is fire-and-forget and is absent from group-room sessions. Synchronous child work is delegate_task (anonymous, ephemeral). Named, durable, blocking pipelines are a thing you assemble with gates — they are not a tool.'}
+ ]},
+ {label:'Missing entirely', tag:'gap', items:[
+   {c:'A Bot is a profile, with a disk layout and an isolation matrix.',
+    f:'~/.hermes/profiles/<name>/, default at ~/.hermes, memory isolated, filesystem not, home_mode global by default, never two writers on one profile directory. The source never tells you what you are actually operating.'},
+   {c:'Canonical Bot Chat forever-chat: /new reroutes to /compact.',
+    f:'If you do not know this, you will think you reset a relationship you only compacted.'},
+   {c:'Hide is display-only; routines keep running; @mentions still resolve.',
+    f:'The silent “I turned it off” failure. Delete is the real kill; default cannot be deleted.'},
+   {c:'message_agent, bot_mode_protocol, fire-and-forget, canonical-only, Desktop relay, hermes peer.',
+    f:'The source talks about Bots pulling each other in without distinguishing group @mention from DM, or Desktop-present from always-on peer.'},
+   {c:'Hard caps 2–6 / 3 / 10, Active-now 90s, needs-you badge, @name-device, same-name recreate is empty.',
+    f:'These are the physics. The runbook is a management layer that does not list them.'},
+   {c:'Kanban vs group vs delegate_task vs cron — four different persistences.',
+    f:'The source’s “durable capture” is a Scribe note. Hermes already has a durable multi-agent board and per-Bot cron. Using the room as a tracker is how work dies to compact.'},
+   {c:'Per-Bot model pins, toolset ticks, shared OAuth pool, SOUL not applying to open sessions, memory frozen at session start (2,200 / 1,375).',
+    f:'Staffing and cost-control details the runbook assumes without specifying.'},
+   {c:'Grok Bot as a cousin product; Hermes-Bot-Mode GitHub archived; skills learning loop.',
+    f:'The source mentions “Hermes” operationally (recovery verifier, behaviour changes) without placing Bot Mode in the 2026 landscape: Nous’s open roster vs xAI’s managed one. The plugin is bundled now. Hermes’s actual differentiator — it writes skills from experience — never appears.'}
+ ]}
+ ]
+};
+
+/* ============================================================
+   Control Stack — app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+  const saveBtn=$('#savepage');
+  if(saveBtn) saveBtn.addEventListener('click',()=>{
+    const html='<!doctype html>\n'+document.documentElement.outerHTML;
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='handoff-logic.html';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+
+
+<protonpass-root-77cf data-protonpass-role="root" data-protonpass-theme="os"></protonpass-root-77cf></body></html>

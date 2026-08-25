@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hermes Bot Mode Operating Runbook — Editorial Edition</title>
+<meta name="description" content="A calm, editorial operating runbook for Hermes Bot Mode: delegation, cascades, group chats, handoffs, gates, escalation, routines, profiles, and Kanban.">
+<style>
+:root{
+  --paper:#f7f4ef;
+  --deep-paper:#eee9e1;
+  --ink:#25242b;
+  --muted:#6d6a71;
+  --lavender:#d8cfee;
+  --mint:#cfe4da;
+  --peach:#f2d2bc;
+  --blue:#cddfeb;
+  --butter:#f1e7b8;
+  --hair:rgba(37,36,43,.16);
+  --hair-strong:rgba(37,36,43,.34);
+  --shadow:6px 8px 0 #25242b;
+  --max:1240px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--paper)}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font:16px/1.62 "Segoe UI",Inter,Helvetica,Arial,sans-serif;
+  text-rendering:optimizeLegibility;
+}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+button,input{font:inherit}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{
+  outline:2px solid var(--ink);outline-offset:3px;
+}
+.site-grid{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+.index-rail{
+  position:sticky;top:0;height:100vh;overflow:auto;
+  border-right:1px solid var(--hair-strong);
+  padding:28px 20px 22px 24px;background:var(--deep-paper);
+}
+.rail-mark{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;margin-bottom:30px}
+.rail-cross{position:relative;width:26px;height:26px;margin-top:2px}
+.rail-cross:before,.rail-cross:after{content:"";position:absolute;background:var(--ink)}
+.rail-cross:before{width:26px;height:1px;top:13px;left:0}
+.rail-cross:after{width:1px;height:26px;left:13px;top:0}
+.rail-title{font:600 12px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.13em;text-transform:uppercase}
+.rail-sub{margin-top:5px;color:var(--muted);font-size:12px}
+.search{
+  width:100%;border:1px solid var(--hair-strong);background:var(--paper);
+  color:var(--ink);padding:9px 10px;margin:0 0 24px;border-radius:0;
+}
+nav{border-top:1px solid var(--hair)}
+nav a{
+  display:block;padding:8px 0;border-bottom:1px solid var(--hair);
+  color:var(--muted);font:500 11px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.07em;text-transform:uppercase;text-decoration:none;
+  transition:transform .18s ease,color .18s ease;
+}
+nav a:hover,nav a.active{color:var(--ink);transform:translateX(4px)}
+.rail-meta{
+  margin-top:28px;padding-top:14px;border-top:1px solid var(--hair-strong);
+  font:11px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted)
+}
+main{width:100%;max-width:var(--max);padding:52px 56px 110px;margin:0 auto}
+section{position:relative;margin:0 0 74px;padding-top:18px}
+section:nth-of-type(even):not(.hero):not(.statement-field){
+  background:var(--deep-paper);
+  margin-left:-28px;margin-right:-28px;padding:30px 28px 34px;
+}
+.section-signal{
+  display:flex;justify-content:space-between;gap:16px;align-items:center;
+  padding-bottom:9px;border-bottom:1px solid var(--hair-strong);margin-bottom:23px;
+  color:var(--muted);font:600 10.5px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.14em;text-transform:uppercase;
+}
+.hero{padding:0 0 28px;margin-bottom:84px;background:var(--paper)!important}
+.hero-grid{display:grid;grid-template-columns:7fr 5fr;gap:36px;align-items:stretch}
+.hero-copy{padding:34px 0 6px}
+.signal-line{
+  color:var(--muted);font:600 11px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.16em;text-transform:uppercase;margin-bottom:22px
+}
+h1,h2,h3,.statement{
+  font-family:Georgia,"Times New Roman",serif;font-weight:400;letter-spacing:-.025em;
+}
+h1{font-size:clamp(48px,6.2vw,86px);line-height:.96;margin:0 0 26px;max-width:820px}
+h1 em{font-weight:400}
+h2{font-size:clamp(32px,3.6vw,50px);line-height:1.02;margin:0 0 22px}
+h3{font-size:23px;line-height:1.1;margin:24px 0 10px}
+.lede{font-size:19px;line-height:1.55;color:var(--muted);max-width:690px}
+.principle-note{
+  position:relative;margin:34px 0 0 12%;padding:18px 22px;background:var(--lavender);
+  border:1px solid var(--hair-strong);box-shadow:var(--shadow);transform:rotate(-.7deg);max-width:620px
+}
+.note-index{
+  display:block;margin-bottom:6px;font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.14em;text-transform:uppercase
+}
+.hero-instrument{
+  min-height:500px;background:var(--lavender);border:1px solid var(--hair-strong);
+  position:relative;padding:24px;overflow:hidden
+}
+.instrument-label{
+  position:relative;z-index:2;font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.14em;text-transform:uppercase
+}
+.orbit{position:absolute;inset:60px 30px 52px}
+.orbit-ring{position:absolute;border:1px solid rgba(37,36,43,.55);border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}
+.ring-a{width:78%;aspect-ratio:1}.ring-b{width:56%;aspect-ratio:1}.ring-c{width:32%;aspect-ratio:1}
+.axis{position:absolute;background:rgba(37,36,43,.25)}
+.axis-x{left:6%;right:6%;height:1px;top:50%}.axis-y{top:6%;bottom:6%;width:1px;left:50%}
+.point{position:absolute;width:12px;height:12px;background:var(--ink);border-radius:50%}
+.point span{
+  position:absolute;white-space:nowrap;font:700 9px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.1em;text-transform:uppercase
+}
+.p-user{left:50%;top:8%}.p-user span{top:-2px;left:18px}
+.p-default{left:50%;top:50%;transform:translate(-50%,-50%);width:16px;height:16px}.p-default span{left:22px;top:0}
+.p-x{right:13%;top:48%}.p-x span{right:18px;top:-2px}
+.p-coder{left:18%;top:65%}.p-coder span{left:18px;top:-2px}
+.p-scribe{left:48%;bottom:10%}.p-scribe span{left:18px;top:-2px}
+.instrument-caption{
+  position:absolute;left:24px;right:24px;bottom:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  font:9.5px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.07em;text-transform:uppercase
+}
+.status-strip{
+  display:grid;grid-template-columns:1.1fr repeat(4,1fr);gap:0;margin-top:24px;border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong)
+}
+.status-strip span{padding:10px 12px;border-right:1px solid var(--hair);font:600 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}
+.status-strip span:first-child{background:var(--mint)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.card{grid-column:span 6;background:var(--paper);border:1px solid var(--hair-strong);padding:20px;border-radius:0;box-shadow:none}
+.card.third{grid-column:span 4}.card.full{grid-column:1/-1}
+.paper-card{transition:transform .2s ease,box-shadow .2s ease}
+.paper-card:hover,.paper-card:focus-within{transform:translate(-3px,-3px);box-shadow:var(--shadow)}
+.kicker,.tag,.small,.source-note{
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.1em
+}
+.kicker{font-size:10px;font-weight:700;color:var(--muted)}
+.bot{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start}
+.bot-icon{width:36px;height:36px;border:1px solid var(--ink);display:grid;place-items:center;font:700 12px ui-monospace,monospace}
+.coordinator{background:var(--lavender)}.coder{background:var(--peach)}.researcher{background:var(--blue)}.scribe{background:var(--mint)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:17px 0}
+.node{border:1px solid var(--hair-strong);background:var(--paper);padding:8px 10px}
+.arrow{color:var(--muted)}
+.callout{border:1px solid var(--hair-strong);border-left:5px solid var(--ink);background:var(--paper);padding:15px 18px;margin:16px 0}
+.pastel-mint{background:var(--mint)}.pastel-butter{background:var(--butter)}
+table{width:100%;border-collapse:collapse;margin:14px 0 24px;background:transparent}
+th,td{border-bottom:1px solid var(--hair-strong);padding:10px 8px;text-align:left;vertical-align:top}
+th{color:var(--muted);font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}
+pre{
+  background:var(--ink);color:var(--paper);border:0;padding:18px 18px 18px;margin:10px 0 18px;
+  overflow:auto;white-space:pre-wrap;word-break:break-word;border-radius:0
+}
+code{font:13.5px/1.58 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+.inline{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--deep-paper);border-bottom:1px solid var(--hair-strong);padding:1px 4px}
+.prompt{position:relative}
+.copy{
+  position:absolute;right:10px;top:10px;border:1px solid rgba(247,244,239,.45);
+  background:transparent;color:var(--paper);padding:6px 9px;cursor:pointer;font:700 10px ui-monospace,monospace;
+  text-transform:uppercase;letter-spacing:.08em
+}
+.copy:hover,.copy:focus-visible{background:var(--paper);color:var(--ink)}
+details{border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong);padding:0;margin:0;background:transparent}
+summary{cursor:pointer;padding:14px 0;font-family:Georgia,"Times New Roman",serif;font-size:20px}
+details[open] summary{margin-bottom:10px}
+.tag{display:inline-block;font-size:9.5px;padding:3px 6px;border:1px solid var(--hair-strong);border-radius:999px;color:var(--muted);background:transparent}
+.statement-field{
+  padding:46px 7% 52px!important;margin-left:-28px!important;margin-right:-28px!important;background:var(--lavender)!important;
+  border-top:1px solid var(--hair-strong);border-bottom:1px solid var(--hair-strong)
+}
+.statement{font-size:clamp(40px,5vw,66px);line-height:1.02;max-width:950px;margin:32px 0}
+mark{background:var(--butter);color:inherit;padding:0 .08em}
+.statement-support{display:grid;grid-template-columns:7fr 5fr;gap:28px;align-items:end;border-top:1px solid var(--hair-strong);padding-top:16px}
+.annotation{
+  justify-self:end;display:inline-block;background:var(--paper);border:1px solid var(--hair-strong);
+  box-shadow:4px 5px 0 var(--ink);padding:10px 12px;transform:rotate(1.2deg);
+  font:italic 14px Georgia,serif
+}
+.filter-row{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 22px}
+.filter-btn{
+  cursor:pointer;background:transparent;border:1px solid var(--hair-strong);color:var(--muted);
+  padding:6px 9px;border-radius:999px;font:700 10px ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase
+}
+.filter-btn.active{background:var(--ink);color:var(--paper)}
+.prompt-card{padding:16px 0 5px;border-top:1px solid var(--hair-strong);margin:0}
+.prompt-card header{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.upstream{border-left:3px solid var(--butter);padding-left:15px}
+.verified{border-left:3px solid var(--mint)}
+.checklist{list-style:none;padding:0;margin:10px 0}
+.checklist li{padding:4px 0 4px 23px;position:relative}
+.checklist li:before{content:"✓";position:absolute;left:0;font-weight:800}
+.good{color:#35634a}.warn{color:#826d20}.bad{color:#8a4343}
+.large-footer{
+  margin-top:92px;border-top:1px solid var(--hair-strong);padding:36px 0 0;
+  display:grid;grid-template-columns:8fr 4fr;gap:32px;align-items:end
+}
+.large-footer .identity{
+  font:400 clamp(44px,6vw,80px)/.95 Georgia,"Times New Roman",serif;letter-spacing:-.035em
+}
+.large-footer .closure{
+  font:10.5px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)
+}
+.hide{display:none!important}
+.mobile-bar{display:none}
+@media(max-width:900px){
+  .site-grid{display:block}
+  .mobile-bar{display:flex;position:sticky;top:0;z-index:30;justify-content:space-between;background:var(--deep-paper);border-bottom:1px solid var(--hair-strong);padding:9px 12px}
+  .index-rail{display:none;position:fixed;z-index:40;inset:47px auto 0 0;width:300px;height:auto;box-shadow:var(--shadow)}
+  .index-rail.open{display:block}
+  main{padding:30px 18px 70px}
+  .hero-grid,.statement-support,.large-footer{grid-template-columns:1fr}
+  .hero-instrument{min-height:390px}
+  .status-strip{grid-template-columns:1fr 1fr}
+  .card,.card.third{grid-column:1/-1}
+  section:nth-of-type(even):not(.hero):not(.statement-field),.statement-field{margin-left:-18px!important;margin-right:-18px!important;padding-left:18px!important;padding-right:18px!important}
+  .annotation{justify-self:start}
+}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important;transition:none!important}
+}
+@media print{
+  .index-rail,.mobile-bar,.copy,.filter-row{display:none!important}
+  .site-grid{display:block}main{max-width:none;padding:0}
+  .paper-card{box-shadow:none!important;transform:none!important}
+  .hero-instrument{break-inside:avoid}
+  body{background:#fff;color:#111}
+  section:nth-of-type(even):not(.hero):not(.statement-field){background:#f3f0ea}
+  pre{white-space:pre-wrap}
+}
+</style>
+<script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787626767844&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_00000000c14081fdba25e7e30f7c822f%26fn%3DHermes_Bot_Mode_Operating_Runbook_Editorial.html%26cd%3Dattachment%26ts%3D496564%26p%3Dfs%26cid%3D1%26sig%3D36b6ea912dee2b97d930d8c0ecc02564bcfaf8c28d969afcf3a80ae6ff92d43d%26v%3D0&amp;app=brave.exe&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787626767844&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head>
+<body>
+<div class="mobile-bar">
+  <button onclick="document.querySelector('.index-rail').classList.toggle('open')">INDEX</button>
+  <span class="rail-title">HERMES / BOT MODE</span>
+</div>
+<div class="site-grid">
+  <aside class="index-rail">
+    <div class="rail-mark">
+      <div class="rail-cross"></div>
+      <div>
+        <div class="rail-title">Hermes Bot Mode</div>
+        <div class="rail-sub">Operating Runbook / Editorial Edition</div>
+      </div>
+    </div>
+    <input id="search" class="search" placeholder="Search runbook…  /">
+    <nav id="nav"><a href="#start">00 / Start here</a>
+<a href="#roster">01 / Bot roster</a>
+<a href="#mental-model">02 / Mental model</a>
+<a href="#automatic">03 / Automatic vs explicit</a>
+<a href="#patterns">04 / Interaction patterns</a>
+<a href="#master">05 / Master prompts</a>
+<a href="#modes">06 / Group modes</a>
+<a href="#handoffs">07 / Cascades & gates</a>
+<a href="#escalation">08 / Human escalation</a>
+<a href="#group-mechanics">09 / Group mechanics</a>
+<a href="#surfaces">10 / Surfaces</a>
+<a href="#hermes-extra">11 / Hermes features</a>
+<a href="#kanban">12 / Kanban</a>
+<a href="#anti-patterns">13 / Anti-patterns</a>
+<a href="#prompts">14 / Prompt library</a>
+<a href="#tests">15 / Smoke tests</a>
+<a href="#sources">16 / Sources</a></nav>
+    <div class="rail-meta">
+      Category / Systems<br>
+      Status / Revised<br>
+      Surface / Standalone HTML<br>
+      Palette / Paper + Lavender<br>
+      Version / 2026.08
+    </div>
+  </aside>
+
+  <main id="content">
+    
+
+<section id="start" class="hero searchable">
+  <div class="section-signal"><span>SECTION 00</span><span>OPERATING RUNBOOK / REVISED</span></div>
+
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="signal-line">HERMES BOT MODE · FIELD GUIDE · 2026</div>
+      <h1>Operate a team,<br><em>not a pile of chatbots.</em></h1>
+      <p class="lede">A practical operating system for delegation, cascading follow-ups, group deliberation, specialist handoffs, verification, escalation, and durable multi-agent work.</p>
+
+      <div class="principle-note">
+        <span class="note-index">OBS. 01</span>
+        <p><strong>Core rule:</strong> Give the team an <strong>outcome</strong>, give one Bot <strong>ownership</strong>, define important <strong>handoffs and gates</strong>, and let specialists contribute only when they add information.</p>
+      </div>
+    </div>
+
+    <div class="hero-instrument" aria-label="Bot Mode operating loop diagram">
+      <div class="instrument-label">INSTRUMENT / COORDINATION LOOP</div>
+      <div class="orbit">
+        <div class="orbit-ring ring-a"></div>
+        <div class="orbit-ring ring-b"></div>
+        <div class="orbit-ring ring-c"></div>
+        <div class="axis axis-x"></div>
+        <div class="axis axis-y"></div>
+        <div class="point p-user"><span>YOU</span></div>
+        <div class="point p-default"><span>DEFAULT</span></div>
+        <div class="point p-x"><span>X</span></div>
+        <div class="point p-coder"><span>CODER</span></div>
+        <div class="point p-scribe"><span>SCRIBE</span></div>
+      </div>
+      <div class="instrument-caption">
+        <span>01 / objective</span>
+        <span>02 / route</span>
+        <span>03 / verify</span>
+        <span>04 / close</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-strip">
+    <span>VERIFIED LOCALLY</span>
+    <span>Coordinator ↔ X deliberation</span>
+    <span>Coder → Coordinator handoff</span>
+    <span>Specialist pass / silence</span>
+    <span>UPSTREAM FEATURES MARKED</span>
+  </div>
+</section>
+
+
+<section id="roster" class="searchable"><div class="section-signal"><span>SECTION 01</span><span>HERMES / BOT MODE</span></div>
+<h2>Your current Bot roster</h2>
+<div class="grid">
+  <article class="card third verified">
+    <div class="bot"><div class="bot-icon coordinator">D</div><div><div class="kicker">Default</div><h3>Coordinator</h3><p>Decision owner, scope manager, router, synthesizer, and final reviewer.</p></div></div>
+    <p><strong>Use for:</strong> “Own this outcome and use the team.”</p>
+  </article>
+  <article class="card third verified">
+    <div class="bot"><div class="bot-icon researcher">X</div><div><div class="kicker">Specialist</div><h3>X-Researcher</h3><p>External evidence, web/X research, trends, source validation, and assumption pressure-testing.</p></div></div>
+    <p><strong>Use for:</strong> “Find what changes the decision.”</p>
+  </article>
+  <article class="card third verified">
+    <div class="bot"><div class="bot-icon coder">C</div><div><div class="kicker">On-demand</div><h3>Coder</h3><p>Repo inspection, feasibility, implementation design, code changes, tests, and technical verification.</p></div></div>
+    <p><strong>Use for:</strong> “What is technically true, and what is the smallest safe change?”</p>
+  </article>
+  <article class="card full verified">
+    <div class="bot"><div class="bot-icon scribe">S</div><div><div class="kicker">Durability layer</div><h3>Scribe</h3><p>Capture and durable compilation. Usually keep Scribe <strong>outside</strong> group deliberation; feed it the final distilled result worth remembering.</p></div></div>
+    <div class="flow"><span class="node">Group deliberates</span><span class="arrow">→</span><span class="node">Coordinator distills</span><span class="arrow">→</span><span class="node">Scribe captures durable note</span></div>
+  </article>
+</div>
+</section>
+
+<section id="mental-model" class="searchable"><div class="section-signal"><span>SECTION 02</span><span>HERMES / BOT MODE</span></div>
+<h2>The mental model shift</h2>
+<div class="grid">
+  <article class="card paper-card">
+    <div class="kicker">Old model</div>
+    <h3>Chatbot</h3>
+    <div class="flow"><span class="node">You</span><span class="arrow">→</span><span class="node">AI</span><span class="arrow">→</span><span class="node">Answer</span></div>
+    <p>You carry the routing, context switching, verification, and follow-up logic yourself.</p>
+  </article>
+  <article class="card paper-card">
+    <div class="kicker">Bot Mode model</div>
+    <h3>Small operating team</h3>
+    <div class="flow"><span class="node">You</span><span class="arrow">→</span><span class="node">Coordinator</span><span class="arrow">→</span><span class="node">Specialists</span><span class="arrow">→</span><span class="node">Coordinator</span><span class="arrow">→</span><span class="node">Outcome</span></div>
+    <p>The useful unit becomes <strong>Objective → roles → handoff → verification → decision → stop</strong>.</p>
+  </article>
+</div>
+<div class="callout">
+  <strong>The upgrade:</strong> you increasingly stop saying “X do this, Coder do this, Default do this” and start saying “Default, own this outcome and use the team.”
+</div>
+</section>
+
+<section id="automatic" class="searchable"><div class="section-signal"><span>SECTION 03</span><span>HERMES / BOT MODE</span></div>
+<h2>What Bots can figure out vs what you should specify</h2>
+<table>
+<thead><tr><th>Let Bot Mode handle</th><th>You should usually specify</th></tr></thead>
+<tbody>
+<tr><td>Whether a Bot has something new to add or should pass</td><td>The actual objective</td></tr>
+<tr><td>Short follow-up rounds in a group</td><td>Who owns the final decision</td></tr>
+<tr><td>Pulling another Bot in with <span class="inline">@name</span></td><td>Order when prerequisites matter</td></tr>
+<tr><td>Routine bot-to-bot conversational handoffs</td><td>Approval gates and stop conditions</td></tr>
+<tr><td>Staying silent when irrelevant</td><td>What requires <span class="inline">@user</span> escalation</td></tr>
+</tbody>
+</table>
+<div class="callout warnbox pastel-butter">
+  <strong>Do not rely on emergent coordination when sequence matters.</strong> If the work must be research → decision → feasibility → verification, write that cascade explicitly.
+</div>
+</section>
+
+<section id="patterns" class="searchable"><div class="section-signal"><span>SECTION 04</span><span>HERMES / BOT MODE</span></div>
+<h2>The 5 core interaction patterns</h2>
+
+<details open>
+<summary>1. Direct specialist request</summary>
+<p>Use when the right Bot is obvious and there is no orchestration problem.</p>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@x-research
+
+Investigate [QUESTION].
+
+Focus on:
+- evidence
+- competing explanations
+- what is actually new
+
+Do not propose implementation.
+Return your findings to the room.</code></pre></div>
+</details>
+
+<details>
+<summary>2. Coordinator-owned delegation</summary>
+<p>Use when you know the outcome but not which specialist work is actually necessary.</p>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@default
+
+I want to determine whether [IDEA] is worth pursuing.
+
+You are the decision owner.
+Use the other Bots where useful.
+Do not let this become a general brainstorm.
+
+Return:
+1. Decision
+2. Evidence
+3. Main risk
+4. Smallest next action</code></pre></div>
+</details>
+
+<details>
+<summary>3. Explicit cascade</summary>
+<p>Use when downstream work depends on upstream findings.</p>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@default
+
+Own this task:
+
+[OBJECTIVE]
+
+PHASE 1 — RESEARCH
+Ask @x-research for external evidence that materially affects the decision.
+
+PHASE 2 — DECISION
+Evaluate the evidence. If the idea is not worth pursuing, stop.
+
+PHASE 3 — FEASIBILITY
+If it survives, ask @coder for the smallest technically valid experiment.
+
+PHASE 4 — REVIEW
+Check whether the experiment actually tests the original thesis.
+
+PHASE 5 — FINAL
+Return:
+- Decision
+- Evidence
+- Proposed action
+- Verification
+- What would change the decision
+
+Stop.</code></pre></div>
+</details>
+
+<details>
+<summary>4. Bot-to-Bot dynamic follow-up</summary>
+<p>Use when the next specialist depends on what gets discovered.</p>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@x-research
+
+Investigate whether [TECHNOLOGY] appears mature enough for production use.
+
+If a finding depends on technical feasibility,
+mention @coder and ask it to evaluate that specific claim.
+
+@coder:
+Only respond to the technical questions X raises.
+
+When the evidence and feasibility are complete, mention @default.
+
+@default:
+Synthesize the final recommendation.</code></pre></div>
+</details>
+
+<details>
+<summary>5. Adversarial review loop</summary>
+<p>Use when you need disagreement, not division of labor.</p>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@default
+
+We are reviewing this proposal:
+
+[PROPOSAL]
+
+Assign:
+- @x-research to challenge external assumptions
+- @coder to challenge technical assumptions
+- yourself to challenge scope and necessity
+
+Each Bot should identify the single biggest weakness.
+Respond to each other's objections.
+Do not converge merely to reach agreement.
+
+When disagreements are resolved or clearly identified,
+give me the final decision.</code></pre></div>
+</details>
+</section>
+
+<section id="master" class="searchable"><div class="section-signal"><span>SECTION 05</span><span>HERMES / BOT MODE</span></div>
+<h2>Master prompts</h2>
+<h3>Full work-session template</h3>
+<div class="prompt"><button class="copy">Copy</button><pre><code>BOT MODE WORK SESSION
+
+OBJECTIVE
+[What outcome do I actually want?]
+
+DECISION OWNER
+@default owns the final result.
+
+TEAM
+Use specialist Bots only when their expertise materially helps.
+
+OPERATING RULES
+1. Do not have every Bot answer independently.
+2. Delegate according to role.
+3. If one Bot's answer creates a question for another specialist, @mention that specialist.
+4. Specialists should challenge assumptions rather than simply agree.
+5. Bots with nothing useful to add should pass.
+6. Do not duplicate work another Bot already completed.
+7. Complete prerequisite work before downstream work.
+8. If new evidence invalidates the direction, stop the cascade.
+9. Escalate to @user only for a real preference, authority decision, or missing requirement.
+10. Do not expand scope beyond the objective.
+
+FINAL OUTPUT
+@default should finish with:
+
+Decision:
+Evidence:
+Risks:
+Next action:
+Verification:
+
+STOP CONDITION
+Once the objective is resolved, stop.
+Do not generate extra ideas, tasks, or projects unless asked.</code></pre></div>
+
+<h3>Compact everyday template</h3>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@default
+
+Own this outcome:
+
+[OBJECTIVE]
+
+Use @x-research for external evidence and @coder for technical feasibility or implementation when useful.
+
+Delegate rather than having everyone answer independently.
+Bots may @mention each other when a finding creates a question for another role.
+Challenge assumptions, avoid duplicate work, and pass when there is nothing new to add.
+Do prerequisite work before downstream work.
+Escalate to @user only for a decision the team genuinely cannot make.
+
+Finish with:
+Decision
+Why
+Next action
+Verification
+
+Then stop.</code></pre></div>
+</section>
+
+<section id="modes" class="searchable"><div class="section-signal"><span>SECTION 06</span><span>HERMES / BOT MODE</span></div>
+<h2>Reusable group modes</h2>
+<div class="grid">
+<article class="card third paper-card"><div class="kicker">Decision Room</div><h3>Evidence → disagreement → decision</h3><p>Use for choices where evidence and tradeoffs matter.</p></article>
+<article class="card third paper-card"><div class="kicker">Build Council</div><h3>Research → scope → feasibility → implementation</h3><p>Use for deciding whether and how to build.</p></article>
+<article class="card third paper-card"><div class="kicker">Incident Room</div><h3>Symptoms → hypotheses → tests → diagnosis</h3><p>Use for disciplined troubleshooting.</p></article>
+<article class="card third paper-card"><div class="kicker">Review Board</div><h3>Proposal → attack → revision</h3><p>Use before architecture or workflow changes.</p></article>
+<article class="card third paper-card"><div class="kicker">Project Re-entry</div><h3>State → blockers → next action</h3><p>Use when returning to a repo or project after time away.</p></article>
+<article class="card third paper-card"><div class="kicker">Automation Council</div><h3>Manual → existing tool → light automation → custom build</h3><p>Use before creating another maintenance burden.</p></article>
+</div>
+</section>
+
+<section id="handoffs" class="searchable"><div class="section-signal"><span>SECTION 07</span><span>HERMES / BOT MODE</span></div>
+<h2>Cascades, gates, and stop conditions</h2>
+<p>The highest-value Bot Mode workflows are not long conversations; they are <strong>controlled state transitions</strong>.</p>
+<div class="flow"><span class="node">Research</span><span class="arrow">→</span><span class="node">Gate: worth it?</span><span class="arrow">→</span><span class="node">Feasibility</span><span class="arrow">→</span><span class="node">Gate: viable?</span><span class="arrow">→</span><span class="node">Implementation</span><span class="arrow">→</span><span class="node">Verification</span></div>
+<div class="callout goodbox pastel-mint"><strong>Gates save work.</strong> A good cascade can terminate early with NO-GO. A bad cascade continues mechanically because “the next step” was already written.</div>
+
+<h3>Reusable gate template</h3>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@default
+
+Investigate whether we should build [THING].
+
+GATE 1 — EVIDENCE
+Ask @x-research for evidence.
+If evidence is weak, stop with NO-GO.
+
+GATE 2 — FEASIBILITY
+If evidence is strong, ask @coder whether a minimal implementation is feasible.
+If feasibility is poor, stop with NO-GO.
+
+Only if both gates pass should you recommend implementation.
+
+For every gate:
+- state PASS / FAIL
+- state the evidence
+- state why the next phase is or is not justified</code></pre></div>
+</section>
+
+<section id="escalation" class="searchable"><div class="section-signal"><span>SECTION 08</span><span>HERMES / BOT MODE</span></div>
+<h2>Human escalation: use <span class="inline">@user</span> sparingly</h2>
+<div class="grid">
+<article class="card paper-card"><h3 class="good">Good escalation</h3><ul class="checklist"><li>Preference tradeoff only you can choose</li><li>Authorization for destructive/irreversible action</li><li>Missing requirement not inferable from evidence</li><li>Scope or risk acceptance decision</li></ul></article>
+<article class="card paper-card"><h3 class="bad">Bad escalation</h3><ul><li>“Python or PowerShell?” when the team can decide</li><li>Asking you to repeat evidence already available</li><li>Using questions to avoid technical judgment</li><li>Escalating every disagreement instead of resolving it</li></ul></article>
+</div>
+<div class="prompt"><button class="copy">Copy</button><pre><code>Do not ask me questions the team can resolve from evidence or expertise.
+
+Escalate to @user only for:
+- preference decisions
+- authorization decisions
+- destructive actions
+- genuinely missing requirements
+
+When escalating, ask exactly one decision question and stop.</code></pre></div>
+</section>
+
+<section id="group-mechanics" class="searchable"><div class="section-signal"><span>SECTION 09</span><span>HERMES / BOT MODE</span></div>
+<h2>How Hermes group chats work</h2>
+<div class="upstream">
+<p><span class="tag">Upstream Hermes docs</span> Group rooms can contain 2–6 Bots. A user send can trigger up to three serial rounds. Mentioned Bots are scoped into the round; when nobody is mentioned, everyone may respond. Bots can reply or pass, and the room settles when a full round is silent. Upstream docs also describe hard caps of 10 messages per send and 3 rounds to prevent loops.</p>
+<p>Bots can pull each other in with <span class="inline">@name</span> and can escalate real judgment calls with <span class="inline">@user</span>. Each member has its own persistent <span class="inline">Group: &lt;name&gt;</span> session.</p>
+</div>
+<table>
+<thead><tr><th>Behavior</th><th>How to use it</th></tr></thead>
+<tbody>
+<tr><td>Not every Bot must speak</td><td>Treat silence/pass as efficiency, not failure.</td></tr>
+<tr><td>@mentions scope participation</td><td>Mention only the Bot whose role is needed now.</td></tr>
+<tr><td>Bots can mention Bots</td><td>Use this for dynamic follow-ups and cascades.</td></tr>
+<tr><td>Rooms have bounded rounds</td><td>Give a stop condition and let the room settle.</td></tr>
+<tr><td>Persistent group sessions</td><td>Keep a room while the decision context remains the same.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="surfaces" class="searchable"><div class="section-signal"><span>SECTION 10</span><span>HERMES / BOT MODE</span></div>
+<h2>Bot Chat vs Group Chat vs regular session / CLI</h2>
+<table>
+<thead><tr><th>Surface</th><th>Best for</th><th>Important behavior</th></tr></thead>
+<tbody>
+<tr><td><strong>Canonical Bot Chat</strong></td><td>Long-lived relationship with one Bot; bot-to-bot direct messaging</td><td>Upstream Bot Mode treats this as a “forever chat.” <span class="inline">message_agent</span> is intended for canonical Bot Chats on Bot-Mode-managed installs.</td></tr>
+<tr><td><strong>Group Chat</strong></td><td>Deliberation, role handoffs, review, scoped @mentions</td><td>Members keep their own group session; use room mentions rather than assuming canonical-DM tooling exists inside the group.</td></tr>
+<tr><td><strong>Regular session / CLI</strong></td><td>Focused work, debugging, one-off agent use</td><td>Same profile identity/state, but Bot Mode messaging protocol may not be injected.</td></tr>
+</tbody>
+</table>
+<div class="callout warnbox pastel-butter"><strong>Do not confuse profile isolation with sandboxing.</strong> Hermes profiles isolate Hermes state (config, memory, sessions, skills, cron, credentials), but they do not automatically restrict filesystem access. Workspace and sandbox boundaries are separate concerns.</div>
+</section>
+
+<section id="hermes-extra" class="searchable"><div class="section-signal"><span>SECTION 11</span><span>HERMES / BOT MODE</span></div>
+<h2>Interesting Hermes features to explore beyond basic Bot Mode</h2>
+<div class="grid">
+
+<article class="card upstream">
+<div class="kicker">Profiles</div><h3>A Bot is a profile</h3>
+<p>Upstream Hermes defines each profile as an independent Hermes home with its own config, API keys, memory, sessions, skills, cron jobs, state DB, and gateway state.</p>
+<p><strong>Why it matters:</strong> specialization is durable, not just a system prompt pasted into one conversation.</p>
+</article>
+
+<article class="card upstream">
+<div class="kicker">Routines</div><h3>Give recurring work to the Bot that owns it</h3>
+<p>Bot Mode routines are backed by ordinary Hermes cron jobs. The result lands in that Bot’s own chat history, so recurring responsibility stays attached to the specialist.</p>
+<p><strong>Try:</strong> “X-Researcher owns a weekday signal brief; Default owns a weekly synthesis.”</p>
+</article>
+
+<article class="card upstream">
+<div class="kicker">Cross-machine Bot Mode</div><h3>Rooms and Bots can span machines</h3>
+<p>Upstream docs describe group rooms that can seat Bots from multiple registered connections, with source-qualified handles such as <span class="inline">@name-device</span>.</p>
+<p><strong>Interesting future pattern:</strong> local Coder + remote GPU specialist + always-on research machine in one room.</p>
+</article>
+
+<article class="card upstream">
+<div class="kicker">Peer messaging</div><h3>Bot-to-Bot DMs without the Desktop courier</h3>
+<p>Upstream Hermes supports gateway peers using API server URLs and keys, allowing machine-to-machine Bot DMs without a Desktop staying in the loop.</p>
+<p><strong>Use when:</strong> you eventually want always-on coordination across machines.</p>
+</article>
+
+<article class="card upstream">
+<div class="kicker">Export / distribution</div><h3>Package a specialist as a reusable agent</h3>
+<p>Profiles can be exported/imported, and upstream docs describe profile distributions for versioned agent sharing while keeping credentials and memories machine-specific.</p>
+<p><strong>Idea:</strong> turn a polished X-Research role into a portable “research-bot” distribution.</p>
+</article>
+
+<article class="card upstream">
+<div class="kicker">Shared vs profile HOME</div><h3>Hermes state isolation is not CLI identity isolation</h3>
+<p>On host installs, external CLI tools typically keep the real OS <span class="inline">HOME</span>. Upstream supports <span class="inline">terminal.home_mode: profile</span> for stricter per-profile CLI state.</p>
+<p><strong>Use only if needed:</strong> separate GitHub/SSH/cloud identities per Bot.</p>
+</article>
+
+</div>
+</section>
+
+<section id="kanban" class="searchable"><div class="section-signal"><span>SECTION 12</span><span>HERMES / BOT MODE</span></div>
+<h2>Hermes Kanban: when chat handoffs are no longer enough</h2>
+<div class="upstream">
+<p><span class="tag">Upstream Hermes docs</span> Kanban is a durable SQLite-backed task board shared across Hermes profiles. It is meant for work that crosses agent boundaries, must survive restarts, needs human comments/review, may be retried, or needs a durable audit trail.</p>
+</div>
+<table>
+<thead><tr><th>Use</th><th>Primitive</th></tr></thead>
+<tbody>
+<tr><td>Short reasoning answer needed before parent continues</td><td><strong>delegate_task</strong> / conversational delegation</td></tr>
+<tr><td>Live multi-Bot deliberation with you watching</td><td><strong>Bot Mode group chat</strong></td></tr>
+<tr><td>Persistent work queue, review states, retries, human-in-loop, discoverable history</td><td><strong>Kanban</strong></td></tr>
+<tr><td>Recurring responsibility over time</td><td><strong>Routines / cron</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+<strong>Useful maturity path:</strong>
+<div class="flow"><span class="node">Chat</span><span class="arrow">→</span><span class="node">Group delegation</span><span class="arrow">→</span><span class="node">Explicit cascades</span><span class="arrow">→</span><span class="node">Dynamic handoffs</span><span class="arrow">→</span><span class="node">Routines / Kanban</span></div>
+</div>
+</section>
+
+<section id="anti-patterns" class="searchable"><div class="section-signal"><span>SECTION 13</span><span>HERMES / BOT MODE</span></div>
+<h2>Anti-patterns</h2>
+<div class="grid">
+<article class="card paper-card"><h3>Everyone answers independently</h3><p>Produces multiple mini-answers instead of a team result.</p><p><strong>Fix:</strong> name a decision owner.</p></article>
+<article class="card paper-card"><h3>No prerequisite order</h3><p>Coder starts designing before research changes the premise.</p><p><strong>Fix:</strong> use phases and gates.</p></article>
+<article class="card paper-card"><h3>Forced participation</h3><p>Every Bot repeats the same point.</p><p><strong>Fix:</strong> explicitly allow passing.</p></article>
+<article class="card paper-card"><h3>Premature execution</h3><p>Exploration turns into writes before a decision exists.</p><p><strong>Fix:</strong> separate exploration room from execution step.</p></article>
+<article class="card paper-card"><h3>Over-escalating to you</h3><p>The team asks questions it should resolve itself.</p><p><strong>Fix:</strong> define escalation criteria.</p></article>
+<article class="card paper-card"><h3>No stop condition</h3><p>The room keeps generating ideas after the objective is solved.</p><p><strong>Fix:</strong> “Finish with X, then stop.”</p></article>
+<article class="card paper-card"><h3>Putting Scribe everywhere</h3><p>Turns a durability specialist into another opinion generator.</p><p><strong>Fix:</strong> capture the final synthesis downstream.</p></article>
+<article class="card paper-card"><h3>Assuming profile = sandbox</h3><p>A role boundary in instructions is not a hard host boundary.</p><p><strong>Fix:</strong> use scoped tools, cwd, and sandboxing separately.</p></article>
+</div>
+</section>
+
+
+<section class="statement-field searchable" id="working-principle">
+  <div class="section-signal"><span>INTERLUDE</span><span>WORKING PRINCIPLE</span></div>
+  <p class="statement">The best Bot Mode prompt is not a better question. It is a <mark>better handoff.</mark></p>
+  <div class="statement-support">
+    <p>Use role, sequence, gates, and ownership to turn a conversation into an operating loop.</p>
+    <span class="annotation">one outcome → one owner → only necessary specialists</span>
+  </div>
+</section>
+
+<section id="prompts" class="searchable"><div class="section-signal"><span>SECTION 14</span><span>HERMES / BOT MODE</span></div>
+<h2>High-value prompt library</h2>
+<div class="filter-row">
+<button class="filter-btn active" data-filter="all">All</button>
+<button class="filter-btn" data-filter="decision">Decision</button>
+<button class="filter-btn" data-filter="build">Build</button>
+<button class="filter-btn" data-filter="incident">Incident</button>
+<button class="filter-btn" data-filter="research">Research</button>
+<button class="filter-btn" data-filter="review">Review</button>
+</div>
+
+<div class="prompt-card" data-tags="build decision research">
+<header><h3>Research → decision → implementation</h3><span class="tag">Build Council</span></header>
+<div class="prompt"><button class="copy">Copy</button><pre><code>I want to explore this idea: [IDEA].
+
+@x-research: investigate viability, similar approaches, and the biggest unknowns. Focus on evidence.
+
+@default: after X responds, decide whether it is worth pursuing and define a small objective with success criteria.
+
+@coder: only after Default defines the objective, propose the smallest experiment that could validate it. Do not build yet.
+
+@default: finish with GO / NO-GO / NEEDS-MORE-EVIDENCE and one next action.</code></pre></div>
+</div>
+
+<div class="prompt-card" data-tags="decision review">
+<header><h3>Grill this idea before I waste time</h3><span class="tag">Adversarial</span></header>
+<div class="prompt"><button class="copy">Copy</button><pre><code>I’m considering building [IDEA].
+
+@x-research: attack the external assumptions.
+@coder: attack the implementation assumptions.
+@default: attack the scope.
+
+Agree on:
+- strongest reason to build
+- strongest reason not to
+- cheapest decisive experiment
+
+Do not give me a roadmap unless the idea survives.</code></pre></div>
+</div>
+
+<div class="prompt-card" data-tags="incident">
+<header><h3>Incident war room</h3><span class="tag">Troubleshooting</span></header>
+<div class="prompt"><button class="copy">Copy</button><pre><code>INCIDENT ROOM
+
+Symptom:
+[ERROR / DESCRIPTION]
+
+@default: maintain confirmed facts, hypotheses, and unchecked items.
+@coder: diagnose locally; one hypothesis → one verification. No changes until understood.
+@x-research: investigate upstream only if local evidence points to an external dependency or known bug.
+
+Rules:
+- no shotgun troubleshooting
+- no destructive commands
+- update diagnosis after each result
+- stop when there is one justified next action</code></pre></div>
+</div>
+
+<div class="prompt-card" data-tags="decision research build">
+<header><h3>60-minute falsifiable experiment</h3><span class="tag">Idea triage</span></header>
+<div class="prompt"><button class="copy">Copy</button><pre><code>I have a vague idea:
+
+[IDEA]
+
+@default: turn it into one falsifiable question.
+@x-research: identify evidence that would raise or lower confidence.
+@coder: design the smallest technical prototype needed to collect that evidence.
+@default: synthesize a 60-minute experiment with a clear PASS / FAIL rule.
+
+Do not turn it into a full project.</code></pre></div>
+</div>
+
+<div class="prompt-card" data-tags="review build">
+<header><h3>Architecture review board</h3><span class="tag">Technical review</span></header>
+<div class="prompt"><button class="copy">Copy</button><pre><code>ARCHITECTURE REVIEW
+
+Proposed change: [CHANGE]
+
+@default: define intended outcome and boundaries.
+@coder: assess complexity, coupling, rollback risk, tests, and smallest safe diff.
+@x-research: check upstream patterns or alternatives when relevant.
+
+Return exactly:
+KEEP AS PROPOSED
+REVISE
+or REJECT
+
+If REVISE, give the minimal revision.</code></pre></div>
+</div>
+
+<div class="prompt-card" data-tags="research decision">
+<header><h3>Signals, not interesting links</h3><span class="tag">Research</span></header>
+<div class="prompt"><button class="copy">Copy</button><pre><code>@x-research: research [TOPIC] and bring back only developments that materially change what I should believe, build, watch, or investigate.
+
+For each finding include evidence and why it matters.
+
+@default: reject anything merely interesting but not decision-relevant.
+
+Finish with:
+- 3 signals worth keeping
+- 1 thing to investigate deeper
+- 1 thing to ignore</code></pre></div>
+</div>
+
+<div class="prompt-card" data-tags="decision">
+<header><h3>CEO / Researcher / Engineer decision room</h3><span class="tag">General purpose</span></header>
+<div class="prompt"><button class="copy">Copy</button><pre><code>DECISION ROOM
+
+Decision: [QUESTION]
+
+@default: act as decision owner. Define criteria.
+@x-research: act as evidence lead. Challenge assumptions.
+@coder: act as feasibility lead. Evaluate constraints and reversibility.
+
+Disagree when warranted rather than converging for politeness.
+
+@default finishes with:
+Decision
+Why
+What would change the decision
+Next smallest action</code></pre></div>
+</div>
+</section>
+
+<section id="tests" class="searchable"><div class="section-signal"><span>SECTION 15</span><span>HERMES / BOT MODE</span></div>
+<h2>Bot Mode smoke tests</h2>
+<p>Use these after profile/tool changes. You do not need to rerun the whole audit.</p>
+<table>
+<thead><tr><th>Test</th><th>Expected</th></tr></thead>
+<tbody>
+<tr><td><strong>Group role test</strong>: each Bot states role, pass if redundant</td><td>Distinct identities; not everyone must speak</td></tr>
+<tr><td><strong>Mention isolation</strong>: <span class="inline">@x-research</span> only</td><td>X responds; others stay quiet unless pulled in</td></tr>
+<tr><td><strong>Cascade</strong>: Default asks X, then synthesizes</td><td>Visible handoff and final owner</td></tr>
+<tr><td><strong>Coder verification</strong>: Coder diagnoses, mentions Default</td><td>Coder → Coordinator verification loop</td></tr>
+<tr><td><strong>@user escalation</strong>: force a preference choice</td><td>Exactly one decision question, then stop</td></tr>
+</tbody>
+</table>
+<div class="callout goodbox pastel-mint"><strong>Already verified on your setup:</strong> Coordinator ↔ X group deliberation, Coder → Coordinator handoff, and X staying silent when irrelevant.</div>
+</section>
+
+<section id="sources" class="searchable"><div class="section-signal"><span>SECTION 16</span><span>HERMES / BOT MODE</span></div>
+<h2>Sources & version note</h2>
+<div class="callout warnbox pastel-butter">
+<strong>Version note:</strong> this runbook combines your locally verified Windows setup with capabilities described in the current upstream Hermes documentation. Your local Hermes build may not contain every upstream feature yet. Items marked “Upstream” are ideas/features to verify before depending on them operationally.
+</div>
+<ul>
+<li><a href="https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/bot-mode.md" target="_blank" rel="noreferrer">Hermes Bot Mode documentation</a></li>
+<li><a href="https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/profiles.md" target="_blank" rel="noreferrer">Hermes Profiles documentation</a></li>
+<li><a href="https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/kanban.md" target="_blank" rel="noreferrer">Hermes Kanban documentation</a></li>
+</ul>
+<p class="source-note">The page is intentionally self-contained: all styling and behavior are embedded in this single HTML file. External links are references only.</p>
+</section>
+
+
+
+    <footer class="large-footer">
+      <div class="identity">Hermes<br>Bot Mode.</div>
+      <div class="closure">
+        Operating runbook<br>
+        Coordinator · X-Researcher · Coder · Scribe<br><br>
+        Principle / one outcome, one owner<br>
+        Method / delegate → verify → close<br>
+        Status / locally tested + upstream extended
+      </div>
+    </footer>
+  </main>
+</div>
+<script>
+const rail=document.querySelector('.index-rail');
+const search=document.getElementById('search');
+document.querySelectorAll('.copy').forEach(btn=>{
+  btn.addEventListener('click',async()=>{
+    const text=btn.parentElement.querySelector('code').innerText;
+    try{
+      await navigator.clipboard.writeText(text);
+      const prev=btn.textContent;btn.textContent='Copied';
+      setTimeout(()=>btn.textContent=prev,1200);
+    }catch(e){btn.textContent='Select';}
+  });
+});
+if(search){
+  search.addEventListener('input',()=>{
+    const q=search.value.trim().toLowerCase();
+    document.querySelectorAll('.searchable').forEach(sec=>{
+      sec.classList.toggle('hide',q && !sec.innerText.toLowerCase().includes(q));
+    });
+  });
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='/' && search && document.activeElement!==search){
+    e.preventDefault();search.focus();
+  }
+});
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.filter;
+    document.querySelectorAll('.prompt-card').forEach(card=>{
+      const tags=card.dataset.tags||'';
+      card.classList.toggle('hide',f!=='all'&&!tags.includes(f));
+    });
+  });
+});
+const sections=[...document.querySelectorAll('main section[id]')];
+const navLinks=[...document.querySelectorAll('#nav a')];
+const obs=new IntersectionObserver(entries=>{
+  const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+  if(!visible)return;
+  navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+visible.target.id));
+},{rootMargin:'-18% 0px -68% 0px',threshold:[0,.2,.5]});
+sections.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>

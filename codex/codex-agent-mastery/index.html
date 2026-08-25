@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Codex Agent Mastery Guide - August 2026 Interactive Platform</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fbfbfa',
+                            100: '#f6f5f1',
+                            200: '#ece9e1',
+                            300: '#ded8ca',
+                            400: '#c0b49d',
+                            500: '#9e8c6e',
+                            600: '#7e6c52',
+                            700: '#63533f',
+                            800: '#4f4334',
+                            900: '#3f362b',
+                        },
+                        accent: {
+                            indigo: '#4f46e5',
+                            emerald: '#059669',
+                            amber: '#d97706',
+                            rose: '#e11d48',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Embedded Chart Container Styles -->
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 340px;
+            }
+        }
+        .code-block {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Chosen Palette: Warm Architectural Neutrals (Stone background, Warm Slate cards, Amber/Indigo/Emerald accents) -->
+
+    <!-- Application Structure Plan:
+        1. Header & Navigation: Executive summary of Codex multi-surface autonomous architecture and tabbed navigation across 6 core modules.
+        2. Module 1: System Overview & 6-Phase Execution Lifecycle (Interactive step-through pipeline and model reasoning comparison charts).
+        3. Module 2: Configuration Hierarchy & Rules Engine (`config.toml` cascade simulator, key restrictions, hooks manager).
+        4. Module 3: OS Sandboxing & Execpolicy Playground (AST decomposition tester for security rules, permission profiles, circuit breaker metrics).
+        5. Module 4: Project Governance & Context (`AGENTS.md` discovery tree visualizer and 32 KiB Byte Budget calculator).
+        6. Module 5: MCP & Progressive Agent Skills (3-Stage disclosure visualizer, tool namespacing explorer, MCP vs Skills matrix).
+        7. Module 6: Multi-Agent Subagent Delegation (Filterable custom roles matrix, intelligent task-to-agent recommender).
+        This non-linear interactive format allows developers and architects to test rules, model token usage, and explore configurations live, replacing static text consumption with active simulation.
+    -->
+
+    <!-- Visualization & Content Choices:
+        - Execution Lifecycle -> Goal: Guide through 6 phases -> Interactive Pipeline Step-Through -> Visual sequence with live context card -> JS dynamic update.
+        - Model Tier Allocation -> Goal: Compare gpt-5.6 variants -> Bar Chart -> Hover inspection -> Chart.js Canvas.
+        - Precedence Cascade -> Goal: Show evaluation rules -> Interactive Layer Toggle Simulator -> Dynamic value resolution display.
+        - Execpolicy Security -> Goal: Test command security -> AST Shell Decomposition Simulator -> Real-time parsing of compound shell inputs.
+        - AGENTS.md Budget -> Goal: Monitor 32KB constraint -> Dynamic Byte Calculator with progress indicator -> Vanilla JS input meter.
+        - Progressive Disclosure -> Goal: Demonstrate Skills stages -> Step-by-Step State Switcher -> Highlighted architecture diagram in HTML/CSS.
+        - Subagent Recommender -> Goal: Assign tasks to specialized models -> Interactive Decision Selector -> Dynamic recommendation output.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Navigation Header -->
+    <header class="bg-stone-900 text-stone-100 border-b border-stone-800 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-amber-600 text-stone-900 font-bold px-2.5 py-1 rounded text-xs tracking-wider uppercase">OpenAI Codex</span>
+                    <h1 class="text-lg font-semibold tracking-tight text-stone-100 hidden sm:block">Agent Mastery Explorer <span class="text-xs text-stone-400 font-normal">(Aug 2026 Edition)</span></h1>
+                </div>
+                <nav class="flex space-x-1 overflow-x-auto py-2 text-xs font-medium">
+                    <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn px-3 py-1.5 rounded-md transition-colors bg-stone-800 text-amber-400">1. Lifecycle</button>
+                    <button onclick="switchTab('config')" id="nav-config" class="nav-btn px-3 py-1.5 rounded-md transition-colors text-stone-300 hover:text-white hover:bg-stone-800">2. Config & Hooks</button>
+                    <button onclick="switchTab('sandbox')" id="nav-sandbox" class="nav-btn px-3 py-1.5 rounded-md transition-colors text-stone-300 hover:text-white hover:bg-stone-800">3. Sandbox & Rules</button>
+                    <button onclick="switchTab('governance')" id="nav-governance" class="nav-btn px-3 py-1.5 rounded-md transition-colors text-stone-300 hover:text-white hover:bg-stone-800">4. AGENTS.md</button>
+                    <button onclick="switchTab('skills')" id="nav-skills" class="nav-btn px-3 py-1.5 rounded-md transition-colors text-stone-300 hover:text-white hover:bg-stone-800">5. MCP & Skills</button>
+                    <button onclick="switchTab('subagents')" id="nav-subagents" class="nav-btn px-3 py-1.5 rounded-md transition-colors text-stone-300 hover:text-white hover:bg-stone-800">6. Subagents</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= SECTION 1: OVERVIEW & LIFECYCLE ================= -->
+        <section id="sec-overview" class="tab-content space-y-8">
+            <!-- Introductory Context Banner -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 text-amber-700 font-semibold text-sm uppercase tracking-wider">
+                    <span>⚡ System Architecture Overview</span>
+                </div>
+                <h2 class="text-2xl font-bold text-stone-900">Multi-Surface Autonomous Engineering System</h2>
+                <p class="text-stone-600 text-sm leading-relaxed">
+                    OpenAI Codex operates as a multi-surface autonomous coding agent capable of traversing local workspaces, executing operations inside operating-system sandboxes, patching source trees, and delegating heavy compute tasks to cloud environments. Mastering Codex requires orchestrating five interconnected systems: hierarchical configuration (<code class="code-block bg-stone-100 px-1 py-0.5 rounded text-amber-800">config.toml</code>), OS sandboxing & approval models, context instruction routing (<code class="code-block bg-stone-100 px-1 py-0.5 rounded text-amber-800">AGENTS.md</code>), Model Context Protocol (MCP), and procedural Agent Skills.
+                </p>
+            </div>
+
+            <!-- Interactive 6-Phase Lifecycle Pipeline -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-6">
+                <div class="border-b border-stone-200 pb-4 flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-stone-900">Unified Execution Lifecycle Simulator</h3>
+                        <p class="text-xs text-stone-500">Step through the 6 operational phases executed during a Codex agent turn.</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="prevPhase()" class="px-3 py-1 text-xs font-semibold bg-stone-200 hover:bg-stone-300 text-stone-800 rounded">◄ Prev Phase</button>
+                        <button onclick="nextPhase()" class="px-3 py-1 text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white rounded">Next Phase ►</button>
+                    </div>
+                </div>
+
+                <!-- Phase Track Visualizer -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2" id="phase-track">
+                    <!-- Phase items dynamic JS highlighting -->
+                </div>
+
+                <!-- Active Phase Detailed Card -->
+                <div id="phase-detail-card" class="bg-stone-50 border border-stone-300 p-5 rounded-lg space-y-3 transition-all duration-300">
+                    <!-- Dynamic Content Loaded by JS -->
+                </div>
+            </div>
+
+            <!-- Model Reasoning & Specialization Chart -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+                    <h3 class="text-md font-bold text-stone-900 flex items-center space-x-2">
+                        <span>📊 Model Variant & Reasoning Effort Spectrum</span>
+                    </h3>
+                    <p class="text-xs text-stone-500">
+                        Codex aligns specific model tiers to execution scopes to balance latency, reasoning depth, and cost.
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="modelSpecChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-stone-900">Key Architectural Invariants</h3>
+                        <p class="text-xs text-stone-500 mb-4">Core execution guarantees enforced across all surfaces.</p>
+                        <ul class="space-y-3 text-xs text-stone-700">
+                            <li class="flex items-start space-x-2 bg-stone-50 p-2.5 rounded border border-stone-200">
+                                <span class="text-amber-600 font-bold">1.</span>
+                                <span><strong>Determinism Over Instruct:</strong> Hard boundaries (sandboxes, <code class="code-block text-amber-800">execpolicy</code>) always supersede soft natural language guidelines in <code class="code-block text-amber-800">AGENTS.md</code>.</span>
+                            </li>
+                            <li class="flex items-start space-x-2 bg-stone-50 p-2.5 rounded border border-stone-200">
+                                <span class="text-amber-600 font-bold">2.</span>
+                                <span><strong>Context Hygiene:</strong> Progressive disclosure limits baseline token footprint; subagent state isolation prevents prompt degradation.</span>
+                            </li>
+                            <li class="flex items-start space-x-2 bg-stone-50 p-2.5 rounded border border-stone-200">
+                                <span class="text-amber-600 font-bold">3.</span>
+                                <span><strong>Non-Bypassable Verification:</strong> Shell chained vectors are AST-parsed via Tree-sitter to prevent wrapping bypasses.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900 font-medium">
+                        💡 <em>Tip: Use the top navigation tabs to dive deep into each system module.</em>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: CONFIG & HOOKS ================= -->
+        <section id="sec-config" class="tab-content hidden space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 text-amber-700 font-semibold text-sm uppercase tracking-wider">
+                    <span>⚙ System 1: Configuration Hierarchy & Hooks</span>
+                </div>
+                <h2 class="text-2xl font-bold text-stone-900">Hierarchical Precedence and Hook Management</h2>
+                <p class="text-stone-600 text-sm leading-relaxed">
+                    Codex resolves configuration parameters across six evaluation tiers in strict descending order of precedence. Repository-local settings apply only within trusted projects, while sensitive authentication and routing keys are strictly blocked from project-level overrides.
+                </p>
+            </div>
+
+            <!-- Cascade Evaluator Simulator -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-6">
+                <h3 class="text-lg font-bold text-stone-900">Interactive Precedence Cascade Simulator</h3>
+                <p class="text-xs text-stone-500">Select active parameters at each layer to see how the active configuration resolves at runtime.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-4 md:col-span-1 border-r border-stone-200 pr-4">
+                        <h4 class="text-sm font-bold text-stone-800">1. Simulate Config Scopes</h4>
+                        
+                        <div class="space-y-2 text-xs">
+                            <label class="block font-semibold text-stone-700">CLI Flag Override (<code class="code-block">--profile</code> / flags)</label>
+                            <select id="sim-cli" onchange="runCascadeSim()" class="w-full bg-stone-50 border border-stone-300 p-2 rounded">
+                                <option value="none">None (No CLI Flag Override)</option>
+                                <option value="on-request">--ask-for-approval (approval_policy = "on-request")</option>
+                                <option value="read-only">--sandbox read-only (permissions = ":read-only")</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <label class="block font-semibold text-stone-700">Project Layer (<code class="code-block">.codex/config.toml</code>)</label>
+                            <select id="sim-project" onchange="runCascadeSim()" class="w-full bg-stone-50 border border-stone-300 p-2 rounded">
+                                <option value="none">Untrusted or Missing File</option>
+                                <option value="valid">Trusted Repo: approval_policy = "never"</option>
+                                <option value="illegal">Trusted Repo (Includes restricted key: openai_base_url)</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <label class="block font-semibold text-stone-700">User Scope (<code class="code-block">~/.codex/config.toml</code>)</label>
+                            <select id="sim-user" onchange="runCascadeSim()" class="w-full bg-stone-50 border border-stone-300 p-2 rounded">
+                                <option value="user-default">approval_policy = "on-request", model = "gpt-5.6"</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Output -->
+                    <div class="md:col-span-2 space-y-4 bg-stone-50 p-4 rounded-lg border border-stone-200">
+                        <h4 class="text-sm font-bold text-stone-800 flex items-center justify-between">
+                            <span>2. Resolved Runtime Configuration State</span>
+                            <span id="cascade-status-tag" class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Evaluated Valid</span>
+                        </h4>
+                        
+                        <div id="cascade-output" class="space-y-3 text-xs">
+                            <!-- Dynamic Content generated by JS -->
+                        </div>
+
+                        <div class="p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900 space-y-1">
+                            <p class="font-semibold">🔒 Restricted Key Policy Guard:</p>
+                            <p class="text-stone-700">Keys such as <code class="code-block">openai_base_url</code>, <code class="code-block">model_provider</code>, and <code class="code-block">notify</code> are blocked from project-level overrides to prevent credential hijacking or malicious routing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reference Table: Hooks Lifecycle Events -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+                <h3 class="text-lg font-bold text-stone-900">Event-Driven Lifecycle Hooks Reference</h3>
+                <p class="text-xs text-stone-500">Hooks execute local validation scripts or context injectors at crucial execution boundaries.</p>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-stone-800 text-stone-200">
+                                <th class="p-2.5 font-semibold">Lifecycle Event</th>
+                                <th class="p-2.5 font-semibold">Matcher Target</th>
+                                <th class="p-2.5 font-semibold">Default Context Limit</th>
+                                <th class="p-2.5 font-semibold">Primary Engineering Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200 text-stone-700">
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">SessionStart</code></td>
+                                <td class="p-2.5"><code class="code-block">startup|resume</code></td>
+                                <td class="p-2.5">2,500 tokens</td>
+                                <td class="p-2.5">Inject dynamic workspace state, environment specs, git root checks.</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">PreToolUse</code></td>
+                                <td class="p-2.5"><code class="code-block">Bash|mcp_*</code></td>
+                                <td class="p-2.5">Immediate (Block/Pass)</td>
+                                <td class="p-2.5">Run pre-execution security linting or command syntax verification.</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">PermissionRequest</code></td>
+                                <td class="p-2.5"><code class="code-block">write|network</code></td>
+                                <td class="p-2.5">N/A</td>
+                                <td class="p-2.5">Intercept boundary escalation attempts prior to auto-review routing.</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">PreCompact</code></td>
+                                <td class="p-2.5"><code class="code-block">auto|manual</code></td>
+                                <td class="p-2.5">5,000 tokens</td>
+                                <td class="p-2.5">Persist essential state summary before context window truncation.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: SANDBOX & RULES ================= -->
+        <section id="sec-sandbox" class="tab-content hidden space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 text-amber-700 font-semibold text-sm uppercase tracking-wider">
+                    <span>🛡 System 2: OS Sandboxing & Execpolicy Rules</span>
+                </div>
+                <h2 class="text-2xl font-bold text-stone-900">Isolation Primitives and Starlark Rules Engine</h2>
+                <p class="text-stone-600 text-sm leading-relaxed">
+                    Codex enforces physical OS-level sandboxing combined with an out-of-process Starlark deterministic rules engine (<code class="code-block bg-stone-100 px-1 py-0.5 rounded text-amber-800">execpolicy</code>). To prevent evasion via shell wrappers, incoming commands undergo AST parsing using Tree-sitter.
+                </p>
+            </div>
+
+            <!-- Execpolicy AST Rule Tester Playground -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-6">
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-stone-900">Starlark <code class="code-block text-amber-700">execpolicy</code> & AST Decomposition Playground</h3>
+                        <p class="text-xs text-stone-500">Test shell commands against the AST rule evaluator to see decision resolution (<code class="code-block">allow</code>, <code class="code-block">prompt</code>, <code class="code-block">forbidden</code>).</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-stone-700 mb-1">Select Preset Sample or Type Custom Command:</label>
+                            <div class="flex space-x-2 mb-2">
+                                <button onclick="setCommand('git push origin main')" class="px-2 py-1 bg-stone-200 text-stone-800 rounded text-xs hover:bg-stone-300">git push</button>
+                                <button onclick="setCommand('gh pr view')" class="px-2 py-1 bg-stone-200 text-stone-800 rounded text-xs hover:bg-stone-300">gh pr view</button>
+                                <button onclick="setCommand('git add . && rm -rf /')" class="px-2 py-1 bg-amber-100 text-amber-900 rounded text-xs hover:bg-amber-200 font-semibold">git add && rm -rf</button>
+                                <button onclick="setCommand('pnpm test')" class="px-2 py-1 bg-stone-200 text-stone-800 rounded text-xs hover:bg-stone-300">pnpm test</button>
+                            </div>
+                            <input type="text" id="rule-input-cmd" value="git add . && rm -rf /" oninput="testExecPolicy()" class="w-full code-block bg-stone-900 text-green-400 p-3 rounded-md text-xs border border-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+
+                        <div class="bg-stone-50 p-4 rounded-lg border border-stone-200 space-y-2">
+                            <h4 class="text-xs font-bold text-stone-800 uppercase tracking-wider">Active Rule Definitions (Starlark)</h4>
+                            <pre class="code-block text-xs bg-white p-3 rounded border border-stone-200 text-stone-700 overflow-x-auto">
+prefix_rule(pattern=["git", "push"], decision="forbidden")
+prefix_rule(pattern=["gh", "pr", ["view", "list"]], decision="allow")
+prefix_rule(pattern=["rm", "-rf"], decision="forbidden")
+prefix_rule(pattern=["pnpm"], decision="allow")</pre>
+                        </div>
+                    </div>
+
+                    <!-- Test Outcome Output -->
+                    <div class="bg-stone-900 text-stone-100 p-5 rounded-xl flex flex-col justify-between space-y-4">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center border-b border-stone-800 pb-2">
+                                <span class="text-xs font-semibold text-stone-400">AST Analysis Output</span>
+                                <span id="policy-decision-badge" class="px-2.5 py-1 rounded text-xs font-bold bg-rose-900 text-rose-200">FORBIDDEN</span>
+                            </div>
+
+                            <div>
+                                <span class="text-xs text-stone-400 block mb-1">Tree-sitter Vector Decomposition:</span>
+                                <div id="ast-vectors" class="space-y-1 font-mono text-xs text-amber-300">
+                                    <!-- Dynamic Vector Output -->
+                                </div>
+                            </div>
+
+                            <div>
+                                <span class="text-xs text-stone-400 block mb-1">Evaluator Justification:</span>
+                                <p id="policy-justification" class="text-xs text-stone-300 leading-relaxed italic">
+                                    <!-- Dynamic Justification -->
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 bg-stone-800 rounded text-xs text-stone-400 border border-stone-700">
+                            🛡 Rules hierarchy rule: <code class="code-block text-amber-400">forbidden</code> > <code class="code-block text-amber-400">prompt</code> > <code class="code-block text-amber-400">allow</code>. Most restrictive decision across decomposed vectors always wins.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OS Platform Isolation & Guardian Circuit Breaker -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- OS Table -->
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+                    <h3 class="text-md font-bold text-stone-900">Physical OS Isolation Primitives</h3>
+                    <div class="overflow-x-auto text-xs">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-stone-100 border-b border-stone-200 text-stone-700">
+                                    <th class="p-2 font-semibold">OS Platform</th>
+                                    <th class="p-2 font-semibold">Kernel Isolation Mechanism</th>
+                                    <th class="p-2 font-semibold">Egress Network Control</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-stone-200 text-stone-600">
+                                <tr>
+                                    <td class="p-2 font-bold text-stone-800">macOS</td>
+                                    <td class="p-2">Seatbelt framework (<code class="code-block">sandbox-exec</code>)</td>
+                                    <td class="p-2">Domain proxy allowlisting</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-stone-800">Linux / WSL2</td>
+                                    <td class="p-2">Bubblewrap (<code class="code-block">bwrap</code>) namespaces</td>
+                                    <td class="p-2">Network namespace total offline</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-stone-800">Windows</td>
+                                    <td class="p-2">Dedicated sandbox users / NTFS ACLs</td>
+                                    <td class="p-2">Per-user Windows Defender Rules</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Circuit Breaker Chart -->
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+                    <h3 class="text-md font-bold text-stone-900">Guardian (<code class="code-block text-amber-700">auto_review</code>) Circuit Breaker</h3>
+                    <p class="text-xs text-stone-500">Automatic denial circuit breaker triggers turn abortion to prevent loop exhaustion.</p>
+                    <div class="chart-container">
+                        <canvas id="circuitBreakerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: AGENTS.MD GOVERNANCE ================= -->
+        <section id="sec-governance" class="tab-content hidden space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 text-amber-700 font-semibold text-sm uppercase tracking-wider">
+                    <span>📜 System 3: Contextual Project Governance</span>
+                </div>
+                <h2 class="text-2xl font-bold text-stone-900">AGENTS.md Discovery & Context Hygiene</h2>
+                <p class="text-stone-600 text-sm leading-relaxed">
+                    <code class="code-block bg-stone-100 px-1 py-0.5 rounded text-amber-800">AGENTS.md</code> defines machine-readable build constraints, architectural limits, and review guidelines. Codex dynamically constructs the system context by walking down the workspace tree from the Git root to the active working directory.
+                </p>
+            </div>
+
+            <!-- Byte Budget Calculator & Traversal Visualizer -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Byte Budget Tool -->
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-stone-900">32 KiB Byte-Budget Meter</h3>
+                        <span id="byte-count-badge" class="px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800">0 / 32,768 Bytes</span>
+                    </div>
+                    <p class="text-xs text-stone-500">
+                        Codex enforces a strict document limit (<code class="code-block">project_doc_max_bytes = 32768</code>). Instruction files exceeding this limit are truncated. Keep instructions dense!
+                    </p>
+
+                    <textarea id="agents-md-input" oninput="updateByteBudget()" placeholder="Paste or draft your AGENTS.md content here to check token and byte footprint..." class="w-full h-40 code-block text-xs p-3 bg-stone-50 border border-stone-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+
+                    <div>
+                        <div class="flex justify-between text-xs text-stone-600 mb-1">
+                            <span>Budget Utilization:</span>
+                            <span id="budget-percent">0%</span>
+                        </div>
+                        <div class="w-full bg-stone-200 rounded-full h-2.5 overflow-hidden">
+                            <div id="budget-bar" class="bg-amber-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <button onclick="loadSampleAgentsMd()" class="w-full py-2 bg-stone-800 hover:bg-stone-900 text-stone-100 font-semibold rounded text-xs transition-colors">
+                        Load Production Standard Template
+                    </button>
+                </div>
+
+                <!-- Traversal Sequence Diagram -->
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-stone-900">Discovery Precedence Order</h3>
+                        <p class="text-xs text-stone-500 mb-4">Discovery traverses top-down; nearest subdirectories appear later in context, taking precedence.</p>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 bg-stone-50 rounded border border-stone-200 flex items-center space-x-3">
+                                <span class="bg-stone-800 text-stone-100 px-2 py-1 rounded font-mono font-bold">1</span>
+                                <div>
+                                    <strong class="text-stone-900 block">Global User Directory</strong>
+                                    <span class="text-stone-500 font-mono">$CODEX_HOME/AGENTS.override.md (or AGENTS.md)</span>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-stone-50 rounded border border-stone-200 flex items-center space-x-3">
+                                <span class="bg-stone-800 text-stone-100 px-2 py-1 rounded font-mono font-bold">2</span>
+                                <div>
+                                    <strong class="text-stone-900 block">Project Git Root</strong>
+                                    <span class="text-stone-500 font-mono">&lt;repo_root&gt;/AGENTS.md</span>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-amber-50 rounded border border-amber-300 flex items-center space-x-3">
+                                <span class="bg-amber-600 text-stone-900 px-2 py-1 rounded font-mono font-bold">3</span>
+                                <div>
+                                    <strong class="text-stone-900 block">Active Working Subdirectory (Highest Priority)</strong>
+                                    <span class="text-stone-500 font-mono">&lt;repo_root&gt;/src/api/AGENTS.md</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-stone-100 rounded text-xs text-stone-600 border border-stone-200">
+                        📌 <em>Note: All matching documents are concatenated separated by blank lines into a single runtime context instruction block.</em>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 5: MCP & AGENT SKILLS ================= -->
+        <section id="sec-skills" class="tab-content hidden space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 text-amber-700 font-semibold text-sm uppercase tracking-wider">
+                    <span>🔌 Systems 4 & 5: MCP & Agent Skills</span>
+                </div>
+                <h2 class="text-2xl font-bold text-stone-900">Extensible Integrations & Progressive Disclosure</h2>
+                <p class="text-stone-600 text-sm leading-relaxed">
+                    The Model Context Protocol (MCP) provides physical platform connectivity, while Agent Skills package modular cognitive workflows. Codex relies on a 3-stage progressive disclosure engine to eliminate context rot during skill execution.
+                </p>
+            </div>
+
+            <!-- 3-Stage Progressive Disclosure Visualizer -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-6">
+                <h3 class="text-lg font-bold text-stone-900">Interactive 3-Stage Skill Progressive Disclosure Engine</h3>
+                <p class="text-xs text-stone-500">Click stages to simulate context ingestion mechanics during task resolution.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="skill-stage-buttons">
+                    <button onclick="setSkillStage(1)" id="skill-btn-1" class="p-4 rounded-lg text-left border border-amber-600 bg-amber-50 text-stone-900 font-medium">
+                        <span class="text-xs text-amber-700 font-bold block uppercase">Stage 1</span>
+                        <span class="text-sm font-bold">Discovery Indexing</span>
+                        <span class="text-xs text-stone-500 block mt-1">Ingests YAML metadata only (<code class="code-block">name</code>, <code class="code-block">description</code>). Baseline token impact ~ 50 tokens.</span>
+                    </button>
+
+                    <button onclick="setSkillStage(2)" id="skill-btn-2" class="p-4 rounded-lg text-left border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 font-medium">
+                        <span class="text-xs text-stone-500 font-bold block uppercase">Stage 2</span>
+                        <span class="text-sm font-bold">Manifest Ingestion</span>
+                        <span class="text-xs text-stone-500 block mt-1">Ingests full <code class="code-block">SKILL.md</code> workflow instructions when prompt matches skill intent.</span>
+                    </button>
+
+                    <button onclick="setSkillStage(3)" id="skill-btn-3" class="p-4 rounded-lg text-left border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 font-medium">
+                        <span class="text-xs text-stone-500 font-bold block uppercase">Stage 3</span>
+                        <span class="text-sm font-bold">On-Demand Execution</span>
+                        <span class="text-xs text-stone-500 block mt-1">Reads/executes supporting resources in <code class="code-block">references/</code> or <code class="code-block">scripts/</code> on-demand.</span>
+                    </button>
+                </div>
+
+                <!-- Dynamic Stage Visualizer Display -->
+                <div id="skill-stage-display" class="bg-stone-900 text-stone-100 p-5 rounded-xl space-y-3 font-mono text-xs">
+                    <!-- Dynamic Content JS -->
+                </div>
+            </div>
+
+            <!-- MCP vs Skills Architectural Division Matrix -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+                <h3 class="text-lg font-bold text-stone-900">MCP vs Skills Architectural Division</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-stone-800 text-stone-100">
+                                <th class="p-3 font-semibold">Architectural Layer</th>
+                                <th class="p-3 font-semibold">Primary Subsystem Role</th>
+                                <th class="p-3 font-semibold">Supported Transports / Formats</th>
+                                <th class="p-3 font-semibold">Namespacing & Invocation</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200 text-stone-700">
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-3 font-bold text-indigo-700">Model Context Protocol (MCP)</td>
+                                <td class="p-3">Physical integration layer: API execution, issue trackers, observability tools.</td>
+                                <td class="p-3"><code class="code-block">stdio</code> child processes, Streamable HTTP (OAuth)</td>
+                                <td class="p-3"><code class="code-block">&lt;server_id&gt;/&lt;tool_name&gt;</code> (e.g. <code class="code-block">unleash/list_flags</code>)</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-3 font-bold text-amber-700">Agent Skills Specification</td>
+                                <td class="p-3">Cognitive reasoning layer: step-by-step procedures, safety checklists, SQL templates.</td>
+                                <td class="p-3"><code class="code-block">SKILL.md</code> manifest + subdirectories (<code class="code-block">scripts/</code>)</td>
+                                <td class="p-3">Triggered via intent matching or explicit CLI invocation (<code class="code-block">$database-migration</code>)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 6: SUBAGENTS ================= -->
+        <section id="sec-subagents" class="tab-content hidden space-y-8">
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 text-amber-700 font-semibold text-sm uppercase tracking-wider">
+                    <span>🤖 Parallel Subagent Delegation</span>
+                </div>
+                <h2 class="text-2xl font-bold text-stone-900">Custom Subagent Roles & Multi-Agent Convergence</h2>
+                <p class="text-stone-600 text-sm leading-relaxed">
+                    Demanding engineering workflows benefit from parallelization. The root orchestrator (<code class="code-block bg-stone-100 px-1 py-0.5 rounded text-amber-800">/root</code>) spawns specialized subagents in isolated threads to prevent context pollution and maximize reasoning efficiency.
+                </p>
+            </div>
+
+            <!-- Intelligent Agent Recommender Tool -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-6">
+                <h3 class="text-lg font-bold text-stone-900">Intelligent Subagent Task Recommender</h3>
+                <p class="text-xs text-stone-500">Select an engineering objective to calculate the optimal subagent role, model tier, and sandbox permissions.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-3 md:col-span-1">
+                        <label class="block text-xs font-semibold text-stone-700">Target Task Objective:</label>
+                        <select id="recommender-task" onchange="runSubagentRecommender()" class="w-full bg-stone-50 border border-stone-300 p-2.5 rounded text-xs font-semibold focus:ring-2 focus:ring-amber-500">
+                            <option value="explorer">Large Codebase Mapping & Symbol Search</option>
+                            <option value="auditor">OWASP Threat Modeling & Security Audit</option>
+                            <option value="browser">Frontend UI Bug Reproduction (Chrome DevTools)</option>
+                            <option value="fixer">Targeted Component Bug Patching</option>
+                            <option value="docs">External SDK & MCP Documentation Lookup</option>
+                        </select>
+                    </div>
+
+                    <!-- Output Card -->
+                    <div id="subagent-recommendation-card" class="md:col-span-2 bg-stone-50 p-5 rounded-xl border border-stone-300 space-y-3 text-xs">
+                        <!-- Dynamic Recommendation Content -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subagent Roles Reference Table -->
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+                <h3 class="text-lg font-bold text-stone-900">Built-in & Standalone Custom Agents</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-stone-800 text-stone-100">
+                                <th class="p-2.5 font-semibold">Agent Name</th>
+                                <th class="p-2.5 font-semibold">Assigned Model Tier</th>
+                                <th class="p-2.5 font-semibold">Reasoning Effort</th>
+                                <th class="p-2.5 font-semibold">Sandbox Boundary</th>
+                                <th class="p-2.5 font-semibold">Primary Assignment</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200 text-stone-700">
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">pr_explorer</code></td>
+                                <td class="p-2.5"><code class="code-block">gpt-5.6-terra</code></td>
+                                <td class="p-2.5">medium</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">read-only</span></td>
+                                <td class="p-2.5">AST symbol mapping, rapid diff scanning.</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">security_auditor</code></td>
+                                <td class="p-2.5"><code class="code-block">gpt-5.6</code></td>
+                                <td class="p-2.5">high</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">read-only</span></td>
+                                <td class="p-2.5">OWASP risk analysis, cryptographic verification.</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">browser_debugger</code></td>
+                                <td class="p-2.5"><code class="code-block">gpt-5.6-terra</code></td>
+                                <td class="p-2.5">high</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">workspace-write</span></td>
+                                <td class="p-2.5">Local reproduction, Chrome DevTools MCP screenshots.</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">ui_fixer</code></td>
+                                <td class="p-2.5"><code class="code-block">gpt-5.6</code></td>
+                                <td class="p-2.5">medium</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">workspace-write</span></td>
+                                <td class="p-2.5">Targeted refactoring, CSS/Tailwind updates.</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-2.5 font-bold text-amber-700"><code class="code-block">docs_researcher</code></td>
+                                <td class="p-2.5"><code class="code-block">gpt-5.6-luna</code></td>
+                                <td class="p-2.5">low</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">read-only</span></td>
+                                <td class="p-2.5">High-frequency documentation lookups via HTTP MCP.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 border-t border-stone-800 py-6 text-xs text-center mt-auto">
+        <div class="max-w-7xl mx-auto px-4 space-y-1">
+            <p>OpenAI Codex Agent Mastery Operational Guide — August 2026 Interactive Reference Edition</p>
+            <p class="text-stone-500">Built with Tailwind CSS & Chart.js. Single-page interactive application architecture.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Logic & JavaScript -->
+    <script>
+        // --- Navigation Logic ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-stone-800', 'text-amber-400');
+                btn.classList.add('text-stone-300');
+            });
+
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            const activeNav = document.getElementById('nav-' + tabId);
+            activeNav.classList.add('bg-stone-800', 'text-amber-400');
+            activeNav.classList.remove('text-stone-300');
+        }
+
+        // --- Lifecycle Visualizer Logic ---
+        const phases = [
+            {
+                num: 1,
+                name: "System Init & Governance",
+                desc: "Processes configuration hierarchy across config.toml files, environment variables, and cryptographic hook registrations. Constructs baseline AGENTS.md instruction chain."
+            },
+            {
+                num: 2,
+                name: "Procedural Discovery",
+                desc: "Indexes available Agent Skills via lightweight YAML metadata (name & description) keeping baseline prompt footprint low (~50 tokens)."
+            },
+            {
+                num: 3,
+                name: "Orchestration & Parallel Delegation",
+                desc: "Primary /root agent evaluates prompt complexity and spawns dedicated subagents (e.g. pr_explorer, security_auditor) in isolated context threads."
+            },
+            {
+                num: 4,
+                name: "External Capability Interoperability",
+                desc: "Subagents execute namespaced MCP tool calls across stdio and Streamable HTTP endpoints (e.g., unleash/evaluate_change)."
+            },
+            {
+                num: 5,
+                name: "Deterministic Boundary Enforcement",
+                desc: "Intercepts shell operations: Tree-sitter decomposes command chains, Starlark execpolicy rules evaluate decisions, and OS sandboxes enforce physical filesystem isolation."
+            },
+            {
+                num: 6,
+                name: "Boundary Escalation & Verification",
+                desc: "Escalation requests pass to Guardian auto_review subagent. Consecutive-denial circuit breakers prevent infinite loops; findings return to parent thread."
+            }
+        ];
+
+        let currentPhaseIdx = 0;
+
+        function renderLifecyclePhase() {
+            const trackContainer = document.getElementById('phase-track');
+            trackContainer.innerHTML = phases.map((p, idx) => `
+                <button onclick="setPhase(${idx})" class="p-2.5 rounded border text-left transition-all ${idx === currentPhaseIdx ? 'border-amber-600 bg-amber-50 text-amber-900 font-bold shadow-sm' : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50'}">
+                    <span class="text-xs block text-stone-400 font-mono">Phase 0${p.num}</span>
+                    <span class="text-xs font-semibold leading-tight block truncate">${p.name}</span>
+                </button>
+            `).join('');
+
+            const p = phases[currentPhaseIdx];
+            document.getElementById('phase-detail-card').innerHTML = `
+                <div class="flex items-center space-x-2 text-amber-800 font-bold text-sm">
+                    <span class="bg-amber-600 text-stone-900 px-2 py-0.5 rounded text-xs">Phase 0${p.num}</span>
+                    <h4>${p.name}</h4>
+                </div>
+                <p class="text-xs text-stone-700 leading-relaxed">${p.desc}</p>
+            `;
+        }
+
+        function setPhase(idx) {
+            currentPhaseIdx = idx;
+            renderLifecyclePhase();
+        }
+
+        function nextPhase() {
+            currentPhaseIdx = (currentPhaseIdx + 1) % phases.length;
+            renderLifecyclePhase();
+        }
+
+        function prevPhase() {
+            currentPhaseIdx = (currentPhaseIdx - 1 + phases.length) % phases.length;
+            renderLifecyclePhase();
+        }
+
+        // --- Config Cascade Simulator Logic ---
+        function runCascadeSim() {
+            const cliVal = document.getElementById('sim-cli').value;
+            const projectVal = document.getElementById('sim-project').value;
+            const outputEl = document.getElementById('cascade-output');
+            const statusTag = document.getElementById('cascade-status-tag');
+
+            let activeApproval = "on-request (User Default)";
+            let activeSandbox = ":workspace (Default)";
+            let warnings = [];
+
+            if (projectVal === "valid") {
+                activeApproval = "never (Overridden by Project .codex/config.toml)";
+            } else if (projectVal === "illegal") {
+                warnings.push("⚠️ Startup Warning: Project config attempted to set restricted key 'openai_base_url'. Key was IGNORED.");
+            }
+
+            if (cliVal === "on-request") {
+                activeApproval = "on-request (CLI Flag Overrode static configs)";
+            } else if (cliVal === "read-only") {
+                activeSandbox = ":read-only (CLI Flag Overrode static permissions)";
+            }
+
+            if (warnings.length > 0) {
+                statusTag.className = "px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-900";
+                statusTag.innerText = "Evaluated with Warnings";
+            } else {
+                statusTag.className = "px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800";
+                statusTag.innerText = "Evaluated Valid";
+            }
+
+            outputEl.innerHTML = `
+                <div class="p-2.5 bg-white rounded border border-stone-200">
+                    <span class="font-semibold text-stone-700">Resolved approval_policy:</span>
+                    <span class="font-mono text-amber-800 font-bold ml-2">${activeApproval}</span>
+                </div>
+                <div class="p-2.5 bg-white rounded border border-stone-200">
+                    <span class="font-semibold text-stone-700">Resolved permissions:</span>
+                    <span class="font-mono text-amber-800 font-bold ml-2">${activeSandbox}</span>
+                </div>
+                ${warnings.map(w => `<div class="p-2 bg-rose-50 border border-rose-200 text-rose-800 rounded font-semibold">${w}</div>`).join('')}
+            `;
+        }
+
+        // --- Execpolicy Rule Tester Logic ---
+        function setCommand(cmd) {
+            document.getElementById('rule-input-cmd').value = cmd;
+            testExecPolicy();
+        }
+
+        function testExecPolicy() {
+            const input = document.getElementById('rule-input-cmd').value.trim();
+            const badge = document.getElementById('policy-decision-badge');
+            const vectorsEl = document.getElementById('ast-vectors');
+            const justEl = document.getElementById('policy-justification');
+
+            if (!input) {
+                badge.className = "px-2.5 py-1 rounded text-xs font-bold bg-stone-700 text-stone-300";
+                badge.innerText = "EMPTY";
+                vectorsEl.innerText = "[ ]";
+                justEl.innerText = "Enter a command to evaluate.";
+                return;
+            }
+
+            // Simulate AST decomposition
+            const parts = input.split(/&&|\|\||;/).map(p => p.trim()).filter(Boolean);
+            
+            let isForbidden = false;
+            let isPrompt = false;
+            let vectorsFormatted = [];
+            let justification = "";
+
+            parts.forEach(p => {
+                const tokens = p.split(/\s+/);
+                vectorsFormatted.push(`➜ Vector: [${tokens.map(t => `"${t}"`).join(', ')}]`);
+
+                if (tokens[0] === 'git' && tokens[1] === 'push') {
+                    isForbidden = true;
+                    justification += `Direct git push forbidden by Starlark prefix_rule. `;
+                } else if (tokens[0] === 'rm' && tokens.includes('-rf')) {
+                    isForbidden = true;
+                    justification += `Destructive recursive removal 'rm -rf' matched forbidden rule. `;
+                } else if (tokens[0] === 'gh' && tokens[1] === 'pr' && tokens[2] === 'create') {
+                    isPrompt = true;
+                    justification += `Opening PR requires operator verification. `;
+                }
+            });
+
+            if (isForbidden) {
+                badge.className = "px-2.5 py-1 rounded text-xs font-bold bg-rose-900 text-rose-200";
+                badge.innerText = "FORBIDDEN";
+                if (!justification) justification = "Command contains forbidden execution vector.";
+            } else if (isPrompt) {
+                badge.className = "px-2.5 py-1 rounded text-xs font-bold bg-amber-900 text-amber-200";
+                badge.innerText = "PROMPT";
+            } else {
+                badge.className = "px-2.5 py-1 rounded text-xs font-bold bg-emerald-900 text-emerald-200";
+                badge.innerText = "ALLOW";
+                justification = "All decomposed command vectors matched allowed execution patterns.";
+            }
+
+            vectorsEl.innerHTML = vectorsFormatted.join('<br>');
+            justEl.innerText = justification;
+        }
+
+        // --- AGENTS.md Byte Budget Meter Logic ---
+        function updateByteBudget() {
+            const text = document.getElementById('agents-md-input').value;
+            const bytes = new Blob([text]).size;
+            const maxBytes = 32768; // 32 KiB
+            const pct = Math.min(100, Math.round((bytes / maxBytes) * 100));
+
+            const badge = document.getElementById('byte-count-badge');
+            const percentEl = document.getElementById('budget-percent');
+            const bar = document.getElementById('budget-bar');
+
+            badge.innerText = `${bytes.toLocaleString()} / 32,768 Bytes`;
+            percentEl.innerText = `${pct}%`;
+            bar.style.width = `${pct}%`;
+
+            if (pct > 90) {
+                bar.className = "bg-rose-600 h-2.5 rounded-full transition-all duration-300";
+                badge.className = "px-2 py-0.5 rounded text-xs font-bold bg-rose-100 text-rose-800";
+            } else if (pct > 70) {
+                bar.className = "bg-amber-600 h-2.5 rounded-full transition-all duration-300";
+                badge.className = "px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800";
+            } else {
+                bar.className = "bg-emerald-600 h-2.5 rounded-full transition-all duration-300";
+                badge.className = "px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-800";
+            }
+        }
+
+        function loadSampleAgentsMd() {
+            const sample = `# AGENTS.md - Production Repository Governance
+
+## Core Build & Verification Rules
+- Primary package manager: pnpm (never invoke npm or yarn directly).
+- Type checking: Run 'pnpm build:types' before marking task complete.
+- Unit Testing: Targeted suites using 'pnpm vitest run <path>'.
+
+## Architectural Constraints
+- Database schemas in src/db/ must never import UI models.
+- All public utility functions require JSDoc comments and unit test coverage in tests/unit/.
+
+## Security Invariants
+- Flag any non-parameterized raw SQL execution.
+- Never write credentials or tokens into raw test assets.`;
+
+            document.getElementById('agents-md-input').value = sample;
+            updateByteBudget();
+        }
+
+        // --- Skills Progressive Disclosure Logic ---
+        const skillStages = {
+            1: {
+                title: "Stage 1: Discovery Indexing (Session Init)",
+                code: `# Ingested Metadata Index into System Prompt (~50 tokens)
+skills:
+  - name: "database-migration"
+    description: "Safely create, validate, and test PostgreSQL and Prisma schema migrations."`
+            },
+            2: {
+                title: "Stage 2: Manifest Ingestion ($database-migration)",
+                code: `# SKILL.md Loaded into Context Active Window
+# Execution Sequence
+1. Locate target schema models within prisma/schema.prisma.
+2. Generate draft migration via 'npx prisma migrate dev --create-only'.
+3. Validate SQL operations against zero-downtime invariants.`
+            },
+            3: {
+                title: "Stage 3: On-Demand Resource Execution",
+                code: `# Executing supporting script: skills/database-migration/scripts/validate_migration.py
+$ python3 skills/database-migration/scripts/validate_migration.py prisma/migrations/
+✔ Output: Schema migration verified: No destructive DROP COLUMN detected.`
+            }
+        };
+
+        function setSkillStage(stageNum) {
+            [1, 2, 3].forEach(s => {
+                const btn = document.getElementById('skill-btn-' + s);
+                if (s === stageNum) {
+                    btn.className = "p-4 rounded-lg text-left border border-amber-600 bg-amber-50 text-stone-900 font-medium shadow-sm";
+                } else {
+                    btn.className = "p-4 rounded-lg text-left border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 font-medium";
+                }
+            });
+
+            const data = skillStages[stageNum];
+            document.getElementById('skill-stage-display').innerHTML = `
+                <div class="text-amber-400 font-bold mb-1">${data.title}</div>
+                <pre class="overflow-x-auto text-stone-300">${data.code}</pre>
+            `;
+        }
+
+        // --- Subagent Recommender Logic ---
+        const subagentRoles = {
+            explorer: {
+                role: "pr_explorer",
+                model: "gpt-5.6-terra",
+                effort: "medium",
+                sandbox: "read-only",
+                reason: "Optimized for ultra-fast codebase mapping, AST symbol traversal, and scanning large diffs without write side-effects."
+            },
+            auditor: {
+                role: "security_auditor",
+                model: "gpt-5.6",
+                effort: "high",
+                sandbox: "read-only",
+                reason: "Requires maximum reasoning capability for threat modeling, OWASP vulnerability detection, and static analysis without direct code modification."
+            },
+            browser: {
+                role: "browser_debugger",
+                model: "gpt-5.6-terra",
+                effort: "high",
+                sandbox: "workspace-write",
+                reason: "Combines high reasoning with workspace write access to spin up local servers and execute Chrome DevTools MCP tools."
+            },
+            fixer: {
+                role: "ui_fixer",
+                model: "gpt-5.6",
+                effort: "medium",
+                sandbox: "workspace-write",
+                reason: "Balanced reasoning model tailored for precise code patching, component edits, and local test verification."
+            },
+            docs: {
+                role: "docs_researcher",
+                model: "gpt-5.6-luna",
+                effort: "low",
+                sandbox: "read-only",
+                reason: "Low-latency lightweight model suited for querying external HTTP documentation MCP servers."
+            }
+        };
+
+        function runSubagentRecommender() {
+            const taskKey = document.getElementById('recommender-task').value;
+            const rec = subagentRoles[taskKey];
+            const card = document.getElementById('subagent-recommendation-card');
+
+            card.innerHTML = `
+                <div class="flex justify-between items-center border-b border-stone-200 pb-2">
+                    <span class="font-bold text-amber-800 text-sm">Recommended Role: <code class="code-block">${rec.role}</code></span>
+                    <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold">${rec.model}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-stone-700">
+                    <div><strong>Reasoning Effort:</strong> <span class="uppercase font-semibold">${rec.effort}</span></div>
+                    <div><strong>Sandbox Policy:</strong> <span class="font-mono">${rec.sandbox}</span></div>
+                </div>
+                <p class="text-stone-600 leading-relaxed border-t border-stone-200 pt-2">${rec.reason}</p>
+            `;
+        }
+
+        // --- Chart.js Visualizations Setup ---
+        function initCharts() {
+            // Chart 1: Model Spectrum Comparison
+            const ctx1 = document.getElementById('modelSpecChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['gpt-5.6', 'gpt-5.6-terra', 'gpt-5.6-luna'],
+                    datasets: [
+                        {
+                            label: 'Reasoning Effort Depth (1-10)',
+                            data: [9.5, 6.5, 3.0],
+                            backgroundColor: '#9e8c6e'
+                        },
+                        {
+                            label: 'Relative Speed / Throughput (1-10)',
+                            data: [4.0, 8.5, 9.8],
+                            backgroundColor: '#4f46e5'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 10, ticks: { font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Chart 2: Guardian Circuit Breaker Metrics
+            const ctx2 = document.getElementById('circuitBreakerChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Consecutive Denials Threshold', 'Rolling Window Denials (50 turns)', 'Safe Executions Threshold'],
+                    datasets: [{
+                        data: [3, 10, 37],
+                        backgroundColor: ['#e11d48', '#d97706', '#059669']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // --- Page Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderLifecyclePhase();
+            runCascadeSim();
+            testExecPolicy();
+            updateByteBudget();
+            setSkillStage(1);
+            runSubagentRecommender();
+            initCharts();
+        });
+    </script>
+</body>
+</html>

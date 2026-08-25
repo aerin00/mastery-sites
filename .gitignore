@@ -1,0 +1,53 @@
+# OS junk
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# Python (for generate_index.py runs)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+
+# Node (if any site ever uses a build step)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Logs
+*.log
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Build output (sites are static, but just in case)
+dist/
+build/
+.tmp/
+
+# Don't ignore the generated index.html — we want it in the repo
+# so the site works even without a CI build step
+!index.html
