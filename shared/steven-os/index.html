@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Humanoid OS — Steven Nguyen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1226;
+  --ink-2:#151A33;
+  --ink-3:#1D2440;
+  --hair:rgba(201,164,87,.28);
+  --hair-soft:rgba(201,164,87,.14);
+  --brass:#C9A457;
+  --brass-dim:#8E7440;
+  --parchment:#EDE7D9;
+  --muted:#8A93B8;
+  --muted-2:#636C93;
+
+  --p-structure:#c9a457;
+  --p-order:#5b9bd5;
+  --p-process:#6dbf8b;
+  --p-form:#d47b8a;
+
+  --display:"Instrument Serif",Georgia,serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+
+  --gut:clamp(20px,5vw,64px);
+  --maxw:1180px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{
+  margin:0;
+  background:var(--ink);
+  background-image:
+    linear-gradient(rgba(201,164,87,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,164,87,.035) 1px,transparent 1px);
+  background-size:44px 44px;
+  color:var(--parchment);
+  font-family:var(--body);
+  font-weight:300;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(14,18,38,.82);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--hair-soft);
+}
+.topbar .wrap{display:flex;align-items:center;gap:24px;height:56px}
+.mark{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);white-space:nowrap}
+.navlinks{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted-2);text-decoration:none;white-space:nowrap;padding:4px 0;
+  border-bottom:1px solid transparent;transition:color .2s,border-color .2s;
+}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--brass);border-bottom-color:var(--brass)}
+
+/* ---------- type ---------- */
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:.005em;margin:0}
+h1{font-size:clamp(38px,6.4vw,74px);line-height:1.02}
+h2{font-size:clamp(28px,3.8vw,44px);line-height:1.1}
+h3{font-size:clamp(19px,2.1vw,24px);line-height:1.25}
+p{margin:0 0 1em}
+em{font-style:italic;color:var(--brass)}
+strong{font-weight:500;color:#fff}
+a{color:var(--brass)}
+
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--brass-dim);margin:0 0 14px;display:flex;align-items:center;gap:12px;
+}
+.eyebrow::after{content:"";height:1px;flex:1;background:var(--hair-soft);max-width:120px}
+.lede{font-size:clamp(17px,1.5vw,19px);color:var(--muted);max-width:64ch}
+.mono{font-family:var(--mono)}
+.dim{color:var(--muted)}
+.tiny{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted-2);line-height:1.6}
+
+/* ---------- sections ---------- */
+section{padding:clamp(56px,8vw,110px) 0;border-top:1px solid var(--hair-soft)}
+section:first-of-type{border-top:none}
+.sechead{margin-bottom:clamp(28px,4vw,52px)}
+.sechead .lede{margin-top:16px}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(44px,6vw,80px);padding-bottom:clamp(40px,6vw,80px)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,4vw,60px);align-items:center}
+.ephem{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--muted-2);
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  padding:9px 0;margin-bottom:26px;display:flex;flex-wrap:wrap;gap:6px 20px;
+}
+.ephem b{color:var(--brass);font-weight:400}
+h1 .swash{font-style:italic;color:var(--brass)}
+.hero p.lede{margin-top:22px}
+.thesis{
+  margin-top:26px;padding:16px 0 0;border-top:1px solid var(--hair-soft);
+  font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--muted);max-width:52ch;
+}
+
+/* wheel */
+.wheelbox{position:relative}
+#wheel{width:100%;height:auto;display:block;overflow:visible}
+.wheel-cap{margin-top:14px;text-align:center}
+
+/* ---------- plates ---------- */
+.plate{
+  background:var(--ink-2);
+  border:1px solid var(--hair-soft);
+  padding:clamp(18px,2.4vw,28px);
+}
+.plate + .plate{margin-top:14px}
+.plate h3{margin-bottom:10px}
+
+.cols-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cols-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cols-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(20px,3vw,40px);align-items:start}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brass-dim);text-align:left;font-weight:400;
+  padding:0 12px 9px 0;border-bottom:1px solid var(--hair);
+}
+.tbl td{padding:10px 12px 10px 0;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:top;color:var(--parchment)}
+.tbl td.n{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.glyph{font-size:16px;color:var(--brass);width:22px;display:inline-block}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.tag{
+  display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;padding:2px 7px;border:1px solid currentColor;line-height:1.5;
+}
+.t-strong{color:#6dbf8b}
+.t-mod{color:var(--brass)}
+.t-weak{color:#d47b8a}
+
+/* ---------- lo shu ---------- */
+.loshu{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:340px;margin:0 auto}
+.cell{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:1px solid var(--hair-soft);background:var(--ink-3);position:relative;
+}
+.cell .num{font-family:var(--display);font-size:30px;line-height:1;color:var(--parchment)}
+.cell .cnt{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--muted-2);margin-top:7px;text-transform:uppercase}
+.cell.filled{border-color:var(--hair)}
+.cell.doubled{background:linear-gradient(180deg,rgba(201,164,87,.16),rgba(201,164,87,.04));border-color:var(--brass)}
+.cell.doubled .num{color:var(--brass)}
+.cell.empty{background:repeating-linear-gradient(45deg,transparent,transparent 6px,rgba(212,123,138,.07) 6px,rgba(212,123,138,.07) 7px);border-color:rgba(212,123,138,.3)}
+.cell.empty .num{color:rgba(212,123,138,.55)}
+.cell.empty .cnt{color:rgba(212,123,138,.6)}
+.axes{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;justify-content:center}
+.axis{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;padding:4px 9px;border:1px solid var(--hair);color:var(--brass)}
+
+/* ---------- convergence ---------- */
+.conv{border-left:2px solid var(--brass);padding-left:18px}
+
+/* ---------- sopf ---------- */
+.phase{border-top:2px solid var(--pc);background:var(--ink-2);padding:20px;position:relative}
+.phase .pn{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--pc);text-transform:uppercase}
+.phase .sym{font-size:20px;color:var(--pc);line-height:1}
+.phase h3{margin:8px 0 4px}
+.phase .q{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-bottom:12px;display:block}
+.phase p{font-size:14px;margin-bottom:.7em}
+.phase .out{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--pc);border-top:1px solid var(--hair-soft);padding-top:10px;margin-top:auto}
+.phase{display:flex;flex-direction:column}
+
+/* ---------- failure modes ---------- */
+.fm{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.fm:last-child{border-bottom:none}
+.fm .idx{font-family:var(--display);font-size:26px;color:var(--brass-dim);line-height:1}
+.fm h3{font-size:19px;margin-bottom:4px}
+.fm p{font-size:14px;margin-bottom:6px;color:var(--parchment)}
+.fm .diag{font-family:var(--mono);font-size:11.5px;color:#d47b8a;letter-spacing:.02em}
+.fm.dominant{background:linear-gradient(90deg,rgba(212,123,138,.07),transparent 70%);padding-left:14px;margin-left:-14px}
+
+/* ---------- timeline ---------- */
+.tl{position:relative;margin-top:10px}
+.tl::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--hair)}
+.ev{position:relative;padding:0 0 22px 34px}
+.ev::before{
+  content:"";position:absolute;left:2px;top:6px;width:11px;height:11px;
+  border:1px solid var(--brass);background:var(--ink);border-radius:50%;
+}
+.ev.gate::before{background:var(--brass);box-shadow:0 0 0 4px rgba(201,164,87,.14)}
+.ev .d{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--brass);text-transform:uppercase}
+.ev h3{font-size:18px;margin:2px 0 4px}
+.ev p{font-size:14px;margin:0;color:var(--muted)}
+
+.zr{margin-top:8px}
+.zrrow{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.zrrow:last-child{border-bottom:none}
+.zrlab{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--brass-dim);text-transform:uppercase}
+.bar{height:26px;background:var(--ink-3);border:1px solid var(--hair-soft);position:relative;display:flex;align-items:center;padding:0 10px}
+.bar span{font-family:var(--mono);font-size:11px;color:var(--parchment);position:relative;z-index:2}
+.bar::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(201,164,87,.22),rgba(201,164,87,.04));width:var(--fill,60%)}
+
+.countdown{
+  display:flex;align-items:baseline;gap:14px;border:1px solid var(--hair);padding:14px 18px;
+  background:linear-gradient(90deg,rgba(201,164,87,.09),transparent);margin-bottom:24px;flex-wrap:wrap;
+}
+.countdown .big{font-family:var(--display);font-size:44px;line-height:1;color:var(--brass)}
+.countdown .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- build state ---------- */
+.card{background:var(--ink-2);border:1px solid var(--hair-soft);padding:20px;display:flex;flex-direction:column;gap:8px}
+.card .st{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.st.live{color:#6dbf8b}
+.st.pend{color:var(--brass)}
+.st.hold{color:var(--muted-2)}
+.card h3{font-size:18px}
+.card p{font-size:13.5px;margin:0;color:var(--muted)}
+
+/* ---------- mandate ---------- */
+.pull{
+  font-family:var(--display);font-size:clamp(24px,3.4vw,38px);line-height:1.25;
+  color:var(--parchment);border-left:2px solid var(--brass);padding-left:clamp(18px,3vw,32px);margin:0;
+}
+.pull em{color:var(--brass)}
+.clauses{list-style:none;padding:0;margin:0}
+.clauses li{
+  font-family:var(--mono);font-size:13px;color:var(--muted);padding:9px 0 9px 26px;position:relative;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.clauses li::before{content:"\2715";position:absolute;left:0;top:9px;color:#d47b8a;font-size:11px}
+
+/* ---------- footer ---------- */
+footer{padding:clamp(44px,6vw,80px) 0 60px;border-top:1px solid var(--hair)}
+.prov{font-family:var(--mono);font-size:11.5px;line-height:1.85;color:var(--muted-2)}
+.prov b{color:var(--brass-dim);font-weight:400}
+.flag{color:#d47b8a}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero-grid,.split{grid-template-columns:1fr}
+  .cols-4{grid-template-columns:1fr 1fr}
+  .cols-3{grid-template-columns:1fr}
+  .hero-grid .wheelbox{order:-1}
+}
+@media (max-width:620px){
+  .cols-2,.cols-4{grid-template-columns:1fr}
+  .zrrow{grid-template-columns:1fr;gap:6px}
+  .topbar .wrap{height:50px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="mark">Humanoid OS</div>
+    <nav class="navlinks">
+      <a href="#instrument">I. Instrument</a>
+      <a href="#grid">II. Grid</a>
+      <a href="#convergence">III. Convergence</a>
+      <a href="#method">IV. Method</a>
+      <a href="#failure">V. Failure</a>
+      <a href="#clock">VI. Clock</a>
+      <a href="#build">VII. Build</a>
+      <a href="#mandate">VIII. Mandate</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="ephem">
+      <span><b>15 Sep 1986</b> · 22:29</span>
+      <span>Phanat Nikhom, TH · 13.4496°N 101.1809°E</span>
+      <span><b>Night chart</b> · Whole sign</span>
+      <span>Sect light ☽</span>
+      <span>Vancouver, BC</span>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <h1>A machine for making<br>the invisible <span class="swash">legible</span>.</h1>
+        <p class="lede">This is the operating system read off five independent instruments: a Hellenistic natal chart, a Lo Shu grid, a name-numerology profile, a thinking-styles assessment, and a personality inventory. They were built by different people, in different centuries, for different reasons. They agree.</p>
+        <p class="thesis">THE FINDING → Structure before content is not a preference. It is the architecture. Schema first, then population, then stop. The third clause is the one that fails.</p>
+      </div>
+      <div class="wheelbox">
+        <svg id="wheel" viewBox="0 0 620 620" role="img" aria-label="Whole-sign natal wheel: Gemini rising, seven traditional planets, lots of Fortune and Spirit, North Node, Midheaven"></svg>
+        <p class="tiny wheel-cap">Whole sign houses · Gemini 4°58′ rising · H1 at the left horizon, counterclockwise</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ I. INSTRUMENT ============ -->
+<section id="instrument">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">I — The Instrument</p>
+      <h2>Seven bodies, one bridge</h2>
+      <p class="lede">Mercury rules the Ascendant, rules the Sun's sign, trines the Ascendant, and comes out as Master of the Nativity. Every route through this chart passes through the translator.</p>
+    </div>
+
+    <div class="split">
+      <div class="plate rv scroll-x">
+        <h3>Placements and condition</h3>
+        <table class="tbl">
+          <thead><tr><th>Body</th><th>Position</th><th>House</th><th>Dignity</th><th>Condition</th></tr></thead>
+          <tbody>
+            <tr><td><span class="glyph">☉</span>Sun</td><td class="n">Virgo 22°29′</td><td class="n">H4 · IC</td><td class="n">Peregrine</td><td><span class="tag t-mod">Moderate</span></td></tr>
+            <tr><td><span class="glyph">☽</span>Moon</td><td class="n">Aquarius 19°35′</td><td class="n">H9</td><td class="n">Peregrine</td><td><span class="tag t-weak">Weak</span></td></tr>
+            <tr><td><span class="glyph">☿</span>Mercury</td><td class="n">Libra 0°56′</td><td class="n">H5</td><td class="n">Triplicity</td><td><span class="tag t-mod">Moderate</span></td></tr>
+            <tr><td><span class="glyph">♀</span>Venus</td><td class="n">Scorpio 6°46′</td><td class="n">H6</td><td class="n">Detriment</td><td><span class="tag t-weak">Poor</span></td></tr>
+            <tr><td><span class="glyph">♂</span>Mars</td><td class="n">Capricorn 18°49′</td><td class="n">H8</td><td class="n">Exaltation</td><td><span class="tag t-strong">Strong</span></td></tr>
+            <tr><td><span class="glyph">♃</span>Jupiter</td><td class="n">Pisces 17°13′ ℞</td><td class="n">H10 · MC</td><td class="n">Domicile</td><td><span class="tag t-strong">Strong</span></td></tr>
+            <tr><td><span class="glyph">♄</span>Saturn</td><td class="n">Sagittarius 4°17′</td><td class="n">H7 · DSC</td><td class="n">Peregrine</td><td><span class="tag t-mod">Moderate</span></td></tr>
+            <tr><td><span class="glyph">⊗</span>Fortune</td><td class="n">Capricorn 7°53′</td><td class="n">H8</td><td class="n">—</td><td class="n dim">with Mars by sign</td></tr>
+            <tr><td><span class="glyph">✧</span>Spirit</td><td class="n">Scorpio 2°04′</td><td class="n">H6</td><td class="n">—</td><td class="n dim">with Venus by sign</td></tr>
+            <tr><td><span class="glyph">☊</span>N. Node</td><td class="n">Aries 21°07′</td><td class="n">H11</td><td class="n">—</td><td class="n dim">sextile Chiron 0°08′</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="plate rv">
+          <h3>What the chart does well</h3>
+          <p class="dim" style="font-size:14px;margin:0">
+            <strong>Career autonomy.</strong> Jupiter domicile and angular in H10. Built for self-directed public work.<br><br>
+            <strong>Crisis competence.</strong> Mars exalted in H8. High-stakes situations get handled with precision.<br><br>
+            <strong>Intellectual identity.</strong> Mercury rules and trines the Ascendant. Fast classification, fast translation.<br><br>
+            <strong>Partnership structure.</strong> Saturn angular and in sect at the Descendant. Bounded, serious, constructive limitation.
+          </p>
+        </div>
+        <div class="plate rv">
+          <h3>Where it strains</h3>
+          <p class="dim" style="font-size:14px;margin:0">
+            <strong>Relational ease.</strong> Venus in detriment, cadent, out of sect, ruling both H5 and H12. Creative pleasure routes through labour.<br><br>
+            <strong>Emotional visibility.</strong> Moon cadent and peregrine. The feeling life runs in the background, processed through frameworks.<br><br>
+            <strong>Inner resourcing.</strong> Sun peregrine in H4. The private foundation lacks intrinsic dignity and looks outward for confirmation.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="plate rv" style="margin-top:14px">
+      <h3>The central tension</h3>
+      <p class="dim" style="max-width:78ch;font-size:14.5px">Sun in Virgo H4 opposes Jupiter in Pisces H10 across the IC–MC axis. The private self is analytical and modest; the public self is expansive and authoritative. Neither wins, and that is the engine. <strong>Mercury rules both signs</strong>, which makes intellectual and creative work the only thing that resolves the opposition instead of merely alternating between its poles.</p>
+      <p class="tiny" style="margin:0">Also live, degrees unverified: Uranus in Sagittarius H7 square Sun and square Jupiter (unconventional method, resistant to standard moulds) · Venus conjunct Pluto in Scorpio H6 (over-refinement) · Chiron in Gemini H1 (the wounded communicator, exact sextile to the North Node).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ II. GRID ============ -->
+<section id="grid">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">II — The Grid</p>
+      <h2>A spine over a sparse field</h2>
+      <p class="lede">The Lo Shu grid is computed from the birth date alone. Two complete arrows cross at the centre; four cells stay empty. Deep strengths, thin surrounding terrain.</p>
+    </div>
+
+    <div class="split">
+      <div class="plate rv">
+        <div class="loshu">
+          <div class="cell empty"><span class="num">4</span><span class="cnt">absent</span></div>
+          <div class="cell doubled"><span class="num">9</span><span class="cnt">×2</span></div>
+          <div class="cell empty"><span class="num">2</span><span class="cnt">absent</span></div>
+          <div class="cell empty"><span class="num">3</span><span class="cnt">absent</span></div>
+          <div class="cell filled"><span class="num">5</span><span class="cnt">×1</span></div>
+          <div class="cell empty"><span class="num">7</span><span class="cnt">absent</span></div>
+          <div class="cell filled"><span class="num">8</span><span class="cnt">×1</span></div>
+          <div class="cell doubled"><span class="num">1</span><span class="cnt">×2</span></div>
+          <div class="cell filled"><span class="num">6</span><span class="cnt">×1</span></div>
+        </div>
+        <div class="axes">
+          <div class="axis">↓ Arrow of Purpose 9·5·1</div>
+          <div class="axis">→ Arrow of Action 8·1·6</div>
+        </div>
+        <p class="tiny" style="text-align:center;margin-top:14px">Rows are planes (Mental 4·9·2 / Soul 3·5·7 / Material 8·1·6). Columns are modes (Thought / Will / Action). No Arrow of Emptiness, but four lines carry only one filled cell.</p>
+      </div>
+
+      <div>
+        <div class="plate rv">
+          <h3>Present · the native drive</h3>
+          <p class="dim" style="font-size:14px;margin:0">
+            <strong>1 ×2</strong> — will, autonomy. Independent operator. Risk: lone-wolf default.<br>
+            <strong>9 ×2</strong> — intellect, vision, philosophy. Powers the abstraction-heavy work. Risk: perpetual residence in vision.<br>
+            <strong>8</strong> — structure and material mastery. Why long-form framework building comes easily.<br>
+            <strong>6</strong> — responsibility, stewardship, home.<br>
+            <strong>5</strong> — the working centre. The lone bridge between planes.
+          </p>
+        </div>
+        <div class="plate rv">
+          <h3>Absent · the curriculum</h3>
+          <p class="dim" style="font-size:14px;margin:0">
+            <strong>2</strong> — receptivity and partnership. Sharp note: the Kua is <em>2</em>. The missing energy is the one the Kua orients toward.<br>
+            <strong>3</strong> — light, unstructured expression. Compensated for structurally by writing in framework mode, which is not the same thing.<br>
+            <strong>4</strong> — embodied order and routine. Already externalised into skill files and code, an 8-flavoured answer to a missing 4. The remaining work is physical.<br>
+            <strong>7</strong> — contemplation, wisdom through experience. The four absences sum to 16 → <strong>7</strong>, which makes it the karmic centre of gravity.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cols-3" style="margin-top:14px">
+      <div class="plate rv"><h3>Name numerology</h3><p class="dim" style="font-size:14px;margin:0">Destiny <b>9</b> · Birth Force <b>3</b> · Heart's Desire <b>9</b> · Personality <b>9</b> · Reality <b>3</b>. Over-intensified <b>5</b>. The 3-engine drives the chart while the 3-cell sits empty in the grid: creative expression is the path <em>and</em> the muscle.</p></div>
+      <div class="plate rv"><h3>Cycle position</h3><p class="dim" style="font-size:14px;margin:0">Pinnacle <b>3</b> (ages 36–44, creative peak) · Challenge <b>0</b> (ages 25–49) · Personal Year <b>7</b> for 2026 under Universal Year 1. A depth-and-refinement year, scheduled.</p></div>
+      <div class="plate rv"><h3>Kua 2 · West group</h3><p class="dim" style="font-size:14px;margin:0">Trigram Kun, receptive earth. Desk faces <b>NE</b> (Sheng Chi) for primary work; bedhead <b>NW</b> (Yan Nian). Never face <b>N</b> for sustained work.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ III. CONVERGENCE ============ -->
+<section id="convergence">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">III — Convergence</p>
+      <h2>Eight readings, one finding</h2>
+      <p class="lede">These instruments do not share a method or a lineage. Read independently, they point at the same thing: the schema has to exist before the content arrives, and boring structure is load-bearing rather than decorative.</p>
+    </div>
+
+    <div class="plate rv scroll-x">
+      <table class="tbl">
+        <thead><tr><th>Instrument</th><th>Signal</th><th>Operational consequence</th></tr></thead>
+        <tbody>
+          <tr><td class="n">Mercury sextile Saturn</td><td>Structure before content</td><td>Absorbs badly from raw streams, superbly into pre-built taxonomies</td></tr>
+          <tr><td class="n">Mercury square Neptune</td><td>Synthesis outruns detail</td><td>The feeling of understanding arrives before the pieces are actually held. Written externalisation is a structural correction, not a productivity habit</td></tr>
+          <tr><td class="n">Sun Virgo H4 · Mars Cap H8</td><td>Methodical and cumulative</td><td>Slow compounding works; heroic sprints do not</td></tr>
+          <tr><td class="n">Moon Aquarius H9</td><td>Regulation by zoom-out</td><td>When stuck in detail, the corrective is altitude, not more detail</td></tr>
+          <tr><td class="n">TalentLens</td><td>Analytical ranks 7 of 7</td><td>Methodical step-tracking is the weakest mode. Inquisitive, Open-Minded, Systematic lead. Frameworks compensate for a real gap</td></tr>
+          <tr><td class="n">Insights Discovery</td><td>Supporting Coordinator, Green-Blue</td><td>Reflects long, refines past the point of need. Will polish the half-finished thing rather than ship the whole rough thing</td></tr>
+          <tr><td class="n">Lo Shu missing 4</td><td>No native execution scaffold</td><td>Calendars, gates and checklists are infrastructure, not bureaucracy</td></tr>
+          <tr><td class="n">Lo Shu missing 7</td><td>Stillness without extraction is hard</td><td>Reflection will get folded into "research" unless protected. It should produce nothing</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="plate rv" style="margin-top:14px">
+      <p class="conv" style="margin:0;font-size:15px">The native processing mode is <strong>embodied and iterative</strong>: thinking by making artifacts. Not abstract reasoning. This is why SOPF works. It externalises cognition into objects, which is the only place this system reliably holds detail.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IV. METHOD ============ -->
+<section id="method">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">IV — The Method</p>
+      <h2>SOPF</h2>
+      <p class="lede">Four phases, strictly sequential, each consuming the previous phase's artifact. The framework exists to prevent one specific failure: jumping to Form before knowing what is being built.</p>
+    </div>
+
+    <div class="cols-4">
+      <div class="phase rv" style="--pc:var(--p-structure)">
+        <span class="sym">◇</span>
+        <span class="pn">Phase 01</span>
+        <h3>Structure</h3>
+        <span class="q">What are the parts, and how do they relate?</span>
+        <p>Identify every component, actor, input, output and constraint. Map dependencies without imposing order. Look for boundaries.</p>
+        <div class="out">→ A component map</div>
+      </div>
+      <div class="phase rv" style="--pc:var(--p-order)">
+        <span class="sym">▤</span>
+        <span class="pn">Phase 02</span>
+        <h3>Order</h3>
+        <span class="q">What comes first? What sequence matters?</span>
+        <p>Establish dependencies and hierarchy. Find the critical path. Separate what is strictly sequential from what can run in parallel.</p>
+        <div class="out">→ A prioritised sequence</div>
+      </div>
+      <div class="phase rv" style="--pc:var(--p-process)">
+        <span class="sym">⟳</span>
+        <span class="pn">Phase 03</span>
+        <h3>Process</h3>
+        <span class="q">How does work actually flow through this?</span>
+        <p>Design the steps, handoffs and decision points. Specify failure paths and feedback loops, not just the happy path.</p>
+        <div class="out">→ A workflow with branches</div>
+      </div>
+      <div class="phase rv" style="--pc:var(--p-form)">
+        <span class="sym">◉</span>
+        <span class="pn">Phase 04</span>
+        <h3>Form</h3>
+        <span class="q">What does the finished thing look like?</span>
+        <p>The tangible deliverable, specified concretely enough that someone else could build or evaluate it. With a real example.</p>
+        <div class="out">→ The gate. Nothing ships before it</div>
+      </div>
+    </div>
+
+    <div class="cols-2" style="margin-top:14px">
+      <div class="plate rv">
+        <h3>The 90-minute cycle</h3>
+        <p class="dim" style="font-size:14px;margin:0"><strong>60 min detail</strong> (Virgo Sun mode): consume, build a minimum working example as you go, write definitions in your own words. <strong>10 min off-screen break.</strong> <strong>20 min zoom-out</strong> (Aquarius Moon mode): where does this sit in the schema, what does it connect to, one sentence on the point of it.<br><br>When aimless mid-detail, do not push through. Climb.</p>
+      </div>
+      <div class="plate rv">
+        <h3>Stopping criteria</h3>
+        <p class="dim" style="font-size:14px;margin:0">The structural gap. Frameworks here reliably specify how to start and never specify when to stop, which is how over-refinement gets to run unopposed.<br><br><strong>Adding explicit ship criteria is higher leverage than adding practices.</strong> A definition of done beats another discipline.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ V. FAILURE ============ -->
+<section id="failure">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">V — Failure Modes</p>
+      <h2>Five ways this machine stalls</h2>
+      <p class="lede">Named so they can be caught in real time. Each has a diagnostic that does not require self-honesty to run.</p>
+    </div>
+
+    <div class="plate rv">
+      <div class="fm">
+        <div class="idx">01</div>
+        <div>
+          <h3>Skip-ahead</h3>
+          <p>Pattern-matching to something familiar, then moving on. The cost lands later, when a downstream concept assumes the skipped one.</p>
+          <p class="diag">DIAGNOSTIC → Can't write the concept's definition from scratch in one paragraph.</p>
+        </div>
+      </div>
+      <div class="fm dominant">
+        <div class="idx">02</div>
+        <div>
+          <h3>Compensatory architecture <span class="tiny" style="color:#d47b8a">· dominant, most camouflaged</span></h3>
+          <p>Building the framework <em>about</em> the work instead of the work. Audits, meta-systems, workspace reorganisations. It feels like progress because it produces artifacts.</p>
+          <p class="diag">DIAGNOSTIC → Does anyone other than you consume the artifact? If not, it is scaffolding.</p>
+        </div>
+      </div>
+      <div class="fm">
+        <div class="idx">03</div>
+        <div>
+          <h3>Next-thing pull</h3>
+          <p>Over-intensified 5 plus an Aquarius Moon's appetite for novelty. Three weeks in, something newer appears.</p>
+          <p class="diag">DIAGNOSTIC → You start drafting notes on a tangentially related topic.</p>
+        </div>
+      </div>
+      <div class="fm">
+        <div class="idx">04</div>
+        <div>
+          <h3>Over-refine</h3>
+          <p>Venus conjunct Pluto, Insights Green-Blue. Module one becomes a treatise; module four never starts.</p>
+          <p class="diag">DIAGNOSTIC → Same module, third revision pass.</p>
+        </div>
+      </div>
+      <div class="fm">
+        <div class="idx">05</div>
+        <div>
+          <h3>Silent abandonment</h3>
+          <p>Stopping with no quitting signal, which leaves the thing neither alive nor dead and blocks the slot it occupies.</p>
+          <p class="diag">DIAGNOSTIC → More than 7 days since last session, no documented decision.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VI. CLOCK ============ -->
+<section id="clock">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">VI — The Clock</p>
+      <h2>Where the year actually sits</h2>
+      <p class="lede">Two load-bearing dates, six days apart. One is a ship gate; the other flips the ruler of the whole year from the planet of structure to the planet of expression.</p>
+    </div>
+
+    <div class="countdown rv">
+      <span class="big" id="cd">—</span>
+      <span class="lbl">days to the 9 September ship gate</span>
+      <span class="lbl dim" style="margin-left:auto" id="today"></span>
+    </div>
+
+    <div class="split">
+      <div class="plate rv">
+        <h3>Sequence</h3>
+        <div class="tl">
+          <div class="ev"><div class="d">29 Jun – 23 Jul 2026</div><h3>Mercury retrograde</h3><p>Designated review-only. No new construction.</p></div>
+          <div class="ev"><div class="d">23 Jul – 9 Sep 2026</div><h3>Execution window · ~48 days</h3><p>The post-retrograde build run for the course.</p></div>
+          <div class="ev gate"><div class="d">9 Sep 2026</div><h3>Ship gate</h3><p>A Saturn gate, not a scheduling note. Hard constraint with real consequences.</p></div>
+          <div class="ev gate"><div class="d">15 Sep 2026 · age 40</div><h3>Profection turns</h3><p>H4 Virgo, Mercury-ruled (structure, drafting, foundation) hands over to H5 Libra, <strong>Venus-ruled</strong> (expression, visibility, release). Venus is in detriment and conjunct Pluto natally: depth-driven, not easy.</p></div>
+          <div class="ev"><div class="d">Early Oct 2026</div><h3>Venus stations retrograde</h3><p>Opens the Venus year inside a Venus retrograde. Frame the quarter as craft, repair and revisiting rather than novelty.</p></div>
+          <div class="ev"><div class="d">16 Oct – 6 Nov 2026</div><h3>Japan · 22 nights, open-jaw</h3><p>Into Tokyo, out of Kansai. Kumano Kodo spine, craft workshops, cosmology sites. Sits inside the Venus retrograde by design.</p></div>
+          <div class="ev"><div class="d">Mid-Dec 2026</div><h3>Triple station cluster</h3><p>Saturn direct, Neptune direct, Jupiter retrograde within 72 hours.</p></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="plate rv">
+          <h3>Zodiacal releasing · verified</h3>
+          <div class="zr">
+            <div class="zrrow"><div class="zrlab">Spirit L1</div><div class="bar" style="--fill:50%"><span>Capricorn · 2013 → 2039</span></div></div>
+            <div class="zrrow"><div class="zrlab">Spirit L2</div><div class="bar" style="--fill:32%"><span>Virgo · Mercury · → Oct 2027</span></div></div>
+            <div class="zrrow"><div class="zrlab">Fortune L1</div><div class="bar" style="--fill:44%"><span>Aquarius · long period</span></div></div>
+            <div class="zrrow"><div class="zrlab">Fortune L2</div><div class="bar" style="--fill:60%"><span>Scorpio · Mars · → Jun 2027</span></div></div>
+          </div>
+          <p class="tiny" style="margin-top:12px"><span class="flag">Correction on record:</span> earlier documentation swapped the Lot of Spirit and Lot of Fortune L2 assignments. The paths above are the source of truth. Any downstream date built on the old layer, including the 2030–31 loosing-of-the-bond estimate, needs re-derivation. <span class="flag">unverified until recalculated.</span></p>
+        </div>
+        <div class="plate rv">
+          <h3>Mercury, triple-activated</h3>
+          <p class="dim" style="font-size:14px;margin:0">Through the current period Mercury is simultaneously <strong>year lord</strong> of the age-39 profection, <strong>chart ruler</strong>, and <strong>ruler of the Spirit L2 period</strong>. The claim survived verification and strengthened. This is the narrowest window in which drafting, classifying and structure-building are maximally supported. It closes on 15 September.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VII. BUILD ============ -->
+<section id="build">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">VII — Build State</p>
+      <h2>What is actually on the bench</h2>
+      <p class="lede">The falsifiability test applies to every item here. If nobody outside this workspace consumes it, it is scaffolding wearing the costume of work.</p>
+    </div>
+
+    <div class="cols-3">
+      <div class="card rv"><span class="st live">Active · gated 9 Sep</span><h3>AI course</h3><p>The one item with an external consumer and a hard date. Everything else is subordinate to it until the gate passes.</p></div>
+      <div class="card rv"><span class="st live">Active</span><h3>Copilot 365 agents</h3><p>Building on top of existing fluency in Claude Code, Codex, and vector stores (Pinecone, Weaviate, pgvector). Copilot Studio first, pro-code after.</p></div>
+      <div class="card rv"><span class="st pend">Booking urgent</span><h3>Japan, October</h3><p>Itinerary and restaurant research complete; six anchor bookings flagged. Ryokan windows are the live constraint. 2026 changes: tripled departure tax, tax-free shopping shift 1 Nov, new Kyoto lodging tax.</p></div>
+      <div class="card rv"><span class="st pend">Q4 windows set</span><h3>Financial astrology</h3><p>Three Tier 1 windows: late Sep/early Oct, late Oct, mid-Dec. MMA Monthly Cycles subscription recommended before October.</p></div>
+      <div class="card rv"><span class="st hold">Designed, not run</span><h3>Cross-system test</h3><p>Pre-registered pipeline with Cohen's kappa, <span class="mono">schema_v1.json</span>, isolated classifiers, Python runner. Blocked on the <span class="mono">compute_transits()</span> stub and natal numerology JSON verification. Systematic divergences are the signal, not agreements.</p></div>
+      <div class="card rv"><span class="st hold">Deferred</span><h3>Loosing of the bond</h3><p>Re-derive from the verified lot placements. Prior 2030–31 estimate is unsafe; may land nearer 2032.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIII. MANDATE ============ -->
+<section id="mandate">
+  <div class="wrap">
+    <div class="sechead rv">
+      <p class="eyebrow">VIII — The Mandate</p>
+      <h2>The Hermetic translator</h2>
+    </div>
+
+    <p class="pull rv">Rigorous infrastructure for esoteric material, delivered <em>publicly</em>. The failure is not capability. It is treating the spine as a hobby orbiting the real job, when it <em>is</em> the real job.</p>
+
+    <div class="split" style="margin-top:clamp(28px,4vw,48px)">
+      <div class="plate rv">
+        <h3>Why a Gemini Ascendant changes the assignment</h3>
+        <p class="dim" style="font-size:14.5px">The usual version of this framing assumes a true self being betrayed by a false one, and asks you to pick a side. That reading does not hold here. For a Gemini Ascendant with Mercury as Master, <strong>the bridge is the self</strong>, not one half of it.</p>
+        <p class="dim" style="font-size:14.5px;margin:0">So the duty is not to choose the esoteric path over the technical one. It is to refuse any arrangement that severs them. The day job is not the problem; the day job as <em>cover identity</em> is. The synthesis work is not the answer; that work as <em>private indulgence</em> is.</p>
+      </div>
+      <div>
+        <div class="plate rv">
+          <h3>Escape clauses to refuse</h3>
+          <ul class="clauses">
+            <li>Once I leave the day job…</li>
+            <li>Once the system is finished…</li>
+            <li>Once the pipeline is validated…</li>
+            <li>Once I have enough credentials…</li>
+            <li>Once the financial base is secure…</li>
+          </ul>
+          <p class="tiny" style="margin-top:14px">The infrastructure already built is sufficient to begin delivering. The block is willingness to be seen as the thing already being done.</p>
+        </div>
+        <div class="plate rv">
+          <h3>The function, stated plainly</h3>
+          <p class="dim" style="font-size:14.5px;margin:0">Make the complex legible. Make the foreign familiar. Make crisis meaningful. Make private insight publicly useful.<br><br>Not a field. A function.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="plate rv" style="margin-top:14px">
+      <h3>Living questions</h3>
+      <p class="dim" style="font-size:14.5px;max-width:80ch;margin:0">Where am I turning pleasure into productivity? Where do I feel safest only when solving a problem? What private foundation has to exist so that public success does not feel hollow? What would peace feel like if intensity stopped being proof of purpose? What do I want, before anyone needs anything from me?</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="eyebrow">Provenance</p>
+    <p class="prov">
+      <b>Sources.</b> Natal placements, dignities, sect, lots and nodes from the project chart files (night chart, whole sign, Phanat Nikhom 13.4496°N 101.1809°E, 22:29 local). Lo Shu grid and Kua from the dedicated Lo Shu profile. Name numerology from the combined numerology synthesis. Thinking-style ranking from TalentLens (4 Feb 2026). Type position from Insights Discovery: conscious 52 Supporting Coordinator, less conscious 13 Observing Coordinator. SOPF phases and phase colours from the SOPF guide. Failure modes and the 90-minute cycle from the Learning OS document.<br><br>
+      <b>Verified.</b> All seven traditional planet positions, both lots, North Node, Ascendant and Midheaven degrees. Zodiacal releasing lot identities and current L1/L2 assignments.<br><br>
+      <span class="flag">Unverified.</span> Outer-planet and Chiron degrees (aspects to them are quoted from the reading files, not recomputed). Zodiacal releasing bar widths are illustrative proportions, not calculated period fractions. The loosing-of-the-bond date is withdrawn pending recalculation. Where two numerology conventions in the corpus disagree on grid orientation, the dedicated Lo Shu profile was used, because it is the one internally consistent with the arrows it reports.<br><br>
+      <b>Status.</b> Throwaway reference page. Single file, no dependencies beyond web fonts. Nothing here is a prediction; it is a description of an operating system and its known failure modes.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ---------- countdown ---------- */
+  var gate = new Date(2026,8,9);
+  var now = new Date();
+  var days = Math.ceil((gate - now)/86400000);
+  var cd = document.getElementById('cd');
+  cd.textContent = days > 0 ? days : (days === 0 ? 'today' : 'passed');
+  document.getElementById('today').textContent =
+    now.toLocaleDateString('en-CA',{year:'numeric',month:'short',day:'numeric'});
+
+  /* ---------- chart wheel ---------- */
+  var SVGNS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('wheel');
+  var cx=310, cy=310;
+  var R_OUT=296, R_SIGN=262, R_HOUSE=196, R_PLANET=228, R_INNER=150;
+
+  var SIGNS=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  var ASC=64.967;                       // Gemini 4°58'
+  var SIGN0=Math.floor(ASC/30)*30;      // Gemini 0° = 60
+
+  function pt(lon,r){
+    var a=(180-(lon-SIGN0))*Math.PI/180;
+    return [cx+r*Math.cos(a), cy+r*Math.sin(a)];
+  }
+  function el(n,attrs,txt){
+    var e=document.createElementNS(SVGNS,n);
+    for(var k in attrs) e.setAttribute(k,attrs[k]);
+    if(txt!=null) e.textContent=txt;
+    svg.appendChild(e); return e;
+  }
+
+  var HAIR='rgba(201,164,87,.28)', HAIR2='rgba(201,164,87,.13)', BRASS='#C9A457';
+
+  // rings
+  [R_OUT,R_SIGN,R_HOUSE,R_INNER].forEach(function(r,i){
+    el('circle',{cx:cx,cy:cy,r:r,fill:'none',stroke:i===0||i===2?HAIR:HAIR2,'stroke-width':1});
+  });
+
+  // 12 whole-sign spokes + sign glyphs + house numbers
+  for(var i=0;i<12;i++){
+    var lon=SIGN0+i*30;
+    var p1=pt(lon,R_INNER), p2=pt(lon,R_OUT);
+    el('line',{x1:p1[0],y1:p1[1],x2:p2[0],y2:p2[1],stroke:i===0||i===9?HAIR:HAIR2,'stroke-width':i===0||i===9?1.3:1});
+
+    var g=pt(lon+15,(R_OUT+R_SIGN)/2);
+    el('text',{x:g[0],y:g[1]+5,fill:BRASS,'font-size':15,'text-anchor':'middle','font-family':'IBM Plex Sans, sans-serif','opacity':.85},SIGNS[Math.floor(((lon)%360)/30)]);
+
+    var h=pt(lon+15,(R_HOUSE+R_INNER)/2+6);
+    el('text',{x:h[0],y:h[1]+4,fill:'#636C93','font-size':10.5,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','letter-spacing':'.08em'},i+1);
+  }
+
+  // degree ticks every 5°
+  for(var d=0;d<360;d+=5){
+    var lon2=SIGN0+d;
+    var t1=pt(lon2,R_SIGN), t2=pt(lon2,R_SIGN-(d%30===0?10:5));
+    el('line',{x1:t1[0],y1:t1[1],x2:t2[0],y2:t2[1],stroke:HAIR2,'stroke-width':1});
+  }
+
+  var BODIES=[
+    {g:'☉',lon:172.483,lab:'Sun'},
+    {g:'☽',lon:319.583,lab:'Moon'},
+    {g:'☿',lon:180.933,lab:'Mercury'},
+    {g:'♀',lon:216.767,lab:'Venus'},
+    {g:'♂',lon:288.817,lab:'Mars'},
+    {g:'♃',lon:347.217,lab:'Jupiter ℞'},
+    {g:'♄',lon:244.283,lab:'Saturn'},
+    {g:'⊗',lon:277.883,lab:'Fortune',minor:1},
+    {g:'✧',lon:212.067,lab:'Spirit',minor:1},
+    {g:'☊',lon:21.117,lab:'North Node',minor:1}
+  ];
+
+  // aspects (drawn under the glyphs)
+  var ASPECTS=[
+    {a:172.483,b:347.217,c:'#d47b8a'},  // Sun opp Jupiter
+    {a:244.283,b:64.967, c:'#d47b8a'},  // Saturn opp Asc
+    {a:180.933,b:244.283,c:'#5b9bd5'},  // Mercury sextile Saturn
+    {a:180.933,b:64.967, c:'#6dbf8b'},  // Mercury trine Asc
+    {a:288.817,b:347.217,c:'#6dbf8b'}   // Mars sextile Jupiter
+  ];
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  ASPECTS.forEach(function(as,i){
+    var p=pt(as.a,R_INNER-4), q=pt(as.b,R_INNER-4);
+    var L=Math.hypot(q[0]-p[0],q[1]-p[1]);
+    var line=el('line',{x1:p[0],y1:p[1],x2:q[0],y2:q[1],stroke:as.c,'stroke-width':1,opacity:.45});
+    if(!reduce){
+      line.setAttribute('stroke-dasharray',L);
+      line.setAttribute('stroke-dashoffset',L);
+      line.style.transition='stroke-dashoffset 1.1s ease '+(0.5+i*0.16)+'s';
+      requestAnimationFrame(function(){ line.setAttribute('stroke-dashoffset',0); });
+    }
+  });
+
+  // angles
+  [{lon:64.967,t:'ASC'},{lon:325.467,t:'MC'}].forEach(function(a){
+    var p1=pt(a.lon,R_INNER-14), p2=pt(a.lon,R_OUT);
+    el('line',{x1:p1[0],y1:p1[1],x2:p2[0],y2:p2[1],stroke:BRASS,'stroke-width':1.4,opacity:.7});
+    var lp=pt(a.lon,R_INNER-30);
+    el('text',{x:lp[0],y:lp[1]+4,fill:BRASS,'font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','letter-spacing':'.12em'},a.t);
+  });
+
+  // planet glyphs, nudged apart when crowded
+  var placed=[];
+  BODIES.forEach(function(b){
+    var lon=b.lon;
+    for(var k=0;k<24;k++){
+      var clash=placed.some(function(p){
+        var sep=Math.abs(((lon-p+540)%360)-180);
+        return sep<7;
+      });
+      if(!clash) break;
+      lon+=3.2;
+    }
+    placed.push(lon);
+    var p=pt(lon,R_PLANET);
+    var tick1=pt(b.lon,R_HOUSE), tick2=pt(b.lon,R_HOUSE+12);
+    el('line',{x1:tick1[0],y1:tick1[1],x2:tick2[0],y2:tick2[1],stroke:b.minor?'rgba(201,164,87,.4)':BRASS,'stroke-width':1});
+    el('text',{
+      x:p[0],y:p[1]+7,fill:b.minor?'#8A93B8':'#EDE7D9',
+      'font-size':b.minor?15:19,'text-anchor':'middle',
+      'font-family':'IBM Plex Sans, sans-serif'
+    },b.g);
+    var dp=pt(lon,R_PLANET-24);
+    el('text',{x:dp[0],y:dp[1]+4,fill:'#636C93','font-size':9,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace'},Math.floor(b.lon%30)+'°');
+  });
+
+  // centre label
+  el('text',{x:cx,y:cy-6,fill:'#8A93B8','font-size':10.5,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','letter-spacing':'.22em'},'NIGHT CHART');
+  el('text',{x:cx,y:cy+16,fill:BRASS,'font-size':22,'text-anchor':'middle','font-family':'Instrument Serif, serif'},'☿ Master');
+
+  if(!reduce){
+    svg.style.opacity=0;
+    svg.style.transform='rotate(-6deg) scale(.97)';
+    svg.style.transition='opacity 1s ease, transform 1.2s cubic-bezier(.2,.7,.2,1)';
+    requestAnimationFrame(function(){ svg.style.opacity=1; svg.style.transform='none'; });
+  }
+
+  /* ---------- scroll reveal ---------- */
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{rootMargin:'0px 0px -8% 0px',threshold:.06});
+  document.querySelectorAll('.rv').forEach(function(n){ io.observe(n); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scoped Flow</title>
+<script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787858967407&amp;type=content-script&amp;dmn=mail-attachment.googleusercontent.com&amp;url=https%3A%2F%2Fmail-attachment.googleusercontent.com%2Fattachment%2Fu%2F0%2F%3Fui%3D2%26ik%3Dc9fb396213%26attid%3D0.4%26permmsgid%3Dmsg-a%3Ar779115665227206629%26th%3D1a03fba60e0349cf%26view%3Datt%26disp%3Dsafe%26realattid%3D1a03fba3ed62413c76e3%26zw%26saddbat%3DANGjdJ_CAN63zf7yHcohVHMRBjCvZZ4uZdsqW-ZIHRtjlGcUhqF5sEOce4X7yQ75iphi96j_E0Fr-54VkXvIJ2vJbUYCl-ywLZeoaN49WOr0-6aHizxeqsRP7zbYcXh34OH-ebJ0ZHr38JHIsK1t-nZxjRrjwzVwgKzypPn3L8fHt0k3IhaMeVyBk0-2O1MPr6FxWb12Y2JYE017KKRmdYBFI74AHrKCoWXT_pzqVhr8dUR-91PtwcYLtM-n5eIx3trktgS-CSieh30Bd7WdxnmeGICR-0l4VtTapKZlZ7-5tip9OXjNvx67KhNzAZPImJE6OnGz93RSbyhJmLCTrABmvruXZlT-hmaP_cWVSHBFgM7M4NPoBDaC-OgUKDNQGnZAsUKvXG8pgrulnfe4b3y-JWkHNnQF_q365YEg7J6iX-4keGG5lAMsR1MlrrE1F4AlEiz5QT9feTGdWYduEPnHIEfSmT92pCK9sW5SrZaq6xmgM745OSlFpbepNP0XTPaFrVflYwYk95hyL1H0wowFTp-chGEPL9VhAUl_CxuVdMcwQG-Q9L64ifreeSVAxqA7P6uge-_WsblK9eDl-lrD8W9BVexHv9Z_7ht_dO11zet1guwSl1K_Oax-OA0C9k5mixBpCsl-4yJLdB3wmR9WX1rR87TwccGCmiVdK51j8a_CQmN6Eh1d2VNYmzNFhdnp9MRmdw25DNx1eeaaDhU1q_4x5yOh7-b_KQs5iYhGOFfYL-ubrGunbEnl3zIGQW3NLhsNTgJjoOonwG4FNdFuBEl8_vaApqz6uX9rF0N31qKhDcw1JF-WuePag9_6cThxgHTLrzezxLVvOdNpbn7Ho4S64h4uS51m0S_rnEOagSyuMDdctiTl3ogMRIG7R0HeIn6nDpqaEJ-dA-McRBRpmDYqwXDwiadWldBpciDJ7hCzzKNU-5Td6aIH8lnbV_CnIJ75rPcycdLI2bZ603f8Vtr6gGQE71f_NKVcaR80HXLomzU7U9-rdmzhgH9hZ5c2iPL6-4SMqgDlop7S3-FaGOnMQZAjnwZg7x0BXXox20sESJCLZNxp8sg3549EqOBQUh8WSmWlbWeuXwWCOh-5ZCZDdN4Pj0QC3Bf7mf6SdNfWxZMZpEtxvQipiELVPGSuSANeEF7PkrGCO0jG8uD5iqjaZbqE5q6E7F7VgR0hAyTrKxWUgiQiGMwYN70&amp;app=brave.exe&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787858967407&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#E8EEF4; --paper:#F5F8FB; --raise:#FFFFFF;
+  --ink:#0F1C2E; --body:#243447; --muted:#5A6B7D; --faint:#8494A7;
+  --line:#C5D0DC; --line-2:#A8B6C6;
+  --accent:#0B5CAB; --accent-soft:#D6E6F5; --accent-ink:#08427A;
+  --signal:#C45C12; --signal-soft:#F8E6D6;
+  --ok:#2F6B3A; --ok-soft:#DCEFDF;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#0F1A28; --code-ink:#D6E4F0; --code-line:#1E2D40;
+  --shadow:0 1px 2px rgba(15,28,46,.06), 0 8px 24px -12px rgba(15,28,46,.16);
+  --rail:264px;
+  --f-disp:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif;
+  --f-body:'IBM Plex Serif','Iowan Old Style',Georgia,serif;
+  --f-mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B121C; --paper:#121B28; --raise:#172334;
+    --ink:#E4ECF5; --body:#C2CFDE; --muted:#8A9BB0; --faint:#6A7C91;
+    --line:#243244; --line-2:#314257;
+    --accent:#4BA0E8; --accent-soft:#132A42; --accent-ink:#9BC8F0;
+    --signal:#F0A060; --signal-soft:#3A2414;
+    --ok:#6FBF7A; --ok-soft:#1A2E1C;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#070E16; --code-ink:#C9D8E8; --code-line:#1A2838;
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 28px -14px rgba(0,0,0,.75);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B121C; --paper:#121B28; --raise:#172334;
+  --ink:#E4ECF5; --body:#C2CFDE; --muted:#8A9BB0; --faint:#6A7C91;
+  --line:#243244; --line-2:#314257;
+  --accent:#4BA0E8; --accent-soft:#132A42; --accent-ink:#9BC8F0;
+  --signal:#F0A060; --signal-soft:#3A2414;
+  --ok:#6FBF7A; --ok-soft:#1A2E1C;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#070E16; --code-ink:#C9D8E8; --code-line:#1A2838;
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 28px -14px rgba(0,0,0,.75);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--body);font-family:var(--f-body);font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--f-disp);color:var(--ink);text-wrap:balance;margin:0;letter-spacing:-.015em}
+a{color:var(--accent-ink);text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono);font-size:.855em}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.topbar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:9px 18px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:9px;font-family:var(--f-disp);font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.02em;white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px}
+.modes button{font-family:var(--f-disp);font-size:12.5px;font-weight:600;letter-spacing:.01em;border:0;background:transparent;color:var(--muted);padding:5px 11px;border-radius:5px;cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{font-family:var(--f-mono);font-size:12.5px;padding:6px 10px;width:min(300px,42vw);border:1px solid var(--line-2);border-radius:7px;background:var(--raise);color:var(--ink)}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2);background:var(--raise);color:var(--muted);border-radius:7px;padding:5px 9px;cursor:pointer;font-family:var(--f-mono);font-size:12px}
+.iconbtn:hover{color:var(--ink);border-color:var(--accent)}
+.shell{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:0;align-items:start}
+@media (max-width:900px){.shell{grid-template-columns:1fr}}
+.rail{position:sticky;top:53px;height:calc(100vh - 53px);overflow-y:auto;border-right:1px solid var(--line);background:var(--paper);padding:16px 12px 40px}
+@media (max-width:900px){.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);display:flex;gap:8px;overflow-x:auto;padding:10px 12px;scrollbar-width:thin}.railhead,.legend{display:none}}
+.railhead{font-family:var(--f-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);padding:0 8px 8px}
+.pnav{display:flex;flex-direction:column;gap:2px}
+@media (max-width:900px){.pnav{flex-direction:row;gap:6px}}
+.pnav a{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;text-decoration:none;color:var(--body);font-family:var(--f-disp);font-size:13.5px;font-weight:500;line-height:1.25;border:1px solid transparent;white-space:nowrap}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.pnav .n{font-family:var(--f-mono);font-size:10.5px;color:var(--faint);width:16px;flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+.legend{margin-top:22px;padding:11px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+.legend h4{font-family:var(--f-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:400;margin-bottom:8px}
+.legend .row{display:flex;align-items:center;gap:8px;font-size:12px;font-family:var(--f-disp);padding:2.5px 0;color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+main{padding:28px 30px 96px;max-width:1080px;min-width:0}
+@media (max-width:640px){main{padding:22px 16px 72px}}
+.eyebrow{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px);font-weight:700;line-height:1.06;margin:7px 0 0}
+.meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:13px}
+.chip{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;padding:3px 8px;border-radius:20px;border:1px solid var(--line-2);color:var(--muted);background:var(--paper);text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+.chip.l5{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.objective{margin:24px 0 0;padding:16px 18px;border-left:3px solid var(--signal);background:var(--paper);border-radius:0 9px 9px 0;font-size:17.5px;line-height:1.5;color:var(--ink)}
+.objective b{font-weight:600}
+h2.sec{font-size:12px;font-family:var(--f-mono);font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin:42px 0 0;padding-bottom:7px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:9px}
+h2.sec .cnt{color:var(--line-2);font-size:11px}
+.concept{padding:19px 0;border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+.concept p{margin:0 0 9px;max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0;padding-left:19px;max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono);font-size:.85em;background:var(--accent-soft);color:var(--accent-ink);padding:1px 5px;border-radius:4px;border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+pre{margin:12px 0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-line);border-radius:9px;padding:13px 15px;overflow-x:auto;font-family:var(--f-mono);font-size:12.6px;line-height:1.65;position:relative}
+pre code{font-size:inherit;color:inherit;background:none}
+.codewrap{position:relative}
+.copy{position:absolute;top:8px;right:8px;z-index:2;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:5px;cursor:pointer;background:rgba(255,255,255,.07);color:#9FB5B0;border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15);color:#fff}
+.copy.done{background:var(--ok);color:#fff;border-color:var(--ok)}
+.cap{font-family:var(--f-mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em;margin:-4px 0 0}
+.tablewrap{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-family:var(--f-disp);font-size:13.4px;min-width:480px}
+th{text-align:left;font-family:var(--f-mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);font-weight:400;padding:9px 13px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+td{padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg);padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+.gotcha{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;padding:3px 7px;border-radius:4px;height:fit-content;white-space:nowrap;margin-top:2px}
+.sev.trap{background:var(--stop-soft);color:var(--stop)}
+.sev.cost{background:var(--warn-soft);color:var(--warn)}
+.sev.stale{background:var(--signal-soft);color:var(--signal)}
+.sev.ok{background:var(--ok-soft);color:var(--ok)}
+.gotcha b{font-family:var(--f-disp);font-weight:600;color:var(--ink);display:block;font-size:14.5px;margin-bottom:2px}
+.gotcha span{font-size:15px}
+.lab{margin:14px 0 0;padding:18px 20px;border:1px solid var(--accent);border-radius:11px;background:var(--accent-soft)}
+.lab h3{font-size:17px;margin-bottom:4px;color:var(--accent-ink)}
+.lab ol{margin:11px 0 0;padding-left:20px}
+.lab li{margin:6px 0}
+.done-line{display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp);font-size:14px;font-weight:600;color:var(--accent-ink);cursor:pointer;display:flex;align-items:center;gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+details.qa{border:1px solid var(--line);border-radius:9px;margin:8px 0;background:var(--paper);overflow:hidden}
+details.qa summary{padding:11px 15px;cursor:pointer;font-family:var(--f-disp);font-weight:600;font-size:14.5px;color:var(--ink);list-style:none;display:flex;gap:9px;align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?';font-family:var(--f-mono);color:var(--signal);font-size:12px;flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px;font-size:15px;color:var(--body);border-top:1px solid var(--line);padding-top:11px}
+.tree{margin:14px 0;display:flex;flex-direction:column;gap:0}
+.branch{display:grid;grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr);gap:12px;align-items:center;padding:11px 14px;border:1px solid var(--line);border-top:0;background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line);border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body);font-size:14.5px;color:var(--body)}
+.branch .arr{font-family:var(--f-mono);color:var(--line-2);font-size:13px}
+.branch .res{font-family:var(--f-disp);font-weight:600;font-size:14px;color:var(--ink)}
+.branch .res em{display:block;font-family:var(--f-body);font-weight:400;font-style:normal;font-size:13.5px;color:var(--muted)}
+@media (max-width:640px){.branch{grid-template-columns:1fr;gap:5px}.branch .arr{display:none}}
+.docs{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.docs a{font-family:var(--f-mono);font-size:11.5px;padding:4px 10px;border-radius:20px;text-decoration:none;border:1px solid var(--line-2);color:var(--muted);background:var(--paper)}
+.docs a:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
+.prog{margin:0 0 26px;padding:15px 18px;border:1px solid var(--line);border-radius:11px;background:var(--paper)}
+.prog .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.prog .pct{font-family:var(--f-disp);font-size:26px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.bar{display:flex;gap:3px;margin-top:11px}
+.bar i{height:7px;flex:1;border-radius:2px;background:var(--line);transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+#drill .flash{border:1px solid var(--line-2);border-radius:14px;background:var(--paper);padding:34px 30px;min-height:220px;display:flex;flex-direction:column;justify-content:center;gap:16px;box-shadow:var(--shadow)}
+#drill .fq{font-family:var(--f-disp);font-size:clamp(19px,2.6vw,25px);font-weight:600;color:var(--ink);line-height:1.3}
+#drill .fa{font-size:16.5px;color:var(--body);border-top:1px solid var(--line);padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+#drill .fbtns{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{font-family:var(--f-disp);font-size:13.5px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;border:1px solid var(--line-2);background:var(--raise);color:var(--ink)}
+.btn.prime{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);align-self:center;margin-left:auto}
+.verdict{display:grid;grid-template-columns:auto minmax(0,1fr);gap:13px;padding:15px 0;border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;padding:4px 8px;border-radius:5px;height:fit-content;white-space:nowrap;margin-top:2px;font-weight:700}
+.vtag.holds{background:var(--ok-soft);color:var(--ok)}
+.vtag.stale{background:var(--warn-soft);color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft);color:var(--stop)}
+.vtag.gap{background:var(--signal-soft);color:var(--signal)}
+.verdict .claim{font-family:var(--f-disp);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:4px;display:block}
+.verdict .find{font-size:15px}
+.hits{margin-top:6px}
+.hit{display:block;padding:11px 14px;border:1px solid var(--line);border-radius:9px;margin-bottom:7px;background:var(--paper);text-decoration:none;color:var(--body)}
+.hit:hover{border-color:var(--accent);background:var(--accent-soft)}
+.hit b{display:block;font-family:var(--f-disp);color:var(--ink);font-size:14.5px}
+.hit small{font-family:var(--f-mono);font-size:10.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase}
+.empty{color:var(--muted);font-style:italic;padding:20px 0}
+.lede{font-size:17.5px;max-width:66ch;color:var(--body);margin:14px 0 0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px}
+#view > h3{margin-top:28px;font-size:19px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname"></span><small id="brandtag"></small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search · / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">&#9686;</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"></div>
+    <div class="legend" id="legend"></div>
+  </nav>
+  <main id="view"></main>
+</div>
+<script>
+const SITE = {
+  key: 'mastery-scoped-flow',
+  title: 'Scoped Flow',
+  tag: 'BCH · SharePoint',
+  spine: 'Compliance envelope',
+  layers: [
+    { id:'l1', label:'Governance — the hard rule', token:'stop' },
+    { id:'l2', label:'Entry — how you create', token:'warn' },
+    { id:'l3', label:'Surface — list / library model', token:'accent' },
+    { id:'l4', label:'Event · Guard · Action', token:'ok' },
+    { id:'l5', label:'Assist · Boundary', token:'signal' }
+  ],
+  refLede: 'Decision trees and lookup tables for staying inside the BC Hydro SharePoint-only envelope.',
+  auditTitle: 'Source checked against governance + Microsoft docs',
+  verifiedAgainst: 'Verified against BC Hydro Power Platform governance summary (Aug 2026) and Microsoft Learn SharePoint connector / Copilot in SharePoint pages (Aug 2026).'
+};
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">' + s + '</code>';
+const PHASES = [
+{
+  id:'p0', n:'00', title:'Observe the surface', layer:'l1', layerLabel:'Governance',
+  time:'20–30 min', pre:'None',
+  objective:'You can open any list or library and <b>state what kind of surface it is and which governance rules apply</b> before you touch Automate.',
+  concepts:[
+    {h:'The single hard rule',
+     p:'<p>At BC Hydro, citizen development is allowed only for solutions created from a SharePoint Online list or library and that interact only with that list or library. Everything else requires IT Advisor review.</p><p>If you start from make.powerautomate.com you are already outside the allowed path.</p>'},
+    {h:'List vs library is not cosmetic',
+     p:'<p>Lists hold items. Libraries hold files. Triggers differ. “When an item is created” never fires for a document library.</p>',
+     table:{head:['Surface','Contains','Common triggers'],rows:[
+       ['List','Items (rows + columns)','When an item is created / created or modified'],
+       ['Document library','Files + metadata','When a file is created (properties only)']
+     ]}},
+    {h:'Why “properties only” exists',
+     p:'<p>File triggers that return content can hit size limits. Properties-only returns metadata. Add Get file content only when you need the binary.</p>'}
+  ],
+  lab:{title:'Inventory one real list or library',
+    steps:['Open a SharePoint site you use.','Pick one list and one library.','Note Site URL, name, type, key columns.','Note the exact menu labels (Integrate, Workflows).','<b>Break it:</b> confirm there is no approved Create-a-flow path outside Integrate/Workflows.'],
+    verify:'You have a note that names the surface type and the only allowed entry menu.'},
+  gotchas:[
+    {s:'trap',t:'Starting from the Power Automate portal',d:'The flow may work in testing but violates the “created from SharePoint” rule.'},
+    {s:'stale',t:'Looking for the old Automate menu',d:'2026 consolidated menus. Use Integrate or Workflows.'},
+    {s:'ok',t:'Notifications are usually still allowed',d:'Email or Teams driven by a list change stays inside the SharePoint context.'}
+  ],
+  quiz:[
+    {q:'State the single hard governance rule.',a:'Citizen development is permitted only for solutions created from a SharePoint Online list or library that interact only with that list or library. Everything else goes to IT Advisor.'},
+    {q:'Name the practical difference between a list trigger and a library trigger.',a:'List triggers use “item”; library triggers use “file”. Item triggers never fire on a document library.'}
+  ],
+  docs:[['Create a flow for a list or library','https://support.microsoft.com/en-us/sharepoint/lists/documents-and-library/create-a-flow-for-a-list-or-library']]
+},
+{
+  id:'p1', n:'01', title:'Entry only', layer:'l2', layerLabel:'Entry',
+  time:'30–45 min', pre:'Phase 00',
+  objective:'You create every new flow <b>from the list or library itself</b> so the site and list are pre-filled.',
+  concepts:[
+    {h:'The only approved creation path',
+     p:'<p>Open the list or library → <b>Integrate</b> → Power Automate → Create a flow (or Workflows). The designer already knows the site and list.</p>'},
+    {h:'What standalone looks like',
+     p:'<p>Any flow whose first screen is a blank canvas in make.powerautomate.com with no SharePoint list pre-selected is standalone. Do not use it.</p>'}
+  ],
+  lab:{title:'Create a do-nothing flow the correct way',
+    steps:['Go to your list.','Integrate → Power Automate → Create a flow.','Confirm Site Address and List Name are populated.','Save with a clear name.','<b>Break it:</b> open make.powerautomate.com and notice the missing list context. Close without saving.'],
+    verify:'One flow whose trigger is already bound to the list and that was created from the list.'},
+  gotchas:[
+    {s:'trap',t:'Editing later and adding a new connector',d:'Adding Dataverse, SQL, or HTTP moves the flow out of the allowed box even if it started correctly.'}
+  ],
+  quiz:[
+    {q:'Where must you start when creating a new citizen-developer flow?',a:'From the SharePoint list or library itself, using Integrate → Power Automate or the Workflows button.'},
+    {q:'What signals a flow is still SharePoint-scoped?',a:'Its trigger is a SharePoint list/library event and every data action targets the same list or library.'}
+  ],
+  docs:[['Create a flow for a list or library','https://support.microsoft.com/en-us/sharepoint/lists/documents-and-library/create-a-flow-for-a-list-or-library']]
+},
+{
+  id:'p2', n:'02', title:'Surface model', layer:'l3', layerLabel:'Surface',
+  time:'45–60 min', pre:'Phase 01',
+  objective:'You can look at any column and <b>predict whether a trigger condition can reliably test it</b>.',
+  concepts:[
+    {h:'Column types conditions can trust',
+     p:'<p>Choice, Yes/No, Number, Date, and Person columns are reliable. Free-text Status fields are not. People type “Approved”, “approved”, “APPROVED - ready” and conditions miss them.</p>'},
+    {h:'Internal names vs display names',
+     p:'<p>Expressions use the internal column name. Display name “Project Status” may be <code>ProjectStatus</code> or <code>Project_x0020_Status</code>.</p>'}
+  ],
+  lab:{title:'Map the columns that drive decisions',
+    steps:['List every column that changes during normal work.','Mark type for each.','Decide which free-text status columns should become Choice.','Note the internal name of the most important Choice column.','<b>Break it:</b> write a condition against free-text, change casing, watch the flow not fire.'],
+    verify:'A short table of decision columns with type and internal name.'},
+  gotchas:[
+    {s:'trap',t:'Relying on free-text status for branching',d:'Works in testing with clean data, then silently skips real items with different wording.'}
+  ],
+  quiz:[
+    {q:'Which column types are safe for reliable trigger conditions?',a:'Choice, Yes/No, Number, Date, and Person. Free-text status fields are not reliable.'},
+    {q:'Why care about the internal column name?',a:'Trigger conditions and most expressions use the internal name, not the display name.'}
+  ],
+  docs:[['SharePoint connector','https://learn.microsoft.com/en-us/connectors/sharepoint/']]
+},
+{
+  id:'p3', n:'03', title:'Events', layer:'l4', layerLabel:'Event',
+  time:'45 min', pre:'Phase 02',
+  objective:'You can choose the correct trigger and <b>predict whether it will fire once or many times</b>.',
+  concepts:[
+    {h:'Triggers you will actually use',
+     table:{head:['Trigger','Fires when','Watch-out'],rows:[
+       ['When an item is created','New list item','Safest default'],
+       ['When an item is created or modified','New or any change','Needs a condition'],
+       ['When a file is created (properties only)','New file','Preferred for libraries'],
+       ['For a selected item','User runs it','Manual']
+     ]}},
+    {h:'Polling, not push',
+     p:'<p>SharePoint triggers poll. Expect minutes of latency. One poll can pick up several changes.</p>'}
+  ],
+  lab:{title:'Wire the right trigger and watch it fire',
+    steps:['Create a flow with When an item is created + Compose Title.','Create an item, confirm it runs.','Switch to created or modified, edit the item twice.','<b>Break it:</b> leave modified with no condition, edit five times, count the runs.'],
+    verify:'Run history showing single-fire create and multi-fire modified on the same list.'},
+  gotchas:[
+    {s:'trap',t:'Using created or modified with no condition',d:'Any later update of the same item can re-trigger the flow and create a loop.'}
+  ],
+  quiz:[
+    {q:'Which trigger is the safest default for a new list automation?',a:'When an item is created.'},
+    {q:'What happens if a created-or-modified flow also updates the same item?',a:'It can re-trigger itself, producing loops or many runs.'}
+  ],
+  docs:[['SharePoint triggers','https://learn.microsoft.com/en-us/training/modules/email-power-automate/2-sharepoint-triggers']]
+},
+{
+  id:'p4', n:'04', title:'Guards', layer:'l4', layerLabel:'Guard',
+  time:'45–60 min', pre:'Phase 03',
+  objective:'You can write a trigger condition that <b>stops the flow from starting</b> when the item is not the one you care about.',
+  concepts:[
+    {h:'Trigger condition vs Condition action',
+     p:'<p>A trigger condition is evaluated before the flow starts. Prefer it so noisy lists do not burn runs.</p>'},
+    {h:'Basic expression shape',
+     code:C('@equals(triggerOutputs()?[\'body/Status\'], \'Approved\')',
+            '@equals(triggerOutputs()?[\'body/Status/Value\'], \'Approved\')',
+            '@and(equals(...), greater(...))')},
+    {h:'Choice columns often need /Value',
+     p:'<p>Many Choice columns arrive as objects. Comparing the whole object to a string fails silently.</p>'}
+  ],
+  lab:{title:'Add a trigger condition that actually filters',
+    steps:['Add a trigger condition for Status = a real Choice value.','Edit a non-matching item — no run.','Edit a matching item — run appears.','<b>Break it:</b> compare against the wrong path for a Choice object and watch silent misses.'],
+    verify:'Run history shows runs only when the condition is true.'},
+  gotchas:[
+    {s:'trap',t:'Comparing a Choice object to a string',d:'The expression is always false. The flow never starts and there is no designer error.'}
+  ],
+  quiz:[
+    {q:'Why prefer a trigger condition over a Condition action?',a:'It prevents the flow from starting, so noisy lists do not consume runs.'},
+    {q:'Common reason a Choice trigger condition never matches?',a:'Comparing the whole object instead of the Value property.'}
+  ],
+  docs:[['Trigger condition patterns','https://ippu-biz.com/en/development/powerplatform/powerautomate/trigger-conditions-spolist/']]
+},
+{
+  id:'p5', n:'05', title:'Actions', layer:'l4', layerLabel:'Action',
+  time:'45–60 min', pre:'Phase 04',
+  objective:'You can perform common CRUD and notification steps <b>while staying on the same list or library</b>.',
+  concepts:[
+    {h:'Safe action set',
+     table:{head:['Action','Use for'],rows:[
+       ['Get item / Get items','Read current values (filter tightly)'],
+       ['Update item','Write back to the triggering item'],
+       ['Get file content / Create file','Same library only'],
+       ['Send email / Post to Teams','Notify about the change']
+     ]}},
+    {h:'Update item needs the ID',
+     p:'<p>Always feed the ID from the trigger. Missing ID is a common source of “worked once then stopped”.</p>'}
+  ],
+  lab:{title:'Update the same item and notify',
+    steps:['Add Update item with ID from the trigger.','Add a simple email or Teams notification.','Trigger with a real item.','<b>Break it:</b> remove the ID mapping and observe failure or wrong target.'],
+    verify:'One successful run that updates a column and sends a notification using fields from the item.'},
+  gotchas:[
+    {s:'trap',t:'Forgetting the ID on Update item',d:'May succeed against a different item or fail only under load.'}
+  ],
+  quiz:[
+    {q:'What must you always supply to Update item?',a:'The ID of the item you intend to change, normally from the trigger.'},
+    {q:'Name three actions that stay inside the envelope.',a:'Update item on the same list, filtered Get items on the same list, and notifications driven by that list’s data.'}
+  ],
+  docs:[['SharePoint connector actions','https://learn.microsoft.com/en-us/connectors/sharepoint/']]
+},
+{
+  id:'p6', n:'06', title:'Assist', layer:'l5', layerLabel:'Assist',
+  time:'30–45 min', pre:'Phase 05',
+  objective:'You can use Copilot to accelerate drafting <b>without letting it push the solution outside the boundary</b>.',
+  concepts:[
+    {h:'Two Copilot surfaces',
+     p:'<p><b>Copilot in SharePoint</b> proposes simple rules: email, move, copy, set value (max 15 per list). <b>Copilot in the flow designer</b> can suggest steps while you stay in a list-created flow.</p>'},
+    {h:'What Copilot is not allowed to invent',
+     p:'<p>Reject any suggestion that adds Dataverse, SQL, HTTP, custom connectors, or other lists.</p>'}
+  ],
+  lab:{title:'Draft with Copilot, then audit connectors',
+    steps:['Ask Copilot to add update + notification steps.','Inspect every action.','Delete anything that points outside the current list.','<b>Break it:</b> ask for a version that also writes to another list or Dataverse, then refuse it.'],
+    verify:'A working flow with only SharePoint actions on the same surface plus allowed notifications.'},
+  gotchas:[
+    {s:'trap',t:'Accepting every Copilot suggestion',d:'Copilot optimises for capability, not your governance model.'}
+  ],
+  quiz:[
+    {q:'Maximum Copilot-in-SharePoint rules per list or library?',a:'15.'},
+    {q:'What do you do when Copilot suggests a connector outside the current list?',a:'Reject it. Keep only SharePoint actions on the same list/library and allowed notifications.'}
+  ],
+  docs:[['Copilot in SharePoint automate workflows','https://learn.microsoft.com/en-us/sharepoint/copilot-in-sharepoint-automate-workflows']]
+},
+{
+  id:'p7', n:'07', title:'Boundary & hand-off', layer:'l5', layerLabel:'Boundary',
+  time:'30–45 min', pre:'All prior phases',
+  objective:'You can decide in under a minute whether an idea <b>stays citizen-developer or goes to IT Advisor</b>.',
+  concepts:[
+    {h:'The decision rule',
+     p:'<p>Stop and contact IT Advisor if any of these is yes:</p><ul><li>Needs a system other than the triggering list/library</li><li>Needs Dataverse, SQL, API, or on-prem data</li><li>Is a cross-department enterprise process</li><li>Was not created from the SharePoint Integrate/Workflows path</li></ul>'},
+    {h:'What this path deliberately excludes',
+     p:'<p>Standalone Power Automate, Copilot Studio agents that leave the list, premium connectors, cross-system orchestration, and personal environments.</p>'}
+  ],
+  lab:{title:'Ship one compliant flow and a hand-off note',
+    steps:['Finish one real flow (trigger + condition + update + notification).','Write a three-line summary: surface, trigger, outcome.','List every connector and target.','If anything is outside SharePoint, rewrite or prepare the IT Advisor request.','<b>Break it:</b> invent the version that also updates a second list, and write the one-sentence reason it is out of scope.'],
+    verify:'One live compliant flow plus a written decision that either confirms scope or states why it needs IT Advisor.'},
+  gotchas:[
+    {s:'trap',t:'“It only uses standard connectors so it must be fine”',d:'Governance is surface-scoped. A standard connector that reaches another system is still out of scope.'}
+  ],
+  quiz:[
+    {q:'Name the four questions that send a solution to IT Advisor.',a:'Needs another system; needs Dataverse/SQL/API/on-prem; is cross-department enterprise; or was not created from the SharePoint list path.'},
+    {q:'State in one sentence what this path does not cover.',a:'Anything that cannot be built as a SharePoint-originated, SharePoint-scoped flow or simple Copilot-in-SharePoint rule.'}
+  ],
+  docs:[['BC Hydro Power Platform governance summary','#']]
+}
+];
+const TREES = [
+{title:'Does this idea stay citizen-developer?', rows:[
+  ['Created from the list via Integrate or Workflows','Continue','Only allowed entry path'],
+  ['All data stays on that same list/library','Continue','Core scope rule'],
+  ['Needs Dataverse, SQL, HTTP, API, or another list','Stop — IT Advisor','Outside the envelope'],
+  ['Needs to coordinate multiple departments','Stop — IT Advisor','Federated model required'],
+  ['Only needs email/Teams driven by the list','Allowed','Still SharePoint-scoped']
+]},
+{title:'Which trigger should I pick?', rows:[
+  ['New list item only','When an item is created','Safest default'],
+  ['New or changed list item','When an item is created or modified','Always add a trigger condition'],
+  ['New file in a library','When a file is created (properties only)','Prefer properties only'],
+  ['User clicks a button on the item','For a selected item','Manual']
+]},
+{title:'Flow is not firing when I expect', rows:[
+  ['Check trigger type first','List vs library mismatch','Item triggers never see files'],
+  ['Look at trigger conditions','Wrong internal name or Choice /Value','Fails silently'],
+  ['Check run history for starts that did nothing','Condition action filtered too late','Prefer trigger conditions']
+]},
+{title:'Copilot just suggested something', rows:[
+  ['Stays on current list + notifications','Accept and review','Inside envelope'],
+  ['Adds another list, Dataverse, SQL, or HTTP','Reject','Governance violation'],
+  ['Simple email / move / copy / set value','Consider Copilot-in-SharePoint rule','15-rule limit']
+]}
+];
+const REF = [
+{id:'r1', title:'Allowed vs not allowed', note:'The compliance envelope in one table.',
+ head:['Allowed','Not allowed'],
+ rows:[
+   ['Flow created from list Integrate or Workflows','Standalone flow in make.powerautomate.com'],
+   ['Trigger and data on the same list/library','External system, Dataverse, SQL, API'],
+   ['Update / get on that surface + notifications','Cross-department process without review'],
+   ['Copilot that stays inside the above','Copilot Studio agents that leave the list']
+ ]},
+{id:'r2', title:'Core SharePoint triggers',
+ head:['Trigger','Typical use','Noise risk'],
+ rows:[
+   ['When an item is created','New list rows','Low'],
+   ['When an item is created or modified','Status changes','High — needs condition'],
+   ['When a file is created (properties only)','New documents','Low–medium'],
+   ['For a selected item','Manual user action','None']
+ ]},
+{id:'r3', title:'Trigger condition patterns',
+ head:['Intent','Expression sketch'],
+ rows:[
+   ['Exact Choice match','@equals(triggerOutputs()?[\'body/Status\'], \'Approved\')'],
+   ['Choice as object','@equals(triggerOutputs()?[\'body/Status/Value\'], \'Approved\')'],
+   ['Number greater than','@greater(triggerOutputs()?[\'body/Amount\'], 1000)'],
+   ['Two conditions','@and(equals(...), greater(...))']
+ ],
+ foot:'Always test matching and non-matching items. Silent false is the common failure.'},
+{id:'r4', title:'Copilot in SharePoint rule limits',
+ head:['Limit','Value'],
+ rows:[
+   ['Max rules per list or library','15'],
+   ['Supported actions','Email, move, copy, set value'],
+   ['Supported triggers','Item created, modified, deleted']
+ ]}
+];
+const AUDIT = {
+ intro:'Source was the BC Hydro Power Platform governance summary (citizen development restricted to SharePoint-originated, SharePoint-scoped solutions) plus the conversation primitives. Technical claims checked against Microsoft Learn SharePoint connector and Copilot in SharePoint pages (Aug 2026).',
+ groups:[
+ {label:'Holds up', tag:'holds', items:[
+   {c:'Citizen development only for SharePoint list/library integrated apps and flows.',f:'Correct and central. The entire curriculum is built around this rule.'},
+   {c:'Solutions must interact only with the SharePoint list or library.',f:'Correct. External connectors are out of scope for citizen developers.'},
+   {c:'Use Integrate / Workflows menus to create flows.',f:'Correct. 2026 menu consolidation makes these the reliable labels.'}
+ ]},
+ {label:'Stale or incomplete', tag:'stale', items:[
+   {c:'Older references to the Automate menu as primary entry.',f:'Menus consolidated in 2026. Look for Integrate or Workflows.'},
+   {c:'Treating all standard connectors as automatically permitted.',f:'Governance is surface-scoped, not merely licence-tier.'}
+ ]},
+ {label:'Wrong', tag:'wrong', items:[
+   {c:'Any implication that standalone Power Automate or Copilot Studio agents are open to citizen developers.',f:'They are not. The source is explicit.'}
+ ]},
+ {label:'Missing from the original summary', tag:'gap', items:[
+   {c:'Trigger condition syntax and silent-failure modes of Choice columns.',f:'Added as Phase 04 — where most “my flow never runs” reports live.'},
+   {c:'List item triggers vs library file triggers.',f:'Added early because the wrong family simply never fires.'},
+   {c:'Copilot-in-SharePoint rule limits (15 rules).',f:'Added so rules are not treated as full Power Automate.'},
+   {c:'Explicit decision tree for “does this need IT Advisor?”.',f:'Added as the capstone.'}
+ ]}
+ ]
+};
+const $ = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+const doneLab = id => !!state['lab:'+id];
+const doneQ = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+let mode='learn', current=PHASES[0].id;
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',''); a.href='#'; a.className=(p.id===current?'on':'');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="tick '+(phaseDone(p)?'done':phasePart(p)?'part':'')+'"></span>';
+    a.onclick=e=>{e.preventDefault(); current=p.id; mode='learn'; render(); buildRail();};
+    nav.appendChild(a);
+  });
+}
+function tableBlock(t){
+  const wrap=el('div','tablewrap'); const table=el('table');
+  const thead=el('thead'); const hr=el('tr');
+  (t.head||[]).forEach(h=>hr.appendChild(el('th','',h)));
+  thead.appendChild(hr); table.appendChild(thead);
+  const tb=el('tbody');
+  (t.rows||[]).forEach(r=>{ const tr=el('tr'); r.forEach(c=>tr.appendChild(el('td','',c))); tb.appendChild(tr); });
+  table.appendChild(tb); wrap.appendChild(table); return wrap;
+}
+function codeBlock(code){
+  const wrap=el('div','codewrap'); const pre=el('pre'); pre.innerHTML='<code>'+esc(code)+'</code>';
+  const btn=el('button','copy','Copy');
+  btn.onclick=()=>{navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied';btn.classList.add('done');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('done')},1500)})};
+  wrap.appendChild(btn); wrap.appendChild(pre); return wrap;
+}
+function sec(title,cnt){ return el('h2','sec',title+(cnt!=null?' <span class="cnt">'+cnt+'</span>':'')); }
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+  const prog=el('div','prog');
+  const done=PHASES.filter(phaseDone).length;
+  const pct=Math.round(done/PHASES.length*100);
+  prog.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>';
+  const bar=el('div','bar');
+  PHASES.forEach(pp=>{ const i=el('i'); if(phaseDone(pp))i.className='done'; else if(phasePart(pp))i.className='part'; bar.appendChild(i); });
+  prog.appendChild(bar); v.appendChild(prog);
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span><span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept'); d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    v.appendChild(d);
+  });
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol><p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl); v.appendChild(lab);
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail(); renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1><p class="lede">'+SITE.refLede+'</p>';
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept'); d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall deck</h1><p class="lede">Checkpoint questions only. Answer before you reveal.</p>';
+  const card=el('div','flash'); card.id='drill';
+  const item=deck[di];
+  card.innerHTML='<div class="fsrc">'+item.src+'</div><div class="fq">'+item.q+'</div><div class="fa '+(revealed?'':'hide')+'">'+item.a+'</div>'+
+    '<div class="fbtns"><button class="btn prime" id="reveal">'+(revealed?'Next':'Reveal')+'</button><button class="btn" id="shuffle">Shuffle</button><span class="counter">'+(di+1)+' / '+deck.length+'</span></div>';
+  v.appendChild(card);
+  $('#reveal').onclick=()=>{ if(!revealed){ revealed=true; renderDrill(); } else { di=(di+1)%deck.length; revealed=false; renderDrill(); } };
+  $('#shuffle').onclick=()=>{ buildDeck(); renderDrill(); };
+}
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1><p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(el('h3','',g.label));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><div><span class="claim">'+it.c+'</span><div class="find">'+it.f+'</div></div>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:28px">'+SITE.verifiedAgainst+'</p>');
+}
+function render(){
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode?'true':'false'));
+  if(mode==='learn'){ const p=PHASES.find(x=>x.id===current)||PHASES[0]; renderPhase(p); }
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(mode==='audit') renderAudit();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{
+  mode=b.dataset.mode; if(mode==='drill') buildDeck(); render(); buildRail();
+}));
+$('#reset').onclick=()=>{ if(confirm('Reset all progress for this site?')){ state={}; store.set(state); buildRail(); render(); }};
+$('#q').addEventListener('input',()=>{
+  const q=$('#q').value.trim().toLowerCase();
+  if(!q){ render(); return; }
+  const hits=[];
+  PHASES.forEach(p=>{
+    const blob=(p.title+' '+p.objective+' '+p.concepts.map(c=>c.h+' '+(c.p||'')).join(' ')).toLowerCase();
+    if(blob.includes(q)) hits.push({type:'phase', title:p.title, n:p.n, id:p.id});
+    p.quiz.forEach(qq=>{ if((qq.q+' '+qq.a).toLowerCase().includes(q)) hits.push({type:'quiz', title:qq.q, n:p.n, id:p.id}); });
+  });
+  TREES.forEach(t=>{ if(t.title.toLowerCase().includes(q)||t.rows.some(r=>r.join(' ').toLowerCase().includes(q))) hits.push({type:'tree', title:t.title}); });
+  const v=$('#view'); v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">Results</h1><div class="hits"></div>';
+  const box=$('.hits');
+  if(!hits.length){ box.innerHTML='<p class="empty">No matches.</p>'; return; }
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.type+(h.n?' · Phase '+h.n:'')+'</small><b>'+h.title+'</b>';
+    a.onclick=e=>{e.preventDefault(); if(h.id){ current=h.id; mode='learn'; } else mode='ref'; render(); buildRail();};
+    box.appendChild(a);
+  });
+});
+document.addEventListener('keydown',e=>{ if(e.key==='/' && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('#q').focus(); } });
+buildRail(); render();
+</script>
+</body>
+</html>

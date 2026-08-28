@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Envelope — Citizen Copilot field guide</title>
+  <meta name="description" content="A single-file field guide for Microsoft 365 Copilot inside the BC Hydro citizen envelope. Works offline.">
+  <meta name="theme-color" content="#1c5f58">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f3efe6'/%3E%3Cpath fill='%231c5f58' d='M7.5 6h17v4.25H13v3.25h10v4H13v4.25h11.5V26h-17z'/%3E%3C/svg%3E">
+  <style>:root {
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-sans: "Segoe UI", "Source Sans 3", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", "SF Mono", Consolas, ui-monospace, monospace;
+  --bg: #f3efe6;
+  --fg: #171a19;
+  --muted: #5a615e;
+  --subtle: #8a908c;
+  --surface: #fbf8f1;
+  --inset: #ece6d8;
+  --border: #d4ccbc;
+  --accent: #1c5f58;
+  --accent-fg: #f4f1ea;
+  --warn: #8a5a20;
+  --danger: #8f2d2d;
+  --good: #2a6b4e;
+  --radius: 0.75rem;
+  --shadow: 0 1px 0 color-mix(in srgb, var(--fg) 6%, transparent),
+    0 12px 32px -18px color-mix(in srgb, var(--fg) 22%, transparent);
+  --max: 72rem;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  line-height: 1.55;
+}
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-wrap: balance;
+  font-weight: 500;
+  margin: 0;
+}
+p { text-wrap: pretty; }
+button:not(:disabled), [role="button"]:not(:disabled), a { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+pre, code, kbd { font-family: var(--font-mono); }
+::selection { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+
+.skip {
+  position: absolute; left: -999px; top: 0;
+}
+.skip:focus {
+  left: 0.5rem; top: 0.5rem; z-index: 80;
+  background: var(--accent); color: var(--accent-fg);
+  padding: 0.5rem 0.75rem; border-radius: 0.5rem;
+}
+
+.top {
+  position: sticky; top: 0; z-index: 40;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(8px);
+}
+.top-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.brand { color: inherit; text-decoration: none; display: flex; align-items: baseline; gap: 0.5rem; }
+.brand-name { font-family: var(--font-display); font-size: 1.25rem; }
+.brand-sub { font-size: 0.75rem; color: var(--muted); display: none; }
+@media (min-width: 640px) { .brand-sub { display: inline; } }
+
+.desk-nav { display: none; gap: 0.25rem; }
+@media (min-width: 800px) { .desk-nav { display: flex; } }
+.desk-nav a {
+  display: flex; align-items: center;
+  height: 2.5rem; padding: 0 0.75rem;
+  border-radius: 0.5rem; color: var(--muted); text-decoration: none; font-size: 0.9rem;
+}
+.desk-nav a:hover, .desk-nav a.on, .dock a.on {
+  background: var(--inset); color: var(--fg);
+}
+
+.top-meta { display: flex; align-items: center; gap: 0.5rem; }
+.progress-chip { margin: 0; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.dock {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+}
+.dock a {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 44px; color: var(--muted); text-decoration: none; font-size: 0.8rem;
+  border-radius: 0.5rem;
+}
+@media (min-width: 800px) { .dock { display: none; } }
+
+#view { max-width: var(--max); margin: 0 auto; padding: 2rem 1rem 6.5rem; }
+@media (min-width: 800px) { #view { padding-bottom: 3rem; } }
+
+.kicker {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+h1 { font-size: clamp(2rem, 4vw, 3rem); margin-top: 0.5rem; }
+.lede { max-width: 36rem; color: var(--muted); font-size: 1.05rem; }
+
+.row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+.split { display: flex; gap: 2.5rem; align-items: flex-start; }
+.side { display: none; width: 15rem; flex-shrink: 0; position: sticky; top: 5rem; }
+@media (min-width: 900px) { .side { display: block; } }
+.main { min-width: 0; flex: 1; }
+
+.phase-list, .card-grid { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; gap: 0.75rem; }
+@media (min-width: 640px) { .card-grid { grid-template-columns: 1fr 1fr; } }
+.card-grid a, .tree, .prompt-card, .panel, .lab, .gotcha {
+  display: block;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow);
+  color: inherit;
+  text-decoration: none;
+}
+.card-grid a:hover { background: color-mix(in srgb, var(--inset) 50%, var(--surface)); }
+.meta { font-size: 0.75rem; color: var(--subtle); font-variant-numeric: tabular-nums; }
+.card-title { display: block; margin-top: 0.25rem; font-family: var(--font-display); font-size: 1.15rem; }
+.card-kicker { display: block; margin-top: 0.2rem; font-size: 0.9rem; color: var(--muted); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  min-height: 44px; padding: 0 1rem;
+  border-radius: 0.6rem; border: 1px solid transparent;
+  font: inherit; font-size: 0.95rem;
+  background: var(--accent); color: var(--accent-fg);
+  text-decoration: none;
+}
+.btn:hover { filter: brightness(1.05); }
+.btn.outline { background: transparent; color: var(--fg); border-color: var(--border); }
+.btn.ghost { background: transparent; color: var(--muted); }
+.btn.sm { min-height: 36px; font-size: 0.85rem; padding: 0 0.7rem; }
+.btn.warn { background: var(--danger); color: #fff; }
+.btn.good { background: var(--good); color: #fff; }
+
+.obj {
+  margin-top: 1rem;
+  background: var(--inset);
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+}
+.concept { margin-top: 2.2rem; }
+.concept h2 { font-size: 1.45rem; }
+.concept p { margin: 0.6rem 0 0; font-size: 1.05rem; color: color-mix(in srgb, var(--fg) 90%, transparent); }
+
+.table-wrap { overflow-x: auto; margin-top: 0.75rem; border: 1px solid var(--border); border-radius: 0.75rem; }
+table { width: 100%; min-width: 28rem; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+th { background: var(--inset); color: var(--muted); font-weight: 600; padding: 0.5rem 0.75rem; }
+td { padding: 0.5rem 0.75rem; vertical-align: top; border-top: 1px solid var(--border); }
+
+.gotchas { display: grid; gap: 0.6rem; margin-top: 0.75rem; }
+.gotcha.silent { border-color: color-mix(in srgb, var(--warn) 35%, var(--border)); }
+.tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--warn);
+  margin-bottom: 0.25rem;
+}
+.lab { margin-top: 1rem; }
+.lab ol { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+.lab li { margin: 0.25rem 0; }
+.fail { color: var(--danger); }
+.pass { color: var(--good); }
+
+.copy {
+  position: relative;
+  background: var(--inset);
+  border-radius: 0.6rem;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+}
+.copy pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.copy-btn {
+  position: absolute; top: 0.4rem; right: 0.4rem;
+  min-height: 32px; padding: 0 0.55rem;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 0.4rem;
+  color: var(--muted);
+}
+
+.checks { display: grid; gap: 0.6rem; margin-top: 0.75rem; }
+.check {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  width: 100%;
+  font: inherit;
+}
+.check .a { margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--border); color: var(--muted); }
+
+.pager { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
+.side-nav { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.2rem; }
+.side-nav a {
+  display: block; padding: 0.4rem 0.5rem; border-radius: 0.4rem;
+  color: var(--muted); text-decoration: none; font-size: 0.9rem;
+}
+.side-nav a.on, .side-nav a:hover { background: var(--inset); color: var(--fg); }
+.done-dot { color: var(--good); }
+
+.filters { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.25rem; }
+.chip {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 0.8rem;
+  border-radius: 999px;
+  border: 0;
+  background: var(--inset);
+  color: var(--muted);
+  font: inherit; font-size: 0.85rem;
+}
+.chip.on { background: var(--accent); color: var(--accent-fg); }
+.search {
+  width: 100%; min-height: 44px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 0.6rem;
+  padding: 0 0.8rem;
+  font: inherit; font-size: 0.95rem;
+}
+.sticky-tools {
+  position: sticky; top: 3.5rem; z-index: 20;
+  background: color-mix(in srgb, var(--bg) 95%, transparent);
+  padding: 0.75rem 0;
+  display: grid; gap: 0.6rem;
+}
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: var(--inset);
+  color: var(--muted);
+}
+.prompt-card { display: grid; gap: 0.7rem; }
+.prompt-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.prompt-list { display: grid; gap: 1rem; margin-top: 1rem; }
+.empty { text-align: center; color: var(--muted); padding: 3rem 0; }
+
+.tree h2 { font-size: 1.25rem; }
+.tree .blurb { color: var(--muted); margin: 0.25rem 0 0.8rem; font-size: 0.9rem; }
+.opt {
+  display: block; width: 100%; text-align: left;
+  margin: 0.35rem 0 0;
+  min-height: 44px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 0.6rem;
+  font: inherit;
+}
+.opt:hover { background: var(--inset); }
+.result {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.6rem;
+  background: var(--inset);
+}
+.result.warn { background: color-mix(in srgb, var(--danger) 12%, var(--inset)); }
+
+.flash {
+  min-height: 12rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+}
+.flash h2 { font-size: 1.5rem; }
+.flash .a { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 1.05rem; }
+
+.note {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 36rem;
+}
+
+@media print {
+  .top, .dock, .btn, .copy-btn, .sticky-tools { display: none !important; }
+  #view { padding: 0; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+  <a class="skip" href="#view">Skip to content</a>
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="#/" data-nav="">
+        <span class="brand-name">Envelope</span>
+        <span class="brand-sub">Citizen Copilot field guide</span>
+      </a>
+      <nav class="desk-nav" aria-label="Primary">
+        <a href="#/" data-nav="" data-match="path" class="on">Path</a>
+        <a href="#/reference" data-nav="" data-match="reference">Reference</a>
+        <a href="#/prompts" data-nav="" data-match="prompts">Prompts</a>
+        <a href="#/drill" data-nav="" data-match="drill">Drill</a>
+      </nav>
+      <div class="top-meta">
+        <p class="progress-chip" id="progress-chip" aria-live="polite">0/8 labs · 0/24 recall</p>
+        <button type="button" class="btn ghost sm" id="download-btn" title="Save Envelope.html">
+          Save file
+        </button>
+      </div>
+    </div>
+  </header>
+  <div id="view">
+      <div class="split">
+        <aside class="side">
+      <p class="meta" style="margin:0 0 .5rem;letter-spacing:.08em;text-transform:uppercase">Eight phases</p>
+      <ul class="side-nav">
+        <li><a href="#/path/envelope" data-nav="" class="on">01 The envelope</a></li><li><a href="#/path/formula" data-nav="" class="">02 Prompt formula</a></li><li><a href="#/path/lists" data-nav="" class="">03 Lists first</a></li><li><a href="#/path/office" data-nav="" class="">04 Office surfaces</a></li><li><a href="#/path/loop" data-nav="" class="">05 Loop, Pages, Notebooks</a></li><li><a href="#/path/onedrive" data-nav="" class="">06 OneDrive as personal index</a></li><li><a href="#/path/combos" data-nav="" class="">07 Handoffs</a></li><li><a href="#/path/stop" data-nav="" class="">08 The stop line</a></li>
+      </ul>
+    </aside>
+        <article class="main">
+          <p class="kicker">Phase 01 · 12 min</p>
+          <h1>The envelope</h1>
+          <p class="lede">Stop before you build</p>
+          <p class="obj"><strong>Objective.</strong> State, from memory, what a citizen may build with Copilot at BC Hydro and what requires an IT Advisor.</p>
+          <section class="concept"><h2>Two restriction layers at once</h2><p>Microsoft Copilot only sees what you can already open. BC Hydro then narrows Power Platform: citizen apps and flows exist only when they start from a SharePoint list or library and only touch that list or library. Copilot inside Word, Excel, Outlook, Teams, Loop, Notebooks, OneDrive, and SharePoint content is allowed. Asking it to publish a standalone app is not.</p></section><section class="concept"><h2>What you can do</h2><p>Customize a list form from Integrate. Create a list-originated flow from Workflows or Integrate. Draft flow logic that reads and writes the same list. Use Copilot to design columns, views, Rules, and wording. Submit anything bigger as an IT Advisor brief.</p></section><section class="concept"><h2>What you cannot do</h2><p>Standalone Power Apps or flows from the maker portals. Dataverse, SQL, HTTP, APIs, on-prem connectors. Cross-department or enterprise-wide apps. Personal or unmanaged environments. Copilot-generated solutions that leave SharePoint.</p></section>
+          <section class="concept">
+          <h2>Citizen vs advisor</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Job</th><th>Citizen path</th><th>Stop</th></tr></thead>
+            <tbody><tr><td>Notify when Status changes</td><td>List Rule</td><td>Maker-portal flow</td></tr><tr><td>Approval that writes back</td><td>Flow from the list</td><td>Dataverse table</td></tr><tr><td>Hide fields until Submitted</td><td>Power Apps form on the list</td><td>Standalone canvas app</td></tr><tr><td>SQL / HTTP / tenant-wide</td><td>IT Advisor brief</td><td>Copilot will happily draft it anyway</td></tr></tbody>
+          </table></div>
+        </section>
+          <section class="concept"><h2>Gotchas</h2><div class="gotchas"><div class="gotcha silent"><div class="tag">Silent failure</div>A prompt that 'works' in Copilot Chat is not permission. Copilot will draft a Dataverse flow. That draft is still blocked here.</div><div class="gotcha ">DLP and Restricted SharePoint Search can hide a site from Copilot even when the browser can open it. OneDrive is not hidden by RSS.</div></div></section>
+          <section class="concept">
+            <h2>Lab · Classify three automations</h2>
+            <div class="lab">
+              <p><strong>Setup.</strong> You will not open Power Automate. Paper classification only.</p>
+              <ol><li>Email me when a list item is created.</li><li>When Status = Submitted, start approval and write Approved or Rejected back to the same list.</li><li>Every night, pull tickets from an external API into the list.</li></ol>
+              
+              <p class="fail" style="margin-top:1rem"><strong>Break.</strong> If you marked item 3 as a list flow, you failed the envelope. Item 3 is an IT Advisor request, not a citizen build.</p>
+              <p class="pass"><strong>Pass.</strong> 1 = Rule. 2 = list-originated flow. 3 = IT Advisor brief. Nothing is built.</p>
+              <button type="button" class="btn " id="mark-lab" style="margin-top:1rem">
+                Mark lab done
+              </button>
+            </div>
+          </section>
+          <section class="concept">
+            <h2>Checkpoint</h2>
+            <div class="checks">
+              <button type="button" class="check" data-check="envelope:0">
+                      <strong>Where must a citizen flow be created?</strong>
+                      <div class="a" hidden="">From the SharePoint list or library Integrate or Workflows menu, scoped to that list or library.</div>
+                    </button><button type="button" class="check" data-check="envelope:1">
+                      <strong>Name three connectors that are out of envelope.</strong>
+                      <div class="a" hidden="">Dataverse, SQL, and HTTP (also APIs and on-prem).</div>
+                    </button><button type="button" class="check" data-check="envelope:2">
+                      <strong>Does Copilot inside Word count as citizen Power Platform development?</strong>
+                      <div class="a" hidden="">No. In-app Copilot on Office content is allowed. The envelope governs apps and flows.</div>
+                    </button>
+            </div>
+          </section>
+          <div class="pager">
+            
+            <a class="btn" href="#/path/formula" data-nav="">Prompt formula →</a>
+          </div>
+        </article>
+      </div></div>
+  <nav class="dock" aria-label="Sections">
+    <a href="#/" data-nav="" data-match="path" class="on">Path</a>
+    <a href="#/reference" data-nav="" data-match="reference">Reference</a>
+    <a href="#/prompts" data-nav="" data-match="prompts">Prompts</a>
+    <a href="#/drill" data-nav="" data-match="drill">Drill</a>
+  </nav>
+  <script>window.ENVELOPE={"phases":[{"id":"envelope","n":1,"title":"The envelope","kicker":"Stop before you build","objective":"State, from memory, what a citizen may build with Copilot at BC Hydro and what requires an IT Advisor.","minutes":12,"concepts":[{"heading":"Two restriction layers at once","body":"Microsoft Copilot only sees what you can already open. BC Hydro then narrows Power Platform: citizen apps and flows exist only when they start from a SharePoint list or library and only touch that list or library. Copilot inside Word, Excel, Outlook, Teams, Loop, Notebooks, OneDrive, and SharePoint content is allowed. Asking it to publish a standalone app is not."},{"heading":"What you can do","body":"Customize a list form from Integrate. Create a list-originated flow from Workflows or Integrate. Draft flow logic that reads and writes the same list. Use Copilot to design columns, views, Rules, and wording. Submit anything bigger as an IT Advisor brief."},{"heading":"What you cannot do","body":"Standalone Power Apps or flows from the maker portals. Dataverse, SQL, HTTP, APIs, on-prem connectors. Cross-department or enterprise-wide apps. Personal or unmanaged environments. Copilot-generated solutions that leave SharePoint."}],"tables":[{"caption":"Citizen vs advisor","headers":["Job","Citizen path","Stop"],"rows":[["Notify when Status changes","List Rule","Maker-portal flow"],["Approval that writes back","Flow from the list","Dataverse table"],["Hide fields until Submitted","Power Apps form on the list","Standalone canvas app"],["SQL / HTTP / tenant-wide","IT Advisor brief","Copilot will happily draft it anyway"]]}],"gotchas":[{"silent":true,"text":"A prompt that 'works' in Copilot Chat is not permission. Copilot will draft a Dataverse flow. That draft is still blocked here."},{"silent":false,"text":"DLP and Restricted SharePoint Search can hide a site from Copilot even when the browser can open it. OneDrive is not hidden by RSS."}],"lab":{"title":"Classify three automations","setup":"You will not open Power Automate. Paper classification only.","steps":["Email me when a list item is created.","When Status = Submitted, start approval and write Approved or Rejected back to the same list.","Every night, pull tickets from an external API into the list."],"breakStep":"If you marked item 3 as a list flow, you failed the envelope. Item 3 is an IT Advisor request, not a citizen build.","pass":"1 = Rule. 2 = list-originated flow. 3 = IT Advisor brief. Nothing is built."},"checkpoint":[{"q":"Where must a citizen flow be created?","a":"From the SharePoint list or library Integrate or Workflows menu, scoped to that list or library."},{"q":"Name three connectors that are out of envelope.","a":"Dataverse, SQL, and HTTP (also APIs and on-prem)."},{"q":"Does Copilot inside Word count as citizen Power Platform development?","a":"No. In-app Copilot on Office content is allowed. The envelope governs apps and flows."}]},{"id":"formula","n":2,"title":"Prompt formula","kicker":"Name the source","objective":"Write a four-block prompt (goal, context, source, expectations) and pick the right Copilot surface for a job.","minutes":15,"concepts":[{"heading":"The four blocks","body":"Goal: what to produce. Context: why, who, constraints. Source: a named file, list, meeting, notebook, or folder. Expectations: format, tone, length, and what to label Unverified. Vague prompts search the wrong slice of Graph."},{"heading":"Grounding syntax","body":"In Copilot Chat: /FileOrFolderName, #MeetingOrTopic, @Researcher, @Analyst. In Loop: / then Draft page content. In a Notebook: pin first, then ask. Do not paste SINs or account numbers into a web-grounded prompt."},{"heading":"Iterate on purpose","body":"First pass is a draft. Second is usually usable. Positive tone instructions beat 'don't be casual.' Outputs are drafts. You review before send or publish."}],"tables":[{"caption":"Which surface","headers":["Job","Use","Do not use"],"rows":[["Rewrite a document","Copilot in Word","Researcher for a two-sentence edit"],["Meeting actions","Teams recap (transcription on)","A meeting that was never recorded"],["Multi-file numbers","@Analyst","A Notebook chart"],["List-triggered flow","SharePoint Integrate","Power Automate portal"]]}],"gotchas":[{"silent":true,"text":"Open Chat without a named source will cite a 2019 draft as current policy. It will not tell you it wandered."},{"silent":false,"text":"Researcher often runs 5–25 minutes. Do not use it for a two-line rewrite."}],"lab":{"title":"Rewrite a bad prompt","setup":"Start with: write something about the project.","steps":["Add a goal (one-page brief).","Add audience and reason.","Name /StationX-brief and #kickoff.","Demand Unverified labels and a section list."],"prompt":"[Goal]. This is for [audience] because [reason].\nUse only [named source(s)]. If a fact is not in those sources, label it Unverified.\nReturn [format]. Tone: [tone]. Length: [limit].\nDo not invent owners, dates, dollars, or policy.","breakStep":"If your rewrite still has no named source, Copilot will search Graph at large. That is the failure the lab is for.","pass":"The prompt names a source, an output contract, and an Unverified rule."},"checkpoint":[{"q":"What are the four blocks of the prompt formula?","a":"Goal, context, source, expectations."},{"q":"What does a leading slash do in Copilot Chat?","a":"Grounds the turn on a named file, folder, library, or site."},{"q":"When should you call @Analyst instead of Excel Copilot?","a":"When the job spans multiple files or needs heavier numerical reasoning than the open sheet."}]},{"id":"lists","n":3,"title":"Lists first","kicker":"Columns, then Rules, then Flows","objective":"Design a list with correct column types and pick Rule vs list-originated flow vs form vs IT Advisor.","minutes":18,"concepts":[{"heading":"Bad automation is a bad column","body":"Status must be Choice, not text. Approver must be Person. Amount must be Currency. Copilot cannot save a Rule that branches, starts an approval, or calls another system. About 15 Rules per list. Alerts retire July 2026; Rules replace them."},{"heading":"Lightest tool wins","body":"Email me when Status changes: Rule. Approval with write-back: flow from the list. Hide fields until Submitted: Power Apps form from the list. SQL, Dataverse, HTTP: stop."},{"heading":"Loop-prevention on flows","body":"Prefer When an item is created. Use created or modified only with a trigger condition. Never update the same item in a way that retriggers forever."}],"tables":[{"caption":"Where to type the prompt","headers":["Surface","Use for"],"rows":[["List Copilot pane","Schema, items, views, formatting, Rule wording"],["Automate > Rules","One trigger, one action"],["Integrate > Flows","Multi-step, approval, conditions"],["Integrate > Power Apps","Form only, same list"],["Maker portals","Do not start here"]]}],"gotchas":[{"silent":true,"text":"Calculated columns: Copilot often cannot create them. If you need Days Open, add it by hand. Custom view JSON is hit-or-miss."},{"silent":true,"text":"The date-approaches Rule trigger may exist in the UI but Copilot may refuse to draft it. Create that Rule by hand."}],"lab":{"title":"Paste a list schema, then stop","setup":"You are on a team site. You will not open the maker portal.","steps":["Paste the schema prompt into list Copilot (or keep it ready).","Confirm Status is Choice and Approver is Person.","Draft a Rule: when Status changes to Submitted, email Approver.","Do not create a flow yet."],"prompt":"Create a list named [Name] on this site to track [process].\nColumns and types:\n- Title (text)\n- RequestedBy (Person, required)\n- Owner (Person)\n- Status (Choice: Draft, Submitted, Approved, Rejected, Closed)\n- Priority (Choice: Low, Medium, High)\n- DueDate (Date)\n- Approver (Person)\n- DecisionNotes (Multiple lines of text)\nDo not create calculated columns.\nViews: All items; Grouped by Status; Due this week; My items.","breakStep":"If Status is a single line of text, every later Rule and view will be garbage. That is the silent failure.","pass":"Choice + Person + one Rule. No flow, no portal."},"checkpoint":[{"q":"What column type must Status be, and why?","a":"Choice. Rules, views, and formatting key off a closed set. Text Status cannot be trusted."},{"q":"When is a Rule the wrong tool?","a":"When you need branching, approvals, or more than one action."},{"q":"How do you avoid an infinite list flow?","a":"Prefer created-only triggers. If you use modified, add a trigger condition and never write a field that retriggers the same flow."}]},{"id":"office","n":4,"title":"Office surfaces","kicker":"Finish in Word, Excel, PowerPoint","objective":"Match Word, Excel, PowerPoint, Outlook, and Teams to the job, and name the one thing each surface cannot invent.","minutes":14,"concepts":[{"heading":"Authoring vs conversation","body":"Word is the argument. Excel is the math. PowerPoint is the 10-minute version. Outlook is the comms pipe. Teams is where decisions happen. Copilot converts; it does not invent metrics, owners, or due dates."},{"heading":"Teams recap needs a transcript","body":"If transcription was off, Recap is empty. Copilot in the meeting pane is transcript-scoped. Use Copilot Chat when you need mail plus files plus this meeting together."},{"heading":"Excel tables first","body":"Format the range as a Table before prompting. @Analyst for multi-file work. Do not ask Loop or Notebooks to chart."}],"gotchas":[{"silent":true,"text":"Shared-mailbox Copilot in the Copilot app needs Full Access. Folder-only delegate access is not enough. Conversation history stays on your account."},{"silent":false,"text":"Word / Excel / PowerPoint Agents in Chat save a new file to OneDrive. Review in the real app, then move to SharePoint if it is a record."}],"lab":{"title":"Recap contract","setup":"Pretend last week's steering call was transcribed. It might not have been.","steps":["Run the recap prompt.","Check whether transcription existed. If not, the output must say so.","Do not invent due dates."],"prompt":"Recap this meeting in 5 bullets.\nThen list action items as a table: Owner | Action | Deadline mentioned | Still open?\nFlag decisions separately from discussion.\nIf transcription is incomplete, say so.","breakStep":"If you accepted a recap of a meeting that was never recorded, you trained yourself to trust fiction.","pass":"Either a sourced recap or an explicit 'transcription incomplete'. No invented deadlines."},"checkpoint":[{"q":"What must be on for a reliable Teams recap?","a":"Transcription (and therefore a recording/transcript Copilot can read)."},{"q":"Where should a finished steering brief live?","a":"As a Word file in the team SharePoint library, not as a Loop page or Chat answer."},{"q":"What does Copilot in Excel need before formulas and charts go well?","a":"A real Table with clear headers, on a cloud copy of the workbook."}]},{"id":"loop","n":5,"title":"Loop, Pages, Notebooks","kicker":"Three jobs, not three notes apps","objective":"Assign Loop components, Copilot Pages, and Copilot Notebooks to the correct job and name where each is stored.","minutes":18,"concepts":[{"heading":"Do not pick one as 'notes'","body":"A Loop component is a live fragment many people edit in Teams or Outlook. A Page keeps a chat answer alive so you can iterate. A Notebook is a pinned corpus so Copilot cannot wander. OneNote remains the long-lived filing cabinet."},{"heading":"Storage is the permission model","body":"Pages and Notebooks live in a user-owned SharePoint Embedded container labeled Loop in admin tools. They count against tenant quota. Delete is currently harsh for Notebooks. A Loop component created in a private chat lands in one person's OneDrive. Create team-facing components from a channel or team workspace."},{"heading":"Notebooks are a constraint","body":"Copilot answers only from pinned references. About 300 files sampled from a folder or site. Pin must-use files directly. Custom instructions: cite the file, say Not in notebook, never invent owners. Cannot chart or generate images inside the notebook."}],"tables":[{"caption":"Job to surface","headers":["Job","Surface"],"rows":[["Live table in chat and mail","Loop component (from a channel)"],["Multi-page project house","Loop workspace"],["Keep this Chat answer","Copilot Page"],["Reason over a known pile","Copilot Notebook"],["Years of notes","OneNote"]]}],"gotchas":[{"silent":true,"text":"Saying 'add X' on a Page often rewrites the whole page. Say: Keep the existing page. Create a new section named X."},{"silent":true,"text":"Copilot Chat inside Loop is often not workspace-aware. Attach the file or paste the section."},{"silent":false,"text":"To paste a Page as a live component, Loop components must be enabled in the tenant. Otherwise it is a link."}],"lab":{"title":"Page edit without a rewrite","setup":"You have a Page with a usable brief. You need a Constraints section from a policy file.","steps":["Do not say 'add constraints'.","Use the keep-the-page prompt.","If Copilot rewrites the brief, you used the wrong verb."],"prompt":"Keep the existing page. Create a new section called Constraints.\nPull constraints only from /[policy]. If a constraint is not there, omit it.","breakStep":"If the original brief disappeared, you felt the silent failure. Restore from version history if you have it; Pages recycle is weak.","pass":"Original sections intact. New Constraints section only."},"checkpoint":[{"q":"Why pin a Notebook instead of asking open Chat?","a":"A Notebook grounds only on the pinned set. Open Chat searches everything you can open and will mix projects."},{"q":"Where does a Loop component created in a private Teams chat live?","a":"In the creator's OneDrive. When they leave, the tracker dies."},{"q":"What is the Notebook file-sample cap when you pin a whole site?","a":"About 300 most-relevant files per prompt. Pin files that must be included."}]},{"id":"onedrive","n":6,"title":"OneDrive as personal index","kicker":"Draft here, publish there","objective":"Draw a shallow OneDrive tree and state when a file must move to SharePoint so other people's Copilot can see it.","minutes":14,"concepts":[{"heading":"Your Copilot, not theirs","body":"OneDrive stays visible to your Copilot even under Restricted SharePoint Search. A colleague's Copilot cannot see a file in your OneDrive unless you shared it. If someone else needs it when you are off, it does not belong in OneDrive."},{"heading":"Filename is the metadata","body":"OneDrive has almost no library columns. Use YYYY-MM-DD_Project_Doctype_Topic_v01. Same project token every time. One current file per topic. Cloud copy only: unsynced local files are invisible."},{"heading":"Agents cap at 20 files","body":"OneDrive agents: up to 20 sources, types DOC/DOCX, PPT/PPTX, PDF, TXT, RTF, MD. Recipients need access to the underlying files. Prefer a Notebook when the corpus also includes SharePoint, meetings, and mail."}],"tables":[{"caption":"Home for the file","headers":["Content","Home"],"rows":[["Solo draft","OneDrive project folder"],["Two+ people editing","Team SharePoint / Teams Files"],["Approved brief, SOP, list","SharePoint"],["Chat attachment / Loop from Outlook","Often your OneDrive — promote it"]]},{"caption":"Shallow tree (one project)","headers":["Folder","What lives here"],"rows":[["Projects/2026-StationX/00-Inbox","Drops and mail attachments. Empty weekly."],["…/01-Ref","Read-only sources. Do not edit."],["…/02-Working","Current drafts. One file per topic."],["…/03-Ready","About to move to the team library."]]}],"gotchas":[{"silent":true,"text":"A sharing link leaves ownership on your drive. Move to the library. Share-and-forget dies at offboarding."},{"silent":true,"text":"Hidden-from-view files still index. Copilot does not organize, rename, or dedupe OneDrive for you."}],"lab":{"title":"Promote, don't link","setup":"You have 2026-08-27_StationX_Brief_Scope_v02.docx in 02-Working. The team needs it tomorrow.","steps":["Do not send a sharing link and call it done.","Move the file to the StationX library.","Prompt Copilot with /StationX, not /your OneDrive copy."],"prompt":"Using only /Projects/2026-StationX, list decisions and open questions.\nTable: Date | Item | Source file | Owner if named.\nIf it is not in that folder, say Not in folder.","breakStep":"If the file stays in OneDrive with an org-wide link, their Copilot may see it now and lose it when you leave. That is the silent failure.","pass":"File lives in the team library. Your OneDrive keeps drafts only."},"checkpoint":[{"q":"Does Restricted SharePoint Search hide your OneDrive from your Copilot?","a":"No. RSS limits SharePoint sites. Your OneDrive, mail, chats, and calendar remain."},{"q":"Why is a sharing link a bad substitute for moving a file?","a":"Ownership stays on your OneDrive. Offboarding removes the source for everyone else's Copilot."},{"q":"What is the OneDrive agent file cap?","a":"20 files, and a folder used as a source must contain no more than 20."}]},{"id":"combos","n":7,"title":"Handoffs","kicker":"The suite is a sequence","objective":"Run the default project stack: library as record, Notebook as brain, Loop as live view, Word as the finished artifact.","minutes":20,"concepts":[{"heading":"Five jobs, not five apps","body":"Reason over a pinned corpus: Notebook. Keep a chat answer: Page. Live fragment: Loop component. Multi-page house: Loop workspace. Record: SharePoint. Personal draft index: OneDrive. Finish formulas, memos, decks in Excel, Word, PowerPoint."},{"heading":"Default BCH stack","body":"SharePoint library (record) + Notebook pinned to that library and key meetings (brain) + Loop workspace or channel component (live status) + Page (keep a specific answer) + Word or PPT in the library (finished). OneDrive only for Inbox and Ref."},{"heading":"List plus Loop","body":"Loop is a terrible system of record. A list is a terrible multiplayer canvas. Use both. List wins on status and dates. Loop wins on this-week narrative. Automate the list, not the component."}],"tables":[{"caption":"Handoff chain","headers":["Step","Surface"],"rows":[["Draft","OneDrive"],["Reason","Notebook"],["Keep","Page"],["Share live","Loop component from a channel"],["Record","SharePoint library or list"],["Finish","Word / Excel / PowerPoint"]]}],"gotchas":[{"silent":true,"text":"Sharing a Notebook can grant access to referenced files. Treat it as a permissions event, not a convenience."},{"silent":true,"text":"Do not pin a whole site and 'just share it.' The 300-file sample will drop the one file that matters."}],"lab":{"title":"Twelve-minute stack, on paper","setup":"Project StationX. You will not demo a canvas app.","steps":["OneDrive: compare two scope drafts. Winner moves to the library.","SharePoint: /StationX summarize. Issues list + one Rule.","Chat: grounded operating rhythm. Edit in Pages.","Loop: component table in the channel.","Notebook: pin library + Page + last meeting. Ask for contradictions.","Word in the library: steering brief.","Then ask open Chat the same question without /StationX and note the wrong-year cite."],"breakStep":"If you skipped the last step, you did not feel why the Notebook exists. Open Chat citing the wrong year is the lesson.","pass":"Record in SharePoint, brain in Notebook, live table in a channel-born component, brief in Word."},"checkpoint":[{"q":"State the default handoff chain in order.","a":"OneDrive draft → Notebook reason → Page keep → Loop share → SharePoint record → Word/Excel/PPT finish. Skip steps the job does not need. Never skip SharePoint when someone else must still have the file after you leave."},{"q":"When a status table is social but approvals are official, which object wins on dates?","a":"The SharePoint list. The Loop table is the live view only."},{"q":"Why create a Loop component from a channel, not a private chat?","a":"Channel-born components live on the SharePoint site. Private-chat components live in one person's OneDrive."}]},{"id":"stop","n":8,"title":"The stop line","kicker":"Weekly hygiene and the IT brief","objective":"List the prompts that fail the envelope, the weekly ten-minute hygiene, and the contents of an IT Advisor request.","minutes":10,"concepts":[{"heading":"Prompts that look useful","body":"Create a standalone Power App. Build a flow with HTTP or Dataverse. Publish this to the whole company. Scrape that API. Recap the meeting we did not record. Chart this inside the Notebook. Use every file on the tenant."},{"heading":"Operating rules","body":"Name the source. Iterate. Pin a Notebook when you will ask five or more questions of the same pile. Use Loop when two or more humans must edit the same object this week. Use SharePoint when it must survive a team change or an audit. Save reused prompts as Prompt Lab or a SharePoint Skill."},{"heading":"Weekly ten minutes","body":"Empty OneDrive Inbox. One current file per topic. Move anything the team used to SharePoint. Kill stale sharing links. If a project folder is over about 20 working files, split or promote to a library."}],"gotchas":[{"silent":false,"text":"Copilot invents owners and dates when sources are thin. Review before send. A blocked prompt is often DLP, not wording."}],"lab":{"title":"Write the brief, do not build","setup":"Someone asked for a nightly API pull into a list.","steps":["Refuse the citizen build.","Draft the IT Advisor request using the prompt.","Include a SharePoint-only stopgap (manual import, Rule on Status)."],"prompt":"Draft an IT Advisor request for [process].\nCover: business outcome, why SharePoint-only is not enough, systems involved,\ndata classification, users, frequency, what a SharePoint-only stopgap would look like,\nand questions we need answered before build.\nDo not claim approval. This is a request, not a design.","breakStep":"If you opened the maker portal 'just to try', you left the envelope. The lab is the brief, not the flow.","pass":"A request document. No connectors. No published app."},"checkpoint":[{"q":"What is the citizen stopgap when SharePoint-only is not enough?","a":"An IT Advisor request that includes a SharePoint-only interim, not a shadow flow in a personal environment."},{"q":"Name two weekly hygiene actions that change Copilot answer quality.","a":"Move team-used files to SharePoint, and keep one current file per topic (archive the rest)."},{"q":"Where should a prompt you run every Friday live?","a":"Prompt Lab or a SharePoint Skill in Agent Assets, not in one person's chat history."}]}],"prompts":[{"id":"daily-catchup","surface":"Chat","title":"Catch me up","tags":["daily","graph"],"body":"Catch me up on [project] from the last 7 days across email, Teams, and files I can access.\nReturn a table: Date | Source | Decision or fact | Owner | Open item.\nLabel anything not grounded in those sources as Unverified."},{"id":"formula","surface":"Chat","title":"Four-block template","tags":["formula"],"body":"[Goal]. This is for [audience] because [reason].\nUse only [named source(s)]. If a fact is not in those sources, label it Unverified.\nReturn [format]. Tone: [tone]. Length: [limit].\nDo not invent owners, dates, dollars, or policy."},{"id":"outlook-thread","surface":"Outlook","title":"Thread to reply","tags":["outlook"],"body":"Summarize this thread for [manager name].\n3 bullets: decision, open question, next step with owner.\nThen draft a 120-word reply that confirms the decision and asks only the open question.\nProfessional, plain language. No extra promises."},{"id":"teams-recap","surface":"Teams","title":"Meeting recap","tags":["teams"],"body":"Recap this meeting in 5 bullets.\nThen list action items as a table: Owner | Action | Deadline mentioned | Still open?\nFlag decisions separately from discussion.\nIf transcription is incomplete, say so."},{"id":"word-brief","surface":"Word","title":"One-page brief","tags":["word"],"body":"Draft a one-page brief from /[source doc] for [audience].\nSections: Purpose, What changed, Risks, Asks, Open questions.\nPlain English. No marketing tone.\nEvery claim must be traceable to the source. Mark gaps as Unverified."},{"id":"excel-variance","surface":"Excel","title":"Three variances","tags":["excel"],"body":"Find the three largest variances between forecast and actual in this sheet.\nFor each: one-sentence explanation and a likely driver.\nShow the rows you used. Do not add data that is not in the sheet."},{"id":"analyst","surface":"Analyst","title":"Multi-file numbers","tags":["excel","agent"],"body":"Analyze /[file A] and /[file B].\n1. Clean obvious header/date issues and tell me what you changed.\n2. Show trends by [dimension] and [period].\n3. Flag anomalies over [threshold].\n4. Return: 5 takeaways, a table of drivers, and one chart recommendation.\nDo not forecast beyond the data without labeling it as a projection."},{"id":"ppt-outline","surface":"PowerPoint","title":"Six-slide outline","tags":["powerpoint"],"body":"Create a 6-slide outline from /[brief] for a steering committee.\nSlides: title, goal, what we know, risks, ask, next 30 days.\nOne sentence of speaker notes per slide that names the likely objection.\nDo not invent metrics."},{"id":"list-schema","surface":"SharePoint","title":"List schema","tags":["list"],"body":"Create a list named [Name] on this site to track [process].\nColumns and types:\n- Title (text)\n- RequestedBy (Person, required)\n- Owner (Person)\n- Status (Choice: Draft, Submitted, Approved, Rejected, Closed)\n- Priority (Choice: Low, Medium, High)\n- DueDate (Date)\n- Approver (Person)\n- DecisionNotes (Multiple lines of text)\nDo not create calculated columns.\nViews: All items; Grouped by Status; Due this week; My items."},{"id":"list-rule","surface":"SharePoint","title":"Submitted Rule","tags":["list","rule"],"body":"When Status changes to Submitted, email the Approver\nwith Title, Amount, RequestedBy, and the item link."},{"id":"list-flow","surface":"SharePoint","title":"List-originated flow logic","tags":["list","flow"],"body":"Using the list [List name] on [Site name], draft the flow logic for:\nTrigger: item created.\nCondition: Status equals Submitted.\nActions: start approval, write Approved/Rejected and DecisionDate back to this list, email requester.\nStay inside this list. No external connectors.\nReturn: trigger, conditions, actions, failure path, test cases."},{"id":"loop-kickoff","surface":"Loop","title":"Kickoff page","tags":["loop"],"body":"Draft a project kickoff page for [project] for [team].\nSections: purpose, in-scope, out-of-scope, owners, milestones, risks, working agreements.\nUse only /[brief] and #[kickoff meeting].\nTone: plain. No slogans.\nMark anything not in those sources as Unverified.\nThen convert owners and milestones into a Loop table: Owner | Workstream | Milestone | Date mentioned | Status."},{"id":"page-keep","surface":"Pages","title":"Add a section without rewrite","tags":["pages"],"body":"Keep the existing page. Create a new section called Constraints.\nPull constraints only from /[policy]. If a constraint is not there, omit it."},{"id":"nb-instructions","surface":"Notebooks","title":"Notebook custom instructions","tags":["notebook"],"body":"You only use the pinned references.\nEvery factual sentence ends with the source file or meeting name in parentheses.\nIf the answer is not in the references, say Not in notebook and stop.\nDefault output: short bullets, then a table if there are owners or dates.\nNever invent owners, dollars, or policy."},{"id":"nb-decisions","surface":"Notebooks","title":"Decisions in the corpus","tags":["notebook"],"body":"List every decision recorded in these references since [date].\nTable: Date | Decision | Source | Owner if named | Reversed later?"},{"id":"od-folder","surface":"OneDrive","title":"Scoped folder","tags":["onedrive"],"body":"Using only /Projects/2026-StationX, list decisions and open questions.\nTable: Date | Item | Source file | Owner if named.\nIf it is not in that folder, say Not in folder."},{"id":"od-compare","surface":"OneDrive","title":"Compare files","tags":["onedrive"],"body":"Compare these files. Table: Topic | File A | File B | Material difference.\nIgnore formatting-only changes."},{"id":"researcher","surface":"Researcher","title":"Cited brief","tags":["agent"],"body":"Write a briefing on [topic] for [audience] due [date].\nInternal sources: /[folder or files] and meetings tagged #[project] in the last 60 days.\nExternal sources: only if web grounding is allowed; cite them.\nSections: situation, what our files say, what the market says, conflicts, risks, recommended next questions.\nSeparate grounded facts from inference."},{"id":"self-check","surface":"Chat","title":"Self-check","tags":["formula"],"body":"Review your last answer.\nWhat is sourced? What is inferred? What is missing because I lack access?\nRewrite. Keep only sourced claims in the main body. Move the rest under Unverified."},{"id":"it-brief","surface":"Word","title":"IT Advisor request","tags":["governance"],"body":"Draft an IT Advisor request for [process].\nCover: business outcome, why SharePoint-only is not enough, systems involved,\ndata classification, users, frequency, what a SharePoint-only stopgap would look like,\nand questions we need answered before build.\nDo not claim approval. This is a request, not a design."},{"id":"site-agent","surface":"SharePoint","title":"Site working agent","tags":["agent","sharepoint"],"body":"You are the [site] working agent.\nSources: this site's documents and list [Name] only.\nWhen asked for status: return Wins, Slips, Decisions needed, Risks without owners.\nCite list item titles and file names.\nNever invent a due date. Never suggest a flow that leaves SharePoint."}],"trees":[{"id":"surface","title":"Pick a surface","blurb":"Wrong surface wastes the best prompt.","root":{"id":"s0","question":"What is the job?","options":[{"label":"A finished brief, memo, or SOP","result":"Word. Ground on a named file. Publish the Word file to the team library."},{"label":"Numbers, variances, a chart","result":"Excel on a Table, or @Analyst if it spans files. Not a Notebook."},{"label":"A 10-minute deck","result":"PowerPoint from a Word brief. Do not invent metrics."},{"label":"Inbox, calendar, a thread","result":"Outlook. Summarize, then draft. No extra promises."},{"label":"A meeting that already happened","next":{"id":"s-meet","question":"Was transcription on?","options":[{"label":"Yes","result":"Teams recap. Decisions vs actions. Do not invent due dates."},{"label":"No","result":"Do not recap from nothing. Use notes, the chat, or say transcription was off.","warn":true}]}},{"label":"Live fragment several people will edit this week","result":"Loop component, created from a channel or team workspace, not a private chat."},{"label":"Answers from a known pile of files","result":"Copilot Notebook. Pin the files. Custom instructions: cite, or say Not in notebook."},{"label":"Keep a Chat answer and iterate","result":"Edit in Pages. Next prompt: Keep the existing page. Create a new section named X."},{"label":"List, approval, or notification","result":"SharePoint list. Columns first, Rules before Flows, Integrate menu only."}]}},{"id":"list-tool","title":"List automation","blurb":"Lightest tool that stays on the list.","root":{"id":"l0","question":"What must happen?","options":[{"label":"One trigger, one action (email or set a field)","result":"Rule. Cap about 15 per list. No branching, no approvals."},{"label":"Approval or conditions, write back to this list","result":"Flow from the list Integrate / Workflows menu. Stay inside this list."},{"label":"Hide or validate fields on the form","result":"Power Apps form customized from the list. Same list as data source."},{"label":"SQL, Dataverse, HTTP, on-prem, tenant-wide","result":"Stop. Draft an IT Advisor request. Include a SharePoint-only stopgap.","warn":true}]}},{"id":"home","title":"Where the file lives","blurb":"Copilot quality follows ownership.","root":{"id":"h0","question":"Who needs this file?","options":[{"label":"Only me, still a draft","result":"OneDrive Projects/YYYY-shortname/02-Working. Named, cloud-synced."},{"label":"The team, this week and after I leave","result":"Move to the SharePoint library. Do not leave a sharing link on your OneDrive."},{"label":"A live table pasted in Teams and Outlook","next":{"id":"h-loop","question":"Where will you create the Loop component?","options":[{"label":"Channel or team Loop workspace","result":"Correct. The .loop file lives on the site. The list still owns official status."},{"label":"Private chat or Outlook","result":"It will land in your OneDrive. When you leave, the tracker dies. Recreate from a channel.","warn":true}]}}]}},{"id":"combo","title":"Which stack","blurb":"Skip steps the job does not need.","root":{"id":"c0","question":"How many people must edit it this week?","options":[{"label":"Just me","next":{"id":"c-me","question":"Must Copilot stay inside a known pile?","options":[{"label":"Yes","result":"Notebook pinned to the pile. Keep a good answer as a Page. Finish in Word if it becomes a record."},{"label":"No, one or five files","result":"OneDrive Copilot summarize or compare (up to 5). Or Chat with /file."}]}},{"label":"Two or more, same fragment","result":"Loop component from a channel. If it is official work, also a SharePoint list row."},{"label":"Two or more, many pages","result":"Loop workspace + Notebook on the library + Word in SharePoint for anything you would defend."}]}}]};</script>
+  <script>(() => {
+  const DATA = window.ENVELOPE;
+  const PHASES = DATA.phases;
+  const PROMPTS = DATA.prompts;
+  const TREES = DATA.trees;
+  const SURFACES = [...new Set(PROMPTS.map((p) => p.surface))];
+  const KEY = "envelope-progress";
+  const view = document.getElementById("view");
+  const chip = document.getElementById("progress-chip");
+
+  const esc = (s) =>
+    String(s)
+      .replace(/&/g, "\u0026amp;")
+      .replace(/</g, "\u0026lt;")
+      .replace(/>/g, "\u0026gt;")
+      .replace(/"/g, "\u0026quot;");
+
+  function load() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(KEY) || "{}");
+      const s = raw.state || raw;
+      return { labs: s.labs || {}, answers: s.answers || {} };
+    } catch {
+      return { labs: {}, answers: {} };
+    }
+  }
+  function save(p) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ state: p, version: 0 }));
+    } catch {}
+    paintChip();
+  }
+  let progress = load();
+
+  function paintChip() {
+    const labs = PHASES.filter((p) => progress.labs[p.id]).length;
+    const totalQ = PHASES.reduce((n, p) => n + p.checkpoint.length, 0);
+    const doneQ = Object.values(progress.answers).filter(Boolean).length;
+    chip.textContent = `${labs}/${PHASES.length} labs · ${doneQ}/${totalQ} recall`;
+  }
+
+  function hashParts() {
+    const h = (location.hash || "#/").replace(/^#/, "") || "/";
+    return h.split("/").filter(Boolean);
+  }
+
+  function parseRoute() {
+    const parts = hashParts();
+    if (parts[0] === "path" && parts[1]) return { name: "path", id: parts[1] };
+    if (parts[0] === "reference") return { name: "reference" };
+    if (parts[0] === "prompts") return { name: "prompts" };
+    if (parts[0] === "drill") return { name: "drill" };
+    return { name: "home" };
+  }
+
+  function markNav() {
+    const r = parseRoute();
+    const key = r.name === "home" || r.name === "path" ? "path" : r.name;
+    document.querySelectorAll("[data-match]").forEach((a) => {
+      a.classList.toggle("on", a.getAttribute("data-match") === key);
+    });
+  }
+
+  function phaseNav(current) {
+    return `<aside class="side">
+      <p class="meta" style="margin:0 0 .5rem;letter-spacing:.08em;text-transform:uppercase">Eight phases</p>
+      <ul class="side-nav">
+        ${PHASES.map(
+          (p) =>
+            `<li><a href="#/path/${p.id}" data-nav class="${p.id === current ? "on" : ""}">${esc(
+              String(p.n).padStart(2, "0"),
+            )} ${esc(p.title)}${progress.labs[p.id] ? ' <span class="done-dot">✓</span>' : ""}</a></li>`,
+        ).join("")}
+      </ul>
+    </aside>`;
+  }
+
+  function copyBlock(text) {
+    return `<div class="copy"><pre>${esc(text)}</pre><button type="button" class="copy-btn" data-copy="${esc(
+      text,
+    )}">Copy</button></div>`;
+  }
+
+  function renderHome() {
+    const next = PHASES.find((p) => !progress.labs[p.id]) || PHASES[0];
+    const verb = progress.labs[next.id] ? "Reopen" : "Continue";
+    view.innerHTML = `
+      <div class="split">
+        ${phaseNav()}
+        <main class="main">
+          <p class="kicker">BC Hydro · citizen Copilot</p>
+          <h1>Stay inside the envelope.</h1>
+          <p class="lede">A working field guide for Microsoft 365 Copilot under Power Platform restrictions: lists first, named sources, Loop for live fragments, SharePoint for the record.</p>
+          <p class="lede" style="margin-top:.75rem">This whole site is one HTML file. Save it, email it, open it on another machine. Progress stays in this browser. No network required for the guide — Copilot still needs Microsoft 365.</p>
+          <div class="row">
+            <a class="btn" href="#/path/${next.id}" data-nav>${esc(verb)} ${esc(next.title)}</a>
+            <a class="btn outline" href="#/reference" data-nav>Decision trees</a>
+            <button type="button" class="btn ghost" id="save-home">Save Envelope.html</button>
+          </div>
+          <ul class="card-grid">
+            ${PHASES.map(
+              (p) => `<li>
+                <a href="#/path/${p.id}" data-nav>
+                  <span class="meta">${String(p.n).padStart(2, "0")} · ${p.minutes} min${
+                    progress.labs[p.id] ? " · lab done" : ""
+                  }</span>
+                  <span class="card-title">${esc(p.title)}</span>
+                  <span class="card-kicker">${esc(p.kicker)}</span>
+                </a>
+              </li>`,
+            ).join("")}
+          </ul>
+        </main>
+      </div>`;
+    document.getElementById("save-home")?.addEventListener("click", downloadSelf);
+  }
+
+  function renderPhase(id) {
+    const phase = PHASES.find((p) => p.id === id) || PHASES[0];
+    const nxt = PHASES[phase.n];
+    const prev = PHASES[phase.n - 2];
+    const tables = (phase.tables || [])
+      .map(
+        (t) => `<section class="concept">
+          <h2>${esc(t.caption)}</h2>
+          <div class="table-wrap"><table>
+            <thead><tr>${t.headers.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+            <tbody>${t.rows
+              .map((row) => `<tr>${row.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`)
+              .join("")}</tbody>
+          </table></div>
+        </section>`,
+      )
+      .join("");
+    const gotchas = `<section class="concept"><h2>Gotchas</h2><div class="gotchas">${phase.gotchas
+      .map(
+        (g) =>
+          `<div class="gotcha ${g.silent ? "silent" : ""}">${
+            g.silent ? '<div class="tag">Silent failure</div>' : ""
+          }${esc(g.text)}</div>`,
+      )
+      .join("")}</div></section>`;
+    const lab = phase.lab;
+    view.innerHTML = `
+      <div class="split">
+        ${phaseNav(phase.id)}
+        <article class="main">
+          <p class="kicker">Phase ${String(phase.n).padStart(2, "0")} · ${phase.minutes} min</p>
+          <h1>${esc(phase.title)}</h1>
+          <p class="lede">${esc(phase.kicker)}</p>
+          <p class="obj"><strong>Objective.</strong> ${esc(phase.objective)}</p>
+          ${phase.concepts
+            .map(
+              (c) =>
+                `<section class="concept"><h2>${esc(c.heading)}</h2><p>${esc(c.body)}</p></section>`,
+            )
+            .join("")}
+          ${tables}
+          ${gotchas}
+          <section class="concept">
+            <h2>Lab · ${esc(lab.title)}</h2>
+            <div class="lab">
+              <p><strong>Setup.</strong> ${esc(lab.setup)}</p>
+              <ol>${lab.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>
+              ${lab.prompt ? `<div style="margin-top:1rem">${copyBlock(lab.prompt)}</div>` : ""}
+              <p class="fail" style="margin-top:1rem"><strong>Break.</strong> ${esc(lab.breakStep)}</p>
+              <p class="pass"><strong>Pass.</strong> ${esc(lab.pass)}</p>
+              <button type="button" class="btn ${progress.labs[phase.id] ? "outline" : ""}" id="mark-lab" style="margin-top:1rem">
+                ${progress.labs[phase.id] ? "Lab marked done" : "Mark lab done"}
+              </button>
+            </div>
+          </section>
+          <section class="concept">
+            <h2>Checkpoint</h2>
+            <div class="checks">
+              ${phase.checkpoint
+                .map(
+                  (c, i) =>
+                    `<button type="button" class="check" data-check="${phase.id}:${i}">
+                      <strong>${esc(c.q)}</strong>
+                      <div class="a" hidden>${esc(c.a)}</div>
+                    </button>`,
+                )
+                .join("")}
+            </div>
+          </section>
+          <div class="pager">
+            ${prev ? `<a class="btn outline" href="#/path/${prev.id}" data-nav>← ${esc(prev.title)}</a>` : ""}
+            ${nxt ? `<a class="btn" href="#/path/${nxt.id}" data-nav>${esc(nxt.title)} →</a>` : `<a class="btn" href="#/drill" data-nav>Drill recall →</a>`}
+          </div>
+        </article>
+      </div>`;
+    document.getElementById("mark-lab")?.addEventListener("click", () => {
+      progress.labs[phase.id] = true;
+      save(progress);
+      renderPhase(phase.id);
+    });
+    view.querySelectorAll("[data-check]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const a = btn.querySelector(".a");
+        a.hidden = !a.hidden;
+        if (!a.hidden) {
+          progress.answers[btn.getAttribute("data-check")] = true;
+          save(progress);
+        }
+      });
+    });
+  }
+
+  function renderRef() {
+    view.innerHTML = `
+      <main>
+        <p class="kicker">Lookup</p>
+        <h1>Reference</h1>
+        <p class="lede">Walk a tree until it names a surface. If the answer is Stop, write an IT Advisor brief instead of opening a maker portal.</p>
+        <div class="prompt-list" id="trees"></div>
+      </main>`;
+    const host = document.getElementById("trees");
+    TREES.forEach((tree) => host.appendChild(treeCard(tree)));
+  }
+
+  function treeCard(tree) {
+    const el = document.createElement("section");
+    el.className = "tree";
+    let current = tree.root;
+    const paint = () => {
+      el.innerHTML = `<h2>${esc(tree.title)}</h2><p class="blurb">${esc(tree.blurb)}</p>
+        <p><strong>${esc(current.question)}</strong></p>
+        ${current.options
+          .map(
+            (o, i) =>
+              `<button type="button" class="opt" data-i="${i}">${esc(o.label)}</button>`,
+          )
+          .join("")}
+        <button type="button" class="btn ghost sm" data-reset style="margin-top:.8rem">Start over</button>`;
+      el.querySelectorAll(".opt").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const o = current.options[Number(btn.getAttribute("data-i"))];
+          if (o.next) {
+            current = o.next;
+            paint();
+            return;
+          }
+          el.insertAdjacentHTML(
+            "beforeend",
+            `<div class="result ${o.warn ? "warn" : ""}">${esc(o.result)}</div>`,
+          );
+        });
+      });
+      el.querySelector("[data-reset]").addEventListener("click", () => {
+        current = tree.root;
+        paint();
+      });
+    };
+    paint();
+    return el;
+  }
+
+  let promptQ = "";
+  let promptSurface = "All";
+
+  function renderPrompts() {
+    view.innerHTML = `
+      <main>
+        <p class="kicker">Copy, then name a source</p>
+        <h1>Prompt pack</h1>
+        <p class="lede">Restriction-aware prompts. Replace bracket text. Keep sources inside Microsoft 365.</p>
+        <div class="sticky-tools">
+          <input class="search" id="psearch" type="search" placeholder="Search title, tag, or text" value="${esc(promptQ)}" />
+          <div class="filters" id="pfilters">
+            ${["All", ...SURFACES]
+              .map(
+                (s) =>
+                  `<button type="button" class="chip ${s === promptSurface ? "on" : ""}" data-surface="${esc(s)}">${esc(s)}</button>`,
+              )
+              .join("")}
+          </div>
+        </div>
+        <div class="prompt-list" id="plist"></div>
+      </main>`;
+    const list = document.getElementById("plist");
+    const paint = () => {
+      const tokens = promptQ.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      const items = PROMPTS.filter((p) => {
+        if (promptSurface !== "All" && p.surface !== promptSurface) return false;
+        if (!tokens.length) return true;
+        const hay = [p.title, p.body, p.surface, ...p.tags].join(" ").toLowerCase();
+        return tokens.every((t) => hay.includes(t));
+      });
+      list.innerHTML = items.length
+        ? items
+            .map(
+              (p) => `<article class="prompt-card">
+                <div class="prompt-head">
+                  <h2 style="font-size:1.15rem">${esc(p.title)}</h2>
+                  <span class="badge">${esc(p.surface)}</span>
+                </div>
+                ${copyBlock(p.body)}
+              </article>`,
+            )
+            .join("")
+        : `<p class="empty">No prompts match.</p>`;
+      bindCopy(list);
+    };
+    document.getElementById("psearch").addEventListener("input", (e) => {
+      promptQ = e.target.value;
+      paint();
+    });
+    document.getElementById("pfilters").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-surface]");
+      if (!b) return;
+      promptSurface = b.getAttribute("data-surface");
+      document.querySelectorAll("#pfilters .chip").forEach((c) => {
+        c.classList.toggle("on", c.getAttribute("data-surface") === promptSurface);
+      });
+      paint();
+    });
+    paint();
+  }
+
+  let deck = [];
+  let deckI = 0;
+  let revealed = false;
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildDeck() {
+    return shuffle(
+      PHASES.flatMap((p) =>
+        p.checkpoint.map((c, i) => ({
+          id: `${p.id}:${i}`,
+          q: c.q,
+          a: c.a,
+          phase: p.title,
+        })),
+      ),
+    );
+  }
+
+  function renderDrill() {
+    if (!deck.length) deck = buildDeck();
+    const card = deck[deckI];
+    view.innerHTML = `
+      <main style="max-width:36rem">
+        <p class="kicker">Recall</p>
+        <div style="display:flex;justify-content:space-between;align-items:end;gap:1rem">
+          <h1>Drill</h1>
+          <p class="meta">${deckI + 1} / ${deck.length}</p>
+        </div>
+        <p class="lede">${esc(card.phase)}</p>
+        <div class="flash">
+          <h2>${esc(card.q)}</h2>
+          ${revealed ? `<p class="a">${esc(card.a)}</p>` : ""}
+        </div>
+        <div class="row">
+          ${
+            !revealed
+              ? `<button type="button" class="btn" id="reveal">Reveal</button>`
+              : `<button type="button" class="btn good" id="had">I had it</button>
+                 <button type="button" class="btn outline" id="miss">Missed it</button>`
+          }
+          <button type="button" class="btn ghost" id="reset">Reset progress</button>
+        </div>
+      </main>`;
+    document.getElementById("reveal")?.addEventListener("click", () => {
+      revealed = true;
+      renderDrill();
+    });
+    const grade = (ok) => {
+      progress.answers[card.id] = ok;
+      save(progress);
+      revealed = false;
+      deckI = (deckI + 1) % deck.length;
+      renderDrill();
+    };
+    document.getElementById("had")?.addEventListener("click", () => grade(true));
+    document.getElementById("miss")?.addEventListener("click", () => grade(false));
+    document.getElementById("reset")?.addEventListener("click", () => {
+      progress = { labs: {}, answers: {} };
+      save(progress);
+      deck = buildDeck();
+      deckI = 0;
+      revealed = false;
+      renderDrill();
+    });
+  }
+
+  function bindCopy(root) {
+    (root || document).querySelectorAll("[data-copy]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const text = btn.getAttribute("data-copy") || "";
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        btn.textContent = "Copied";
+        setTimeout(() => (btn.textContent = "Copy"), 1200);
+      });
+    });
+  }
+
+  async function downloadSelf() {
+    let html = "";
+    try {
+      const href = location.pathname.endsWith(".html")
+        ? location.href.split("#")[0]
+        : new URL("envelope.html", location.origin).href;
+      const r = await fetch(href);
+      if (r.ok) html = await r.text();
+    } catch {}
+    if (!html) html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Envelope.html";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  }
+
+  document.getElementById("download-btn").addEventListener("click", downloadSelf);
+
+  function route() {
+    markNav();
+    const r = parseRoute();
+    if (r.name === "path") renderPhase(r.id);
+    else if (r.name === "reference") renderRef();
+    else if (r.name === "prompts") renderPrompts();
+    else if (r.name === "drill") renderDrill();
+    else renderHome();
+    bindCopy(view);
+    window.scrollTo(0, 0);
+  }
+
+  window.addEventListener("hashchange", route);
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-nav]");
+    if (!a) return;
+  });
+  paintChip();
+  route();
+})();
+</script>
+
+
+<protonpass-root-ffd9 data-protonpass-role="root" data-protonpass-theme="os"></protonpass-root-ffd9></body></html>
