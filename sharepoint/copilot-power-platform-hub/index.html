@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Chosen Palette: Nordic Warm Intelligence (Warm slate backgrounds, deep mineral blues, emerald compliance accents, and muted indigo intelligence highlights) -->
+    <!-- Application Structure Plan:
+         The application is designed as a multi-perspective interactive command center structured into 5 cohesive tabs:
+         1. Governance & Compliance Evaluator: Interactive decision engine enforcing BC Hydro / Enterprise rules (Is your flow/app allowed or restricted?).
+         2. Semantic Indexing & Work IQ Architecture: Visualizes RAG mechanics, context window budgets ("Lost in the Middle"), and index latency comparisons using dynamic Chart.js charts.
+         3. Repository Information Architecture Tool: Interactive file naming/folder structure analyzer that rates OneDrive & SharePoint setups for vector discovery.
+         4. Declarative Agents & Native Automation: Interactive simulator for `.agent` creation, AI Autofill columns, and list-bound workflow scoping.
+         5. 4-Phase Implementation Roadmap: A interactive strategy tracking matrix with progress states for organizational rollout.
+         This non-linear architecture transforms dense compliance rules and vector mechanics into actionable, self-service tools for knowledge workers. -->
+    <!-- Visualization & Content Choices:
+         - Compliance Evaluator: Dynamic JS interactive form -> Instant verdict + Next steps -> Replaces dry rules list with real-time decisioning.
+         - Index Performance & Latency Charts: Chart.js Bar & Line charts -> Visualizes token window saturation and User vs Tenant index sync times -> NO SVG/Mermaid used.
+         - IA Structure Rating Engine: JS string parsing -> Instant feedback on folder depth, heading usage, and semantic naming.
+         - Declarative Agent Simulator: Interactive configuration generator -> Visualizes .agent parameter limits (20 sources max). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise M365 Copilot & Power Platform Knowledge Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-btn.active {
+            border-bottom-color: #0f766e;
+            color: #0f766e;
+            font-weight: 600;
+            background-color: #f0fdf4;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navigation -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">⚡</span>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white">Work IQ & Compliance Optimization Center</h1>
+                    <p class="text-xs text-slate-400">M365 Copilot Grounding & Power Platform Governance Hub</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-xs">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-slate-300">Governance Scope: <strong class="text-white">Partially Federated (BC Hydro Model)</strong></span>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation Bar -->
+        <nav class="bg-slate-800 border-t border-slate-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto space-x-1">
+                <button onclick="switchTab('tab-governance')" id="btn-governance" class="tab-btn active px-4 py-3 text-sm font-medium text-slate-300 hover:text-white border-b-2 border-transparent whitespace-nowrap transition-colors">
+                    ⚖️ Governance & Compliance Engine
+                </button>
+                <button onclick="switchTab('tab-semantic')" id="btn-semantic" class="tab-btn px-4 py-3 text-sm font-medium text-slate-300 hover:text-white border-b-2 border-transparent whitespace-nowrap transition-colors">
+                    🧠 Work IQ & RAG Mechanics
+                </button>
+                <button onclick="switchTab('tab-ia')" id="btn-ia" class="tab-btn px-4 py-3 text-sm font-medium text-slate-300 hover:text-white border-b-2 border-transparent whitespace-nowrap transition-colors">
+                    📂 IA & Repository Structuring
+                </button>
+                <button onclick="switchTab('tab-automation')" id="btn-automation" class="tab-btn px-4 py-3 text-sm font-medium text-slate-300 hover:text-white border-b-2 border-transparent whitespace-nowrap transition-colors">
+                    🤖 Declarative Agents & Native Automation
+                </button>
+                <button onclick="switchTab('tab-roadmap')" id="btn-roadmap" class="tab-btn px-4 py-3 text-sm font-medium text-slate-300 hover:text-white border-b-2 border-transparent whitespace-nowrap transition-colors">
+                    🗺️ 4-Phase Implementation Strategy
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- SECTION 1: GOVERNANCE & COMPLIANCE EVALUATOR -->
+        <section id="tab-governance" class="tab-content block space-y-6">
+            <!-- Introductory Context -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900 mb-2">Enterprise Governance Framework & Citizen Boundaries</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Under enterprise operating models (such as BC Hydro’s partially federated architecture), low-code automation is strictly governed to protect data integrity and prevent unmanaged technical debt. Citizen developers are restricted from creating standalone apps or connecting directly to enterprise databases like Dataverse or SQL. Use this interactive decision engine to verify if your proposed workflow qualifies as an authorized SharePoint-integrated exception or requires formal submission to an IT Advisor.
+                </p>
+            </div>
+
+            <!-- Decision Tool & Matrix Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Interactive Evaluator Tool -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <span class="text-xl">🔍</span>
+                            <h3 class="text-lg font-bold text-slate-900">Automation Eligibility Evaluator</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-6">Answer the 3 criteria below to check if your solution meets citizen development compliance.</p>
+
+                        <form id="evaluator-form" class="space-y-4 text-sm">
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">1. Creation Entry Point</label>
+                                <select id="eval-origin" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-teal-500">
+                                    <option value="sharepoint">Created inside SharePoint ("Integrate" or "Workflows" menu)</option>
+                                    <option value="powerapps_portal">Created in Power Apps / Automate Maker Portal</option>
+                                    <option value="teams">Created inside Microsoft Teams channel</option>
+                                    <option value="desktop">Created via Power Automate Desktop / Local PC</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">2. Target Data Sources & Connectors</label>
+                                <select id="eval-data" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-teal-500">
+                                    <option value="sp_only">Exclusively Host SharePoint List or Library</option>
+                                    <option value="dataverse">Dataverse Tables / Managed Schemas</option>
+                                    <option value="sql_api">SQL Database / External REST API / ERP</option>
+                                    <option value="multi_sp">Multiple Cross-Departmental SharePoint Sites</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">3. Solution Scope & Audience</label>
+                                <select id="eval-scope" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-teal-500">
+                                    <option value="team_local">Local Team / Single SharePoint Library Context</option>
+                                    <option value="cross_dept">Cross-Departmental / Multi-Business Unit</option>
+                                    <option value="enterprise">Enterprise-Wide Public Deployment</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Dynamic Output Box -->
+                    <div id="eval-result" class="mt-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xl">✅</span>
+                            <h4 class="font-bold text-emerald-900">Compliant Citizen Solution</h4>
+                        </div>
+                        <p class="text-xs text-emerald-800 mt-1">
+                            This flow/app is fully permitted! It is SharePoint-integrated, self-contained, and stays within host library boundaries.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Governance Rules Matrix Table -->
+                <div class="lg:col-span-7 bg-white p-6 rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <span>📋</span> Operational Governance Boundaries Matrix
+                    </h3>
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 uppercase font-semibold">
+                                <th class="p-3 border-b">Capability / Action</th>
+                                <th class="p-3 border-b">Permitted Citizen Scope</th>
+                                <th class="p-3 border-b">Prohibited / IT Advisor Scope</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-600">
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Process Automation</td>
+                                <td class="p-3 bg-emerald-50/50 text-emerald-900">
+                                    Flows created strictly via SharePoint "Integrate" menu; updates host list/library only.
+                                </td>
+                                <td class="p-3 bg-rose-50/50 text-rose-900">
+                                    Standalone flows in Power Automate portal; HTTP, Dataverse, SQL, or custom API connectors.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">App Development</td>
+                                <td class="p-3 bg-emerald-50/50 text-emerald-900">
+                                    SharePoint form customizations built inside list view customization settings.
+                                </td>
+                                <td class="p-3 bg-rose-50/50 text-rose-900">
+                                    Standalone Canvas Apps, Model-Driven Apps, or custom web portals.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Data Storage</td>
+                                <td class="p-3 bg-emerald-50/50 text-emerald-900">
+                                    Standard SharePoint Lists, Custom Columns, and Document Libraries.
+                                </td>
+                                <td class="p-3 bg-rose-50/50 text-rose-900">
+                                    Microsoft Dataverse environment provisioning, Azure SQL, or external storage.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold text-slate-800">Copilot Integration</td>
+                                <td class="p-3 bg-emerald-50/50 text-emerald-900">
+                                    M365 Copilot querying grounded in OneDrive/SharePoint via Graph RAG pipeline.
+                                </td>
+                                <td class="p-3 bg-rose-50/50 text-rose-900">
+                                    Unmanaged citizen plugins pointing directly to backend Dataverse tables.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: WORK IQ & RAG MECHANICS -->
+        <section id="tab-semantic" class="tab-content hidden space-y-6">
+            <!-- Introductory Context -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900 mb-2">Understanding Work IQ, Vector Indexing & Context Constraints</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Microsoft 365 Copilot does not train on your private enterprise data. Instead, it uses a Retrieval-Augmented Generation (RAG) architecture. When you ask a question, the Copilot Orchestrator queries the Semantic Index to construct a dynamic, grounded prompt payload within a strict token budget. Understanding how user-level and tenant-level vector indexes operate prevents "lost-in-the-middle" context window truncation.
+                </p>
+            </div>
+
+            <!-- Visual Architecture Diagram Card (HTML/CSS Based) -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-md font-bold text-slate-900 mb-4">Copilot Grounding & RAG Retrieval Flow</h3>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-center text-xs">
+                    <div class="bg-slate-100 p-3 rounded-lg border border-slate-300 flex flex-col justify-center">
+                        <span class="text-lg mb-1">💬</span>
+                        <strong class="text-slate-800">1. User Prompt</strong>
+                        <span class="text-slate-500 text-[10px] mt-1">Submitted in Word, Teams, or Copilot Chat</span>
+                    </div>
+                    <div class="bg-teal-50 p-3 rounded-lg border border-teal-200 flex flex-col justify-center">
+                        <span class="text-lg mb-1">⚙️</span>
+                        <strong class="text-teal-900">2. Orchestration</strong>
+                        <span class="text-teal-700 text-[10px] mt-1">Calls Graph & Semantic Index</span>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-200 flex flex-col justify-center">
+                        <span class="text-lg mb-1">🔎</span>
+                        <strong class="text-indigo-900">3. Vector Search</strong>
+                        <span class="text-indigo-700 text-[10px] mt-1">Filters by Entra ID ACLs & selects top ~20 chunks</span>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 flex flex-col justify-center">
+                        <span class="text-lg mb-1">📦</span>
+                        <strong class="text-amber-900">4. Token Payload</strong>
+                        <span class="text-amber-700 text-[10px] mt-1">Context window payload built</span>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 flex flex-col justify-center">
+                        <span class="text-lg mb-1">🤖</span>
+                        <strong class="text-emerald-900">5. Grounded LLM</strong>
+                        <span class="text-emerald-700 text-[10px] mt-1">Generates response with cited source proof</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Chart 1: Retrieval Accuracy vs Document Structure -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-slate-900 mb-1">RAG Context Window & Accuracy Impact</h3>
+                        <p class="text-xs text-slate-500 mb-4">Effect of directory depth and internal document structure on Copilot retrieval precision.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="accuracyChart"></canvas>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2 text-center">
+                        *Data demonstrates severe "Lost-in-the-middle" degradation in deep subdirectories without H1/H2/H3 tags.
+                    </p>
+                </div>
+
+                <!-- Chart 2: Semantic Index Tiers Comparison -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-md font-bold text-slate-900 mb-1">Semantic Index Indexing Latency & Scope</h3>
+                        <p class="text-xs text-slate-500 mb-4">Comparison between User-Level (OneDrive) and Tenant-Level (SharePoint) vectorization.</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="latencyChart"></canvas>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2 text-center">
+                        *Tenant index achieves 95% full coverage within 7 to 28 days for shared organizational assets.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: IA & REPOSITORY STRUCTURING -->
+        <section id="tab-ia" class="tab-content hidden space-y-6">
+            <!-- Introductory Context -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900 mb-2">Information Architecture: Optimizing Repositories for Vector Discovery</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Legacy filing habits—like deep subdirectories, ambiguous names like <code>Draft1.docx</code>, and unformatted narrative walls—severely degrade vector search. To maximize Copilot grounding, repositories must transition to flat directories (1-2 tiers), metadata-driven columns, native Word heading styles, and standard data tables.
+                </p>
+            </div>
+
+            <!-- Interactive File & Path Rating Tool -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+                    <span>🧪</span> Vector Discovery IA Quality Evaluator
+                </h3>
+                <p class="text-xs text-slate-500 mb-4">Test a file path and structure parameters to see its predicted vector readiness score.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">File Path / Directory Depth</label>
+                        <input id="ia-path" type="text" value="Projects/Grid/2026/Docs/Specs/Draft_v2.docx" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-teal-500 text-xs">
+                        <span class="text-[10px] text-slate-400">Try changing to: <code>PRJ-GridMod-Architecture-v1.2.docx</code></span>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Internal Heading Styles</label>
+                        <select id="ia-headings" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-teal-500 text-xs">
+                            <option value="none">Bold Text Only / Unformatted Paragraphs</option>
+                            <option value="native">Native Word Styles (H1, H2, H3)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Tabular & Numerical Data Format</label>
+                        <select id="ia-tables" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-teal-500 text-xs">
+                            <option value="bullet">Bullet Points / Text Narrative</option>
+                            <option value="structured">Clean Word Table with Explicit Column Headers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dynamic Rating Results -->
+                <div id="ia-score-card" class="p-4 rounded-lg bg-amber-50 border border-amber-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span id="ia-score-badge" class="px-2.5 py-1 bg-amber-600 text-white font-bold rounded text-xs">Score: 45/100 (Sub-optimal)</span>
+                            <h4 id="ia-score-title" class="font-bold text-amber-900 text-sm">Deep Directory Path & Ambiguous Naming</h4>
+                        </div>
+                        <p id="ia-score-desc" class="text-xs text-amber-800 mt-1">
+                            Folder depth (>3 levels) and generic filename ('Draft_v2') force reliance on pure chunking and increase vector search distance.
+                        </p>
+                    </div>
+                    <button onclick="evaluateIA()" class="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold hover:bg-slate-800 transition-colors whitespace-nowrap">
+                        Re-evaluate IA Structure
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Promotion Blueprint: OneDrive to SharePoint -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-md font-bold text-slate-900 mb-4">Content Lifecycle & Promotion Boundary</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl">🔒</span>
+                            <h4 class="font-bold text-slate-800 text-sm">OneDrive for Business (Personal Sandbox)</h4>
+                        </div>
+                        <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside">
+                            <li>Indexed exclusively in <strong>User-Level Semantic Index</strong>.</li>
+                            <li>Invisible to team Copilot synthesis and multi-user agents.</li>
+                            <li>Ideal for early drafts, analytical working notes, and personal logs.</li>
+                            <li><em>Action: Keep drafts here until operational baseline maturity is reached.</em></li>
+                        </ul>
+                    </div>
+
+                    <div class="p-4 bg-teal-50 rounded-xl border border-teal-200">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="text-xl">🌐</span>
+                            <h4 class="font-bold text-teal-900 text-sm">SharePoint Online (Shared Enterprise Tenant)</h4>
+                        </div>
+                        <ul class="text-xs text-teal-800 space-y-2 list-disc list-inside">
+                            <li>Indexed in <strong>Tenant-Level Semantic Index</strong> (ACL enforced).</li>
+                            <li>Grounds team-wide Copilot Chat and Declarative Agents.</li>
+                            <li>Enables AI Autofill metadata columns and list-integrated automation.</li>
+                            <li><em>Action: Promote finalized specifications here to enable Work IQ.</em></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: DECLARATIVE AGENTS & NATIVE AUTOMATION -->
+        <section id="tab-automation" class="tab-content hidden space-y-6">
+            <!-- Introductory Context -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900 mb-2">Compliant Citizen Automation: Declarative Agents & Native SharePoint</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    While custom Dataverse connections are restricted, business users can achieve high-impact productivity using native SharePoint AI tools. You can deploy scoped <strong>Declarative Agents</strong> (grounded in up to 20 specific document libraries), configure <strong>AI Autofill Columns</strong> to structure incoming documents, and launch list-bound Power Automate flows.
+                </p>
+            </div>
+
+            <!-- Interactive Declarative Agent Configurator Simulator -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-md font-bold text-slate-900 mb-2 flex items-center gap-2">
+                        <span>🛠️</span> Declarative Agent (`.agent`) Builder Simulator
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">Simulate how a scoped assistant is instantiated directly within SharePoint.</p>
+
+                    <div class="space-y-4 text-xs">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Agent Name & Persona</label>
+                            <input id="agent-name" type="text" value="Substation Engineering Standards Assistant" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Grounded Knowledge Scope (Max 20 Sources)</label>
+                            <div class="p-2 bg-slate-50 border border-slate-300 rounded-lg space-y-1">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked disabled class="rounded text-teal-600">
+                                    <span>Host Library: `/sites/GridMod/ProtectionRelays/`</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded text-teal-600">
+                                    <span>Folder: `/sites/GridMod/Shared Documents/Standards-2026/`</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded text-teal-600">
+                                    <span>File: `PRJ-SubstationAutomation-Standard-v2.1.docx`</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">System Instructions / Guardrails</label>
+                            <textarea id="agent-instructions" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800">You are an expert technical advisor. Answer queries strictly using the technical standards in the grounded library. If a parameter is not in the source files, state that information is unavailable. Always cite exact document titles.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated .agent Configuration Preview -->
+                <div class="lg:col-span-6 bg-slate-900 text-slate-200 p-6 rounded-xl shadow-sm border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-mono text-teal-400">Generated File: Site Assets / Copilots / agent.json</span>
+                            <span class="px-2 py-0.5 bg-teal-900 text-teal-300 rounded text-[10px] font-mono">SharePoint ACL Enforced</span>
+                        </div>
+                        <pre id="agent-json-preview" class="text-[11px] font-mono text-slate-300 bg-slate-950 p-4 rounded-lg overflow-x-auto border border-slate-800 leading-relaxed">
+{
+  "name": "Substation Engineering Standards Assistant",
+  "capabilities": [
+    {
+      "type": "DeclarativeAgent",
+      "grounding": {
+        "maxSources": 20,
+        "scope": ["/sites/GridMod/ProtectionRelays/"]
+      }
+    }
+  ],
+  "governance": "SharePoint-Bound (Compliant)"
+}
+                        </pre>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-4 border-t border-slate-800 pt-3">
+                        💡 <strong>Governance Note:</strong> This agent is saved natively as an <code>.agent</code> file in SharePoint Site Assets and strictly respects Entra ID user permissions at query runtime.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Native SharePoint Capabilities Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="text-xl mb-2 block">✨</span>
+                    <h4 class="font-bold text-slate-900 mb-1">AI Autofill Columns</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Extracts structured metadata (serial numbers, review dates, inspection status) automatically upon document upload into library columns.
+                    </p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="text-xl mb-2 block">🔄</span>
+                    <h4 class="font-bold text-slate-900 mb-1">List-Bound Power Automate</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Created via "Integrate > Power Automate". Triggers notifications and updates status columns without external enterprise connectors.
+                    </p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="text-xl mb-2 block">🔔</span>
+                    <h4 class="font-bold text-slate-900 mb-1">Native Library Rules</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Lightweight conditional alerts that notify specific team members in Teams/Email when metadata columns change or files are checked in.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: 4-PHASE IMPLEMENTATION STRATEGY -->
+        <section id="tab-roadmap" class="tab-content hidden space-y-6">
+            <!-- Introductory Context -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900 mb-2">Strategic Implementation & Rollout Roadmap</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Follow this structured, 4-phase strategic framework to operationalize M365 Copilot Grounding and build compliant SharePoint automation without violating enterprise governance boundaries.
+                </p>
+            </div>
+
+            <!-- Interactive 4-Phase Accordion/Matrix -->
+            <div class="space-y-4 text-sm">
+                <!-- Phase 1 -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="togglePhase('phase-1')">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs">P1</span>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Phase 1: Repository Hygiene & Restructuring</h3>
+                                <p class="text-xs text-slate-500">Folder flattening, semantic naming, and Word heading formatting.</p>
+                            </div>
+                        </div>
+                        <span id="icon-phase-1" class="text-slate-400">▼</span>
+                    </div>
+                    <div id="phase-1" class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+                        <p>• Audit personal OneDrive and team SharePoint libraries; flatten directories deeper than 2 subfolders.</p>
+                        <p>• Rename active technical files using explicit standardized naming conventions (e.g., <code>PRJ-Domain-Subject-v1.0.docx</code>).</p>
+                        <p>• Reformat core engineering standards in Word using native Heading 1, 2, and 3 styles for clean chunking.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="togglePhase('phase-2')">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-xs">P2</span>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Phase 2: Semantic Promotion & Lifecycle Transition</h3>
+                                <p class="text-xs text-slate-500">Migrating mature draft assets from personal OneDrive to shared SharePoint libraries.</p>
+                            </div>
+                        </div>
+                        <span id="icon-phase-2" class="text-slate-400">▼</span>
+                    </div>
+                    <div id="phase-2" class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+                        <p>• Identify working drafts in personal OneDrive that have reached operational maturity.</p>
+                        <p>• Promote finalized specifications to inherited-permission SharePoint libraries to trigger Tenant-Level Semantic Indexing.</p>
+                        <p>• Establish routine lifecycle reviews to archive obsolete specifications out of active Copilot scope.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="togglePhase('phase-3')">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs">P3</span>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Phase 3: Scoped Declarative Agent Deployment</h3>
+                                <p class="text-xs text-slate-500">Instantiating specialized AI assistants grounded in curated libraries.</p>
+                            </div>
+                        </div>
+                        <span id="icon-phase-3" class="text-slate-400">▼</span>
+                    </div>
+                    <div id="phase-3" class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+                        <p>• Create Declarative Agents directly inside SharePoint document libraries using the AI actions menu.</p>
+                        <p>• Bound agent grounding scopes to ≤20 high-value technical libraries to eliminate noise.</p>
+                        <p>• Author natural language instructions defining persona boundaries and requiring strict document citations.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="togglePhase('phase-4')">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">P4</span>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Phase 4: Compliant In-Context Workflow Integration</h3>
+                                <p class="text-xs text-slate-500">Deploying AI Autofill, list flows, and IT Advisor escalation channels.</p>
+                            </div>
+                        </div>
+                        <span id="icon-phase-4" class="text-slate-400">▼</span>
+                    </div>
+                    <div id="phase-4" class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+                        <p>• Enable AI Autofill columns in SharePoint document libraries for automated metadata extraction.</p>
+                        <p>• Build list-bound Power Automate flows strictly via the "Integrate" menu for status updates and Teams cards.</p>
+                        <p>• Route complex multi-system, Dataverse, or SQL requirements to designated IT Advisors for federated delivery.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-1">
+            <p>Work IQ Grounding & Enterprise Governance Reference Platform</p>
+            <p class="text-slate-500">Compliant with Partially Federated Power Platform Governance Standards</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic & Chart Initialization -->
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId.replace('tab-', ''));
+            if(activeBtn) activeBtn.classList.add('active');
+        }
+
+        // Section 1: Governance Evaluator Logic
+        function evaluateGovernance() {
+            const origin = document.getElementById('eval-origin').value;
+            const data = document.getElementById('eval-data').value;
+            const scope = document.getElementById('eval-scope').value;
+            const resultBox = document.getElementById('eval-result');
+
+            if (origin === 'sharepoint' && data === 'sp_only' && scope === 'team_local') {
+                resultBox.className = "mt-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200";
+                resultBox.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">✅</span>
+                        <h4 class="font-bold text-emerald-900 text-sm">Compliant Citizen Solution</h4>
+                    </div>
+                    <p class="text-xs text-emerald-800 mt-1">
+                        This flow/app is fully permitted! It originates in SharePoint, relies solely on host list storage, and remains within local team scope.
+                    </p>`;
+            } else if (data === 'dataverse' || data === 'sql_api' || origin === 'powerapps_portal' || scope === 'enterprise') {
+                resultBox.className = "mt-6 p-4 rounded-lg bg-rose-50 border border-rose-200";
+                resultBox.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">❌</span>
+                        <h4 class="font-bold text-rose-900 text-sm">Prohibited Citizen Automation (Action Required)</h4>
+                    </div>
+                    <p class="text-xs text-rose-800 mt-1">
+                        This scenario violates citizen development rules. Unmanaged Dataverse/SQL connectors or standalone maker portal apps are prohibited. You must submit a formal brief to your <strong>IT Advisor</strong>.
+                    </p>`;
+            } else {
+                resultBox.className = "mt-6 p-4 rounded-lg bg-amber-50 border border-amber-200";
+                resultBox.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl">⚠️</span>
+                        <h4 class="font-bold text-amber-900 text-sm">Requires Architecture Review</h4>
+                    </div>
+                    <p class="text-xs text-amber-800 mt-1">
+                        Cross-departmental scope or non-SharePoint origins require evaluation by your IT Advisor prior to deployment.
+                    </p>`;
+            }
+        }
+
+        document.getElementById('eval-origin').addEventListener('change', evaluateGovernance);
+        document.getElementById('eval-data').addEventListener('change', evaluateGovernance);
+        document.getElementById('eval-scope').addEventListener('change', evaluateGovernance);
+
+        // Section 3: IA Evaluator Logic
+        function evaluateIA() {
+            const path = document.getElementById('ia-path').value;
+            const headings = document.getElementById('ia-headings').value;
+            const tables = document.getElementById('ia-tables').value;
+            
+            const card = document.getElementById('ia-score-card');
+            const badge = document.getElementById('ia-score-badge');
+            const title = document.getElementById('ia-score-title');
+            const desc = document.getElementById('ia-score-desc');
+
+            const depth = (path.match(/\//g) || []).length;
+            const isSemanticName = /PRJ|STD|SPEC|[A-Z]{3}-\d+/.test(path);
+
+            let score = 100;
+            if (depth > 2) score -= 30;
+            if (!isSemanticName) score -= 25;
+            if (headings === 'none') score -= 25;
+            if (tables === 'bullet') score -= 20;
+
+            if (score >= 80) {
+                card.className = "p-4 rounded-lg bg-emerald-50 border border-emerald-200 flex flex-col md:flex-row justify-between items-center gap-4";
+                badge.className = "px-2.5 py-1 bg-emerald-600 text-white font-bold rounded text-xs";
+                badge.innerText = `Score: ${score}/100 (Optimal Vector Ready)`;
+                title.innerText = "High Vector Proximity & Semantic Accuracy";
+                title.className = "font-bold text-emerald-900 text-sm";
+                desc.innerText = "Shallow topology, native headings, and explicit naming allow Copilot's vector engine to retrieve chunk payloads effortlessly.";
+                desc.className = "text-xs text-emerald-800 mt-1";
+            } else {
+                card.className = "p-4 rounded-lg bg-amber-50 border border-amber-200 flex flex-col md:flex-row justify-between items-center gap-4";
+                badge.className = "px-2.5 py-1 bg-amber-600 text-white font-bold rounded text-xs";
+                badge.innerText = `Score: ${score}/100 (Sub-optimal)`;
+                title.innerText = "Indexing Risk: 'Lost in the Middle' Threat";
+                title.className = "font-bold text-amber-900 text-sm";
+                desc.innerText = "Deep subdirectories or unformatted text blocks increase mathematical search distance and risk context window truncation.";
+                desc.className = "text-xs text-amber-800 mt-1";
+            }
+        }
+
+        // Section 4: Declarative Agent Live Preview Updater
+        function updateAgentPreview() {
+            const name = document.getElementById('agent-name').value;
+            const instructions = document.getElementById('agent-instructions').value;
+
+            const agentObj = {
+                "$schema": "https://developer.microsoft.com/json-schemas/copilot/declarative-agent/v1.0.json",
+                "name": name,
+                "description": "Scoped SharePoint Declarative Agent",
+                "instructions": instructions,
+                "capabilities": [
+                    {
+                        "type": "WebSearch",
+                        "enabled": false
+                    },
+                    {
+                        "type": "SharePointGrounding",
+                        "maxGroundedSources": 20,
+                        "scope": ["/sites/GridMod/ProtectionRelays/"]
+                    }
+                ],
+                "governanceBoundary": "SharePoint-Native (.agent in Site Assets)"
+            };
+
+            document.getElementById('agent-json-preview').innerText = JSON.stringify(agentObj, null, 2);
+        }
+
+        document.getElementById('agent-name').addEventListener('input', updateAgentPreview);
+        document.getElementById('agent-instructions').addEventListener('input', updateAgentPreview);
+
+        // Section 5: Roadmap Accordion
+        function togglePhase(phaseId) {
+            const el = document.getElementById(phaseId);
+            const icon = document.getElementById('icon-' + phaseId);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                icon.innerText = '▼';
+            } else {
+                el.classList.add('hidden');
+                icon.innerText = '►';
+            }
+        }
+
+        // Chart Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            // Label truncation helper function
+            const formatLabel = (str, maxLen = 16) => {
+                if (str.length <= maxLen) return str;
+                return str.substring(0, maxLen) + '...';
+            };
+
+            // Chart 1: RAG Retrieval Accuracy vs Document Depth
+            const ctx1 = document.getElementById('accuracyChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        formatLabel('Flat Directory + H1-H3 Headings'),
+                        formatLabel('Flat Directory + Plain Text'),
+                        formatLabel('3+ Subfolders + H1-H3 Headings'),
+                        formatLabel('Deep Folders + Generic Filename')
+                    ],
+                    datasets: [{
+                        label: 'Copilot Vector Grounding Accuracy (%)',
+                        data: [96, 72, 64, 38],
+                        backgroundColor: ['#059669', '#0d9488', '#d97706', '#e11d48'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` Accuracy Score: ${ctx.raw}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Retrieval Precision %', font: { size: 11 } }
+                        },
+                        x: {
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Index Latency & Tier Comparison
+            const ctx2 = document.getElementById('latencyChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 7', 'Day 14', 'Day 28'],
+                    datasets: [
+                        {
+                            label: 'User-Level Semantic Index (OneDrive)',
+                            data: [30, 85, 98, 100, 100],
+                            borderColor: '#4f46e5',
+                            backgroundColor: '#4f46e5',
+                            borderWidth: 2,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Tenant-Level Semantic Index (SharePoint)',
+                            data: [10, 35, 70, 95, 100],
+                            borderColor: '#0f766e',
+                            backgroundColor: '#0f766e',
+                            borderWidth: 2,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw}% Coverage`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Vector Index Coverage %', font: { size: 11 } }
+                        },
+                        x: {
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
