@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BC Hydro Microsoft 365 Copilot Operating Model</title>
+<meta name="description" content="Standalone reference guide for a governed Microsoft 365 Copilot operating model at BC Hydro.">
+<style>
+:root{
+  --bg:#f6f8fb;
+  --panel:#ffffff;
+  --panel2:#eef3f8;
+  --text:#17212b;
+  --muted:#607080;
+  --line:#d9e2ec;
+  --accent:#0b5cab;
+  --accent2:#0a477f;
+  --good:#0d6b3f;
+  --warn:#8a5a00;
+  --bad:#9b2c2c;
+  --info:#245b8f;
+  --code:#111827;
+  --codeText:#e5edf6;
+  --shadow:0 8px 24px rgba(22,34,48,.08);
+}
+[data-theme="dark"]{
+  --bg:#0f141a;
+  --panel:#171e26;
+  --panel2:#202a35;
+  --text:#eaf0f6;
+  --muted:#9fb0c0;
+  --line:#2f3a46;
+  --accent:#6db8ff;
+  --accent2:#99ccff;
+  --good:#6fd7a4;
+  --warn:#f2c56b;
+  --bad:#ff9898;
+  --info:#8fc8ff;
+  --code:#0b0f14;
+  --codeText:#ecf4fb;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.55;
+}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline}
+button,input{font:inherit}
+.shell{display:grid; grid-template-columns:290px minmax(0,1fr); min-height:100vh}
+.sidebar{
+  position:sticky; top:0; height:100vh; overflow:auto;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  padding:22px 18px 28px;
+}
+.brand{
+  font-weight:800; font-size:18px; line-height:1.2; margin-bottom:4px;
+}
+.subtitle{color:var(--muted); font-size:13px; margin-bottom:18px}
+.search{
+  width:100%; border:1px solid var(--line); background:var(--bg); color:var(--text);
+  border-radius:9px; padding:10px 11px; outline:none;
+}
+.search:focus{border-color:var(--accent)}
+.nav{margin-top:16px}
+.nav a{
+  display:block; color:var(--text); padding:8px 10px; border-radius:8px; font-size:14px;
+}
+.nav a:hover{background:var(--panel2); text-decoration:none}
+.nav .sub{padding-left:24px; color:var(--muted); font-size:13px}
+.controls{display:flex; gap:8px; margin-top:18px}
+.btn{
+  border:1px solid var(--line); background:var(--panel); color:var(--text);
+  border-radius:8px; padding:8px 10px; cursor:pointer;
+}
+.btn:hover{background:var(--panel2)}
+.content{min-width:0; padding:34px 42px 80px}
+.container{max-width:1180px; margin:0 auto}
+.hero{
+  background:linear-gradient(135deg, var(--panel), var(--panel2));
+  border:1px solid var(--line); border-radius:18px; padding:30px; box-shadow:var(--shadow);
+}
+.eyebrow{
+  display:inline-block; font-size:12px; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--accent); font-weight:700; margin-bottom:8px;
+}
+h1{font-size:34px; line-height:1.15; margin:0 0 10px}
+h2{font-size:25px; line-height:1.2; margin:48px 0 18px; scroll-margin-top:20px}
+h3{font-size:18px; margin:28px 0 10px}
+p{margin:10px 0}
+.lead{font-size:18px; color:var(--muted); max-width:850px}
+.callout{
+  border-left:4px solid var(--accent); background:var(--panel);
+  border:1px solid var(--line); border-left-width:4px; border-radius:10px;
+  padding:14px 16px; margin:18px 0;
+}
+.callout strong{display:block; margin-bottom:4px}
+.callout.good{border-left-color:var(--good)}
+.callout.warn{border-left-color:var(--warn)}
+.callout.bad{border-left-color:var(--bad)}
+.callout.info{border-left-color:var(--info)}
+.grid{display:grid; gap:14px}
+.grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:14px;
+  padding:18px; box-shadow:var(--shadow);
+}
+.card h3{margin-top:0}
+.kicker{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700}
+.pill{
+  display:inline-block; border:1px solid var(--line); border-radius:999px; padding:3px 8px;
+  font-size:12px; margin:2px 4px 2px 0; background:var(--panel2);
+}
+.pill.good{color:var(--good)}
+.pill.warn{color:var(--warn)}
+.pill.bad{color:var(--bad)}
+table{width:100%; border-collapse:collapse; margin:14px 0 24px; font-size:14px}
+th,td{border:1px solid var(--line); padding:10px 11px; vertical-align:top; text-align:left}
+th{background:var(--panel2); font-weight:700}
+pre{
+  background:var(--code); color:var(--codeText); padding:16px 18px;
+  border-radius:12px; overflow:auto; font-size:13px; line-height:1.5;
+}
+code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+details{
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  margin:10px 0; overflow:hidden;
+}
+summary{
+  cursor:pointer; padding:14px 16px; font-weight:700; list-style:none;
+}
+summary::-webkit-details-marker{display:none}
+details[open] summary{border-bottom:1px solid var(--line); background:var(--panel2)}
+.details-body{padding:14px 16px 18px}
+.workflow{
+  border:1px solid var(--line); background:var(--panel); border-radius:14px; padding:16px;
+}
+.workflow .flow{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;
+}
+.node{
+  padding:9px 11px; border:1px solid var(--line); border-radius:9px; background:var(--panel2); font-size:13px;
+}
+.arrow{color:var(--muted); font-weight:800}
+.status{
+  font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+}
+.status.good{color:var(--good)} .status.warn{color:var(--warn)} .status.bad{color:var(--bad)}
+.prompt{
+  position:relative;
+}
+.copy{
+  position:absolute; right:10px; top:10px; border:1px solid #44505e;
+  background:#1d2630; color:#fff; border-radius:7px; padding:5px 8px; cursor:pointer; font-size:12px;
+}
+.source-list li{margin:8px 0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.hide{display:none !important}
+mark{background:#fff3a3; color:#1a1a1a; border-radius:2px}
+.footer{margin-top:52px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
+.mobile-menu{display:none}
+@media (max-width:980px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{
+    position:relative; height:auto; border-right:0; border-bottom:1px solid var(--line);
+  }
+  .nav{display:none}
+  .nav.open{display:block}
+  .mobile-menu{display:inline-block}
+  .content{padding:24px 18px 60px}
+  .grid.cols-2,.grid.cols-3{grid-template-columns:1fr}
+  h1{font-size:29px}
+}
+@media print{
+  .sidebar,.controls,.copy,.mobile-menu{display:none!important}
+  .shell{display:block}
+  .content{padding:0}
+  body{background:#fff; color:#000}
+  .card,.hero,.callout,details,.workflow{box-shadow:none}
+  details{break-inside:avoid}
+  details[open] .details-body{display:block}
+  a{color:#000; text-decoration:none}
+}
+</style>
+<script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787896769020&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_00000000bea081fda09bb8c35ba34b77%26fn%3Dbc_hydro_m365_copilot_reference.html%26cd%3Dattachment%26ts%3D496638%26p%3Dfs%26cid%3D1%26sig%3D67899e958c869a04aad693389b017d600df0a069ef6c75d820759f2ac2bd3661%26v%3D0&amp;app=brave.exe&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787896769020&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">BC Hydro M365 Copilot</div>
+    <div class="subtitle">Operating model & workflow reference</div>
+    <input id="search" class="search" type="search" placeholder="Search this guide…">
+    <div class="controls">
+      <button class="btn mobile-menu" onclick="toggleNav()">Menu</button>
+      <button class="btn" onclick="toggleTheme()">Theme</button>
+      <button class="btn" onclick="window.print()">Print</button>
+    </div>
+    <nav id="nav" class="nav">
+      <a href="#overview">1. Executive model</a>
+      <a href="#architecture">2. Architecture</a>
+      <a href="#decision-matrix">3. Decision matrix</a>
+      <a href="#apps">4. Application playbook</a>
+      <a class="sub" href="#copilot">Copilot</a>
+      <a class="sub" href="#notebooks">Notebooks</a>
+      <a class="sub" href="#sharepoint">SharePoint</a>
+      <a class="sub" href="#teams">Teams / Loop / Planner</a>
+      <a class="sub" href="#pages">Pages</a>
+      <a class="sub" href="#office">Word / Excel / PowerPoint</a>
+      <a class="sub" href="#outlook">Outlook</a>
+      <a class="sub" href="#onedrive-onenote">OneDrive / OneNote</a>
+      <a href="#workflows">5. Workflow patterns</a>
+      <a href="#governance">6. Governance</a>
+      <a href="#information-architecture">7. Information architecture</a>
+      <a href="#pilot">8. Pilot & metrics</a>
+      <a href="#prompts">9. Prompt library</a>
+      <a href="#sources">10. Primary sources</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+  <div class="container">
+
+    <section id="overview" class="hero searchable">
+      <span class="eyebrow">Reference guide</span>
+      <h1>Microsoft 365 Copilot operating model for BC Hydro workflows</h1>
+      <p class="lead">Use Microsoft 365 as an information lifecycle, not as a collection of interchangeable apps. SharePoint is the governed authority; Copilot and collaboration tools are working layers that help retrieve, reason, coordinate, draft, and communicate.</p>
+
+      <div class="callout good">
+        <strong>Core rule</strong>
+        AI helps create and reason over work. Human review promotes work into the authoritative record.
+      </div>
+
+      <pre><code>Personal / incoming work
+Outlook ─────┐
+OneDrive ────┼──&gt; Focused reasoning ──&gt; Collaborative working ──&gt; Formal artifact ──&gt; Governed record
+OneNote ─────┘    Copilot Notebook       Teams + Loop + Pages      Word / Excel /      SharePoint
+                  Researcher                                      PowerPoint
+                       │                       │
+                       │                       └──&gt; Planner
+                       │
+                       └──&gt; SharePoint sources / approved work content
+
+Cross-system automation:
+Outlook / Teams / Lists / SharePoint ──&gt; Power Automate</code></pre>
+
+      <div class="grid cols-3">
+        <div class="card">
+          <div class="kicker">Governed authority</div>
+          <h3>SharePoint</h3>
+          <p>Approved team content, controlled knowledge, document libraries, metadata, permissions, retention, and records controls.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Focused reasoning</div>
+          <h3>Copilot Notebooks</h3>
+          <p>Bounded project corpus for repeat questions, comparison, synthesis, and decision support. Not the authoritative repository.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">Live work</div>
+          <h3>Teams + Loop + Planner</h3>
+          <p>Meetings, collaboration, live working tables, decisions, tasks, owners, and due dates.</p>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Important BC Hydro dependency</strong>
+        Exact licensing, enabled features, sensitivity labels, SharePoint architecture, records schedules, data-location settings, and internal AI policy are organization-specific and remain <b>unverified</b> until checked against BC Hydro tenant configuration and policy.
+      </div>
+    </section>
+
+    <section id="architecture" class="searchable">
+      <h2>2. Architecture: what Copilot is actually doing</h2>
+      <p>The safest mental model is permission-aware retrieval over Microsoft 365 content, not a new hidden knowledge base containing copies of everything.</p>
+
+      <pre><code>                         USER IDENTITY
+                              │
+                              ▼
+                     Existing permissions
+                              │
+            ┌─────────────────┼─────────────────┐
+            ▼                 ▼                 ▼
+        SharePoint         OneDrive      Email / meetings /
+                                            other M365 data
+            └─────────────────┬─────────────────┘
+                              ▼
+                 Microsoft Graph + Work IQ
+                 + semantic/lexical retrieval
+                              │
+                              ▼
+                         Copilot
+                              │
+                       Prompt + answer</code></pre>
+
+      <div class="callout bad">
+        <strong>Primary risk: Copilot amplifies existing permissions</strong>
+        If SharePoint is overshared, outdated, duplicated, or poorly governed, Copilot can make that mess easier to retrieve. The first Copilot control is therefore permissions and content hygiene, not prompt engineering.
+      </div>
+
+      <h3>Key corrections to the original model</h3>
+      <table>
+        <thead><tr><th>Claim</th><th>Assessment</th><th>Recommended wording</th></tr></thead>
+        <tbody>
+          <tr><td>Copilot as Graph + semantic orchestration</td><td><span class="status good">Mostly right</span></td><td>Use current Microsoft language: Microsoft Graph + Work IQ with permission-aware semantic and lexical retrieval.</td></tr>
+          <tr><td>Copilot Notebooks = project brain</td><td><span class="status good">Useful metaphor</span></td><td>Use as a bounded reasoning space, not the official project repository.</td></tr>
+          <tr><td>Notebook up to 300 files</td><td><span class="status good">Verified</span></td><td>Copilot can ground on up to 300 files. Add critical files directly rather than relying on broad SharePoint-location selection.</td></tr>
+          <tr><td>SharePoint = system of record</td><td><span class="status warn">Design choice</span></td><td>SharePoint becomes the governed authority through information architecture, metadata, permissions, retention, records controls, and process.</td></tr>
+          <tr><td>Tenant-level / user-level Semantic Index labels</td><td><span class="status bad">Remove</span></td><td>These labels oversimplify current architecture. Describe the actual content locations and permission-aware retrieval instead.</td></tr>
+          <tr><td>Word H1-H3 improves Copilot indexing</td><td><span class="status bad">Unverified</span></td><td>Keep heading structure for document quality and accessibility, not as an asserted Copilot-indexing optimization.</td></tr>
+          <tr><td>Excel “@Analyst”</td><td><span class="status warn">Needs correction</span></td><td>Analyst is an agent in Microsoft Copilot. Excel Copilot is workbook-native analysis/editing.</td></tr>
+          <tr><td>Outlook turns email into SharePoint items</td><td><span class="status warn">Needs correction</span></td><td>Use Outlook Copilot for summary/drafting; use Power Automate for structured email-to-SharePoint/List workflows.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="decision-matrix" class="searchable">
+      <h2>3. Decision matrix: which application should I use?</h2>
+      <table>
+        <thead>
+          <tr><th>Need</th><th>Best home</th><th>Why</th><th>Avoid</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Quick question / transient synthesis</td><td>Copilot Chat</td><td>Fast grounding and synthesis without creating a new work artifact.</td><td>Treating chat as durable project state.</td></tr>
+          <tr><td>Focused project reasoning</td><td>Copilot Notebook</td><td>Repeatable reasoning over a bounded corpus.</td><td>Using it as the official repository.</td></tr>
+          <tr><td>Deep multi-source investigation</td><td>Researcher</td><td>Source-cited investigation across work and public sources.</td><td>Using it for final legal, regulatory, engineering, or safety judgment.</td></tr>
+          <tr><td>Personal working files</td><td>OneDrive</td><td>Drafts, working analysis, temporary comparison sets.</td><td>Leaving team-dependent final work only in personal storage.</td></tr>
+          <tr><td>Personal long-lived notes</td><td>OneNote</td><td>Human-authored context, history, personal reference.</td><td>Using personal notes as official policy or approved direction.</td></tr>
+          <tr><td>Live meetings and collaboration</td><td>Teams</td><td>Conversation, meeting recap, transcript, shared review.</td><td>Relying on chat as the only decision log.</td></tr>
+          <tr><td>Live shared tables / notes</td><td>Loop</td><td>Portable synchronized components across Microsoft 365.</td><td>Calling live working content a final record.</td></tr>
+          <tr><td>Action ownership</td><td>Planner</td><td>Named owner, due date, durable action management.</td><td>Leaving actions buried in meeting summaries.</td></tr>
+          <tr><td>AI answer worth refining</td><td>Copilot Pages</td><td>Editable bridge from chat output to work product.</td><td>Equating persistence with official status.</td></tr>
+          <tr><td>Formal narrative</td><td>Word</td><td>Briefs, memos, specifications, reports, recommendations.</td><td>Publishing unreviewed AI text as authoritative.</td></tr>
+          <tr><td>Structured analysis</td><td>Excel</td><td>Calculations, registers, pivots, charts, validation.</td><td>Accepting unsupported causal narratives.</td></tr>
+          <tr><td>Executive communication</td><td>PowerPoint</td><td>Reviewed presentation layer built from approved evidence.</td><td>Letting slide compression remove caveats.</td></tr>
+          <tr><td>Email intake / communication</td><td>Outlook</td><td>Threads, drafting, coaching, calendar.</td><td>Using inboxes as task, decision, or project registers.</td></tr>
+          <tr><td>Workflow automation</td><td>Power Automate</td><td>Event-triggered movement of notifications and structured data.</td><td>Automating consequential judgment.</td></tr>
+          <tr><td>Approved knowledge / official team content</td><td>SharePoint</td><td>Governed destination with metadata, permissions, retention, and records controls.</td><td>Uncontrolled “everything goes here” dumping.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="apps" class="searchable">
+      <h2>4. Application playbook</h2>
+
+      <details id="copilot" open>
+        <summary>Microsoft Copilot Chat</summary>
+        <div class="details-body">
+          <p><b>Use for:</b> low-friction questions, synthesis, catch-up, first-pass drafting.</p>
+          <div class="flow">
+            <span class="node">Catch me up</span><span class="arrow">→</span>
+            <span class="node">Copilot Chat</span><span class="arrow">→</span>
+            <span class="node">Enough? stop</span>
+            <span class="node">Recurring corpus? Notebook</span>
+            <span class="node">Deep research? Researcher</span>
+            <span class="node">Worth preserving? Page</span>
+          </div>
+          <p class="small muted">Licensing and work-grounding capabilities vary by tenant and license. BC Hydro-specific availability is unverified.</p>
+        </div>
+      </details>
+
+      <details id="notebooks" open>
+        <summary>Copilot Notebooks</summary>
+        <div class="details-body">
+          <p><b>Best use:</b> a deliberately bounded project reasoning space, narrower than the full SharePoint repository.</p>
+          <pre><code>PROJECT NOTEBOOK: &lt;Project / decision&gt;
+
+Authoritative baseline
+  - approved project brief
+  - current design basis
+  - current standards
+  - current schedule / milestones
+
+Current working state
+  - latest status report
+  - risk / issue register
+  - current draft
+  - key meeting records
+
+Decision-specific evidence
+  - technical study
+  - vendor submission
+  - cost analysis
+  - prior approved decision
+
+Explicit exclusions
+  - superseded standards
+  - obsolete drafts
+  - unapproved alternatives</code></pre>
+          <div class="callout warn"><strong>300-file grounding limit</strong>Critical files should be added directly. Do not assume a huge SharePoint site will always select the exact documents you intend.</div>
+        </div>
+      </details>
+
+      <details id="sharepoint" open>
+        <summary>SharePoint Online</summary>
+        <div class="details-body">
+          <p><b>Best use:</b> governed team authority, controlled document libraries, official knowledge, publication, records, and long-lived structured lists.</p>
+          <p>Recommended metadata for technical/project libraries:</p>
+          <div>
+            <span class="pill">Document Type</span>
+            <span class="pill">Project / Program</span>
+            <span class="pill">Discipline</span>
+            <span class="pill">Document Owner</span>
+            <span class="pill">Status</span>
+            <span class="pill">Revision</span>
+            <span class="pill">Issue Date</span>
+            <span class="pill">Effective Date</span>
+            <span class="pill">Supersedes</span>
+            <span class="pill">Approval Status</span>
+            <span class="pill">Sensitivity</span>
+            <span class="pill">Record Category</span>
+          </div>
+          <div class="callout good"><strong>Why this matters for Copilot</strong>Metadata and controlled publishing locations help humans and AI distinguish current approved content from working drafts and superseded material.</div>
+        </div>
+      </details>
+
+      <details id="teams" open>
+        <summary>Teams + Loop + Planner</summary>
+        <div class="details-body">
+          <p>Treat these as one operating workflow:</p>
+          <pre><code>Before meeting
+Loop agenda
+    │
+    ▼
+During meeting
+Teams + transcript + Facilitator
+    │
+    ├── decision
+    ├── unresolved question
+    └── action + owner
+             │
+             ▼
+         Loop notes
+             │
+             ▼
+          Planner
+             │
+             ▼
+Next meeting reviews open actions
+             │
+             ▼
+Material decision promoted to
+project decision log / SharePoint</code></pre>
+          <p><b>Storage detail:</b> standard Teams channel files live in SharePoint. Files shared in 1:1 or group chats generally live in the sharer’s OneDrive.</p>
+        </div>
+      </details>
+
+      <details id="pages">
+        <summary>Copilot Pages</summary>
+        <div class="details-body">
+          <p><b>Use for:</b> turning a useful AI answer into editable, shareable work product.</p>
+          <div class="flow">
+            <span class="node">Copilot answer</span><span class="arrow">→</span>
+            <span class="node">Open in Page</span><span class="arrow">→</span>
+            <span class="node">Refine collaboratively</span><span class="arrow">→</span>
+            <span class="node">Word</span><span class="arrow">→</span>
+            <span class="node">Review</span><span class="arrow">→</span>
+            <span class="node">SharePoint</span>
+          </div>
+          <div class="callout warn"><strong>Governance caveat</strong>Pages and Notebooks use SharePoint Embedded. They should not automatically be treated as official repositories. Information Barrier support and lifecycle behavior differ from ordinary SharePoint sites.</div>
+        </div>
+      </details>
+
+      <details id="office">
+        <summary>Word + Excel + Analyst + PowerPoint</summary>
+        <div class="details-body">
+          <h3>Word</h3>
+          <p>Destination for formal narrative: briefs, technical memoranda, recommendations, specifications, and reports.</p>
+          <pre><code>Purpose
+Decision required
+Background
+Evidence
+Options
+Assessment
+Risks
+Recommendation
+Actions
+References</code></pre>
+
+          <h3>Excel vs Analyst</h3>
+          <table>
+            <thead><tr><th>Scenario</th><th>Use</th></tr></thead>
+            <tbody>
+              <tr><td>Edit / analyze one workbook</td><td>Copilot in Excel</td></tr>
+              <tr><td>Explore a data question across files</td><td>Analyst agent</td></tr>
+              <tr><td>Final validated calculation model</td><td>Excel workbook</td></tr>
+            </tbody>
+          </table>
+
+          <h3>PowerPoint</h3>
+          <p>Use as the last-mile communication layer. Build from reviewed evidence, and recheck numbers and caveats against the source Word/Excel artifact.</p>
+        </div>
+      </details>
+
+      <details id="outlook">
+        <summary>Outlook + Power Automate</summary>
+        <div class="details-body">
+          <p>Copilot in Outlook is strong for thread summaries, drafting, coaching, and agenda creation. For structured work intake, use Power Automate.</p>
+          <pre><code>Incoming Outlook message
+        │
+        ▼
+Power Automate trigger
+        │
+        ├── extract metadata
+        ├── create SharePoint/List item
+        ├── assign / notify
+        └── retain reference to source message</code></pre>
+          <div class="callout info"><strong>Operating rule</strong>Email is a communication pipe, not a task register, decision register, or final project record destination.</div>
+        </div>
+      </details>
+
+      <details id="onedrive-onenote">
+        <summary>OneDrive + OneNote</summary>
+        <div class="details-body">
+          <p><b>OneDrive:</b> files I am currently working on.</p>
+          <p><b>OneNote:</b> context I personally want to remember.</p>
+          <pre><code>OneDrive draft
+     │
+     ├── stays personal / exploratory
+     │
+     └── team now depends on it
+                 │
+                 ▼
+           SharePoint</code></pre>
+        </div>
+      </details>
+    </section>
+
+    <section id="workflows" class="searchable">
+      <h2>5. High-value BC Hydro workflow patterns</h2>
+
+      <div class="grid cols-2">
+        <div class="workflow">
+          <div class="kicker">Pilot 1</div>
+          <h3>Technical standard change & project impact</h3>
+          <p>Compare current and previous standards, map changes to project artifacts, then route findings to responsible reviewers.</p>
+          <div class="flow">
+            <span class="node">SharePoint standards</span><span class="arrow">→</span>
+            <span class="node">Notebook</span><span class="arrow">→</span>
+            <span class="node">Comparison matrix</span><span class="arrow">→</span>
+            <span class="node">Human review</span><span class="arrow">→</span>
+            <span class="node">Word + SharePoint</span>
+          </div>
+        </div>
+
+        <div class="workflow">
+          <div class="kicker">Pilot 2</div>
+          <h3>Weekly project-control cycle</h3>
+          <p>Surface only material changes, decisions, overdue actions, contradictions, and owner gaps.</p>
+          <div class="flow">
+            <span class="node">Status / risk / actions</span><span class="arrow">→</span>
+            <span class="node">Notebook</span><span class="arrow">→</span>
+            <span class="node">Teams meeting</span><span class="arrow">→</span>
+            <span class="node">Loop / Planner</span><span class="arrow">→</span>
+            <span class="node">Decision log</span>
+          </div>
+        </div>
+
+        <div class="workflow">
+          <div class="kicker">Pilot 3</div>
+          <h3>Design / document review</h3>
+          <p>Generate candidate review findings, not compliance determinations.</p>
+          <div class="flow">
+            <span class="node">Requirements</span><span class="arrow">→</span>
+            <span class="node">Notebook</span><span class="arrow">→</span>
+            <span class="node">Candidate gaps</span><span class="arrow">→</span>
+            <span class="node">Reviewer matrix</span>
+          </div>
+        </div>
+
+        <div class="workflow">
+          <div class="kicker">Pilot 4</div>
+          <h3>Excel variance → management brief</h3>
+          <p>Separate demonstrated findings from possible explanations, validate in Excel, then turn the reviewed narrative into a deck.</p>
+          <div class="flow">
+            <span class="node">Excel / Analyst</span><span class="arrow">→</span>
+            <span class="node">Validate</span><span class="arrow">→</span>
+            <span class="node">Word brief</span><span class="arrow">→</span>
+            <span class="node">PowerPoint</span>
+          </div>
+        </div>
+
+        <div class="workflow">
+          <div class="kicker">Research</div>
+          <h3>Regulatory / policy / executive research</h3>
+          <p>Use Researcher for source-cited investigation, then route the output through SME, Legal, Regulatory, or policy review as required.</p>
+          <div class="flow">
+            <span class="node">Question</span><span class="arrow">→</span>
+            <span class="node">Researcher</span><span class="arrow">→</span>
+            <span class="node">Page / Word</span><span class="arrow">→</span>
+            <span class="node">SME review</span>
+          </div>
+        </div>
+
+        <div class="workflow">
+          <div class="kicker">Intake</div>
+          <h3>Email → tracked work</h3>
+          <p>Keep stakeholder communication in Outlook, but move real commitments into structured SharePoint/Lists tracking.</p>
+          <div class="flow">
+            <span class="node">Shared mailbox</span><span class="arrow">→</span>
+            <span class="node">Power Automate</span><span class="arrow">→</span>
+            <span class="node">List / register</span><span class="arrow">→</span>
+            <span class="node">Teams</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="governance" class="searchable">
+      <h2>6. Governance, privacy, security, and records guardrails</h2>
+
+      <div class="callout bad">
+        <strong>Permissions are the first control</strong>
+        Copilot respects existing access, but it can make overshared material easier to discover. Run a SharePoint permissions and oversharing review before broad Copilot adoption.
+      </div>
+
+      <h3>Recommended readiness sequence</h3>
+      <pre><code>SharePoint inventory
+      ↓
+permissions / sharing review
+      ↓
+identify overshared sites
+      ↓
+remediate permissions
+      ↓
+apply appropriate classification
+      ↓
+validate authoritative content
+      ↓
+enable broader Copilot discovery</code></pre>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="kicker">Sensitivity</div>
+          <h3>Protect the information, not the app</h3>
+          <p>Decision path:</p>
+          <pre><code>What classification is this?
+        ↓
+What does BC Hydro policy permit?
+        ↓
+Which Microsoft 365 surface is approved?
+        ↓
+Proceed</code></pre>
+        </div>
+        <div class="card">
+          <div class="kicker">Prompts & discovery</div>
+          <h3>Assume prompts are governable records</h3>
+          <p>Copilot interactions can be subject to Purview retention, audit, and eDiscovery. Do not treat prompts as off-the-record scratch space.</p>
+        </div>
+      </div>
+
+      <h3>Pages and Notebooks require extra review</h3>
+      <div class="callout warn">
+        <strong>SharePoint Embedded caveat</strong>
+        Copilot Pages and Copilot Notebooks live in SharePoint Embedded containers and have different governance/lifecycle characteristics from ordinary SharePoint. For projects requiring Information Barriers or highly constrained content handling, suitability must be validated.
+      </div>
+
+      <h3>Data residency</h3>
+      <p>Storage-at-rest location and processing location are not the same thing. Microsoft documents local-region storage commitments for Copilot interaction content, but actual tenant geography, Multi-Geo, Advanced Data Residency configuration, and BC Hydro’s permitted handling of personal information must be checked against internal privacy/security policy.</p>
+      <table>
+        <thead><tr><th>Item to verify in BC Hydro tenant</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Microsoft 365 tenant geography</td><td><span class="status warn">Unverified</span></td></tr>
+          <tr><td>Copilot interaction data location</td><td><span class="status warn">Unverified</span></td></tr>
+          <tr><td>Advanced Data Residency / Multi-Geo configuration</td><td><span class="status warn">Unverified</span></td></tr>
+          <tr><td>Permitted information classifications for Copilot</td><td><span class="status warn">Unverified</span></td></tr>
+          <tr><td>PIA / privacy assessment requirements</td><td><span class="status warn">Unverified</span></td></tr>
+          <tr><td>Internal records schedules and retention labels</td><td><span class="status warn">Unverified</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Authoritative-copy rule</h3>
+      <table>
+        <thead><tr><th>State</th><th>Meaning</th><th>Typical location</th></tr></thead>
+        <tbody>
+          <tr><td>Working</td><td>In progress, exploratory, may be wrong</td><td>OneDrive, OneNote, Notebook, Page, Loop</td></tr>
+          <tr><td>Reviewed</td><td>Humans checked it, still may evolve</td><td>Teams / SharePoint working library / Word / Excel</td></tr>
+          <tr><td>Approved / Current</td><td>Team-authoritative version</td><td>Governed SharePoint library</td></tr>
+          <tr><td>Record</td><td>Subject to approved records controls</td><td>SharePoint + Purview according to policy</td></tr>
+          <tr><td>Superseded</td><td>Retained if required, clearly not current</td><td>Controlled SharePoint / records lifecycle</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="information-architecture" class="searchable">
+      <h2>7. Pragmatic information architecture</h2>
+      <p>The goal is to make “current authoritative information” obvious to both humans and Copilot.</p>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <div class="kicker">Library design</div>
+          <h3>Prefer metadata + controlled locations</h3>
+          <ul>
+            <li>Separate working and approved libraries when practical.</li>
+            <li>Use explicit status values instead of filename conventions.</li>
+            <li>Track revision, issue date, effective date, and supersedes.</li>
+            <li>Assign a document owner for every authoritative artifact.</li>
+            <li>Use sensitivity and record categories consistently.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="kicker">Avoid</div>
+          <h3>Do not rely on filenames like</h3>
+          <pre><code>FINAL.docx
+FINAL2.docx
+FINAL_revised.docx
+FINAL_revised_USE_THIS.docx</code></pre>
+          <p>These are weak signals for people and weaker still for automated retrieval.</p>
+        </div>
+      </div>
+
+      <h3>Promotion rules</h3>
+      <table>
+        <thead><tr><th>From</th><th>To</th><th>Promote when…</th></tr></thead>
+        <tbody>
+          <tr><td>OneDrive</td><td>SharePoint working library</td><td>The team depends on the file, needs shared review, or needs durable team access.</td></tr>
+          <tr><td>Copilot Page / Loop</td><td>Word / Excel</td><td>The content becomes a formal artifact requiring controlled review.</td></tr>
+          <tr><td>Word / Excel / PowerPoint</td><td>SharePoint approved library</td><td>Responsible human review is complete and the artifact is ready to become authoritative.</td></tr>
+          <tr><td>Teams meeting recap</td><td>Decision log / Planner / SharePoint</td><td>A discussion creates a material decision, commitment, action, exception, or record-worthy outcome.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="pilot" class="searchable">
+      <h2>8. Pilot design and success criteria</h2>
+      <p>Do not measure “prompt volume.” Measure whether a bounded workflow becomes faster, more complete, more traceable, and easier to govern.</p>
+
+      <table>
+        <thead><tr><th>Pilot workflow</th><th>AI role</th><th>Human control point</th></tr></thead>
+        <tbody>
+          <tr><td>Technical standard change review</td><td>Compare and locate affected requirements</td><td>Engineer validates every finding</td></tr>
+          <tr><td>Weekly project-control cycle</td><td>Surface material changes, decisions, and actions</td><td>PM / lead confirms decisions, owners, due dates</td></tr>
+          <tr><td>Excel variance → management brief</td><td>Detect patterns, create tables/charts, draft narrative</td><td>Analyst validates calculations and explanations</td></tr>
+          <tr><td>Email/request → tracked work</td><td>Summarize and route</td><td>Process owner confirms categorization and closure</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Metrics worth tracking</h3>
+      <div class="grid cols-3">
+        <div class="card"><b>Time to first usable draft</b><p class="muted small">Productivity</p></div>
+        <div class="card"><b>Time to confirmed meeting actions</b><p class="muted small">Execution speed</p></div>
+        <div class="card"><b>% material claims with source</b><p class="muted small">Grounding quality</p></div>
+        <div class="card"><b>Source / revision errors</b><p class="muted small">Retrieval risk</p></div>
+        <div class="card"><b>Human correction rate</b><p class="muted small">Output reliability</p></div>
+        <div class="card"><b>Missed requirements</b><p class="muted small">Completeness</p></div>
+        <div class="card"><b>Unsupported causal claims</b><p class="muted small">Reasoning risk</p></div>
+        <div class="card"><b>Actions missing owner / date</b><p class="muted small">Project-control quality</p></div>
+        <div class="card"><b>Approved artifacts in correct SharePoint location</b><p class="muted small">Records discipline</p></div>
+        <div class="card"><b>Superseded docs used by Copilot</b><p class="muted small">Content quality</p></div>
+        <div class="card"><b>Oversharing exceptions found</b><p class="muted small">Security readiness</p></div>
+        <div class="card"><b>Time spent finding information</b><p class="muted small">Search benefit</p></div>
+      </div>
+    </section>
+
+    <section id="prompts" class="searchable">
+      <h2>9. Prompt library</h2>
+
+      <h3>Notebook grounding discipline</h3>
+      <div class="prompt">
+        <button class="copy" onclick="copyPrompt(this)">Copy</button>
+        <pre><code>Using only the notebook references:
+
+1. Answer the question.
+2. Cite the supporting document for every material statement.
+3. Identify the document revision/effective date where available.
+4. Separate:
+   - explicit source fact
+   - inference
+   - assumption
+   - unresolved question
+5. If sources conflict, show both rather than choosing one.
+6. Mark unsupported conclusions "unverified."</code></pre>
+      </div>
+
+      <h3>Technical standard comparison</h3>
+      <div class="prompt">
+        <button class="copy" onclick="copyPrompt(this)">Copy</button>
+        <pre><code>Using only the references in this notebook, compare the currently
+effective standard with the previous revision.
+
+Create a table with:
+
+- requirement / clause
+- previous requirement
+- current requirement
+- change type
+- effective date
+- project artifact potentially affected
+- evidence supporting the assessment
+- required follow-up
+- uncertainty
+
+Do not determine engineering compliance.
+
+For every material statement, identify the supporting source.
+If a conclusion requires engineering judgment rather than explicit source
+text, label it "requires engineering review."
+If documents conflict, show the conflict rather than resolving it.</code></pre>
+      </div>
+
+      <h3>Weekly project-control briefing</h3>
+      <div class="prompt">
+        <button class="copy" onclick="copyPrompt(this)">Copy</button>
+        <pre><code>Prepare my project-control briefing.
+
+Show only material changes since the previous reporting period:
+
+1. decisions needed this week
+2. milestones that moved
+3. new or materially changed risks
+4. overdue actions
+5. unresolved issues appearing in more than one meeting
+6. contradictions between the status report, action register, and meeting records
+7. items lacking a named owner
+
+For every item, cite the source.</code></pre>
+      </div>
+
+      <h3>Meeting close-out</h3>
+      <div class="prompt">
+        <button class="copy" onclick="copyPrompt(this)">Copy</button>
+        <pre><code>Create a close-out table containing:
+
+Decision | Owner | Action | Due date | Evidence required | Open question
+
+Then identify:
+- anything discussed but not resolved
+- any action without an owner
+- any owner without a due date
+- any statement where two participants appear to have different interpretations
+
+Do not infer agreement when the transcript does not demonstrate it.</code></pre>
+      </div>
+
+      <h3>Design / document review</h3>
+      <div class="prompt">
+        <button class="copy" onclick="copyPrompt(this)">Copy</button>
+        <pre><code>Review the supplied draft against the supplied requirements.
+
+Do not state that the design is compliant.
+
+Produce candidate review findings only:
+
+Requirement | Draft evidence | Potential gap | Source | Confidence |
+Reviewer required
+
+Pay particular attention to:
+- requirements with no corresponding evidence
+- contradictory assumptions
+- undefined terms
+- references to superseded material
+- numerical values that differ across documents
+- unresolved comments from the previous review
+- requirements containing "shall", "must", or equivalent mandatory language
+
+Quote only the minimum text necessary to identify the requirement.</code></pre>
+      </div>
+
+      <h3>Variance analysis</h3>
+      <div class="prompt">
+        <button class="copy" onclick="copyPrompt(this)">Copy</button>
+        <pre><code>Analyze actual vs forecast.
+
+For each material variance, report:
+
+- metric
+- current value
+- baseline / forecast
+- absolute variance
+- percentage variance
+- trend over the last six reporting periods
+- whether the variance is new, persistent, or recovering
+- the rows / fields supporting the calculation
+
+Do not invent a causal explanation.
+
+Separate:
+1. findings demonstrated by the data
+2. plausible explanations requiring investigation
+
+Create charts only for the five variances most relevant to management.</code></pre>
+      </div>
+
+      <h3>Researcher prompt</h3>
+      <div class="prompt">
+        <button class="copy" onclick="copyPrompt(this)">Copy</button>
+        <pre><code>Research this question using both accessible BC Hydro work content
+and authoritative public sources.
+
+Prioritize:
+1. legislation / regulation
+2. regulator material
+3. BC Hydro approved material
+4. other primary sources
+
+For every conclusion:
+- identify the source
+- identify publication/effective date
+- distinguish source fact from interpretation
+- identify conflicts between sources
+- state what remains unknown
+
+Do not provide a final legal or regulatory determination.</code></pre>
+      </div>
+    </section>
+
+    <section id="sources" class="searchable">
+      <h2>10. Primary sources</h2>
+      <p class="muted">Selected primary sources used in the underlying research. Product capabilities can change, so recheck these before formalizing policy or architecture.</p>
+      <ul class="source-list">
+        <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/work-iq/" target="_blank" rel="noopener">Microsoft Learn: Work IQ overview</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/microsoft-365-copilot-privacy" target="_blank" rel="noopener">Microsoft Learn: Data, Privacy, and Security for Microsoft Copilot</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/security-microsoft-365-copilot" target="_blank" rel="noopener">Microsoft Learn: Security for Microsoft Copilot</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-365-copilot/how-microsoft-365-copilot-notebooks-works" target="_blank" rel="noopener">Microsoft Support: How Copilot Notebooks works</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-365-copilot/add-references-to-your-microsoft-365-copilot-notebook" target="_blank" rel="noopener">Microsoft Support: Add references to Copilot Notebooks</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/microsoft-365/loop/cpcn-compliance-summary?view=o365-worldwide" target="_blank" rel="noopener">Microsoft Learn: Governance and compliance for Copilot Pages and Notebooks</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/sharepoint/teams-connected-sites" target="_blank" rel="noopener">Microsoft Learn: Teams and SharePoint integration</a></li>
+        <li><a href="https://support.microsoft.com/en-us/teams/meetings/recap-in-microsoft-teams" target="_blank" rel="noopener">Microsoft Support: Teams Recap</a></li>
+        <li><a href="https://support.microsoft.com/en-us/teams/copilot/facilitator-in-microsoft-teams-meetings" target="_blank" rel="noopener">Microsoft Support: Facilitator in Teams meetings</a></li>
+        <li><a href="https://support.microsoft.com/en-us/loop/get-to-know-loop-components" target="_blank" rel="noopener">Microsoft Support: Loop components</a></li>
+        <li><a href="https://support.microsoft.com/en-us/loop/manage-your-tasks-from-loop-task-lists-and-collaborative-notes-in-planner" target="_blank" rel="noopener">Microsoft Support: Loop tasks and Planner</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-365-copilot/get-started-with-microsoft-365-copilot-pages" target="_blank" rel="noopener">Microsoft Support: Copilot Pages</a></li>
+        <li><a href="https://support.microsoft.com/en-us/excel/copilot/get-started-with-copilot-in-excel" target="_blank" rel="noopener">Microsoft Support: Copilot in Excel</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-365-copilot/get-started-with-analyst-in-microsoft-365-copilot" target="_blank" rel="noopener">Microsoft Support: Analyst agent</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-365-copilot/get-started-with-researcher-in-microsoft-365-copilot" target="_blank" rel="noopener">Microsoft Support: Researcher agent</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/power-automate/triggers-introduction" target="_blank" rel="noopener">Microsoft Learn: Power Automate triggers</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/purview/declare-records" target="_blank" rel="noopener">Microsoft Learn: Declare records using retention labels</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/purview/retention-policies-copilot" target="_blank" rel="noopener">Microsoft Learn: Retention for Copilot and AI apps</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/purview/audit-copilot" target="_blank" rel="noopener">Microsoft Learn: Audit logs for Copilot and AI applications</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/sharepoint/advanced-management" target="_blank" rel="noopener">Microsoft Learn: SharePoint Advanced Management</a></li>
+        <li><a href="https://learn.microsoft.com/en-us/sharepoint/restricted-content-discovery" target="_blank" rel="noopener">Microsoft Learn: Restricted Content Discovery</a></li>
+        <li><a href="https://www.bchydro.com/accounts-billing/electrical-connections/distribution-standards.html" target="_blank" rel="noopener">BC Hydro: Distribution Technical Standards and Guides</a></li>
+        <li><a href="https://www.bchydro.com/toolbar/about/accountability_reports/freedom-of-information-requests.html" target="_blank" rel="noopener">BC Hydro: Freedom of Information Requests</a></li>
+        <li><a href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96165_08" target="_blank" rel="noopener">BC Laws: Freedom of Information and Protection of Privacy Act</a></li>
+        <li><a href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/policies-procedures/foippa-manual/disclosure-outside-canada" target="_blank" rel="noopener">Government of BC: FIPPA section 33.1 disclosure outside Canada</a></li>
+      </ul>
+    </section>
+
+    <div class="footer">
+      Standalone reference site generated from the completed research. Organization-specific recommendations remain proposals until validated against BC Hydro policy, privacy, security, records management, and tenant configuration.
+    </div>
+
+  </div>
+  </main>
+</div>
+
+<script>
+function toggleTheme(){
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme') === 'dark' ? '' : 'dark';
+  if(next) root.setAttribute('data-theme', next); else root.removeAttribute('data-theme');
+  localStorage.setItem('theme', next);
+}
+(function(){
+  const saved = localStorage.getItem('theme');
+  if(saved === 'dark') document.documentElement.setAttribute('data-theme','dark');
+})();
+
+function toggleNav(){
+  document.getElementById('nav').classList.toggle('open');
+}
+
+function copyPrompt(btn){
+  const text = btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(()=>btn.textContent = old, 1200);
+  });
+}
+
+const search = document.getElementById('search');
+search.addEventListener('input', function(){
+  const q = this.value.trim().toLowerCase();
+  document.querySelectorAll('.searchable, details').forEach(el=>{
+    if(!q){ el.classList.remove('hide'); return; }
+    const hit = el.innerText.toLowerCase().includes(q);
+    el.classList.toggle('hide', !hit);
+    if(hit && el.tagName === 'DETAILS') el.open = true;
+  });
+});
+</script>
+</body>
+</html>

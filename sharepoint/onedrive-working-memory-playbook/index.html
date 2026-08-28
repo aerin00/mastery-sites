@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OneDrive Working Memory Playbook</title>
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --panel:#ffffff;
+    --text:#18212f;
+    --muted:#667085;
+    --border:#e4e7ec;
+    --soft:#f2f4f7;
+    --accent:#2563eb;
+    --accent-soft:#eff6ff;
+    --good:#067647;
+    --good-bg:#ecfdf3;
+    --warn:#b54708;
+    --warn-bg:#fffaeb;
+    --bad:#b42318;
+    --bad-bg:#fef3f2;
+    --code:#101828;
+    --shadow:0 8px 24px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.55;
+  }
+  a{color:inherit}
+  .app{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:290px minmax(0,1fr);
+  }
+  aside{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:22px 18px;
+    border-right:1px solid var(--border);
+    background:#fbfcfe;
+    overflow:auto;
+  }
+  .brand{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+  .brand-mark{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+    display:grid;place-items:center;color:white;font-weight:800;
+  }
+  .brand strong{display:block;font-size:15px}
+  .brand small{color:var(--muted)}
+  .search-wrap{margin:14px 0 18px}
+  #search{
+    width:100%;
+    border:1px solid var(--border);
+    background:white;
+    padding:10px 12px;
+    border-radius:10px;
+    font:inherit;
+    outline:none;
+  }
+  #search:focus{border-color:#93c5fd; box-shadow:0 0 0 3px #dbeafe}
+  nav a{
+    display:block;
+    text-decoration:none;
+    color:#344054;
+    padding:8px 10px;
+    border-radius:8px;
+    font-size:14px;
+    margin:2px 0;
+  }
+  nav a:hover{background:var(--soft)}
+  nav a.active{background:var(--accent-soft); color:#1d4ed8; font-weight:700}
+  .side-note{
+    margin-top:18px;
+    padding:12px;
+    border:1px solid var(--border);
+    background:white;
+    border-radius:10px;
+    color:var(--muted);
+    font-size:12px;
+  }
+  main{
+    padding:42px clamp(22px,4vw,64px) 80px;
+    max-width:1280px;
+  }
+  .hero{
+    background:linear-gradient(135deg,#ffffff,#f8fbff);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow);
+    border-radius:18px;
+    padding:34px;
+    margin-bottom:24px;
+  }
+  .eyebrow{
+    color:#1d4ed8;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-size:12px;
+  }
+  h1{font-size:clamp(30px,4vw,50px); line-height:1.05; margin:8px 0 16px}
+  h2{font-size:26px; margin:0 0 14px}
+  h3{font-size:18px; margin:0 0 10px}
+  p{margin:10px 0}
+  .lead{
+    font-size:19px;
+    max-width:850px;
+    color:#344054;
+  }
+  .rulebar{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:24px;
+  }
+  .rule{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
+    background:white;
+  }
+  .rule strong{display:block;margin-bottom:3px}
+  .rule span{color:var(--muted);font-size:14px}
+  section{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:26px;
+    margin:18px 0;
+    box-shadow:0 2px 8px rgba(16,24,40,.03);
+  }
+  .section-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    font-weight:800;
+    color:#475467;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+    margin-bottom:8px;
+  }
+  .callout{
+    border-left:4px solid var(--accent);
+    background:var(--accent-soft);
+    padding:14px 16px;
+    border-radius:8px;
+    margin:16px 0;
+  }
+  .callout.good{border-color:var(--good); background:var(--good-bg)}
+  .callout.warn{border-color:var(--warn); background:var(--warn-bg)}
+  .callout.bad{border-color:var(--bad); background:var(--bad-bg)}
+  .grid-2{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+  }
+  .grid-3{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:16px;
+  }
+  .card{
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:12px;
+    padding:16px;
+  }
+  .card p:last-child{margin-bottom:0}
+  .muted{color:var(--muted)}
+  pre{
+    position:relative;
+    margin:14px 0 0;
+    padding:18px;
+    overflow:auto;
+    border-radius:12px;
+    background:var(--code);
+    color:#f8fafc;
+    font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  code{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  .copy-btn{
+    position:absolute;
+    right:10px;
+    top:10px;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.08);
+    color:white;
+    border-radius:8px;
+    padding:6px 9px;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .copy-btn:hover{background:rgba(255,255,255,.14)}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:14px;
+    font-size:14px;
+  }
+  th,td{
+    text-align:left;
+    padding:11px 12px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  th{background:#f9fafb;color:#344054}
+  .flow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    margin:16px 0 4px;
+  }
+  .flow .step{
+    background:#fff;
+    border:1px solid var(--border);
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:650;
+  }
+  .flow .arrow{color:#98a2b3}
+  details{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    margin:10px 0;
+    background:#fff;
+  }
+  summary{cursor:pointer;font-weight:750}
+  .checklist{
+    list-style:none;
+    padding:0;
+    margin:12px 0 0;
+  }
+  .checklist li{
+    padding:8px 0 8px 28px;
+    position:relative;
+    border-bottom:1px dashed var(--border);
+  }
+  .checklist li::before{
+    content:"✓";
+    position:absolute;
+    left:0; top:8px;
+    width:18px;height:18px;border-radius:50%;
+    background:var(--good-bg); color:var(--good);
+    display:grid;place-items:center;font-size:12px;font-weight:800;
+  }
+  .pill{
+    display:inline-block;
+    font-size:12px;
+    font-weight:750;
+    padding:4px 8px;
+    border-radius:999px;
+    background:var(--soft);
+    color:#475467;
+    margin-right:6px;
+  }
+  .hide{display:none !important}
+  footer{
+    color:var(--muted);
+    font-size:13px;
+    padding:20px 4px 0;
+  }
+  .top-btn{
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    width:42px;height:42px;border-radius:50%;
+    border:1px solid var(--border);
+    background:white;
+    box-shadow:var(--shadow);
+    cursor:pointer;
+    display:none;
+  }
+  .top-btn.show{display:block}
+  @media(max-width:900px){
+    .app{grid-template-columns:1fr}
+    aside{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--border)}
+    nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+    .rulebar,.grid-2,.grid-3{grid-template-columns:1fr}
+    main{padding:24px 16px 60px}
+  }
+</style>
+<script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787896769020&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_000000002aac81fd92d9b11ffae1f471%26fn%3Donedrive-working-memory-playbook.html%26cd%3Dattachment%26ts%3D496638%26p%3Dfs%26cid%3D1%26sig%3D35ec824c1954b5acbdbdbecae9e6dd0b82d7f06b5680a77a241b2b22e68db9a4%26v%3D0&amp;app=brave.exe&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="58288f5ea6d0410ba8744899c00" src="//local.adguard.org?ts=1787896769020&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="brand-mark">OD</div>
+      <div>
+        <strong>OneDrive Working Memory</strong>
+        <small>Copilot-ready reference guide</small>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search this guide..." aria-label="Search guide" />
+    </div>
+
+    <nav id="nav">
+      <a href="#principles">1. Core principles</a>
+      <a href="#structure">2. Top-level structure</a>
+      <a href="#active-work">3. Active work</a>
+      <a href="#context">4. Context documents</a>
+      <a href="#versions">5. Duplicates & versions</a>
+      <a href="#archive">6. Archive & stale files</a>
+      <a href="#authority">7. Official vs working</a>
+      <a href="#reference">8. Working reference</a>
+      <a href="#copilot">9. Copilot folder</a>
+      <a href="#naming">10. Naming</a>
+      <a href="#decisions">11. Decision logs</a>
+      <a href="#cleanup">12. Cleanup plan</a>
+      <a href="#duplicate-audit">13. Duplicate audit</a>
+      <a href="#architecture">14. Final architecture</a>
+      <a href="#rules">15. Five rules</a>
+    </nav>
+
+    <div class="side-note">
+      <strong>Design goal:</strong><br>
+      Make the current truth obvious, reduce duplicate evidence, and keep personal work separate from authoritative team sources.
+    </div>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="eyebrow">Reference Playbook</div>
+      <h1>Structure OneDrive as your personal working memory</h1>
+      <p class="lead">
+        The goal is not prettier folders. The goal is a controlled working set where current documents are obvious, stale copies are demoted, authoritative material lives in the right place, and Copilot has less conflicting evidence to reason over.
+      </p>
+      <div class="rulebar">
+        <div class="rule"><strong>One current working set</strong><span>Keep only what you actively use.</span></div>
+        <div class="rule"><strong>Links to authority</strong><span>Reference SharePoint originals instead of copying them.</span></div>
+        <div class="rule"><strong>Minimal historical clutter</strong><span>Delete redundant copies and clearly mark retained history.</span></div>
+      </div>
+    </div>
+
+    <section id="principles" data-search>
+      <div class="section-kicker">01 · Core principles</div>
+      <h2>What OneDrive should be</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Use OneDrive for</h3>
+          <ul>
+            <li>Active personal working files</li>
+            <li>Drafts you are responsible for</li>
+            <li>Personal analysis and meeting prep</li>
+            <li>Reusable personal templates</li>
+            <li>Context documents that explain your work</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Do not turn it into</h3>
+          <ul>
+            <li>A dump of email attachments</li>
+            <li>A second copy of SharePoint</li>
+            <li>A permanent archive of every version</li>
+            <li>A mixed pile of official and unofficial information</li>
+            <li>An AI-output knowledge base with no authority labels</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Rule of thumb:</strong> if an official copy already exists in SharePoint or another governed location, keep the authoritative source there and reference it from OneDrive.
+      </div>
+    </section>
+
+    <section id="structure" data-search>
+      <div class="section-kicker">02 · Top-level structure</div>
+      <h2>Use this exact top-level structure</h2>
+      <pre><button class="copy-btn">Copy</button><code>OneDrive - BC Hydro
+│
+├── 00_Inbox
+├── 10_Active Work
+├── 20_Working Reference
+├── 30_Templates
+├── 40_Copilot
+├── 90_Completed Work
+└── 99_Cleanup Quarantine</code></pre>
+
+      <table>
+        <thead><tr><th>Folder</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>00_Inbox</code></td><td>New files you have not classified yet.</td></tr>
+          <tr><td><code>10_Active Work</code></td><td>Things you are actively working on.</td></tr>
+          <tr><td><code>20_Working Reference</code></td><td>Personal reference material you genuinely reuse.</td></tr>
+          <tr><td><code>30_Templates</code></td><td>Clean reusable templates.</td></tr>
+          <tr><td><code>40_Copilot</code></td><td>Context documents, prompt libraries, research notes.</td></tr>
+          <tr><td><code>90_Completed Work</code></td><td>Completed personal work that is still worth retaining.</td></tr>
+          <tr><td><code>99_Cleanup Quarantine</code></td><td>Temporary holding area while the old mess is being cleaned.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="active-work" data-search>
+      <div class="section-kicker">03 · Active work</div>
+      <h2>Mirror your real workstreams</h2>
+      <p>Inside <code>10_Active Work</code>, organize around projects and recurring responsibilities, not file types.</p>
+      <pre><button class="copy-btn">Copy</button><code>10_Active Work
+│
+├── JUAS
+│   ├── 00_Context
+│   ├── 10_Inputs
+│   ├── 20_Working
+│   ├── 30_Meetings
+│   ├── 40_Decisions
+│   └── 50_Deliverables
+│
+├── Quarterly Forecasting
+│   ├── 00_Context
+│   ├── 10_Inputs
+│   ├── 20_Working
+│   ├── 30_Meetings
+│   ├── 40_Decisions
+│   └── 50_Deliverables
+│
+├── SharePoint Master Hub
+│   └── ...
+│
+└── Coordinator Work
+    └── ...</code></pre>
+      <div class="callout good"><strong>Keep it shallow.</strong> Three or four levels of nesting is usually enough.</div>
+    </section>
+
+    <section id="context" data-search>
+      <div class="section-kicker">04 · Context documents</div>
+      <h2>Give every major project one context document</h2>
+      <p>This is the most useful document in each workstream because it tells Copilot what the project is, what is current, and which sources outrank others.</p>
+      <pre><button class="copy-btn">Copy</button><code>10_Active Work/
+└── JUAS/
+    └── 00_Context/
+        └── JUAS - Work Context.docx</code></pre>
+
+      <details open>
+        <summary>Recommended contents</summary>
+        <pre><button class="copy-btn">Copy</button><code>JUAS - Work Context
+
+Purpose
+Joint Use Asset System work relating to...
+
+My role
+Financial Systems Analyst responsible for...
+
+Current focus
+- ...
+- ...
+- ...
+
+Important terminology
+JUAS = ...
+JPB = ...
+POLE_ID = ...
+
+Authoritative sources
+- SharePoint: [link]
+- Current coordinator guide: [link]
+- Current billing procedures: [link]
+
+Source authority
+1. Approved process documentation
+2. Approved formulas
+3. Approved cost tables
+4. System/run outputs
+5. Personal analysis
+
+Current deliverables
+- ...
+- ...
+
+Known unresolved questions
+- ...
+
+Last reviewed
+2026-08-27</code></pre>
+      </details>
+
+      <div class="flow">
+        <div class="step">Project</div><div class="arrow">→</div>
+        <div class="step">Purpose</div><div class="arrow">→</div>
+        <div class="step">Role</div><div class="arrow">→</div>
+        <div class="step">Current work</div><div class="arrow">→</div>
+        <div class="step">Authority</div>
+      </div>
+    </section>
+
+    <section id="versions" data-search>
+      <div class="section-kicker">05 · Duplicates & versions</div>
+      <h2>One logical document should usually mean one file</h2>
+      <div class="grid-2">
+        <div class="card">
+          <span class="pill">Bad</span>
+          <pre><code>Forecast.xlsx
+Forecast new.xlsx
+Forecast final.xlsx
+Forecast final2.xlsx
+Forecast FINAL.xlsx
+Forecast use this one.xlsx</code></pre>
+        </div>
+        <div class="card">
+          <span class="pill">Good</span>
+          <pre><code>Quarterly Forecast.xlsx
+
+Use Version History for
+previous states.</code></pre>
+        </div>
+      </div>
+      <div class="callout warn"><strong>Why this matters:</strong> multiple independently searchable copies create multiple plausible versions of truth.</div>
+    </section>
+
+    <section id="archive" data-search>
+      <div class="section-kicker">06 · Archive & stale files</div>
+      <h2>Do not treat an Archive folder as an AI exclusion switch</h2>
+      <p>Moving a document into an archive-style folder may help humans, but it should not be treated as a guaranteed semantic instruction to ignore that file.</p>
+
+      <div class="grid-3">
+        <div class="card"><h3>Still useful?</h3><p>Keep it only if there is a clear reason.</p></div>
+        <div class="card"><h3>Retention required?</h3><p>Move it to the correct official governed location.</p></div>
+        <div class="card"><h3>Redundant?</h3><p>Delete it after confirming the current copy.</p></div>
+      </div>
+
+      <h3 style="margin-top:18px">If an obsolete file must remain</h3>
+      <pre><button class="copy-btn">Copy</button><code>SUPERSEDED - Billing Process - Replaced 2026-04-01.docx</code></pre>
+      <pre><button class="copy-btn">Copy</button><code>STATUS: SUPERSEDED
+
+Do not use this document for current operational guidance.
+
+Replaced by:
+[Current Billing Process]
+
+Effective replacement date:
+2026-04-01
+
+Retained for:
+Historical reference only</code></pre>
+    </section>
+
+    <section id="authority" data-search>
+      <div class="section-kicker">07 · Official vs working</div>
+      <h2>Separate organizational truth from your personal working material</h2>
+
+      <div class="callout good">
+        <strong>Default:</strong> if there is already an authoritative corporate copy, do not create another permanent OneDrive reference copy.
+      </div>
+
+      <pre><button class="copy-btn">Copy</button><code>Did I create this as part of my own work?
+
+YES → OneDrive may be appropriate.
+
+NO → Is there already an authoritative corporate copy?
+
+YES → reference that copy.
+      Do not download another permanent copy.</code></pre>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>SharePoint</h3>
+          <p>Authoritative truth:</p>
+          <ul><li>Policies</li><li>Procedures</li><li>Approved team deliverables</li><li>Official reference material</li></ul>
+        </div>
+        <div class="card">
+          <h3>OneDrive</h3>
+          <p>Your working memory:</p>
+          <ul><li>Active work</li><li>Personal analysis</li><li>Draft deliverables</li><li>Meeting prep</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="reference" data-search>
+      <div class="section-kicker">08 · Working reference</div>
+      <h2>Be strict with <code>20_Working Reference</code></h2>
+      <p>Only keep a reference file if all three conditions are true:</p>
+      <ul class="checklist">
+        <li>I personally use this repeatedly.</li>
+        <li>It does not already have a better authoritative home.</li>
+        <li>I would want Copilot using it as context today.</li>
+      </ul>
+
+      <pre><button class="copy-btn">Copy</button><code>20_Working Reference/
+├── Excel
+│   └── Monthly Workbook Maintenance Checklist.docx
+├── SQL
+│   └── JUAS Query Conventions.docx
+└── M365
+    └── BC Hydro Copilot Constraints.docx</code></pre>
+    </section>
+
+    <section id="copilot" data-search>
+      <div class="section-kicker">09 · Copilot folder</div>
+      <h2>Give AI-generated material a clearly labeled home</h2>
+      <pre><button class="copy-btn">Copy</button><code>40_Copilot
+│
+├── 00_Instructions
+├── 10_Prompts
+├── 20_Context
+├── 30_Research
+└── 90_Experiments</code></pre>
+
+      <div class="callout bad">
+        <strong>Critical rule:</strong> AI output does not automatically become organizational truth.
+      </div>
+
+      <pre><button class="copy-btn">Copy</button><code>STATUS: AI-GENERATED WORKING ANALYSIS
+AUTHORITY: NON-AUTHORITATIVE
+REQUIRES VERIFICATION AGAINST SOURCE DOCUMENTS</code></pre>
+
+      <div class="flow">
+        <div class="step">Official source</div><div class="arrow">→</div>
+        <div class="step">AI summary</div><div class="arrow">→</div>
+        <div class="step">Saved summary</div><div class="arrow">→</div>
+        <div class="step">Future retrieval</div>
+      </div>
+      <p class="muted">Without labels, summaries can start to look like sources.</p>
+    </section>
+
+    <section id="naming" data-search>
+      <div class="section-kicker">10 · Naming</div>
+      <h2>Use a boring naming convention</h2>
+      <pre><button class="copy-btn">Copy</button><code>[Subject] - [Document Type] - [Date if meaningful]</code></pre>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Date when the period matters</h3>
+          <pre><code>Monthly Billing Analysis - 2026-08.xlsx
+Meeting Notes - 2026-08-27.docx</code></pre>
+        </div>
+        <div class="card">
+          <h3>No date for one living document</h3>
+          <pre><code>JUAS - Work Context.docx
+Quarterly Forecast - Assumptions.docx</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="decisions" data-search>
+      <div class="section-kicker">11 · Decision logs</div>
+      <h2>Make current decisions explicit</h2>
+      <p>Important projects should have one simple decision log instead of forcing Copilot to reconstruct decisions from old emails, meetings, and drafts.</p>
+
+      <table>
+        <thead><tr><th>Date</th><th>Decision</th><th>Reason</th><th>Source</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>2026-08-12</td><td>Use X</td><td>Y constraint</td><td>Meeting / link</td><td>Current</td></tr>
+          <tr><td>2026-06-03</td><td>Use Z</td><td>Original design</td><td>Meeting / link</td><td>Superseded</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="cleanup" data-search>
+      <div class="section-kicker">12 · Cleanup plan</div>
+      <h2>Clean the mess in passes, not file by file</h2>
+
+      <details open>
+        <summary>Pass 1: establish the new system</summary>
+        <pre><button class="copy-btn">Copy</button><code>00_Inbox
+10_Active Work
+20_Working Reference
+30_Templates
+40_Copilot
+90_Completed Work
+99_Cleanup Quarantine</code></pre>
+        <p>From this point forward, all new work follows the new structure.</p>
+      </details>
+
+      <details>
+        <summary>Pass 2: quarantine the old mess</summary>
+        <p>Move unclassified material into <code>99_Cleanup Quarantine</code>. Preserve obvious folder groupings instead of flattening everything.</p>
+      </details>
+
+      <details>
+        <summary>Pass 3: clean project by project</summary>
+        <div class="flow">
+          <div class="step">Find related files</div><div class="arrow">→</div>
+          <div class="step">Group duplicates</div><div class="arrow">→</div>
+          <div class="step">Choose canonical version</div><div class="arrow">→</div>
+          <div class="step">Link official sources</div><div class="arrow">→</div>
+          <div class="step">Delete redundancy</div><div class="arrow">→</div>
+          <div class="step">Create context doc</div>
+        </div>
+      </details>
+
+      <div class="callout good">
+        <strong>Priority:</strong> clean the workstreams responsible for most of your current Copilot questions first. Do not start with obscure files from years ago.
+      </div>
+    </section>
+
+    <section id="duplicate-audit" data-search>
+      <div class="section-kicker">13 · Duplicate audit</div>
+      <h2>Use Copilot to compare suspected duplicates, then decide yourself</h2>
+      <pre><button class="copy-btn">Copy</button><code>Compare these files.
+
+Determine:
+1. Which appears to contain the most current information.
+2. What substantive changes exist between them.
+3. Whether any file contains unique information absent from the others.
+4. Which files appear to be redundant copies.
+
+Do not recommend deletion unless the contents are materially represented
+in another file.</code></pre>
+
+      <div class="callout warn">
+        Copilot can assist with comparison, but deletion remains a human decision.
+      </div>
+    </section>
+
+    <section id="architecture" data-search>
+      <div class="section-kicker">14 · Final architecture</div>
+      <h2>The target state</h2>
+      <pre><button class="copy-btn">Copy</button><code>                         WORK IQ
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+             ▼                             ▼
+      SHAREPOINT                     YOUR ONEDRIVE
+   authoritative truth              working memory
+             │                             │
+   policies / procedures              active work
+   team deliverables                  personal analysis
+   official records                   meeting prep
+   approved reference                 context documents
+             │                        draft deliverables
+             │                             │
+             └──────────┬──────────────────┘
+                        │
+                        ▼
+                  M365 COPILOT
+                        │
+                 cleaner evidence
+                        │
+                        ▼
+                  better answers</code></pre>
+    </section>
+
+    <section id="rules" data-search>
+      <div class="section-kicker">15 · Five rules</div>
+      <h2>The five rules worth remembering</h2>
+      <div class="grid-2">
+        <div class="card"><h3>1. OneDrive = active work</h3><p>SharePoint is the better home for organizational truth.</p></div>
+        <div class="card"><h3>2. One logical document = one current file</h3><p>Use version history instead of endless filename variants.</p></div>
+        <div class="card"><h3>3. Link instead of copy</h3><p>Reference official sources rather than duplicating them.</p></div>
+        <div class="card"><h3>4. Delete useless duplicates</h3><p>Do not merely bury them in an archive folder.</p></div>
+        <div class="card"><h3>5. Create one context document</h3><p>Every major project gets a concise map of purpose, current state, terminology, and source authority.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      Standalone reference guide. No external libraries or internet connection required.
+    </footer>
+  </main>
+</div>
+
+<button class="top-btn" id="topBtn" aria-label="Back to top">↑</button>
+
+<script>
+  const search = document.getElementById('search');
+  const sections = [...document.querySelectorAll('[data-search]')];
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    sections.forEach(section => {
+      section.classList.toggle('hide', q && !section.innerText.toLowerCase().includes(q));
+    });
+  });
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const code = btn.parentElement.innerText.replace(/^Copy\s*/,'').trim();
+      try {
+        await navigator.clipboard.writeText(code);
+        const old = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(() => btn.textContent = old, 1200);
+      } catch {
+        btn.textContent = 'Select text';
+      }
+    });
+  });
+
+  const navLinks = [...document.querySelectorAll('nav a')];
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+      }
+    })
+  }, {rootMargin:'-25% 0px -65% 0px', threshold:0});
+
+  sections.forEach(s => observer.observe(s));
+
+  const topBtn = document.getElementById('topBtn');
+  window.addEventListener('scroll', () => {
+    topBtn.classList.toggle('show', window.scrollY > 700);
+  });
+  topBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+</script>
+</body>
+</html>
