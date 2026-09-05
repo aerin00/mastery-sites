@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<!-- index:
+description: Design agent harnesses across instructions, tools, boundaries, lifecycle, orchestration, and proof.
+tags: guide, agent-systems
+-->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harness Field Manual</title>
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;%E2%9A%99%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+<style>
+/* =====================================================================
+   TOKENS — light palette lives on the bare :root.
+   >>> CHOOSE PER SUBJECT: the 6 values marked [PICK] below. <<<
+   Derive them from the subject's own world. Keep neutrals biased
+   toward the accent hue. Everything else in this file is structural
+   and should carry over unchanged.
+   ===================================================================== */
+:root{
+  /* [PICK] grounds — page, cards, raised surfaces */
+  --bg:#EEF3F7; --paper:#F9FCFE; --raise:#FFFFFF;
+  --ink:#10202C; --body:#263B49; --muted:#5B7080; --faint:#8296A4;
+  --line:#D3DEE6; --line-2:#B8CAD6;
+  /* [PICK] structural accent — links, active nav, lab cards */
+  --accent:#086B83; --accent-soft:#DCEEF3; --accent-ink:#07566A;
+  /* [PICK] signal — current state, eyebrows, the one loud thing */
+  --signal:#D45C18; --signal-soft:#F9E6D8;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#111A19; --code-ink:#DCE7E4; --code-line:#24322F;
+  --shadow:0 1px 2px rgba(18,26,25,.05), 0 8px 24px -12px rgba(18,26,25,.14);
+  --rail:264px;
+  /* [PICK] type: display / body / mono. Three roles, chosen deliberately. */
+  --f-disp:'Segoe UI Variable Display','Segoe UI',Arial,sans-serif;
+  --f-body:'Segoe UI Variable Text','Segoe UI',Arial,sans-serif;
+  --f-mono:'Cascadia Code','SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+    --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+    --signal:#F09055; --signal-soft:#3A2114;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+  --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+  --signal:#F09055; --signal-soft:#3A2114;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname">Harness Field Manual</span><small id="brandtag">AGENT HARNESS</small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search · / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">◖</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"><a class="on" href="#hp-observe"><span class="n">00</span><span>Read the instrument</span><span class="tick">✓</span></a><a href="#hp-loop"><span class="n">01</span><span>Run the default loop</span><span class="tick">✓</span></a><a href="#hp-mind"><span class="n">02</span><span>Shape the mind</span><span class="tick">✓</span></a><a href="#hp-hands"><span class="n">03</span><span>Equip the hands</span><span class="tick">✓</span></a><a href="#hp-boundary"><span class="n">04</span><span>Draw the boundary</span><span class="tick">✓</span></a><a href="#hp-lifecycle"><span class="n">05</span><span>Control the lifecycle</span><span class="tick">✓</span></a><a href="#hp-orchestrate"><span class="n">06</span><span>Orchestrate work</span><span class="tick">✓</span></a><a href="#hp-proof"><span class="n">07</span><span>Demand proof</span><span class="tick">✓</span></a><a href="#hp-operations"><span class="n">08</span><span>Operate and recover</span><span class="tick">✓</span></a><a href="#hp-capstone"><span class="n">09</span><span>Assemble the harness</span><span class="tick">✓</span></a></div>
+    <div class="legend" id="legend"><h4>Control layer</h4><div class="row"><span class="swatch" style="background:var(--warn)"></span>Mind: intent + context</div><div class="row"><span class="swatch" style="background:var(--accent)"></span>Hands: tools + workflows</div><div class="row"><span class="swatch" style="background:var(--stop)"></span>Boundary: permission</div><div class="row"><span class="swatch" style="background:var(--signal)"></span>Loop: state + coordination</div><div class="row"><span class="swatch" style="background:var(--ok)"></span>Proof: evidence + recovery</div></div>
+  </nav>
+  <main id="view"><div class="prog"><div class="top"><span class="lbl">Path progress</span><span class="pct">0%</span></div><div class="bar"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div></div><div><div class="eyebrow">Phase 00 · Mind layer</div><h1 class="ptitle">Read the instrument</h1><div class="meta"><span class="chip mind">Mind</span><span class="chip">25 min</span><span class="chip">prereq: None</span></div></div><div class="objective">Before changing the harness, <b>record what the agent can see, do, change, and prove</b>.</div><h2 class="sec">Concepts <span class="cnt">4</span></h2><div class="concept"><h3>A harness surrounds the model</h3><p>The model proposes the next useful step. The harness supplies instructions, context, tools, boundaries, lifecycle control, state, and evidence.</p><div class="codewrap"><pre><code>Goal → model decision → tool action → observation → next decision
+          ↑                                      │
+          └──────────── harness state ───────────┘</code></pre><button class="copy">copy</button></div></div><div class="concept"><h3>Five control layers</h3><div class="tablewrap"><table><thead><tr><th>Layer</th><th>Question</th><th>Typical primitives</th></tr></thead><tbody><tr><td>Mind</td><td>What should happen?</td><td>Instructions, context, memory</td></tr><tr><td>Hands</td><td>How can it act?</td><td>Tools, skills, MCP</td></tr><tr><td>Boundary</td><td>What may it do?</td><td>Sandbox, permissions, approvals</td></tr><tr><td>Loop</td><td>How does work continue?</td><td>Hooks, state, retries, subagents</td></tr><tr><td>Proof</td><td>How do we know?</td><td>Tests, evaluators, logs, artifacts</td></tr></tbody></table></div></div><div class="concept"><h3>Baseline before configuration</h3><p>Record the working directory, instruction sources, enabled tools, permission mode, expected test command, and current failure. Without a baseline, configuration changes become superstition.</p></div><div class="concept"><h3>Observable success beats intention</h3><p>“Be careful” is not measurable. “The forbidden command is denied before execution” is measurable.</p></div><h2 class="sec">Lab</h2><div class="lab"><h3>Baseline one real workspace</h3><ol><li>Choose a real repository or work folder you own.</li><li>Record its working directory and active instruction files.</li><li>List available tools and current permission mode.</li><li>Run the smallest existing verification command, if one exists.</li><li>Write one observable harness failure you want to improve.</li><li><b>Break it deliberately:</b> remove the recorded baseline from your notes and try to explain whether a later change helped, then restore it.</li></ol><p style="margin:14px 0 0"><b>Done when:</b> You have a dated baseline naming context, tools, boundaries, verification, and one reproducible failure.</p><div class="done-line"><label for="lab-hp-observe"><input type="checkbox" id="lab-hp-observe">Lab complete</label></div></div><h2 class="sec">Gotchas <span class="cnt">4</span></h2><div class="gotcha"><span class="sev trap">trap</span><span><b>Config without a baseline</b>The agent behaves differently, but you cannot attribute the change or know whether it improved.</span></div><div class="gotcha"><span class="sev trap">trap</span><span><b>Capability mistaken for permission</b>A tool may exist while its action remains blocked by the active boundary.</span></div><div class="gotcha"><span class="sev trap">trap</span><span><b>Completion mistaken for correctness</b>A polished final response can arrive without any test or observable result.</span></div><div class="gotcha"><span class="sev cost">cost</span><span><b>Inventory without a question</b>Listing everything consumes attention unless each item informs a control decision.</span></div><h2 class="sec">Checkpoint <span class="cnt">2</span></h2><details class="qa"><summary>Name the five harness layers in order.</summary><div class="ans">Mind, Hands, Boundary, Loop, and Proof.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><details class="qa"><summary>What six facts belong in a useful baseline?</summary><div class="ans">Working directory, instruction sources, enabled tools, permission mode, expected verification, and the current reproducible failure.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><h2 class="sec">Source docs</h2><div class="docs"><a href="https://learn.chatgpt.com/docs/customization/overview" target="_blank" rel="noopener">Customization ↗</a><a href="https://learn.chatgpt.com/docs/sandboxing" target="_blank" rel="noopener">Sandbox ↗</a></div><div class="done-line" style="border-top: 1px solid var(--line); margin-top: 40px;"><button class="btn prime">Run the default loop →</button></div></main>
+</div>
+
+
+<script>
+/* =====================================================================
+   CONTENT — replace everything below this banner.
+   Three example phases show every field. Delete them and write yours.
+   See the Mastery Site build specification for the full rules. The short version:
+     - 8–14 phases. Phase 00 = read the instrument. Phase 01 = operate it
+       without configuring it. Last = capstone with the exclusions stated.
+     - `id` is STABLE and drives progress keys. `n` is cosmetic.
+     - A gotcha is only a gotcha if it fails SILENTLY.
+     - Every lab has one step that deliberately breaks something.
+     - Quiz items are recall, not recognition. They become the Drill deck.
+     - Assert only what you verified. Mark the rest <span class="unv">unverified</span>.
+   ===================================================================== */
+
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">' + s + '</code>';
+
+const SITE = {
+  key:'harness-primitives-mastery-v1',
+  title:'Harness Field Manual',
+  tag:'AGENT HARNESS',
+  spine:'Control layer',
+  layers:[
+    {id:'mind',label:'Mind: intent + context',token:'warn'},
+    {id:'hands',label:'Hands: tools + workflows',token:'accent'},
+    {id:'boundary',label:'Boundary: permission',token:'stop'},
+    {id:'loop',label:'Loop: state + coordination',token:'signal'},
+    {id:'proof',label:'Proof: evidence + recovery',token:'ok'}
+  ],
+  refLede:'Decision trees, control-layer comparisons, and ship checklists for turning a capable model into a reliable working system.',
+  auditTitle:'Source audit',
+  verifiedAgainst:'Verified against official OpenAI documentation, September 4, 2026.'
+};
+
+const PHASES = [
+{id:'hp-observe',n:'00',title:'Read the instrument',layer:'mind',layerLabel:'Mind',time:'25 min',pre:'None',
+ objective:'Before changing the harness, <b>record what the agent can see, do, change, and prove</b>.',
+ concepts:[
+  {h:'A harness surrounds the model',p:'<p>The model proposes the next useful step. The harness supplies instructions, context, tools, boundaries, lifecycle control, state, and evidence.</p>',code:C('Goal → model decision → tool action → observation → next decision','          ↑                                      │','          └──────────── harness state ───────────┘')},
+  {h:'Five control layers',table:{head:['Layer','Question','Typical primitives'],rows:[['Mind','What should happen?','Instructions, context, memory'],['Hands','How can it act?','Tools, skills, MCP'],['Boundary','What may it do?','Sandbox, permissions, approvals'],['Loop','How does work continue?','Hooks, state, retries, subagents'],['Proof','How do we know?','Tests, evaluators, logs, artifacts']]}},
+  {h:'Baseline before configuration',p:'<p>Record the working directory, instruction sources, enabled tools, permission mode, expected test command, and current failure. Without a baseline, configuration changes become superstition.</p>'},
+  {h:'Observable success beats intention',p:'<p>“Be careful” is not measurable. “The forbidden command is denied before execution” is measurable.</p>'}
+ ],
+ lab:{title:'Baseline one real workspace',steps:['Choose a real repository or work folder you own.','Record its working directory and active instruction files.','List available tools and current permission mode.','Run the smallest existing verification command, if one exists.','Write one observable harness failure you want to improve.','<b>Break it deliberately:</b> remove the recorded baseline from your notes and try to explain whether a later change helped, then restore it.'],verify:'You have a dated baseline naming context, tools, boundaries, verification, and one reproducible failure.'},
+ gotchas:[{s:'trap',t:'Config without a baseline',d:'The agent behaves differently, but you cannot attribute the change or know whether it improved.'},{s:'trap',t:'Capability mistaken for permission',d:'A tool may exist while its action remains blocked by the active boundary.'},{s:'trap',t:'Completion mistaken for correctness',d:'A polished final response can arrive without any test or observable result.'},{s:'cost',t:'Inventory without a question',d:'Listing everything consumes attention unless each item informs a control decision.'}],
+ quiz:[{q:'Name the five harness layers in order.',a:'Mind, Hands, Boundary, Loop, and Proof.'},{q:'What six facts belong in a useful baseline?',a:'Working directory, instruction sources, enabled tools, permission mode, expected verification, and the current reproducible failure.'}],docs:[['Customization','https://learn.chatgpt.com/docs/customization/overview'],['Sandbox','https://learn.chatgpt.com/docs/sandboxing']]},
+
+{id:'hp-loop',n:'01',title:'Run the default loop',layer:'mind',layerLabel:'Mind',time:'35 min',pre:'Phase 00',
+ objective:'Operate the basic <b>decide, act, observe, and adjust loop</b> before adding automation.',
+ concepts:[
+  {h:'The loop is the core machine',p:'<p>A harness is not a giant prompt. It is a controlled feedback loop in which tool results change the next decision.</p>',code:C('1. Understand the goal','2. Inspect current state','3. Choose one bounded action','4. Execute through a tool','5. Observe the real result','6. Continue, recover, or stop')},
+  {h:'A turn needs a stopping rule',p:'<p>Stop when the requested outcome is observable and required checks pass. Do not stop merely because a plausible edit exists.</p>'},
+  {h:'Errors are observations',p:'<p>A failed command is new state. The next step should diagnose the failure, not repeat the same guess indefinitely.</p>'},
+  {h:'Keep actions bounded',p:'<p>Small actions localize failure and make recovery cheaper. Batch only when the batch has one verification boundary.</p>'}
+ ],
+ lab:{title:'Trace one unmodified loop',steps:['Give Codex a small real task without adding configuration.','Write down each decision, tool action, and returned observation.','Mark the point where success became observable.','Identify one unnecessary action or missing observation.','<b>Break it deliberately:</b> pretend the first plausible output equals completion and compare it with the verified end state.'],verify:'You have a trace that links every material action to an observation and a falsifiable stopping condition.'},
+ gotchas:[{s:'trap',t:'Open-loop execution',d:'The agent runs a sequence without checking intermediate results, so an early error silently contaminates later work.'},{s:'trap',t:'Repetition disguised as persistence',d:'The same failed action repeats without new evidence or a changed hypothesis.'},{s:'cost',t:'Oversized steps',d:'A broad action may work, but failures become expensive to isolate and reverse.'},{s:'trap',t:'Narrative completion',d:'The final explanation says the work succeeded while the actual system was never checked.'}],
+ quiz:[{q:'Name the six steps in the default agent loop.',a:'Understand, inspect, choose, execute, observe, then continue, recover, or stop.'},{q:'What makes a stopping rule falsifiable?',a:'It points to an observable result or check that can pass or fail independently of the agent’s prose.'}],docs:[['Codex overview','https://learn.chatgpt.com/docs/codex']]},
+
+{id:'hp-mind',n:'02',title:'Shape the mind',layer:'mind',layerLabel:'Mind',time:'55 min',pre:'Phase 01',
+ objective:'Place each instruction or fact in <b>the narrowest durable context that needs it</b>.',
+ concepts:[
+  {h:'Instructions and context are different',table:{head:['Primitive','Job','Example'],rows:[['User goal','Current outcome','Fix this failing test'],['AGENTS.md','Durable behavior','Run npm test after JS changes'],['Memory','Useful prior context','The team chose SQLite for this project'],['Working files','Current evidence','Source code, logs, specifications'],['Tool results','Fresh observations','Test output or API response']]}},
+  {h:'AGENTS.md shapes recurring behavior',p:'<p>Use it for repository conventions, build and test commands, review expectations, and directory-specific guidance. Keep it short enough that important rules remain visible.</p>'},
+  {h:'Memory should reduce rediscovery',p:'<p>Store durable decisions and useful context, not every transient detail. Stale memory is worse than no memory when it silently overrides current evidence.</p>'},
+  {h:'Context has a budget',p:'<p>Every instruction, file, and tool result competes for attention. Prefer retrieval of relevant evidence over loading an entire archive.</p>'}
+ ],
+ lab:{title:'Route five pieces of guidance',steps:['Collect five recurring instructions or facts from one real project.','Classify each as current goal, AGENTS.md rule, memory, source evidence, or disposable note.','Move nothing yet; write a proposed routing table.','Check each entry for an owner and expiry condition.','<b>Break it deliberately:</b> place a temporary incident fact in permanent guidance and explain how it could mislead a future run.'],verify:'Every item has one home, one reason, and a rule for correction or expiry.'},
+ gotchas:[{s:'trap',t:'A fact stored as an instruction',d:'The agent treats a temporary condition as a permanent rule.'},{s:'trap',t:'Conflicting instruction layers',d:'The agent follows a higher-priority instruction while the lower file still appears authoritative to a human reader.'},{s:'cost',t:'Everything loaded every time',d:'Large context works but consumes tokens and hides the few facts needed for the current decision.'},{s:'stale',t:'Memory presented as current evidence',d:'A prior decision may have changed; cheap, drift-prone facts should be rechecked.'}],
+ quiz:[{q:'What belongs in AGENTS.md?',a:'Durable repository behavior such as conventions, build and test commands, review expectations, and directory-specific guidance.'},{q:'What is the difference between memory and current evidence?',a:'Memory carries prior useful context; current evidence is freshly observed from the active workspace or system and should win when they conflict.'}],docs:[['Customization','https://learn.chatgpt.com/docs/customization/overview'],['AGENTS.md','https://learn.chatgpt.com/docs/agent-configuration/agents-md'],['Memories','https://learn.chatgpt.com/docs/customization/memories']]},
+
+{id:'hp-hands',n:'03',title:'Equip the hands',layer:'hands',layerLabel:'Hands',time:'70 min',pre:'Phase 02',
+ objective:'Choose tools and reusable workflows that <b>expose only the capability the task needs</b>.',
+ concepts:[
+  {h:'Tools act; skills organize',table:{head:['Primitive','Job','Use when'],rows:[['Local tool','Operate on the workspace','Shell, file edits, local inspection'],['MCP','Reach external tools or context','GitHub, Figma, docs, internal systems'],['Skill','Package a repeatable workflow','The same method should be applied consistently'],['Plugin','Bundle skills, MCP, and configuration','The capability should be installed and shared as a unit']]}},
+  {h:'Tool schemas are contracts',p:'<p>A useful tool has a narrow purpose, explicit inputs, structured output, and honest side-effect annotations. Ambiguous tools force the model to guess.</p>'},
+  {h:'Skills encode procedure',p:'<p>A skill tells the agent when to use a workflow, what sources to read, which tools to call, how to verify, and where to stop.</p>'},
+  {h:'MCP crosses a trust boundary',p:'<p>MCP connects Codex to external tools and shared systems. Treat read access, write access, authentication, and destructive actions as separate capabilities.</p>'}
+ ],
+ lab:{title:'Design one narrow capability',steps:['Choose one recurring task in a real workspace.','List the minimum read and write operations it requires.','Decide whether it needs a local tool, MCP, skill, or plugin.','Write the input and output contract.','Define one verification step and one forbidden side effect.','<b>Break it deliberately:</b> broaden the tool to “do anything” and identify which permissions and failure modes become unclear.'],verify:'The capability has explicit inputs, outputs, side effects, verification, and a justified packaging choice.'},
+ gotchas:[{s:'trap',t:'Workflow hidden inside tool code',d:'The tool works, but humans cannot inspect or revise the decision process separately from execution.'},{s:'trap',t:'Skill without trigger boundaries',d:'The workflow activates in unrelated tasks and changes behavior unexpectedly.'},{s:'trap',t:'Read and write bundled together',d:'A lookup tool quietly gains mutation power because both actions share one broad interface.'},{s:'cost',t:'Too many tools exposed',d:'More options increase selection errors and consume context even when most tools are irrelevant.'}],
+ quiz:[{q:'What is the difference between a tool and a skill?',a:'A tool performs an action; a skill packages the repeatable method for deciding, using tools, and verifying the outcome.'},{q:'When should MCP enter the harness?',a:'When the workflow needs tools or context outside the local repository, with explicit trust and capability boundaries.'}],docs:[['Customization','https://learn.chatgpt.com/docs/customization/overview'],['MCP','https://learn.chatgpt.com/docs/extend/mcp'],['Build skills','https://learn.chatgpt.com/docs/skills']]},
+
+{id:'hp-boundary',n:'04',title:'Draw the boundary',layer:'boundary',layerLabel:'Boundary',time:'65 min',pre:'Phase 03',
+ objective:'Separate what the agent <b>can technically do</b> from what requires approval.',
+ concepts:[
+  {h:'Sandbox and approval are separate',table:{head:['Control','Question','Example'],rows:[['Sandbox','What is technically reachable?','Writable workspace roots and network access'],['Approval policy','When must work pause?','Ask before crossing the boundary'],['Reviewer','Who decides eligible requests?','User or auto-review'],['Tool-specific controls','What does this external action require?','Separate connector or MCP approval']]}},
+  {h:'Least authority is an operating design',p:'<p>Give routine work enough access to proceed inside a bounded workspace. Escalate only the specific operation that cannot fit inside that boundary.</p>'},
+  {h:'Permissions do not prove safety',p:'<p>An allowed action can still be wrong. Boundaries limit blast radius; verification decides whether the result is correct.</p>'},
+  {h:'Rules beat broad access',p:'<p>When one command family needs an exception, a narrow rule is usually clearer than removing the sandbox for the whole session.</p>'}
+ ],
+ lab:{title:'Build a permission matrix',steps:['List the reads, writes, commands, network calls, and external mutations in one real workflow.','Mark each as automatic, approval-required, or forbidden.','Map automatic actions inside a bounded workspace.','Write the exact reason for every escalation.','<b>Break it deliberately:</b> replace the matrix with full access and list which distinctions disappear.'],verify:'Every action class has a boundary, reviewer, rationale, and recovery path.'},
+ gotchas:[{s:'trap',t:'Approval confused with capability',d:'Approving one request does not necessarily expand the underlying sandbox or unrelated tool permissions.'},{s:'trap',t:'Full access used as debugging',d:'The task starts working, but the actual missing permission remains unknown and the blast radius stays broad.'},{s:'trap',t:'Local boundary assumed for external tools',d:'Connectors, MCP, browser, and computer-use actions can have separate controls.'},{s:'cost',t:'Approval fatigue',d:'An overly tight routine boundary works but trains users to approve prompts without careful review.'}],
+ quiz:[{q:'What is the difference between sandbox and approval policy?',a:'The sandbox defines what is technically reachable; the approval policy defines when the agent must pause before an action proceeds.'},{q:'Why does permission not prove correctness?',a:'Permission only authorizes the action’s scope. Tests and observations are still needed to show the result is right.'}],docs:[['Sandbox','https://learn.chatgpt.com/docs/sandboxing'],['Permissions','https://learn.chatgpt.com/docs/permissions'],['Agent approvals and security','https://learn.chatgpt.com/docs/agent-approvals-security']]},
+
+{id:'hp-lifecycle',n:'05',title:'Control the lifecycle',layer:'loop',layerLabel:'Loop',time:'75 min',pre:'Phase 04',
+ objective:'Use hooks and state to <b>react at the earliest useful lifecycle checkpoint</b>.',
+ concepts:[
+  {h:'Hooks are sensors and reflexes',p:'<p>Hooks run scripts or MCP tools during the Codex lifecycle. They are important in a mature harness, but a minimal harness can hard-code its loop without them.</p>'},
+  {h:'Choose timing by reversibility',table:{head:['Need','Event'],rows:[['Inspect before execution','PreToolUse'],['Handle an approval request','PermissionRequest'],['Inspect completed output','PostToolUse'],['Check the submitted prompt','UserPromptSubmit'],['Continue work before stopping','Stop'],['Load or save session context','SessionStart or SessionEnd']]}},
+  {h:'State makes the loop durable',p:'<p>Track what has happened, what remains, the last verified checkpoint, retry counts, and the reason for stopping. State should be inspectable outside the model’s prose.</p>'},
+  {h:'A hook is not the whole harness',p:'<p>Hooks react to events. Instructions define intent, permissions define authority, tools act, and verification proves outcomes.</p>'}
+ ],
+ lab:{title:'Add one lifecycle guard',steps:['Choose one failure from your baseline.','Select the earliest event with the required information.','Define the matcher, input fields, handler, and valid output.','Test a matching and non-matching case.','Record the result in inspectable state.','<b>Break it deliberately:</b> move the check to PostToolUse and show what can no longer be prevented.'],verify:'The matching unsafe case is intercepted at the intended checkpoint; the neighboring safe case proceeds.'},
+ gotchas:[{s:'trap',t:'PostToolUse sold as prevention',d:'Feedback arrives after the tool’s side effect and cannot undo it.'},{s:'trap',t:'Async enforcement',d:'A background hook appears active but cannot block, approve, or rewrite its trigger.'},{s:'trap',t:'Matcher silently ignored',d:'UserPromptSubmit, Stop, and Interrupt do not currently filter on matcher.'},{s:'trap',t:'Multiple hook sources assumed to override',d:'Matching hooks from active layers accumulate and matching command hooks can start concurrently.'}],
+ quiz:[{q:'Why are hooks integral to many mature harnesses but optional in minimal ones?',a:'Mature harnesses need configurable lifecycle reactions; a minimal harness can implement its loop directly without an extension framework.'},{q:'What four parts define a hook?',a:'Event, matcher, handler, and supported result.'}],docs:[['Hooks','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'hp-orchestrate',n:'06',title:'Orchestrate work',layer:'loop',layerLabel:'Loop',time:'60 min',pre:'Phase 05',
+ objective:'Delegate only when work is <b>independent, bounded, and cheaper to combine than to do serially</b>.',
+ concepts:[
+  {h:'Subagents trade simplicity for parallelism',p:'<p>Subagents can specialize and work concurrently, but each one consumes model and tool resources and creates results the parent must reconcile.</p>'},
+  {h:'A delegation needs a contract',table:{head:['Field','Question'],rows:[['Objective','What exact result must return?'],['Ownership','Which files or responsibility belong to this agent?'],['Boundary','What must it not change?'],['Evidence','What should it cite or verify?'],['Handoff','What format should return to the parent?']]}},
+  {h:'Dependencies determine topology',p:'<p>Parallelize independent branches. Keep dependent steps sequential. Do not spawn an agent merely to avoid reading the result yourself.</p>'},
+  {h:'The parent owns integration',p:'<p>The parent agent resolves contradictions, checks shared-state conflicts, runs final verification, and presents one coherent result.</p>'}
+ ],
+ lab:{title:'Split one real task',steps:['Choose a task with at least two candidate branches.','Draw the dependency graph.','Select only branches that can run independently.','Write an ownership and evidence contract for each.','Define the parent integration check.','<b>Break it deliberately:</b> assign two agents the same file and identify the conflict before making changes.'],verify:'Every delegated branch has exclusive ownership or read-only scope, and the parent has one integration test.'},
+ gotchas:[{s:'trap',t:'Parallel work with hidden dependency',d:'One agent uses assumptions that another branch has not produced yet, so both return plausible but incompatible results.'},{s:'trap',t:'Shared file ownership',d:'Concurrent edits overwrite or invalidate one another while each agent reports local success.'},{s:'cost',t:'Delegating tiny tasks',d:'Coordination and synthesis consume more time and tokens than the work itself.'},{s:'trap',t:'Parent repeats all exploration',d:'Delegation appears useful but produces no speedup because the parent redoes the same investigation.'}],
+ quiz:[{q:'What five fields belong in a delegation contract?',a:'Objective, ownership, boundary, evidence, and handoff format.'},{q:'Who owns final integration and verification?',a:'The parent agent.'}],docs:[['Subagents','https://learn.chatgpt.com/docs/agent-configuration/subagents']]},
+
+{id:'hp-proof',n:'07',title:'Demand proof',layer:'proof',layerLabel:'Proof',time:'70 min',pre:'Phase 06',
+ objective:'Turn completion from a claim into <b>a reproducible body of evidence</b>.',
+ concepts:[
+  {h:'Verification has layers',table:{head:['Layer','Question','Evidence'],rows:[['Static','Is the artifact well formed?','Lint, typecheck, schema validation'],['Behavioral','Does it do the requested thing?','Focused test or reproduction'],['Integration','Do connected parts still work?','Build or integration suite'],['Visual','Does rendered output look right?','Screenshots and viewport checks'],['Acceptance','Is the user outcome complete?','Falsifiable checklist']]}},
+  {h:'Tests belong near the failure',p:'<p>A regression test should fail for the original bug and pass after the fix. A broad green suite without that link may miss the behavior entirely.</p>'},
+  {h:'Evaluators judge outputs',p:'<p>When correctness is semantic rather than deterministic, define a rubric, counterexamples, thresholds, and human escalation. Do not let the same vague model judgment both create and certify the result.</p>'},
+  {h:'Evidence must survive the narration',p:'<p>Record exact commands, exit status, artifact paths, and relevant output. The final response should summarize this evidence, not replace it.</p>'}
+ ],
+ lab:{title:'Create a proof ladder',steps:['Choose one real requested outcome.','Write one static, behavioral, and acceptance check.','Run the checks and capture exact commands and outcomes.','Confirm the behavioral check would fail on the original defect.','<b>Break it deliberately:</b> replace the acceptance check with “looks good” and show why another reviewer cannot reproduce it.'],verify:'A second person can run the recorded checks and reach the same pass or fail result.'},
+ gotchas:[{s:'trap',t:'Green test unrelated to the change',d:'The suite passes, but no assertion covers the requested behavior.'},{s:'trap',t:'Generated snapshot blessed automatically',d:'A changed output becomes the new expected result without human or rule-based adjudication.'},{s:'trap',t:'Model grades its own vague work',d:'The evaluator repeats the generator’s assumptions and produces false confidence.'},{s:'cost',t:'Full suite for every tiny step',d:'Verification is thorough but too slow, so people bypass it; use a focused ladder and final integration check.'}],
+ quiz:[{q:'Name the five verification layers.',a:'Static, behavioral, integration, visual, and acceptance.'},{q:'What evidence should survive outside the final narrative?',a:'Exact commands, exit status, artifact paths, and relevant output.'}],docs:[['Code review','https://learn.chatgpt.com/docs/code-review'],['GitHub Action','https://learn.chatgpt.com/docs/github-action']]},
+
+{id:'hp-operations',n:'08',title:'Operate and recover',layer:'proof',layerLabel:'Proof',time:'65 min',pre:'Phase 07',
+ objective:'Make failures <b>visible, bounded, diagnosable, and recoverable</b>.',
+ concepts:[
+  {h:'Observability answers four questions',table:{head:['Question','Record'],rows:[['What was attempted?','Task and bounded action'],['What happened?','Tool result and state transition'],['Why did it continue?','Decision and evidence'],['Why did it stop?','Success, budget, denial, or blocker reason']]}},
+  {h:'Retries need changed information',p:'<p>A retry is justified only when input, state, tool, timing, or hypothesis changes. Otherwise it is repetition.</p>'},
+  {h:'Budgets are control surfaces',p:'<p>Bound time, tool calls, tokens, parallel workers, and retries. A budget exhaustion should produce a truthful partial state, not a fabricated success.</p>'},
+  {h:'Recovery starts from a checkpoint',p:'<p>Persist the last verified state and make mutations reversible where practical. Resume from evidence, not from the model’s memory of what probably happened.</p>'}
+ ],
+ lab:{title:'Design a failure envelope',steps:['Choose one real automated workflow.','Set maximum retries, elapsed time, and concurrent workers.','Define the log record for each state transition.','Name the last verified checkpoint and recovery action.','Define when the workflow escalates to a human.','<b>Break it deliberately:</b> remove the retry cap and trace the possible infinite loop.'],verify:'A forced failure stops inside the declared budget and leaves enough evidence to resume or escalate.'},
+ gotchas:[{s:'trap',t:'Retry without changed evidence',d:'The loop burns budget while reproducing the same failure.'},{s:'trap',t:'Logs record prose but not state',d:'The transcript sounds detailed, yet you cannot reconstruct which action changed which artifact.'},{s:'trap',t:'Budget exhaustion reported as completion',d:'A partial artifact is presented as finished because the loop reached its limit.'},{s:'trap',t:'Recovery depends on hidden context',d:'A new session cannot resume because the last verified checkpoint exists only in the previous model context.'}],
+ quiz:[{q:'When is a retry justified?',a:'When input, state, tool, timing, or hypothesis has changed in a way that could change the outcome.'},{q:'What should happen at budget exhaustion?',a:'Stop truthfully, preserve the last verified state, report remaining work, and escalate when required.'}],docs:[['Non-interactive mode','https://learn.chatgpt.com/docs/non-interactive'],['Config basics','https://learn.chatgpt.com/docs/config-basic']]},
+
+{id:'hp-capstone',n:'09',title:'Assemble the harness',layer:'proof',layerLabel:'Proof',time:'2–4 h',pre:'All phases',
+ objective:'Build one small harness in which <b>every primitive traces to a witnessed failure or required outcome</b>.',
+ concepts:[
+  {h:'The minimum mature stack',code:C('MIND      one goal + concise durable instructions + scoped context','HANDS     minimum tools + one reusable workflow','BOUNDARY  workspace limit + explicit approvals','LOOP      state + one lifecycle hook + bounded retries','PROOF     focused checks + evidence log + recovery checkpoint')},
+  {h:'Traceability is the organizing principle',p:'<p>For every configuration item, answer: which failure does it prevent, which evidence activates it, and how will you know it still works?</p>'},
+  {h:'Graduation test',table:{head:['Test','Pass condition'],rows:[['Cold start','A new session finds the instructions and state'],['Safe action','Routine work proceeds without unnecessary approval'],['Unsafe action','The boundary or hook stops it before impact'],['Failure','The workflow stops within budget with evidence'],['Recovery','A fresh session resumes from the last verified checkpoint'],['Completion','Independent checks prove the requested outcome']]}},
+  {h:'Out of scope',p:'<p>This path stops at practical Codex harness design for local and repository workflows. Agents SDK architecture, building MCP servers, enterprise MDM policy, distributed queues, and production multi-tenant control planes require separate guides.</p>'}
+ ],
+ lab:{title:'Ship one evidence-backed harness',steps:['Choose one repeated workflow with a witnessed failure.','Complete the five-layer design canvas.','Implement only the primitives justified by that canvas.','Run the six graduation tests.','Save exact commands, outcomes, state, and recovery instructions.','Ask another person or a fresh session to operate it cold.','<b>Break it deliberately:</b> change one trusted instruction or hook definition and confirm the review or verification path detects the change.'],verify:'A cold run completes the real workflow, an unsafe case is blocked, a forced failure stays within budget, and recovery succeeds from durable state.'},
+ gotchas:[{s:'trap',t:'Architecture before evidence',d:'The harness gains components, but none trace to a real failure or measurable outcome.'},{s:'trap',t:'Soft rule used as hard enforcement',d:'Instructions request safety while tools and permissions still allow the forbidden action.'},{s:'trap',t:'One successful run treated as reliability',d:'The happy path passes while failure, recovery, and cold-start behavior remain unknown.'},{s:'cost',t:'Framework becomes the product',d:'Maintaining the harness consumes more effort than the workflow it was built to support.'}],
+ quiz:[{q:'State the minimum mature harness stack in one sentence.',a:'A scoped goal and context use minimal tools inside explicit boundaries, continue through inspectable state and lifecycle control, and stop only on reproducible proof.'},{q:'What is the strongest reason to add a harness primitive?',a:'A witnessed failure or required outcome that the primitive can control and verify.'}],docs:[['Customization','https://learn.chatgpt.com/docs/customization/overview'],['Hooks','https://learn.chatgpt.com/docs/hooks'],['Sandbox','https://learn.chatgpt.com/docs/sandboxing'],['Subagents','https://learn.chatgpt.com/docs/agent-configuration/subagents']]}
+];
+
+const TREES = [
+{title:'Which primitive should solve this?',rows:[
+ ['Recurring behavioral rule','<code>AGENTS.md</code>','Persistent guidance for the project'],
+ ['Repeatable method with tool sequence','Skill','Packages workflow and verification'],
+ ['External action or shared data','MCP tool or resource','Connects beyond the local workspace'],
+ ['Technical access boundary','Sandbox or permission profile','Limits what is reachable'],
+ ['Decision before crossing a boundary','Approval policy','Chooses when and who must approve'],
+ ['Reaction at a lifecycle checkpoint','Hook','Runs on a matching event'],
+ ['Independent specialized work','Subagent','Delegates a bounded branch'],
+ ['Proof of behavior','Test or evaluator','Produces reproducible evidence']
+]},
+{title:'Instruction or enforcement?',rows:[
+ ['Preferred style or convention','Instruction','A soft behavioral default'],
+ ['Must prevent filesystem access','Sandbox','A technical boundary'],
+ ['Must prevent a matching tool call','PreToolUse hook','Interception before execution'],
+ ['Must verify generated output','Test or evaluator','Evidence after creation'],
+ ['Must require a human decision','Approval','Explicit authorization point'],
+ ['Must survive a new session','Durable state or memory','Context outside the active turn']
+]},
+{title:'The agent is not doing what I expect',rows:[
+ ['Wrong recurring behavior','Inspect instruction chain','Find conflict or missing guidance'],
+ ['Cannot reach a file or network','Inspect sandbox and permissions','Capability may be outside the boundary'],
+ ['Chooses the wrong tool','Narrow tool exposure or improve schema','Reduce ambiguity'],
+ ['Hook never fires','Check trust, event, matcher, and path','Lifecycle configuration may be skipped'],
+ ['Claims success too early','Add falsifiable stopping rule','Require observable proof'],
+ ['Repeats a failure','Inspect state and retry policy','Require changed evidence'],
+ ['Parallel results conflict','Fix ownership and dependency graph','Parent must integrate']
+]},
+{title:'Should I add another component?',rows:[
+ ['No witnessed failure or requirement','No','Avoid speculative harness complexity'],
+ ['Existing primitive can express it clearly','Extend existing primitive','Keep the control surface small'],
+ ['Needs a new technical capability','Add a narrow tool','Expose minimum authority'],
+ ['Needs a reusable decision process','Add a skill','Keep procedure inspectable'],
+ ['Needs lifecycle interception','Add a hook','Choose the earliest useful event'],
+ ['Needs parallel independent work','Add a subagent','Budget integration cost'],
+ ['Needs independent proof','Add a test or evaluator','Separate creation from adjudication']
+]},
+{title:'Where should state live?',rows:[
+ ['Needed only inside one tool call','Local variable','Shortest useful lifetime'],
+ ['Needed across the current turn','Turn context','Temporary reasoning state'],
+ ['Needed to resume a workflow','Checkpoint file or durable store','Inspectable recovery point'],
+ ['Useful across future sessions','Curated memory','Persisted context with provenance'],
+ ['Canonical project fact','Repository source or documentation','Owned and reviewable'],
+ ['High-volume event history','Structured log','Queryable observability']
+]}
+];
+
+const REF = [
+{id:'five-layer',title:'Five-layer harness map',note:'Start here when diagnosing a harness problem.',head:['Layer','Purpose','Primitives','Failure without it'],rows:[
+ ['Mind','Shape decisions','Goal, instructions, context, memory','Agent acts on wrong assumptions'],
+ ['Hands','Provide capability','Tools, skills, MCP, plugins','Agent cannot act or chooses poorly'],
+ ['Boundary','Limit authority','Sandbox, permissions, approvals, rules','Blast radius is unclear or excessive'],
+ ['Loop','Continue reliably','State, hooks, retries, subagents','Work stalls, repeats, or loses continuity'],
+ ['Proof','Establish truth','Tests, evaluators, logs, artifacts','Completion is only a claim']
+]},
+{id:'design-canvas',title:'Harness design canvas',note:'Fill this before adding configuration.',head:['Field','Question'],rows:[
+ ['Outcome','What observable result must exist?'],['Failure','What witnessed problem are we controlling?'],['Mind','Which instructions and evidence are required?'],['Hands','What minimum capabilities are needed?'],['Boundary','What is automatic, approval-required, or forbidden?'],['Loop','What state, hook, retry, or delegation keeps work moving?'],['Proof','Which checks independently establish success?'],['Budget','What limits time, retries, tools, and concurrency?'],['Recovery','Where is the last verified checkpoint?'],['Owner','Who changes and reviews this harness?']
+]},
+{id:'soft-hard',title:'Soft guidance versus hard control',head:['Mechanism','Type','Can technically prevent?','Best use'],rows:[
+ ['Prompt or AGENTS.md','Soft guidance','No','Preferred behavior and conventions'],
+ ['Skill','Structured guidance','Not by itself','Repeatable process'],
+ ['Sandbox','Hard boundary','Yes','Filesystem and network reach'],
+ ['Approval','Authorization gate','Yes','Human or reviewer decision'],
+ ['PreToolUse hook','Lifecycle guard','For supported paths','Matching tool policy'],
+ ['Test or evaluator','Evidence','No, unless wired as a gate','Adjudicate outputs']
+],foot:'Use instructions to guide choices, boundaries to limit authority, hooks to react, and verification to prove results.'},
+{id:'ship-check',title:'Harness ship checklist',head:['Area','Required evidence'],rows:[
+ ['Scope','One outcome and explicit exclusions'],['Instructions','Active sources listed; conflicts resolved'],['Context','Required evidence identified; stale facts labeled'],['Tools','Minimum capability and side effects documented'],['Boundary','Automatic, approval, and forbidden actions mapped'],['Lifecycle','Event timing and hook branches tested'],['State','Last verified checkpoint survives restart'],['Retries','Changed-evidence rule and hard cap'],['Delegation','Dependencies, ownership, and parent integration'],['Verification','Focused and final checks reproducible'],['Observability','State transitions and stop reason recorded'],['Recovery','Disable, resume, or rollback procedure tested']
+]},
+{id:'hook-summary',title:'Hook quick reference',head:['Goal','Event','Key warning'],rows:[
+ ['Prevent supported tool action','PreToolUse','Choose valid event-specific output'],['Decide approval request','PermissionRequest','Runs only when approval is needed'],['Review completed tool result','PostToolUse','Cannot undo side effects'],['Inspect submitted prompt','UserPromptSubmit','Matcher ignored'],['Continue before stopping','Stop','Matcher ignored'],['Load context','SessionStart','MCP server may not be ready yet'],['End-session cleanup','SessionEnd','Advisory and synchronous']
+]},
+{id:'source-index',title:'Primary documentation index',head:['Primitive','Official page'],rows:[
+ ['Customization','<a href="https://learn.chatgpt.com/docs/customization/overview">Customization overview</a>'],
+ ['Project instructions','<a href="https://learn.chatgpt.com/docs/agent-configuration/agents-md">AGENTS.md</a>'],
+ ['Memory','<a href="https://learn.chatgpt.com/docs/customization/memories">Memories</a>'],
+ ['Skills','<a href="https://learn.chatgpt.com/docs/skills">Build skills</a>'],
+ ['External tools','<a href="https://learn.chatgpt.com/docs/extend/mcp">MCP</a>'],
+ ['Boundaries','<a href="https://learn.chatgpt.com/docs/sandboxing">Sandbox</a>'],
+ ['Lifecycle','<a href="https://learn.chatgpt.com/docs/hooks">Hooks</a>'],
+ ['Orchestration','<a href="https://learn.chatgpt.com/docs/agent-configuration/subagents">Subagents</a>']
+]}
+];
+
+const AUDIT = {
+ intro:'The earlier Hooks guide was accurate within its scope, but hooks alone do not constitute a complete harness. This expansion compares that guide with the wider official Codex customization, sandbox, MCP, and subagent documentation.',
+ groups:[
+  {label:'Holds up',tag:'holds',items:[
+   {c:'Hooks are “when this happens, automatically do that” lifecycle helpers.',f:'This remains the right beginner mental model.'},
+   {c:'Hooks are important in mature harnesses.',f:'They provide configurable lifecycle interception for validation, context, logging, and policy reactions.'},
+   {c:'Event, matcher, handler, and result form a useful hook design model.',f:'It maps cleanly to the documented configuration and output contracts.'}
+  ]},
+  {label:'Stale or incomplete',tag:'stale',items:[
+   {c:'Hooks are integral to every harness.',f:'Too absolute. A minimal harness can implement a fixed loop directly; lifecycle extensibility becomes increasingly valuable as reliability requirements grow.'},
+   {c:'A hook guide is a harness guide.',f:'Incomplete. A harness also needs instructions, context, capabilities, boundaries, state, orchestration, proof, and recovery.'}
+  ]},
+  {label:'Wrong',tag:'wrong',items:[
+   {c:'Instructions enforce hard safety boundaries.',f:'Wrong. Instructions guide model behavior; sandbox, permissions, approvals, and supported policy hooks provide technical control.'},
+   {c:'A successful tool call proves task completion.',f:'Wrong. Verification must test the requested behavior and acceptance condition.'},
+   {c:'More tools and more agents automatically improve results.',f:'Wrong. They add selection, permission, coordination, token, and integration costs.'}
+  ]},
+  {label:'Missing entirely',tag:'gap',items:[
+   {c:'The original guide did not teach instruction and context routing.',f:'Added as the Mind layer with AGENTS.md, memory, evidence, and context-budget guidance.'},
+   {c:'It did not separate capability from authority.',f:'Added as Hands and Boundary layers covering tools, MCP, sandbox, permissions, and approvals.'},
+   {c:'It did not cover orchestration, budgets, proof, or recovery.',f:'Added with subagent contracts, verification ladders, retry rules, observability, checkpoints, and a cold-start capstone.'}
+  ]}
+ ]
+};
+
+
+/* ============================================================
+   Harness Field Manual — app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+
+
+
+
+</body></html>

@@ -1,4 +1,8 @@
 <!doctype html>
+<!-- index:
+description: Build and operate a durable Hermes Bot fleet across profiles, groups, routines, peers, and boards.
+tags: guide, bot-mode
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -482,7 +486,9 @@ const PHASES = [
        ['<b>Delete Profile</b>','Right-click a Bot','Permanent, behind the desktop destructive confirmation. The <b>default profile cannot be deleted</b>'],
        ['<b>Rename</b>','Pencil in the chat header, or <code>hermes profile rename</code>','Display name and the @tag it answers to; the old profile name keeps resolving']]}},
     {h:'Renaming keeps tags in sync',
-     p:'<p>Give a Bot a friendly name and it becomes taggable by it. A Bot titled <i>Research Buddy</i> answers to '+K('@research-buddy')+' <b>and</b> '+K('@researchbuddy')+', in regular chats and group rooms alike. The composer autocomplete offers the renamed tag and also matches when you type the old profile name, which keeps resolving.</p><p>This means tags accumulate rather than migrate. Two Bots whose friendly names normalise to the same tag is a collision you create silently by renaming.</p>'}
+     p:'<p>Give a Bot a friendly name and it becomes taggable by it. A Bot titled <i>Research Buddy</i> answers to '+K('@research-buddy')+' <b>and</b> '+K('@researchbuddy')+', in regular chats and group rooms alike. The composer autocomplete offers the renamed tag and also matches when you type the old profile name, which keeps resolving.</p><p>This means tags accumulate rather than migrate. Two Bots whose friendly names normalise to the same tag is a collision you create silently by renaming.</p>'},
+    {h:'Visual identity is profile metadata, not capability',
+     p:'<p>A Bot can use a deterministic blob face, a geometric face, an uploaded image, an AI-generated portrait, or a petdex pet. The look, title, and description live in profile metadata, so every desktop connected to that backend renders the same identity. An unlocked name-derived face may change when the Bot is renamed; lock a face before renaming if visual continuity matters.</p><p>Avatars are useful recognition cues, but they enforce nothing. The real capability boundary remains the model pin, enabled skills, toolsets, MCP servers, and operating-system sandbox.</p>'}
   ],
   lab:{title:'Build one Bot you will actually keep',
     steps:[

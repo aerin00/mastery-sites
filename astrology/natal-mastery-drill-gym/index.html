@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<!-- index:
+description: Drill natal synthesis through planetary condition, rulership, houses, aspects, and timed judgment.
+tags: lab, astrology
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Natal Mastery — drill gym</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-subtle: #161b22;
+      --bg-raise: #21262d;
+      --border: #30363d;
+      --fg: #c9d1d9;
+      --fg-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-2: #d2a8ff;
+      --danger: #f85149;
+      --success: #3fb950;
+      --warning: #d29922;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --leading: 1.55;
+      --measure: 72ch;
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 1rem;
+      --space-4: 1.5rem;
+      --space-5: 2.5rem;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      line-height: var(--leading);
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button { font-family: inherit; cursor: pointer; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    header.top { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: baseline; justify-content: space-between; margin-bottom: 1.5rem; }
+    .kicker { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); }
+    h1 { font-size: 2rem; color: #f0f6fc; margin: 0.2rem 0 0; letter-spacing: -0.03em; }
+    h2 { font-size: 1.25rem; color: #f0f6fc; margin: 0 0 0.75rem; }
+    .lede { color: var(--fg-muted); max-width: var(--measure); }
+    .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1.25rem 0 1.5rem; }
+    .tabs button {
+      height: 2.5rem; padding: 0 0.9rem; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-subtle); color: var(--fg);
+    }
+    .tabs button[aria-selected="true"] { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .spotter {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px;
+      padding: 1rem 1.15rem; margin-bottom: 1.5rem;
+    }
+    .spotter h2 { margin-top: 0; font-size: 0.95rem; color: var(--warning); }
+    .spotter ol { margin: 0; padding-left: 1.25rem; color: var(--fg-muted); font-size: 0.92rem; }
+    .tree { display: grid; gap: 1rem; }
+    .branch {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 1rem;
+    }
+    .branch h3 { margin: 0 0 0.75rem; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-muted); }
+    .node {
+      display: grid; grid-template-columns: auto 1fr auto; gap: 0.65rem; align-items: start;
+      padding: 0.55rem 0; border-top: 1px solid var(--border);
+    }
+    .node:first-of-type { border-top: 0; }
+    .status {
+      font-family: var(--font-mono); font-size: 0.75rem; min-width: 1.6rem; color: var(--fg-muted);
+    }
+    .status.x { color: var(--success); }
+    .status.tilde { color: var(--warning); }
+    .status.caret { color: var(--accent-2); }
+    .prereq { display: block; font-size: 0.8rem; color: var(--fg-muted); }
+    .stats {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-family: var(--font-mono);
+      font-size: 0.8rem; color: var(--fg-muted); margin-bottom: 1rem;
+    }
+    .stats b { color: var(--fg); font-weight: 600; }
+    .drill-pick { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .drill-pick button {
+      height: 2.25rem; padding: 0 0.75rem; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-raise); color: var(--fg); font-size: 0.875rem;
+    }
+    .drill-pick button.on { border-color: var(--accent); color: var(--accent); }
+    .card {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem;
+    }
+    .prompt { font-size: 1.15rem; color: #f0f6fc; margin: 0 0 1rem; }
+    .choices { display: grid; gap: 0.45rem; }
+    .choices button {
+      text-align: left; min-height: 2.75rem; padding: 0.6rem 0.85rem; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-raise); color: var(--fg);
+    }
+    .choices button:hover { border-color: var(--accent); }
+    .choices button.good { border-color: var(--success); background: rgba(63,185,80,0.12); }
+    .choices button.bad { border-color: var(--danger); background: rgba(248,81,73,0.12); }
+    .choices button:disabled { cursor: default; }
+    .why { margin-top: 0.9rem; color: var(--fg-muted); font-size: 0.92rem; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .row button, .ghost {
+      height: 2.5rem; padding: 0 0.9rem; border-radius: 6px; border: 1px solid var(--border);
+      background: transparent; color: var(--fg);
+    }
+    .row .go { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+    .hint { margin-top: 0.75rem; color: var(--warning); font-size: 0.9rem; display: none; }
+    .hint.show { display: block; }
+    details.ref {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.85rem 1rem; margin-bottom: 0.6rem;
+    }
+    details.ref summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+    details.ref .body { margin-top: 0.75rem; color: var(--fg-muted); }
+    table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+    th, td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; }
+    th { background: var(--bg-raise); }
+    .meter { height: 6px; background: var(--bg-raise); border-radius: 99px; overflow: hidden; margin: 0.4rem 0 1rem; }
+    .meter > span { display: block; height: 100%; background: var(--success); width: 0%; }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <p class="kicker">Mastery gym · natal practice</p>
+        <h1>Recall first. Peek last.</h1>
+        <p class="lede">Deliberate practice for the natal runbook. High-volume reps, spotter protocol, skill tree. The Helm stays the reference; this is the gym.</p>
+      </div>
+      <a href="/">← The Helm</a>
+    </header>
+
+    <section class="spotter">
+      <h2>Spotter protocol</h2>
+      <ol>
+        <li>Recall first.</li>
+        <li>Peek only as a last resort.</li>
+        <li>Peek the minimum — one hint, not the whole answer.</li>
+        <li>After peeking, reproduce from memory on the next rep.</li>
+        <li>Never transcribe. If you keep peeking, you need more reps, not more notes.</li>
+      </ol>
+    </section>
+
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-tab="tree">Skill tree</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="drills">Drills</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="reference">Reference (spotter)</button>
+    </div>
+
+    <section id="tree" class="panel active"></section>
+    <section id="drills" class="panel">
+      <div class="stats" id="stats"></div>
+      <div class="meter" aria-hidden="true"><span id="bar"></span></div>
+      <div class="drill-pick" id="pick"></div>
+      <div class="card" id="card"></div>
+    </section>
+    <section id="reference" class="panel"></section>
+  </div>
+
+<script>
+const SIGNS = [
+  {id:"aries", name:"Aries", glyph:"♈", zr:15, lord:"Mars"},
+  {id:"taurus", name:"Taurus", glyph:"♉", zr:8, lord:"Venus"},
+  {id:"gemini", name:"Gemini", glyph:"♊", zr:20, lord:"Mercury"},
+  {id:"cancer", name:"Cancer", glyph:"♋", zr:25, lord:"Moon"},
+  {id:"leo", name:"Leo", glyph:"♌", zr:19, lord:"Sun"},
+  {id:"virgo", name:"Virgo", glyph:"♍", zr:20, lord:"Mercury"},
+  {id:"libra", name:"Libra", glyph:"♎", zr:8, lord:"Venus"},
+  {id:"scorpio", name:"Scorpio", glyph:"♏", zr:15, lord:"Mars"},
+  {id:"sagittarius", name:"Sagittarius", glyph:"♐", zr:12, lord:"Jupiter"},
+  {id:"capricorn", name:"Capricorn", glyph:"♑", zr:27, lord:"Saturn"},
+  {id:"aquarius", name:"Aquarius", glyph:"♒", zr:30, lord:"Saturn"},
+  {id:"pisces", name:"Pisces", glyph:"♓", zr:12, lord:"Jupiter"},
+];
+const HOUSES = [
+  [1,"Hour-Marker","life, helm, body, spirit"],
+  [2,"Gate of Hades","livelihood, possessions"],
+  [3,"Goddess","siblings, short travel, queen of the Moon"],
+  [4,"Subterranean","parents, land, foundations"],
+  [5,"Good Fortune","children, pleasure"],
+  [6,"Bad Fortune","injury, toil, slavery"],
+  [7,"Setting","marriage, the other"],
+  [8,"Idle","death, inheritance"],
+  [9,"God","travel, religion, king of the Sun"],
+  [10,"Midheaven","action, reputation, occupation"],
+  [11,"Good Spirit","friends, patrons, hopes"],
+  [12,"Bad Spirit","enemies, suffering, loss"],
+];
+const ASPECTS = [
+  {n:0, name:"conjunction / copresence"},
+  {n:1, name:"aversion"},
+  {n:2, name:"sextile"},
+  {n:3, name:"square"},
+  {n:4, name:"trine"},
+  {n:5, name:"aversion"},
+  {n:6, name:"opposition"},
+];
+
+const TREE = [
+  {branch:"Trunk — chart setup", nodes:[
+    {id:"sect", name:"Sect (day/night roles)", prereq:"None. First lens on every planet."},
+    {id:"houses", name:"Twelve whole-sign places", prereq:"Know the rising sign is the 1st."},
+    {id:"planets", name:"Seven planets, joys, nature", prereq:"Sect."},
+    {id:"aspects", name:"Sign-based witnessing & aversion", prereq:"Signs in order."},
+    {id:"dignity", name:"Domicile, exaltation, detriment, fall", prereq:"Seven + twelve signs."},
+  ]},
+  {branch:"Branch — lots", nodes:[
+    {id:"lots", name:"Fortune & Spirit formulas", prereq:"Sect + ASC/Sun/Moon longitudes."},
+  ]},
+  {branch:"Branch — timing", nodes:[
+    {id:"prof", name:"Annual profection (place + LoY)", prereq:"Houses + domicile lords."},
+    {id:"zr", name:"ZR L1 years per sign", prereq:"Capricorn is 27, not 30."},
+  ]},
+  {branch:"Branch — failure modes", nodes:[
+    {id:"errors", name:"Common natal errors", prereq:"All trunk nodes at least [~]."},
+  ]},
+];
+
+const KEY = "natal-mastery-v1";
+const store = JSON.parse(localStorage.getItem(KEY) || '{"tree":{},"stats":{}}');
+function save(){ localStorage.setItem(KEY, JSON.stringify(store)); }
+
+const state = { tab:"tree", bank:"sect", q:null, locked:false, hint:false, session:{n:0, ok:0, peek:0} };
+
+function nth(n){
+  if (n === 1) return "1st";
+  if (n === 2) return "2nd";
+  if (n === 3) return "3rd";
+  return n + "th";
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function pick(arr, n, except){
+  const pool = arr.filter(x => x !== except);
+  shuffle(pool);
+  return pool.slice(0, n);
+}
+function norm(d){ return ((d % 360)+360)%360; }
+function fmt(d){
+  d = norm(d);
+  const i = Math.floor(d/30);
+  const deg = Math.floor(d % 30);
+  return SIGNS[i].glyph + " " + deg + "° " + SIGNS[i].name;
+}
+function lon(i, deg){ return i*30 + deg; }
+function mcq(answer, distractors){
+  const opts = shuffle([answer, ...distractors]).slice(0,4);
+  if (!opts.includes(answer)) opts[0] = answer;
+  return shuffle(opts);
+}
+
+function qSect(){
+  const rows = [
+    {q:"In a day chart, the benefic of sect is…", a:"Jupiter", d:["Venus","Saturn","Moon"], why:"Day: Jupiter is of the sect in favour. Venus is the contrary benefic."},
+    {q:"In a night chart, the benefic of sect is…", a:"Venus", d:["Jupiter","Mars","Sun"], why:"Night: Venus is of the sect in favour. Jupiter is contrary-to-sect."},
+    {q:"In a day chart, the potential nexus of greatest difficulty is…", a:"Mars", d:["Saturn","Venus","Mercury"], why:"Day: Mars is the malefic contrary to sect."},
+    {q:"In a night chart, the potential nexus of greatest difficulty is…", a:"Saturn", d:["Mars","Jupiter","Moon"], why:"Night: Saturn is the malefic contrary to sect."},
+    {q:"A chart is diurnal when the Sun is…", a:"Above the ASC–DSC axis", d:["In a masculine sign","In Leo or Aries","Above the MC"], why:"Sect is the horizon test, not the sign of the Sun."},
+    {q:"Mercury’s sect is…", a:"Neutral — follows the chart or its condition vs the Sun", d:["Always diurnal","Always nocturnal","Always of the Moon"], why:"Mercury is the common star."},
+    {q:"The sect light of a night chart is…", a:"The Moon", d:["The Sun","Venus","Jupiter"], why:"Night: Moon is the luminary of sect."},
+    {q:"Twilight (Sun on the ASC–DSC) should be treated as…", a:"A genuine ambiguity — run both", d:["Always day","Always night","Ignore sect"], why:"Do not force a call within a few degrees of the axis."},
+  ];
+  return rows[Math.floor(Math.random()*rows.length)];
+}
+function qHouses(){
+  const h = HOUSES[Math.floor(Math.random()*12)];
+  const kind = Math.random();
+  if (kind < 0.45) {
+    return {q:"Place " + h[0] + " is called…", a:h[1], d:pick(HOUSES.map(x=>x[1]),3,h[1]), why:h[2]};
+  }
+  if (kind < 0.75) {
+    return {q:"Which place covers: " + h[2] + "?", a:"Place " + h[0] + " — " + h[1], d:pick(HOUSES.map(x=>"Place "+x[0]+" — "+x[1]),3,"Place "+h[0]+" — "+h[1]), why:h[1]};
+  }
+  const joys = {1:"Mercury",3:"Moon",5:"Venus",6:"Mars",9:"Sun",11:"Jupiter",12:"Saturn"};
+  const n = [1,3,5,6,9,11,12][Math.floor(Math.random()*7)];
+  return {q:"The planetary joy of place " + n + " is…", a:joys[n], d:pick(["Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn"],3,joys[n]), why:"Joys: 1 Mercury, 3 Moon, 5 Venus, 6 Mars, 9 Sun, 11 Jupiter, 12 Saturn."};
+}
+function qLots(){
+  const ai = Math.floor(Math.random()*12), si = Math.floor(Math.random()*12), mi = Math.floor(Math.random()*12);
+  const ad = Math.floor(Math.random()*30), sd = Math.floor(Math.random()*30), md = Math.floor(Math.random()*30);
+  const day = Math.random() < 0.5;
+  const A = lon(ai, ad), S = lon(si, sd), M = lon(mi, md);
+  const fortune = day ? norm(A + M - S) : norm(A + S - M);
+  const spirit = day ? norm(A + S - M) : norm(A + M - S);
+  const wantF = Math.random() < 0.5;
+  const ans = wantF ? fortune : spirit;
+  const q = (day?"Day":"Night") + " chart. ASC " + fmt(A) + ", Sun " + fmt(S) + ", Moon " + fmt(M) + ". Lot of " + (wantF?"Fortune":"Spirit") + "?";
+  const distractors = [
+    fmt(wantF ? spirit : fortune),
+    fmt(norm(ans + 30)),
+    fmt(norm(ans + 180)),
+    fmt(norm(A + S + M)),
+  ];
+  return {q, a: fmt(ans), d: pick(distractors,3,fmt(ans)), why: (day
+    ? "Day Fortune = ASC + Moon − Sun. Spirit reverses it."
+    : "Night Fortune = ASC + Sun − Moon. Spirit reverses it.")};
+}
+function qZr(){
+  const s = SIGNS[Math.floor(Math.random()*12)];
+  if (Math.random() < 0.7) {
+    return {q:s.glyph + " " + s.name + " — ZR L1 years?", a: String(s.zr), d:pick(["8","12","15","19","20","25","27","30"],3,String(s.zr)), why:s.name + " is " + s.zr + " (ruler " + s.lord + "). Capricorn is 27, not Saturn’s 30."};
+  }
+  return {q:"Which sign is 27 ZR years (not 30)?", a:"Capricorn", d:["Aquarius","Saturn","Scorpio"], why:"Per-sign table. Aquarius takes Saturn’s 30; Capricorn is 27."};
+}
+function qProf(){
+  const age = Math.floor(Math.random()*72);
+  const place = (age % 12) + 1;
+  const asc = Math.floor(Math.random()*12);
+  const sign = SIGNS[(asc + age) % 12];
+  if (Math.random() < 0.5) {
+    return {q:"Age " + age + " (birthday-to-birthday). Profected place from the ASC?", a: nth(place), d:pick(["1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"],3,nth(place)), why:"Place = (age mod 12) + 1. Age 0 is the 1st."};
+  }
+  return {q:"Rising " + SIGNS[asc].name + ", age " + age + ". Profected sign (Lord of the Year’s domicile)?", a: sign.glyph + " " + sign.name, d:pick(SIGNS.map(s=>s.glyph+" "+s.name),3,sign.glyph+" "+sign.name), why:"Advance one sign per year from the rising sign. LoY is the domicile lord of that sign (" + sign.lord + ")."};
+}
+function qAspects(){
+  const a = Math.floor(Math.random()*12);
+  const b = Math.floor(Math.random()*12);
+  const n = Math.min((b - a + 12)%12, (a - b + 12)%12);
+  const name = ASPECTS.find(x=>x.n===n).name;
+  const from = SIGNS[a], to = SIGNS[b];
+  if (a === b) {
+    return {q: from.name + " to " + to.name + " is…", a:"conjunction / copresence", d:["sextile","trine","aversion"], why:"Same sign: copresence. Overcoming does not apply."};
+  }
+  return {q: from.glyph + " " + from.name + " looking at " + to.glyph + " " + to.name + "?", a:name, d:pick(["sextile","square","trine","opposition","aversion","conjunction / copresence"],3,name), why:"Count signs apart. 2/6/8/12 = aversion — no aspect exists."};
+}
+function qDignity(){
+  const rows = [
+    {q:"Domicile of the Sun?", a:"Leo", d:["Aries","Sagittarius","Cancer"]},
+    {q:"Exaltation of the Sun?", a:"Aries", d:["Leo","Libra","Capricorn"]},
+    {q:"Fall of the Moon?", a:"Scorpio", d:["Capricorn","Taurus","Cancer"]},
+    {q:"Exaltation of the Moon?", a:"Taurus", d:["Cancer","Pisces","Libra"]},
+    {q:"Detriment of Mars?", a:"Libra and Taurus", d:["Cancer and Leo","Pisces and Sagittarius","Gemini and Virgo"]},
+    {q:"Exaltation of Saturn?", a:"Libra", d:["Capricorn","Aquarius","Scorpio"]},
+    {q:"Jupiter is in fall in…", a:"Capricorn", d:["Virgo","Gemini","Cancer"]},
+    {q:"Venus is exalted in…", a:"Pisces", d:["Taurus","Libra","Cancer"]},
+    {q:"Mercury’s nocturnal domicile?", a:"Virgo", d:["Gemini","Virgo and Gemini","Pisces"]},
+    {q:"A planet in two or more of domicile / exaltation / bound is…", a:"In its chariot or throne", d:["Peregrine","Cazimi","Under the beams"]},
+  ];
+  return rows[Math.floor(Math.random()*rows.length)];
+}
+function qErrors(){
+  const rows = [
+    {q:"Capricorn ZR years are…", a:"27", d:["30","12","19"], why:"Error 13: Capricorn is 27, not Saturn’s minor years."},
+    {q:"Sign-based aspects use orbs of…", a:"None — whole signs see or they don’t", d:["8°","6° for planets, 12° for lights","3°"], why:"Error 7: orbs belong to the degree-based layer only."},
+    {q:"Cazimi is…", a:"≤1° from the Sun (medieval 16′)", d:["Any Sun conjunction","≤8°","≤15°"], why:"Error 18. A 6° conjunction is combust, not cazimi."},
+    {q:"Lord of the Year is…", a:"Domicile ruler of the profected sign", d:["Exaltation lord of the year","Triplicity lord of the sect","The chart ruler"], why:"Error 15."},
+    {q:"An empty house means…", a:"The lord of the house still carries the topic", d:["The topic is absent from the life","Skip it","Read only transits there"], why:"Error 20."},
+    {q:"Transits without time-lords should be…", a:"Downgraded to echo until ZR/profection frame them", d:["The main prediction","Ignored entirely","Used as the natal promise"], why:"Error 9–10. Promise, then activation, then trigger."},
+    {q:"Whole-sign 10th vs MC degree…", a:"State both separately", d:["The MC is the 10th cusp","Ignore the MC","Move the 10th to the MC sign"], why:"Errors 4–5."},
+  ];
+  return rows[Math.floor(Math.random()*rows.length)];
+}
+
+const BANKS = {
+  sect: {label:"Sect", gen:qSect},
+  houses: {label:"Places", gen:qHouses},
+  lots: {label:"Lots", gen:qLots},
+  zr: {label:"ZR years", gen:qZr},
+  prof: {label:"Profections", gen:qProf},
+  aspects: {label:"Aspects", gen:qAspects},
+  dignity: {label:"Dignity", gen:qDignity},
+  errors: {label:"Errors", gen:qErrors},
+};
+
+function nextQ(){
+  state.locked = false;
+  state.hint = false;
+  const item = BANKS[state.bank].gen();
+  const opts = mcq(item.a, item.d);
+  state.q = { ...item, opts };
+  renderCard();
+}
+
+function answer(choice){
+  if (state.locked) return;
+  state.locked = true;
+  state.session.n++;
+  const ok = choice === state.q.a;
+  if (ok) state.session.ok++;
+  store.stats[state.bank] = store.stats[state.bank] || {n:0, ok:0};
+  store.stats[state.bank].n++;
+  if (ok) store.stats[state.bank].ok++;
+  const node = store.tree[state.bank] || " ";
+  if (ok && store.stats[state.bank].n >= 12 && store.stats[state.bank].ok / store.stats[state.bank].n >= 0.85) {
+    store.tree[state.bank] = "x";
+  } else if (store.stats[state.bank].n >= 4) {
+    store.tree[state.bank] = node === "x" ? "^" : "~";
+  }
+  save();
+  renderCard(choice);
+  renderStats();
+  renderTree();
+}
+
+function renderStats(){
+  const s = state.session;
+  const acc = s.n ? Math.round(100*s.ok/s.n) : 0;
+  document.getElementById("stats").innerHTML =
+    "<span>Reps <b>"+s.n+"</b></span><span>Correct <b>"+s.ok+"</b></span><span>Accuracy <b>"+acc+"%</b></span><span>Peeks <b>"+s.peek+"</b></span>";
+  document.getElementById("bar").style.width = Math.min(100, s.n) + "%";
+}
+function renderPick(){
+  document.getElementById("pick").innerHTML = Object.entries(BANKS).map(([id,b]) =>
+    "<button type='button' class='"+(id===state.bank?"on":"")+"' data-bank='"+id+"'>"+b.label+"</button>"
+  ).join("");
+}
+function renderCard(chosen){
+  const q = state.q;
+  if (!q) return;
+  const btns = q.opts.map(o => {
+    let cls = "";
+    if (state.locked) {
+      if (o === q.a) cls = "good";
+      else if (o === chosen) cls = "bad";
+    }
+    return "<button type='button' data-choice='"+encodeURIComponent(o)+"' class='"+cls+"' "+(state.locked?"disabled":"")+">"+o+"</button>";
+  }).join("");
+  document.getElementById("card").innerHTML =
+    "<p class='kicker'>"+BANKS[state.bank].label+" · recall from memory</p>"+
+    "<p class='prompt'>"+q.q+"</p>"+
+    "<div class='choices'>"+btns+"</div>"+
+    "<p class='hint"+(state.hint?" show":"")+"' id='hint'>"+(q.why || "")+"</p>"+
+    (state.locked ? "<p class='why'>"+ (chosen===q.a ? "Clean. Next rep." : "Miss. "+(q.why||"")) +"</p>" : "")+
+    "<div class='row'>"+
+      "<button type='button' class='ghost' id='hintBtn'>Peek a hint</button>"+
+      "<button type='button' class='go' id='nextBtn'>"+(state.locked?"Next rep":"Skip")+"</button>"+
+    "</div>";
+}
+
+function mark(id){
+  const v = store.tree[id];
+  if (v==="x") return {cls:"x", t:"[x]"};
+  if (v==="^") return {cls:"caret", t:"[^]"};
+  if (v==="~") return {cls:"tilde", t:"[~]"};
+  return {cls:"", t:"[ ]"};
+}
+function renderTree(){
+  const html = TREE.map(br => {
+    const nodes = br.nodes.map(n => {
+      const m = mark(n.id);
+      const st = store.stats[n.id];
+      const ev = st ? (st.ok+"/"+st.n+" clean") : "no evidence yet";
+      return "<div class='node'><span class='status "+m.cls+"'>"+m.t+"</span><div><strong>"+n.name+"</strong><span class='prereq'>"+n.prereq+" · "+ev+"</span></div><button type='button' class='ghost' data-go='"+n.id+"'>Drill</button></div>";
+    }).join("");
+    return "<article class='branch'><h3>"+br.branch+"</h3>"+nodes+"</article>";
+  }).join("");
+  document.getElementById("tree").innerHTML = html +
+    "<p class='lede' style='margin-top:1rem'>Legend: [ ] not started · [~] understanding · [x] automatic (≥12 reps, ≥85%) · [^] fortifying after a miss streak.</p>";
+}
+
+function renderRef(){
+  document.getElementById("reference").innerHTML = `
+    <p class="lede">Peek one cell. Close it. Reproduce. If you live in this panel, you are letting the spotter lift the weight.</p>
+    <details class="ref"><summary>Sect table</summary><div class="body">
+      <table><tr><th></th><th>Day</th><th>Night</th></tr>
+      <tr><td>Sect light</td><td>Sun</td><td>Moon</td></tr>
+      <tr><td>Benefic of sect</td><td>Jupiter</td><td>Venus</td></tr>
+      <tr><td>Malefic of sect</td><td>Saturn</td><td>Mars</td></tr>
+      <tr><td>Contrary malefic</td><td>Mars</td><td>Saturn</td></tr>
+      </table></div></details>
+    <details class="ref"><summary>Lot formulas</summary><div class="body">
+      Day Fortune = ASC + Moon − Sun. Night reverses. Spirit is the inverse of Fortune.
+    </div></details>
+    <details class="ref"><summary>ZR L1 years</summary><div class="body">
+      <table><tr><th>Sign</th><th>Years</th></tr>
+      ${SIGNS.map(s=>"<tr><td>"+s.glyph+" "+s.name+"</td><td>"+s.zr+"</td></tr>").join("")}
+      </table>
+      Capricorn 27 · Aquarius 30.
+    </div></details>
+    <details class="ref"><summary>Profection</summary><div class="body">
+      Place = (age mod 12) + 1 from the Ascendant. Lord of the Year = domicile ruler of the profected sign. Monthly: one sign per month from that sign.
+    </div></details>
+    <details class="ref"><summary>Places 1–12</summary><div class="body">
+      <table><tr><th>#</th><th>Name</th><th>Topics</th></tr>
+      ${HOUSES.map(h=>"<tr><td>"+h[0]+"</td><td>"+h[1]+"</td><td>"+h[2]+"</td></tr>").join("")}
+      </table>
+    </div></details>
+    <details class="ref"><summary>Primary source</summary><div class="body">
+      Brennan, <em>Hellenistic Astrology</em> — houses, lots, profections, ZR. George V1 for sect. Hand-verify every formula against the extracted text; do not recall citations from memory.
+    </div></details>
+    <p class="lede">Stuck? That is the feeling of adaptation. Ask in chat — this gym does not replace the teacher.</p>
+  `;
+}
+
+function showTab(id){
+  state.tab = id;
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id===id));
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab===id ? "true":"false"));
+}
+
+document.querySelector(".tabs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-tab]");
+  if (b) showTab(b.dataset.tab);
+});
+document.getElementById("pick").addEventListener("click", e => {
+  const b = e.target.closest("button[data-bank]");
+  if (!b) return;
+  state.bank = b.dataset.bank;
+  renderPick();
+  nextQ();
+});
+document.getElementById("card").addEventListener("click", e => {
+  const c = e.target.closest("button[data-choice]");
+  if (c) answer(decodeURIComponent(c.dataset.choice));
+  if (e.target.id === "nextBtn") nextQ();
+  if (e.target.id === "hintBtn") {
+    state.hint = true;
+    state.session.peek++;
+    renderStats();
+    const h = document.getElementById("hint");
+    if (h) h.classList.add("show");
+  }
+});
+document.getElementById("tree").addEventListener("click", e => {
+  const b = e.target.closest("button[data-go]");
+  if (!b) return;
+  state.bank = b.dataset.go;
+  showTab("drills");
+  renderPick();
+  nextQ();
+});
+
+renderTree();
+renderPick();
+renderStats();
+renderRef();
+nextQ();
+</script>
+</body>
+</html>

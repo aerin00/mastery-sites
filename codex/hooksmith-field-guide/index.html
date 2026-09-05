@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<!-- index:
+description: Engineer Codex hooks from event matching and handlers through policy decisions, testing, and rollout.
+tags: guide, agent-systems
+-->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hooksmith Field Guide</title>
+<style>
+/* =====================================================================
+   TOKENS — light palette lives on the bare :root.
+   >>> CHOOSE PER SUBJECT: the 6 values marked [PICK] below. <<<
+   Derive them from the subject's own world. Keep neutrals biased
+   toward the accent hue. Everything else in this file is structural
+   and should carry over unchanged.
+   ===================================================================== */
+:root{
+  /* [PICK] grounds — page, cards, raised surfaces */
+  --bg:#EEF3F7; --paper:#F9FCFE; --raise:#FFFFFF;
+  --ink:#10202C; --body:#263B49; --muted:#5B7080; --faint:#8296A4;
+  --line:#D3DEE6; --line-2:#B8CAD6;
+  /* [PICK] structural accent — links, active nav, lab cards */
+  --accent:#086B83; --accent-soft:#DCEEF3; --accent-ink:#07566A;
+  /* [PICK] signal — current state, eyebrows, the one loud thing */
+  --signal:#D45C18; --signal-soft:#F9E6D8;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#111A19; --code-ink:#DCE7E4; --code-line:#24322F;
+  --shadow:0 1px 2px rgba(18,26,25,.05), 0 8px 24px -12px rgba(18,26,25,.14);
+  --rail:264px;
+  /* [PICK] type: display / body / mono. Three roles, chosen deliberately. */
+  --f-disp:'Segoe UI Variable Display','Segoe UI',Arial,sans-serif;
+  --f-body:'Segoe UI Variable Text','Segoe UI',Arial,sans-serif;
+  --f-mono:'Cascadia Code','SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+    --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+    --signal:#F09055; --signal-soft:#3A2114;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+  --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+  --signal:#F09055; --signal-soft:#3A2114;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname">Hooksmith Field Guide</span><small id="brandtag">CODEX HOOKS</small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search · / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">◖</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"><a class="on" href="#mental-model"><span class="n">00</span><span>See the machine</span><span class="tick">✓</span></a><a href="#observe-default"><span class="n">01</span><span>Read the event</span><span class="tick">✓</span></a><a href="#choose-event"><span class="n">02</span><span>Choose the moment</span><span class="tick">✓</span></a><a href="#match-scope"><span class="n">03</span><span>Narrow the match</span><span class="tick">✓</span></a><a href="#write-handler"><span class="n">04</span><span>Write the handler</span><span class="tick">✓</span></a><a href="#return-decision"><span class="n">05</span><span>Return a decision</span><span class="tick">✓</span></a><a href="#execution-safety"><span class="n">06</span><span>Bound the run</span><span class="tick">✓</span></a><a href="#ship-hook"><span class="n">07</span><span>Trust and ship</span><span class="tick">✓</span></a></div>
+    <div class="legend" id="legend"><h4>Build checkpoint</h4><div class="row"><span class="swatch" style="background:var(--warn)"></span>Model: understand</div><div class="row"><span class="swatch" style="background:var(--accent)"></span>Select: event + match</div><div class="row"><span class="swatch" style="background:var(--signal)"></span>Build: handler + output</div><div class="row"><span class="swatch" style="background:var(--stop)"></span>Prove: test + trust</div></div>
+  </nav>
+  <main id="view"><div class="prog"><div class="top"><span class="lbl">Path progress</span><span class="pct">0%</span></div><div class="bar"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div></div><div><div class="eyebrow">Phase 00 · Model layer</div><h1 class="ptitle">See the machine</h1><div class="meta"><span class="chip model">Model</span><span class="chip">10 min</span><span class="chip">prereq: None</span></div></div><div class="objective">Explain a hook as <b>when this happens, automatically do that</b>.</div><h2 class="sec">Concepts <span class="cnt">3</span></h2><div class="concept"><h3>ELI5: a hook is a little helper</h3><p>Imagine Codex is using scissors. A helper wakes up, checks whether the action is safe, and either lets it continue or stops it.</p><div class="codewrap"><pre><code>Something happens
+        ↓
+Hook wakes up
+        ↓
+Check, act, report</code></pre><button class="copy">copy</button></div></div><div class="concept"><h3>The four-part mental model</h3><div class="tablewrap"><table><thead><tr><th>Question</th><th>Hook part</th><th>Example</th></tr></thead><tbody><tr><td>When?</td><td>Event</td><td>Before a tool runs</td></tr><tr><td>Which?</td><td>Matcher</td><td>Only Bash commands</td></tr><tr><td>Do what?</td><td>Handler</td><td>Run check-command.ps1</td></tr><tr><td>Then what?</td><td>Output</td><td>Allow, deny, warn, or add context</td></tr></tbody></table></div></div><div class="concept"><h3>Before versus after</h3><p><code>PreToolUse</code> can prevent an operation. <code>PostToolUse</code> can inspect what happened, but it cannot undo side effects.</p></div><h2 class="sec">Lab</h2><div class="lab"><h3>Describe one hook without code</h3><ol><li>Choose one repetitive problem in your real Codex work.</li><li>Write one sentence: “When ___ happens, automatically ___.”</li><li>Name what would count as success.</li><li><b>Break it deliberately:</b> move the proposed check from before the action to after it and identify what can no longer be prevented.</li></ol><p style="margin:14px 0 0"><b>Done when:</b> Your sentence names one event, one action, and one observable success condition.</p><div class="done-line"><label for="lab-mental-model"><input type="checkbox" id="lab-mental-model">Lab complete</label></div></div><h2 class="sec">Gotchas <span class="cnt">2</span></h2><div class="gotcha"><span class="sev trap">trap</span><span><b>Automation without a checkpoint</b>A script can be useful but still be the wrong hook if it runs after the damage it was meant to prevent.</span></div><div class="gotcha"><span class="sev ok">ok</span><span><b>One policy per hook</b>Small hooks are easier to test, trust, and disable.</span></div><h2 class="sec">Checkpoint <span class="cnt">2</span></h2><details class="qa"><summary>State the four questions used to design a hook.</summary><div class="ans">When does it run, which occurrences match, what handler runs, and what result should Codex receive?<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><details class="qa"><summary>Why can PostToolUse not protect against the original side effect?</summary><div class="ans">It runs only after the tool has already completed.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><h2 class="sec">Source docs</h2><div class="docs"><a href="https://learn.chatgpt.com/docs/hooks" target="_blank" rel="noopener">Official Hooks documentation ↗</a></div><div class="done-line" style="border-top: 1px solid var(--line); margin-top: 40px;"><button class="btn prime">Read the event →</button></div></main>
+</div>
+
+
+<script>
+/* =====================================================================
+   CONTENT — replace everything below this banner.
+   Three example phases show every field. Delete them and write yours.
+   See the Mastery Site build specification for the full rules. The short version:
+     - 8–14 phases. Phase 00 = read the instrument. Phase 01 = operate it
+       without configuring it. Last = capstone with the exclusions stated.
+     - `id` is STABLE and drives progress keys. `n` is cosmetic.
+     - A gotcha is only a gotcha if it fails SILENTLY.
+     - Every lab has one step that deliberately breaks something.
+     - Quiz items are recall, not recognition. They become the Drill deck.
+     - Assert only what you verified. Mark the rest <span class="unv">unverified</span>.
+   ===================================================================== */
+
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">' + s + '</code>';
+
+const SITE = {
+  key:'hooksmith-field-guide-v1',
+  title:'Hooksmith Field Guide',
+  tag:'CODEX HOOKS',
+  spine:'Build checkpoint',
+  layers:[
+    {id:'model',label:'Model: understand',token:'warn'},
+    {id:'select',label:'Select: event + match',token:'accent'},
+    {id:'build',label:'Build: handler + output',token:'signal'},
+    {id:'prove',label:'Prove: test + trust',token:'stop'}
+  ],
+  refLede:'Fast answers for choosing an event, matcher, input, output contract, timeout, and execution mode. Verified against the official OpenAI Hooks documentation.',
+  auditTitle:'Source status',
+  verifiedAgainst:'Verified against OpenAI Hooks documentation, September 4, 2026.'
+};
+
+const PHASES = [
+{id:'mental-model',n:'00',title:'See the machine',layer:'model',layerLabel:'Model',time:'10 min',pre:'None',
+ objective:'Explain a hook as <b>when this happens, automatically do that</b>.',
+ concepts:[
+  {h:'ELI5: a hook is a little helper',p:'<p>Imagine Codex is using scissors. A helper wakes up, checks whether the action is safe, and either lets it continue or stops it.</p>',code:C('Something happens','        ↓','Hook wakes up','        ↓','Check, act, report')},
+  {h:'The four-part mental model',table:{head:['Question','Hook part','Example'],rows:[['When?','Event','Before a tool runs'],['Which?','Matcher','Only Bash commands'],['Do what?','Handler','Run check-command.ps1'],['Then what?','Output','Allow, deny, warn, or add context']]}},
+  {h:'Before versus after',p:'<p><code>PreToolUse</code> can prevent an operation. <code>PostToolUse</code> can inspect what happened, but it cannot undo side effects.</p>'}
+ ],
+ lab:{title:'Describe one hook without code',steps:['Choose one repetitive problem in your real Codex work.','Write one sentence: “When ___ happens, automatically ___.”','Name what would count as success.','<b>Break it deliberately:</b> move the proposed check from before the action to after it and identify what can no longer be prevented.'],verify:'Your sentence names one event, one action, and one observable success condition.'},
+ gotchas:[{s:'trap',t:'Automation without a checkpoint',d:'A script can be useful but still be the wrong hook if it runs after the damage it was meant to prevent.'},{s:'ok',t:'One policy per hook',d:'Small hooks are easier to test, trust, and disable.'}],
+ quiz:[{q:'State the four questions used to design a hook.',a:'When does it run, which occurrences match, what handler runs, and what result should Codex receive?'},{q:'Why can PostToolUse not protect against the original side effect?',a:'It runs only after the tool has already completed.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'observe-default',n:'01',title:'Read the event',layer:'model',layerLabel:'Model',time:'15 min',pre:'Phase 00',
+ objective:'Inspect the JSON Codex sends and <b>identify only documented fields</b>.',
+ concepts:[
+  {h:'Every command hook gets JSON on stdin',p:'<p>Standard input is the data pipe into your script. Common fields include <code>session_id</code>, <code>transcript_path</code>, <code>cwd</code>, <code>hook_event_name</code>, and <code>model</code>.</p>'},
+  {h:'Events add fields',table:{head:['Event','Useful added fields'],rows:[['UserPromptSubmit','prompt'],['PreToolUse','tool_name, tool_use_id, tool_input'],['PostToolUse','tool_name, tool_use_id, tool_input, tool_response'],['Stop','last_assistant_message, stop_hook_active'],['SessionStart','source']]}},
+  {h:'Safe PowerShell reader',code:C('$rawInput = [Console]::In.ReadToEnd()','$eventData = $rawInput | ConvertFrom-Json','$eventName = $eventData.hook_event_name','exit 0')}
+ ],
+ lab:{title:'Capture shape, not secrets',steps:['Create a temporary handler that reads stdin JSON.','Write only the property names to a temporary log.','Trigger the selected event once.','Confirm the expected fields are present.','<b>Break it deliberately:</b> reference a made-up field and observe that it is empty or missing.','Delete the temporary event log if it contains sensitive content.'],verify:'You can list the actual input property names observed for one event without storing their sensitive values.'},
+ gotchas:[{s:'trap',t:'Invented fields fail quietly',d:'A misspelled property often becomes null, so the hook may appear to run while enforcing nothing.'},{s:'cost',t:'Logging full inputs',d:'Prompts, commands, files, and transcripts can contain credentials or private data.'}],
+ quiz:[{q:'How does a command hook receive its event data?',a:'As one JSON object on standard input.'},{q:'Name the five common fields documented for every command hook.',a:'session_id, transcript_path, cwd, hook_event_name, and model.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'choose-event',n:'02',title:'Choose the moment',layer:'select',layerLabel:'Select',time:'20 min',pre:'Phase 01',
+ objective:'Select the event that gives your policy <b>the control point it needs</b>.',
+ concepts:[
+  {h:'Event names are strict choices',table:{head:['Goal','Event'],rows:[['Check a submitted prompt','UserPromptSubmit'],['Prevent an unsafe tool call','PreToolUse'],['Decide an approval request','PermissionRequest'],['Review a completed tool call','PostToolUse'],['Check before the turn finishes','Stop'],['Load context','SessionStart'],['Save end-of-session information','SessionEnd'],['React around compaction','PreCompact or PostCompact'],['Guide a subagent','SubagentStart or SubagentStop'],['React to user interruption','Interrupt']]}},
+  {h:'Exact supported names',code:C('SessionStart','SessionEnd','SubagentStart','SubagentStop','UserPromptSubmit','PreToolUse','PermissionRequest','PostToolUse','PreCompact','PostCompact','Stop','Interrupt')}
+ ],
+ lab:{title:'Pick the earliest useful event',steps:['Choose one real policy.','List the earliest moment when all required information exists.','Choose the event at that moment.','Explain whether the action is still preventable.','<b>Break it deliberately:</b> choose a later event and name the irreversible effect that could occur first.'],verify:'You can defend the chosen event using timing and available input fields.'},
+ gotchas:[{s:'trap',t:'Post-check mistaken for prevention',d:'PostToolUse feedback can steer later work, but the completed command or edit is not undone.'},{s:'stale',t:'Assuming every event behaves alike',d:'Inputs, matcher support, stdout handling, and decisions differ by event.'}],
+ quiz:[{q:'Which event should inspect a tool call before it runs?',a:'PreToolUse.'},{q:'Which event runs when Codex is about to ask for approval?',a:'PermissionRequest.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'match-scope',n:'03',title:'Narrow the match',layer:'select',layerLabel:'Select',time:'20 min',pre:'Phase 02',
+ objective:'Write a matcher that <b>fires only for the intended occurrences</b>.',
+ concepts:[
+  {h:'Matchers are regex strings with event-specific meaning',table:{head:['Events','Matcher examines'],rows:[['PreToolUse, PostToolUse, PermissionRequest','Tool name'],['SessionStart','startup source'],['SessionEnd','end reason'],['PreCompact, PostCompact','manual or auto trigger'],['SubagentStart, SubagentStop','Subagent type'],['UserPromptSubmit, Stop, Interrupt','Matcher ignored']]}},
+  {h:'Common patterns',code:C('^Bash$','^apply_patch$','Edit|Write','^mcp__filesystem__.*','startup|resume','manual|auto')}
+ ],
+ lab:{title:'Prove match and non-match',steps:['Select an event that supports matchers.','Write the narrowest useful regex.','Trigger one matching occurrence.','Trigger one non-matching occurrence.','Confirm the hook ran exactly once.','<b>Break it deliberately:</b> replace the pattern with <code>*</code> and observe the increased scope, then restore it.'],verify:'One matching case fires and one neighboring non-matching case does not.'},
+ gotchas:[{s:'trap',t:'Ignored matcher looks configured',d:'UserPromptSubmit, Stop, and Interrupt accept configuration containing a matcher but do not use it for filtering.'},{s:'trap',t:'Broad regex catches neighbors',d:'A loose pattern can activate on unrelated tools and create noisy or unsafe behavior.'}],
+ quiz:[{q:'What does a PreToolUse matcher inspect?',a:'The tool name and documented matcher aliases.'},{q:'Name the three events that ignore matchers.',a:'UserPromptSubmit, Stop, and Interrupt.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'write-handler',n:'04',title:'Write the handler',layer:'build',layerLabel:'Build',time:'30 min',pre:'Phase 03',
+ objective:'Implement a handler that <b>reads documented input and returns valid output</b>.',
+ concepts:[
+  {h:'Two supported handler types',table:{head:['Type','Use'],rows:[['command','Run a local script or executable'],['mcp_tool','Call a tool on an already-connected MCP server']]}},
+  {h:'Reusable configuration',code:C('{','  "description": "One clear policy",','  "hooks": {','    "PreToolUse": [{','      "matcher": "^Bash$",','      "hooks": [{','        "type": "command",','        "command": "python3 /absolute/path/check.py",','        "commandWindows": "pwsh -NoProfile -File \\"C:\\\\hooks\\\\check.ps1\\"",','        "timeout": 5,','        "statusMessage": "Checking command"','      }]','    }]','  }','}')},
+  {h:'Reusable PowerShell shell',code:C('$rawInput = [Console]::In.ReadToEnd()','try { $eventData = $rawInput | ConvertFrom-Json }','catch { Write-Error "Invalid hook JSON"; exit 1 }','# Add one policy here.','exit 0')}
+ ],
+ lab:{title:'Build an advisory hook',steps:['Create a project-local <code>.codex/hooks.json</code>.','Create one PowerShell handler using the template.','Make it record only timestamp, event name, and result.','Trigger it once.','<b>Break it deliberately:</b> output malformed JSON and observe the failure, then restore valid behavior.'],verify:'The hook runs once, exits successfully, and its record contains no prompt, command, credential, or transcript content.'},
+ gotchas:[{s:'trap',t:'Relative paths drift',d:'Codex may start in a subdirectory. For repository hooks, resolve scripts from the Git root or use a stable absolute path.'},{s:'trap',t:'Handler type sounds plausible but is skipped',d:'Current documentation says command and mcp_tool are supported; prompt and agent handlers are parsed but skipped.'}],
+ quiz:[{q:'Which two handler types are currently supported?',a:'command and mcp_tool.'},{q:'Why are stable paths important for repository hooks?',a:'The session working directory may be a repository subdirectory, so a simple relative path can resolve incorrectly.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'return-decision',n:'05',title:'Return a decision',layer:'build',layerLabel:'Build',time:'35 min',pre:'Phase 04',
+ objective:'Return <b>only the output shape supported by the selected event</b>.',
+ concepts:[
+  {h:'Outputs are event-specific',table:{head:['Event','Typical supported result'],rows:[['PreToolUse','Deny, allow with updated input, or add context'],['PermissionRequest','Allow, deny, or make no decision'],['PostToolUse','Feedback after execution or continue false'],['SessionStart','Additional context'],['UserPromptSubmit','Additional context or block'],['Stop','Continue the turn with block feedback'],['SessionEnd','Advisory output only']]}},
+  {h:'PreToolUse deny shape',code:C('{','  "hookSpecificOutput": {','    "hookEventName": "PreToolUse",','    "permissionDecision": "deny",','    "permissionDecisionReason": "Blocked by policy."','  }','}')},
+  {h:'Safe default',p:'<p>Exit code 0 with no output means success and normal continuation. Use it when the hook has nothing to say.</p>'}
+ ],
+ lab:{title:'Test both branches',steps:['Implement one allowed input and one denied input.','Run the allowed case and confirm normal continuation.','Run the denied case and confirm the tool never executes.','Check that the denial reason is useful.','<b>Break it deliberately:</b> return a field unsupported by the event and observe the reported hook failure, then remove it.'],verify:'The allowed case executes; the denied case does not; both produce the expected hook status.'},
+ gotchas:[{s:'trap',t:'Generic JSON copied to the wrong event',d:'A field supported by one event may cause another hook run to fail and continue unexpectedly.'},{s:'trap',t:'Block after execution sounds protective',d:'A PostToolUse block replaces feedback but cannot undo the tool side effect.'}],
+ quiz:[{q:'What is the safest output when a command hook has no action to take?',a:'Exit 0 with no output.'},{q:'What must accompany updatedInput in PreToolUse?',a:'permissionDecision set to allow, with an updatedInput shape valid for that tool.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'execution-safety',n:'06',title:'Bound the run',layer:'build',layerLabel:'Build',time:'25 min',pre:'Phase 05',
+ objective:'Choose timeout, background mode, and logging so the hook <b>cannot quietly become the problem</b>.',
+ concepts:[
+  {h:'Timeout and execution choices',table:{head:['Field','Choice'],rows:[['timeout','Positive integer seconds; most default to 600'],['async','true for background, false or omitted for synchronous'],['Interrupt','One-second default, three-second maximum'],['SessionEnd','Always synchronous'],['mcp_tool','Synchronous']]}},
+  {h:'Background means advisory',p:'<p>Background hooks finish later and cannot block, approve, rewrite, or control the operation that triggered them. Use synchronous execution for policy decisions.</p>'},
+  {h:'Keep model-visible output small',p:'<p>Large additional context consumes working space and can spill to temporary files. Never return secrets in hook output.</p>'}
+ ],
+ lab:{title:'Set a practical bound',steps:['Measure a normal handler run three times.','Choose a timeout above normal variance but below an unacceptable delay.','Confirm the hook fails visibly when the timeout is exceeded.','Classify every field the hook reads as public, internal, sensitive, or secret.','<b>Break it deliberately:</b> add a delay beyond the timeout and observe the failure, then remove it.'],verify:'Normal runs finish within the chosen timeout, the delayed run times out, and no sensitive values are logged.'},
+ gotchas:[{s:'trap',t:'Async policy cannot stop anything',d:'The hook appears active, but background results arrive only at a later safe point.'},{s:'cost',t:'Verbose additional context',d:'Multiple hooks add context together and can degrade model performance.'}],
+ quiz:[{q:'When should a command hook remain synchronous?',a:'When its result must block, approve, rewrite, or otherwise control the triggering operation.'},{q:'Why should secrets never appear in hook output?',a:'Output may become model-visible or be saved to a temporary spill file.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]},
+
+{id:'ship-hook',n:'07',title:'Trust and ship',layer:'prove',layerLabel:'Prove',time:'40 min',pre:'All phases',
+ objective:'Ship one hook only after you <b>prove its trigger, non-trigger, allow, deny, failure, and recovery paths</b>.',
+ concepts:[
+  {h:'Where hooks live',table:{head:['Scope','Locations'],rows:[['User','~/.codex/hooks.json or inline hooks in ~/.codex/config.toml'],['Repository','&lt;repo&gt;/.codex/hooks.json or inline hooks in &lt;repo&gt;/.codex/config.toml'],['Plugin','Manifest hook entry or hooks/hooks.json'],['Managed','System, MDM, cloud, or requirements.toml sources']]}},
+  {h:'Trust is tied to the definition',p:'<p>Use <code>/hooks</code> to inspect, trust, or disable non-managed hooks. If the definition changes, Codex marks it for review again.</p>'},
+  {h:'Ship checklist',code:C('[ ] One policy and one owner','[ ] Exact event selected','[ ] Matcher tested both ways','[ ] Inputs verified from observed JSON','[ ] Output valid for this event','[ ] Timeout tested','[ ] No secrets logged','[ ] Failure is visible','[ ] /hooks review completed','[ ] Recovery or disable path written down')},
+  {h:'Scope boundary',p:'<p>This guide covers Codex lifecycle command and MCP-tool hooks. It does not cover building MCP servers, packaging full plugins, enterprise MDM deployment, or treating hooks as a complete security boundary.</p>'}
+ ],
+ lab:{title:'Ship one real hook',steps:['Complete the design worksheet for one real policy.','Install it in the narrowest useful scope.','Test match, non-match, allow, deny, timeout, and malformed output.','Review and trust it through <code>/hooks</code>.','Document how to disable it.','<b>Break it deliberately:</b> change the hook definition and confirm it requires review again.'],verify:'A fresh Codex session runs the trusted hook correctly, a changed definition is skipped pending review, and the disable procedure works.'},
+ gotchas:[{s:'trap',t:'Multiple sources accumulate',d:'Higher-precedence hook sources do not replace lower-precedence hooks; all matching hooks can run.'},{s:'trap',t:'Matching commands start concurrently',d:'One matching command hook cannot prevent another matching hook from starting.'},{s:'ok',t:'Trust the exact definition',d:'Hash-based review makes changed hook definitions visible before they run again.'}],
+ quiz:[{q:'What command opens the hook review interface?',a:'/hooks.'},{q:'What happens when a trusted non-managed hook definition changes?',a:'Its hash changes, so Codex marks it for review and skips it until trusted.'},{q:'Do higher-precedence hook layers replace lower ones?',a:'No. Matching hooks from all active sources load and run.'}],docs:[['Official Hooks documentation','https://learn.chatgpt.com/docs/hooks']]}
+];
+
+const TREES = [
+{title:'Which event should I use?',rows:[
+ ['Need to stop a tool before execution','<code>PreToolUse</code>','Prevention requires a before-event'],
+ ['Need to decide an approval prompt','<code>PermissionRequest</code>','It fires only when approval is needed'],
+ ['Need to inspect completed tool output','<code>PostToolUse</code>','The tool response is available'],
+ ['Need to inspect the user prompt','<code>UserPromptSubmit</code>','The prompt field is available'],
+ ['Need to ensure Codex keeps working','<code>Stop</code>','It can feed a continuation reason'],
+ ['Need to load workspace context','<code>SessionStart</code>','Adds context at startup or resume'],
+ ['Need end-of-session cleanup','<code>SessionEnd</code>','Advisory, main thread only']
+]},
+{title:'Should this run in the background?',rows:[
+ ['Must block, approve, or rewrite','No','Control requires synchronous execution'],
+ ['Only logging or analytics','Usually yes','The triggering action need not wait'],
+ ['MCP tool handler','No choice','MCP hooks are synchronous'],
+ ['SessionEnd handler','No choice','SessionEnd is always synchronous'],
+ ['Unsure','No','Prove correctness before optimizing latency']
+]},
+{title:'My hook appears to do nothing',rows:[
+ ['New or changed definition','Open <code>/hooks</code>','It may be awaiting trust'],
+ ['Repository is untrusted','Trust the project layer','Project-local hooks do not load otherwise'],
+ ['Event ignores matcher','Remove matcher assumptions','Some events ignore configured matchers'],
+ ['Field is always empty','Inspect actual stdin keys','The field may be misspelled or unavailable'],
+ ['Relative script path fails in subfolders','Resolve from Git root','Session cwd may not be repository root'],
+ ['Background decision arrived too late','Use synchronous execution','Async hooks cannot control the trigger']
+]},
+{title:'Where should the hook live?',rows:[
+ ['Useful only in one repository','<code>&lt;repo&gt;/.codex/hooks.json</code>','Narrow scope and reviewable with the project'],
+ ['Useful in all your work','<code>~/.codex/hooks.json</code>','User-wide behavior'],
+ ['Ships as part of a plugin','Plugin hooks configuration','Travels with the plugin'],
+ ['Mandatory enterprise policy','Managed configuration','Administrator-controlled trust and enforcement']
+]}
+];
+
+const REF = [
+{id:'event-ref',title:'Event chooser',note:'Start here. Timing determines what can still be controlled.',head:['Event','When','Matcher examines','Core use'],rows:[
+ ['SessionStart','Session or subagent starts','startup, resume, clear, compact','Load context'],
+ ['SessionEnd','Main thread ends','other','Cleanup or save notes'],
+ ['SubagentStart','Subagent starts','subagent type','Provide subagent context'],
+ ['SubagentStop','Subagent stops','subagent type','Request more subagent work'],
+ ['UserPromptSubmit','Prompt submitted','Ignored','Check prompt or add context'],
+ ['PreToolUse','Before supported tool','tool name','Prevent or rewrite'],
+ ['PermissionRequest','Before approval prompt','tool name','Allow or deny approval'],
+ ['PostToolUse','After supported tool','tool name','Inspect result'],
+ ['PreCompact','Before compaction','manual or auto','Stop or prepare'],
+ ['PostCompact','After compaction','manual or auto','React to compaction'],
+ ['Stop','Turn is about to stop','Ignored','Continue or finish'],
+ ['Interrupt','User interrupts active root turn','Ignored','Fast advisory cleanup']
+]},
+{id:'worksheet',title:'Hook design worksheet',note:'Freeform fields help you think. Strict fields must match the documented schema.',head:['Field','Input type','Write'],rows:[
+ ['Purpose','Freeform','One policy and its value'],['Event','Strict choice','One supported exact event name'],['Matcher','Regex, event-constrained','Pattern plus what it examines'],['Input fields','Strict schema choices','Only documented fields for the event'],['Action','Freeform design','One observable handler behavior'],['Success behavior','Event-specific','A supported output or exit 0'],['Failure behavior','Event-specific','Deny, block, warn, error, or no decision'],['Timeout','Integer seconds','A tested operational bound'],['Execution','Boolean/constrained','Synchronous or async when supported'],['Sensitive data','Freeform classification','None, internal, sensitive, or secret']
+],foot:'Fill the event first. It constrains the matcher, available inputs, and valid outputs.'},
+{id:'config-ref',title:'Configuration fields',head:['Field','Type','Meaning'],rows:[
+ ['description','String, optional','Human-readable metadata'],['matcher','Regex string, optional','Filters supported events'],['type','command or mcp_tool','Handler mechanism'],['command','String','Command to run'],['commandWindows','String, optional','Windows-only command override'],['timeout','Integer seconds','Active execution limit'],['statusMessage','String, optional','Message shown while running'],['async','Boolean','Run command in background'],['additionalContextLimit','Positive integer or 0','Approximate additional-context token threshold']
+]},
+{id:'inputs-ref',title:'Common command-hook input',head:['Field','Type','Meaning'],rows:[
+ ['session_id','string','Current session identifier'],['transcript_path','string or null','Convenience path; transcript format is not stable'],['cwd','string','Session working directory'],['hook_event_name','string','Current lifecycle event'],['model','string','Active model slug'],['permission_mode','string','Present on documented turn and lifecycle events']
+]},
+{id:'limits-ref',title:'Operational limits and defaults',head:['Rule','Current behavior'],rows:[
+ ['Most hook timeouts','600 seconds when omitted'],['Interrupt timeout','1 second default, 3 seconds maximum'],['SessionEnd timeout','1 second default, up to 3 seconds'],['Background concurrency','Up to 8 background hooks per session'],['Default additional-context threshold','Approximately 2,500 tokens'],['SessionEnd execution','Always synchronous'],['MCP hook execution','Synchronous']
+],foot:'Current as of September 4, 2026. Re-check the official documentation before relying on volatile limits.'}
+];
+
+const AUDIT = {
+ intro:'This site consolidates the official OpenAI Hooks page and the conversation’s ELI5 explanation, mental model, templates, and strict-choice clarification. Facts below were checked against the primary documentation.',
+ groups:[
+  {label:'Holds up',tag:'holds',items:[
+   {c:'A hook means “when this happens, automatically do that.”',f:'A sound beginner mental model for lifecycle-triggered scripts and MCP tool calls.'},
+   {c:'Design with event, matcher, handler, and result.',f:'Matches the documented three-level configuration while making the output contract explicit.'},
+   {c:'Non-managed hooks require review and trust.',f:'Trust is recorded against the current hook-definition hash.'}
+  ]},
+  {label:'Stale or incomplete',tag:'stale',items:[
+   {c:'Treating every worksheet entry as freeform.',f:'Incomplete. Event names and input fields are strict; matcher and outputs are constrained by the selected event.'},
+   {c:'Treating PostToolUse blocking as prevention.',f:'Incorrect mental model. It can replace feedback, but it cannot undo a completed tool side effect.'}
+  ]},
+  {label:'Wrong',tag:'wrong',items:[
+   {c:'Background hooks can enforce policy.',f:'Wrong. Background hooks cannot block, approve, rewrite, or otherwise control the triggering action.'},
+   {c:'Higher-precedence hook files replace lower-precedence hooks.',f:'Wrong. Matching hooks from active sources accumulate.'}
+  ]},
+  {label:'Missing entirely',tag:'gap',items:[
+   {c:'This guide does not teach MCP server construction.',f:'It covers only calling an already-connected MCP tool from a lifecycle hook.'},
+   {c:'This guide is not a complete security architecture.',f:'Specialized tool paths can opt out, and hooks should be treated as useful guardrails rather than a complete enforcement boundary.'}
+  ]}
+ ]
+};
+
+/* ============================================================
+   Hooksmith Field Guide — app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+
+
+
+</body></html>

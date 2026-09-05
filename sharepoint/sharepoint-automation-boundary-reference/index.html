@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<!-- index:
+description: Decide which SharePoint automations are permitted, need confirmation, or sit outside the approved boundary.
+tags: reference, automation
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SharePoint-Scoped Automation Boundary Reference</title>
+<style>
+:root{
+  --ink:#16202b;
+  --ink-soft:#4a5a68;
+  --paper:#eef1f4;
+  --surface:#ffffff;
+  --rule:#c9d3dc;
+  --rule-soft:#e3e9ee;
+  --blueprint:#27547f;
+  --permitted:#1c6b47;
+  --permitted-bg:#e4f1ea;
+  --confirm:#8d5a05;
+  --confirm-bg:#faeed6;
+  --outside:#9b272c;
+  --outside-bg:#f9e4e4;
+  --code-bg:#eaeef2;
+  --shadow:0 1px 0 var(--rule);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:1.5rem}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:15px;
+  line-height:1.55;
+}
+h1,h2,h3,h4{font-family:Georgia,"Times New Roman",serif;font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:2rem;line-height:1.15}
+h2{font-size:1.5rem;line-height:1.2}
+h3{font-size:1.15rem}
+h4{font-size:1rem;font-family:"Segoe UI",sans-serif;font-weight:600}
+p{margin:0 0 .8rem}
+a{color:var(--blueprint)}
+code,kbd{font-family:Consolas,"SF Mono",Menlo,"Courier New",monospace;font-size:.88em;background:var(--code-bg);padding:.08em .32em;border-radius:2px;word-break:break-word}
+pre{font-family:Consolas,"SF Mono",Menlo,"Courier New",monospace;font-size:.82rem;line-height:1.5;background:var(--surface);border:1px solid var(--rule);padding:1rem;overflow-x:auto;margin:0 0 1rem}
+pre code{background:none;padding:0}
+ul,ol{margin:0 0 .9rem;padding-left:1.2rem}
+li{margin-bottom:.3rem}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;max-width:1360px;margin:0 auto;min-height:100vh}
+.rail{
+  border-right:1px solid var(--rule);
+  background:var(--surface);
+  padding:1.4rem 1rem 3rem;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+main{padding:1.6rem 2.2rem 6rem;min-width:0}
+
+/* ---------- rail nav ---------- */
+.railmark{font-size:.72rem;color:var(--ink-soft);letter-spacing:.04em;margin-bottom:.15rem}
+.railtitle{font-family:Georgia,serif;font-size:1.02rem;line-height:1.25;margin-bottom:1rem;padding-bottom:.9rem;border-bottom:1px solid var(--rule)}
+.rail nav a{
+  display:block;text-decoration:none;color:var(--ink);
+  padding:.32rem .5rem .32rem .6rem;border-left:2px solid transparent;
+  font-size:.845rem;border-radius:0 2px 2px 0;
+}
+.rail nav a:hover{background:var(--paper)}
+.rail nav a.on{border-left-color:var(--blueprint);background:var(--paper);font-weight:600}
+.rail nav .grp{font-size:.7rem;color:var(--ink-soft);margin:1rem 0 .3rem .6rem;letter-spacing:.03em}
+
+/* ---------- controls ---------- */
+.controls{position:sticky;top:0;z-index:20;background:var(--paper);padding:.7rem 0 .7rem;border-bottom:1px solid var(--rule);margin-bottom:1.6rem}
+.searchrow{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+#q{
+  flex:1 1 260px;min-width:200px;font:inherit;padding:.5rem .7rem;
+  border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:3px;
+}
+#q:focus{outline:2px solid var(--blueprint);outline-offset:1px;border-color:var(--blueprint)}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap}
+.chip{
+  font:inherit;font-size:.8rem;cursor:pointer;border:1px solid var(--rule);
+  background:var(--surface);color:var(--ink-soft);padding:.42rem .7rem;border-radius:3px;
+}
+.chip:hover{border-color:var(--ink-soft)}
+.chip:focus-visible{outline:2px solid var(--blueprint);outline-offset:1px}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.chip.permitted[aria-pressed="true"]{background:var(--permitted);border-color:var(--permitted)}
+.chip.confirm[aria-pressed="true"]{background:var(--confirm);border-color:var(--confirm)}
+.chip.outside[aria-pressed="true"]{background:var(--outside);border-color:var(--outside)}
+#hits{font-size:.8rem;color:var(--ink-soft);margin-top:.5rem;min-height:1.1em}
+
+/* ---------- verdict tiles (hero) ---------- */
+.key{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin:1.2rem 0 1.6rem}
+.tile{background:var(--surface);border:1px solid var(--rule);border-top:4px solid;padding:.95rem 1rem}
+.tile.permitted{border-top-color:var(--permitted)}
+.tile.confirm{border-top-color:var(--confirm)}
+.tile.outside{border-top-color:var(--outside)}
+.tile .n{font-family:Georgia,serif;font-size:1.9rem;line-height:1;display:block;margin-bottom:.15rem}
+.tile.permitted .n{color:var(--permitted)}
+.tile.confirm .n{color:var(--confirm)}
+.tile.outside .n{color:var(--outside)}
+.tile h3{font-family:"Segoe UI",sans-serif;font-size:.95rem;margin-bottom:.3rem}
+.tile p{font-size:.82rem;color:var(--ink-soft);margin:0}
+
+/* ---------- verdict badges ---------- */
+.v{
+  display:inline-block;font-size:.7rem;font-weight:700;line-height:1.35;
+  padding:.14rem .42rem;border-radius:2px;white-space:nowrap;border:1px solid;
+}
+.v.permitted{color:var(--permitted);background:var(--permitted-bg);border-color:#bcdccb}
+.v.confirm{color:var(--confirm);background:var(--confirm-bg);border-color:#e6d09c}
+.v.outside{color:var(--outside);background:var(--outside-bg);border-color:#e8bfc0}
+
+/* ---------- sections & tables ---------- */
+section{margin-bottom:2.6rem;scroll-margin-top:5.5rem}
+section > h2{padding-bottom:.4rem;border-bottom:2px solid var(--ink);margin-bottom:.9rem}
+.lede{color:var(--ink-soft);max-width:70ch;margin-bottom:1rem}
+.prose{max-width:74ch}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th,td{text-align:left;padding:.6rem .7rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+thead th{background:var(--paper);border-bottom:1px solid var(--rule);font-size:.76rem;color:var(--ink-soft);font-weight:700;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#f7fafc}
+td:first-child{font-weight:600}
+.col-v{width:1%}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--blueprint);padding:1rem 1.1rem;margin-bottom:.9rem}
+.card.permitted{border-left-color:var(--permitted)}
+.card.confirm{border-left-color:var(--confirm)}
+.card.outside{border-left-color:var(--outside)}
+.card h3{margin-bottom:.4rem}
+.card p:last-child,.card ul:last-child{margin-bottom:0}
+.cardhead{display:flex;justify-content:space-between;gap:1rem;align-items:baseline;margin-bottom:.45rem}
+.cardhead h3{margin:0}
+.note{background:var(--confirm-bg);border:1px solid #e6d09c;padding:.8rem 1rem;margin-bottom:1rem;font-size:.9rem}
+.note strong{color:var(--confirm)}
+.stopnote{background:var(--outside-bg);border:1px solid #e8bfc0;padding:.8rem 1rem;margin-bottom:1rem;font-size:.9rem}
+.stopnote strong{color:var(--outside)}
+.hidden{display:none !important}
+
+/* ---------- copy button ---------- */
+.copybtn{font:inherit;font-size:.8rem;cursor:pointer;border:1px solid var(--rule);background:var(--surface);padding:.4rem .75rem;border-radius:3px;color:var(--ink)}
+.copybtn:hover{border-color:var(--ink-soft)}
+.copybtn:focus-visible{outline:2px solid var(--blueprint);outline-offset:1px}
+
+footer{border-top:1px solid var(--rule);padding-top:1rem;font-size:.8rem;color:var(--ink-soft);max-width:74ch}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:static;height:auto;border-right:none;border-bottom:1px solid var(--rule)}
+  .rail nav{columns:2;column-gap:1rem}
+  main{padding:1.2rem 1.1rem 4rem}
+  .key{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;font-size:10.5pt}
+  .rail,.controls,.copybtn{display:none !important}
+  .shell{display:block;max-width:none}
+  main{padding:0}
+  section{page-break-inside:auto;margin-bottom:1.4rem}
+  h2{page-break-after:avoid}
+  tr{page-break-inside:avoid}
+  .tablewrap,.card,.tile{border:1px solid #999}
+  thead th{position:static}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="rail">
+  <div class="railmark">Internal working reference</div>
+  <div class="railtitle">SharePoint-Scoped Automation Boundary</div>
+  <nav id="nav">
+    <a href="#start">Start here</a>
+    <a href="#decide">Decision path</a>
+    <div class="grp">Capability catalogue</div>
+    <a href="#a-native">A. SharePoint native</a>
+    <a href="#b-flow">B. Flows from SharePoint</a>
+    <a href="#c-connectors">C. Adjacent connectors</a>
+    <a href="#d-powerapps">D. Power Apps forms</a>
+    <a href="#e-copilot">E. Microsoft 365 Copilot</a>
+    <a href="#f-onedrive">F. OneDrive</a>
+    <a href="#g-office">G. Client-side Office</a>
+    <div class="grp">Applying it</div>
+    <a href="#patterns">Worked patterns</a>
+    <a href="#coordinator">Coordinator workflow</a>
+    <a href="#questions">Questions for IT Advisor</a>
+    <a href="#limits">Limits and thresholds</a>
+    <a href="#plan">Staged plan</a>
+    <div class="grp">Reliability</div>
+    <a href="#caveats">Caveats</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</aside>
+
+<main>
+
+  <div class="controls">
+    <div class="searchrow">
+      <input id="q" type="search" placeholder="Search capabilities, connectors, limits (press / to focus)" autocomplete="off" aria-label="Search the catalogue">
+      <div class="chips" role="group" aria-label="Filter by boundary verdict">
+        <button class="chip permitted" data-filter="permitted" aria-pressed="false">Permitted</button>
+        <button class="chip confirm" data-filter="confirm" aria-pressed="false">Confirm first</button>
+        <button class="chip outside" data-filter="outside" aria-pressed="false">Outside</button>
+        <button class="chip" id="reset">Clear</button>
+      </div>
+    </div>
+    <div id="hits" role="status"></div>
+  </div>
+
+  <section id="start">
+    <h1>What you can build without leaving the SharePoint boundary</h1>
+    <p class="lede">A working catalogue of every automation and Copilot capability available under a partially federated Power Platform model, sorted by whether you can build it today, must clear it with an IT Advisor first, or cannot build it at all.</p>
+
+    <div class="key">
+      <div class="tile permitted">
+        <span class="n" id="n-permitted">0</span>
+        <h3>Permitted</h3>
+        <p>Stays inside SharePoint. Build it today, no review required.</p>
+      </div>
+      <div class="tile confirm">
+        <span class="n" id="n-confirm">0</span>
+        <h3>Confirm first</h3>
+        <p>Licence-included but not strictly SharePoint. Get a ruling before you rely on it.</p>
+      </div>
+      <div class="tile outside">
+        <span class="n" id="n-outside">0</span>
+        <h3>Outside</h3>
+        <p>Requires the federated model. Route to your IT Advisor.</p>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>The governing rule</h3>
+      <p>Citizen development on Power Platform is not permitted, with one exception: Power Apps and Power Automate flows created directly from a SharePoint Online list or library, through the <code>Integrate</code> or <code>Workflows</code> menus, where the solution interacts only with SharePoint lists and libraries.</p>
+      <h3>What that leaves you</h3>
+      <ul>
+        <li>The whole SharePoint no-code layer: <code>Rules</code>, column and view JSON formatting, content approval, versioning, retention labels, content types, and document sets.</li>
+        <li>Power Automate flows built from a list or library that use only the SharePoint connector.</li>
+        <li>Power Apps list-form customisation through <code>Integrate &gt; Power Apps &gt; Customize forms</code>.</li>
+        <li>Microsoft 365 Copilot across Word, Excel, PowerPoint, Outlook and SharePoint, plus SharePoint agents grounded on your own site.</li>
+        <li>Client-side Office automation that never touches Power Platform: Excel Power Query, Office Scripts run manually, Word mail merge.</li>
+      </ul>
+      <h3>The one question that decides most of your builds</h3>
+      <p>Almost every useful flow needs to notify somebody, which pulls in <code>Office 365 Outlook</code>, <code>Approvals</code>, <code>Teams</code> or <code>Office 365 Users</code>. These are Standard, licence-included connectors that never touch Dataverse, SQL or an API, but they are not SharePoint. Section C sets out the ambiguity and the <a href="#questions">IT Advisor questions</a> give you the exact wording to put to them.</p>
+    </div>
+  </section>
+
+  <section id="decide">
+    <h2>Decision path</h2>
+    <p class="lede">Run any automation idea down this tree before you build anything.</p>
+<pre><code>Where does the idea start?
+│
+├─ Not in Power Platform at all (Excel, Word, Outlook, Copilot)
+│   └─► PERMITTED. Client-side or Copilot. No Power Platform surface touched.
+│
+├─ From a SharePoint list or library (Integrate / Automate / Workflows menu)
+│   │
+│   ├─ Can SharePoint do it natively? (Rules, formatting, approval, retention)
+│   │   └─► PERMITTED. Prefer this. No flow to maintain.
+│   │
+│   ├─ Needs a flow. Which connectors?
+│   │   ├─ SharePoint connector only
+│   │   │   └─► PERMITTED.
+│   │   ├─ Plus Outlook / Teams / Approvals / Office 365 Users / Excel Online
+│   │   │   └─► CONFIRM FIRST. Standard connectors, but not SharePoint. See section C.
+│   │   └─ Any premium connector (HTTP, SQL, Dataverse, custom)
+│   │       └─► OUTSIDE. IT Advisor, federated model.
+│   │
+│   └─ Needs a form, not an app
+│       ├─ Integrate &gt; Power Apps &gt; Customize forms
+│       │   └─► PERMITTED. The sanctioned exception.
+│       └─ Integrate &gt; Power Apps &gt; Create an app
+│           └─► OUTSIDE. This builds a standalone canvas app.
+│
+└─ In the Power Apps, Power Automate or Copilot Studio maker portal
+    └─► OUTSIDE. Standalone by definition. IT Advisor, federated model.
+</code></pre>
+    <div class="note"><strong>Design rule.</strong> Build flows SharePoint-connector-first and isolate any notification or approval step into its own branch, so that if an IT Advisor rules Standard connectors out of scope you can remove the step without rebuilding the flow.</div>
+  </section>
+
+  <section id="a-native">
+    <h2>A. SharePoint Online native, no-code</h2>
+    <p class="lede">Unambiguously inside the boundary. These features live in SharePoint and touch only SharePoint data. Between them they replace most email-and-shared-drive process.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Capability</th><th>What it does</th><th class="col-v">Verdict</th><th>Licensing</th><th>Known limits</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted">
+            <td><code>Rules</code> (Automate &gt; Create a rule)</td>
+            <td>No-code "if a column changes, an item is created, or an item is deleted, then notify or move" automation built into every modern list and library.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Office 365 E3/E5, no add-on</td>
+            <td>Notify and (in libraries) move or copy actions only. No digests. Email format is not customisable. Requires Edit or Contribute permission. Not available on Site Pages libraries. Multi-line text columns cannot trigger a rule.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Column formatting (JSON)</td>
+            <td>Restyles a single field: colours, data bars, icons, links, action buttons.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Roughly 1000-character display limit on formatted output. Does not render in grid edit view.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>View formatting (JSON)</td>
+            <td>Restyles whole rows or the entire list layout, including card views.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Same JSON schema as column formatting. Performance degrades with deeply nested logic on large views.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Conditional show and hide in forms</td>
+            <td>Shows or hides a column in the default list form based on a formula.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Formula-based only. Not full form logic.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Column and list validation</td>
+            <td>Enforces data rules at the point of entry.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Single-column and list-level formula validation.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Content approval</td>
+            <td>Built-in Draft, Pending and Approved status on a library so minor versions stay hidden until approved.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Single-stage. Multi-stage routing needs a flow.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Versioning</td>
+            <td>Major and minor version history on items and files.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Configurable version limits. Versions count toward tenant storage.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Content types and Content Type Hub</td>
+            <td>Reusable definitions of metadata, templates and behaviour, published tenant-wide.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Publishing latency between hub and consuming sites. The hub is a dedicated site.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Document Sets</td>
+            <td>Treats a folder of related documents as one governed unit with shared metadata.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Must be enabled as a site collection feature.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Metadata navigation and managed metadata</td>
+            <td>Term Store driven filtering and taxonomy across libraries.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Term Store administration is needed for enterprise-level terms.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Retention labels</td>
+            <td>Item-level retain, delete, or retain-then-delete, event-based retention, disposition review, and the Preservation Hold Library.</td>
+            <td><span class="v permitted">Permitted</span> (configured in Microsoft Purview)</td>
+            <td>Retention labels need Purview. Auto-apply needs E5, E5 Compliance or an equivalent add-on.</td>
+            <td>One label per item. Label publication can take up to seven days to reach a site. Auto-apply sits at a higher licence tier than manual labelling.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Site and list templates, site scripts and site designs</td>
+            <td>Reusable provisioning of lists, columns and settings.</td>
+            <td><span class="v permitted">Permitted</span> for list templates. Site scripts and designs are admin-scoped.</td>
+            <td>E3/E5</td>
+            <td>Site template creation is blocked if a list exceeds the 5,000-item view threshold.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Microsoft Lists forms and list templates</td>
+            <td>Simple capture forms and ready-made list templates.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Only generic lists (template 100) and generic libraries (template 101) support downstream Power Platform integration.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Pages, news posts and web parts</td>
+            <td>Publishes site pages and news, and surfaces list and library web parts.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>E3/E5</td>
+            <td>Manual authoring unless combined with Copilot or a flow.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="b-flow">
+    <h2>B. Power Automate flows created from a SharePoint list or library</h2>
+    <p class="lede">The SharePoint connector is Standard and licence-included. A flow that starts from a list and uses only this connector is squarely inside the boundary.</p>
+
+    <div class="card permitted">
+      <h3>Triggers available</h3>
+      <p><code>When an item is created</code>, <code>When an item is created or modified</code>, <code>When an item or a file is modified</code>, <code>When an item is deleted</code>, <code>When a file is created (properties only)</code>, and the manual triggers <code>For a selected item</code> and <code>For a selected file</code>.</p>
+    </div>
+
+    <div class="card permitted">
+      <h3>Actions available</h3>
+      <p><code>Get items</code>, <code>Get item</code>, <code>Create item</code>, <code>Update item</code>, <code>Delete item</code>, <code>Get files</code>, <code>Get file content</code>, <code>Create file</code>, <code>Copy file</code>, <code>Move file</code>, <code>Set content approval status</code>, <code>Get changes for an item or a file</code>, <code>Create sharing link</code>, <code>Grant access</code>, <code>Stop sharing</code>, <code>Create an approval request for an item or file</code>, and <code>Send an HTTP request to SharePoint</code>.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Item</th><th>Detail</th><th class="col-v">Verdict</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted">
+            <td>Supported list templates</td>
+            <td>Flows for lists are supported only on generic lists (template 100) and generic document libraries (template 101). Custom and legacy templates (Announcements, Contacts, Events, Tasks) are unsupported.</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Lookup column ceiling</td>
+            <td>Standard <code>Get items</code> and <code>Update item</code> actions handle a maximum of 12 lookup columns and cannot write Image-type columns. Use <code>Send an HTTP request to SharePoint</code> for those.</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>File size</td>
+            <td>The SharePoint connector supports files up to 100 MB.</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Native approval action</td>
+            <td><code>Create an approval request for an item or file</code> belongs to the SharePoint connector, surfaces in the list, and gives you an approval without reaching for the separate <code>Approvals</code> connector. Prefer it when the approval shape allows.</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Recurrence (scheduled) flows</td>
+            <td>A scheduled sweep over SharePoint data, for example flagging overdue items, stays inside the boundary provided it uses only the SharePoint connector.</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td><code>Send an HTTP request to SharePoint</code></td>
+            <td>Constructs SharePoint REST calls against the specified site, for example <code>_api/web/lists/getbytitle('Demo List')/items</code>. It runs as the flow creator and reaches only SharePoint: Microsoft confirmed in 2024 that using it to call other services was never supported and no longer works. Technically SharePoint-scoped, but developer-grade and very broad. Raise it explicitly.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td>What a SharePoint-only flow cannot do</td>
+            <td>Without a second connector it cannot send email, post to Teams, run the <code>Approvals</code> service, resolve a manager's address, or read and write an Excel table. Each of those requires a connector covered in section C.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:1.4rem">Run limits you will hit before any other</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Licence</th><th>Requests per 24 hours</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted"><td>Microsoft 365 seeded / Standard</td><td>6,000</td><td>Rolling 24-hour window. This is your ceiling on E3/E5.</td></tr>
+          <tr class="f" data-v="outside"><td>Power Automate Premium</td><td>40,000</td><td>Requires a premium licence, which puts the solution outside the boundary.</td></tr>
+          <tr class="f" data-v="outside"><td>Process licence</td><td>250,000 per flow</td><td>Stackable. Outside the boundary.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><strong>Throttling behaviour.</strong> Occasional overage throttles the flow with 429 errors. If a flow stays over the limit continuously for 14 days, Power Automate disables it and notifies the owner. A single run can last up to 30 days, and pending approvals time out after 30 days.</div>
+  </section>
+
+  <section id="c-connectors">
+    <h2>C. Adjacent Standard connectors</h2>
+    <p class="lede">This is the crux of the governance ambiguity. Every connector below is Standard and included in your licence, and none touches Dataverse, SQL or an API. But on a literal reading of "interacts only with SharePoint lists and libraries", they are arguably out of scope.</p>
+
+    <div class="note"><strong>Two readings, one answer needed.</strong> On a licensing reading these are all fine. On a data-scope reading they are not SharePoint. A reasonable ruling is that they are in scope, but do not assume it. The <a href="#questions">IT Advisor questions</a> below have the wording to put to them.</div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Connector or action</th><th>Why you need it</th><th class="col-v">Verdict</th><th>Reading</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="confirm">
+            <td><code>Office 365 Outlook</code> (<code>Send an email (V2)</code>)</td>
+            <td>Reminders, escalations, notifications.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+            <td>Standard connector, but email is not SharePoint. Most practitioners treat SharePoint-triggered notification flows as in scope.</td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td><code>Approvals</code> (<code>Start and wait for an approval</code>)</td>
+            <td>Multi-stage sign-off on requests and documents.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+            <td>Standard connector, delivering actionable approvals through Teams and Outlook. Prefer the SharePoint connector's own <code>Create an approval request for an item or file</code> where the approval shape allows, which is a stronger in-boundary claim.</td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td><code>Microsoft Teams</code></td>
+            <td>Adaptive cards and channel notifications.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+            <td>Standard connector. Does not read or write SharePoint data.</td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td><code>Office 365 Users</code></td>
+            <td>Resolving <code>Manager</code>, email and display name for approval routing.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+            <td>Standard connector, but it reads the Entra ID directory, not SharePoint.</td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td><code>Excel Online (Business)</code></td>
+            <td>Reading and writing tables in a workbook stored in the SharePoint library.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+            <td>Strong in-scope claim because the data physically lives in SharePoint. The connector is nominally an Excel connector, which is the objection.</td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td><code>OneDrive for Business</code></td>
+            <td>File operations in personal OneDrive.</td>
+            <td><span class="v outside">Outside</span></td>
+            <td>Likely out under a SharePoint-only reading. OneDrive is a distinct, user-owned location. Use team-owned SharePoint libraries instead.</td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td>Any premium connector</td>
+            <td><code>HTTP</code>, <code>SQL Server</code>, <code>Dataverse</code>, custom connectors, on-premises data gateway.</td>
+            <td><span class="v outside">Outside</span></td>
+            <td>Explicitly excluded by the governance model. Route to IT Advisor.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="d-powerapps">
+    <h2>D. Power Apps from a SharePoint list</h2>
+    <p class="lede">Form customisation is the single sanctioned Power Apps exception. The menu item next to it is not.</p>
+
+    <div class="stopnote"><strong>Read the menu carefully.</strong> <code>Integrate &gt; Power Apps &gt; Customize forms</code> is permitted. <code>Integrate &gt; Power Apps &gt; Create an app</code> builds a standalone canvas app and is outside the boundary. Do not use it.</div>
+
+    <div class="card permitted">
+      <div class="cardhead"><h3><code>Customize forms</code></h3><span class="v permitted">Permitted</span></div>
+      <p>Opens the list form in Power Apps Studio with a <code>SharePointIntegration</code> control exposing <code>OnNew</code>, <code>OnEdit</code>, <code>OnView</code>, <code>OnSave</code> and <code>OnCancel</code>.</p>
+      <h4>What you can achieve</h4>
+      <ul>
+        <li>Change control types, for example a dropdown to radio buttons or a rating control.</li>
+        <li>Conditional show and hide driven by formulas.</li>
+        <li>Field-level validation beyond what list validation offers.</li>
+        <li>Multi-column layouts, tabs and sections.</li>
+        <li><code>RequestHide()</code> to close the form panel programmatically.</li>
+      </ul>
+      <h4>Limits</h4>
+      <ul>
+        <li>Generic lists and libraries only. Announcements, Contacts and Tasks templates are unsupported.</li>
+        <li>On a document library it edits metadata only, never the file itself.</li>
+        <li>The form cannot exist outside the list and cannot hide the surrounding SharePoint chrome.</li>
+        <li>It does not scale responsively for mobile the way a standalone canvas app does.</li>
+        <li>No proper application lifecycle management.</li>
+        <li>Stays in boundary only while you add no other data source.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="e-copilot">
+    <h2>E. Microsoft 365 Copilot</h2>
+    <p class="lede">Copilot is governed by Copilot licensing, not by the Power Platform maker rules. That distinction is what makes SharePoint agents available to you and Copilot Studio agents not.</p>
+
+    <div class="note"><strong>Licensing change to watch.</strong> Admin-centre notification MC1253858 removed Copilot from Word, Excel, PowerPoint and OneNote for Copilot Chat users, announced for 15 April 2026 and subsequently rescheduled to 16 May 2026. The full removal applies to organisations above 2,000 seats; smaller organisations keep standard access. Unlicensed users retain Copilot Chat and Copilot in Outlook. A paid Microsoft 365 Copilot licence keeps everything below.</div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Capability</th><th>What it does</th><th class="col-v">Verdict</th><th>Notes and limits</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted">
+            <td>Copilot in Word, Excel, PowerPoint, Outlook, OneNote</td>
+            <td>Drafting, summarising, rewriting and analysis inside the app.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Not Power Platform. Paid licence required for organisations above 2,000 seats after the 2026 change.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Copilot in Excel with Python</td>
+            <td>Runs Python for advanced analysis inside the workbook.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>General availability rolling out from August 2026 for Windows, Mac and web.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Copilot Chat with work grounding</td>
+            <td>Answers grounded on your Microsoft 365 content, within your existing permissions.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Creates no new data surface. Respects existing access control.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Copilot Pages</td>
+            <td>Persistent, editable AI canvas for collaboration.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Collaboration artifact, not an automation.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Copilot Notebooks</td>
+            <td>Project workspace that grounds Copilot on a fixed set of files and pages, and generates Word, Excel, PowerPoint output and mind maps.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Generally available in the Microsoft 365 Copilot app from early to mid August 2026. Can reference SharePoint content and OneNote.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Copilot Search</td>
+            <td>Enterprise semantic search across work data.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Paid tiers.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Copilot in SharePoint (page and site authoring)</td>
+            <td>Natural-language authoring of sites, pages, news posts, sections, columns, rules and views.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Still a preview, not generally available, as of August 2026. From mid-June 2026 it became an opt-out preview, on by default for Copilot-licensed users unless scoped back with <code>Set-SPOTenant -KnowledgeAgentScope</code>. Included with the Copilot licence at no extra cost. Not available in government or sovereign clouds.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>SharePoint agents (per site or library)</td>
+            <td>Question-and-answer knowledge agents grounded on a site or library. This is the read-only knowledge agent pattern.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Not Power Platform citizen development. Up to 20 source items (sites, libraries, folders, files). Uses sites, pages and libraries but not Lists. Stored as a <code>.agent</code> file under <code>Site Assets &gt; Copilots</code>, so version history applies. Needs a Copilot licence or pay-as-you-go.</td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td>Copilot Studio agents</td>
+            <td>Standalone and custom agents with connectors and topics.</td>
+            <td><span class="v outside">Outside</span></td>
+            <td>Copilot Studio is part of Power Platform and inherits its governance: environments, DLP and maker zones. Route to IT Advisor.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card permitted" style="margin-top:1.2rem">
+      <h3>Grounding a SharePoint agent well</h3>
+      <ul>
+        <li>Keep individual SharePoint files to a maximum of roughly 36,000 characters, about 15 to 20 pages, for reliable retrieval.</li>
+        <li>When you specify up to 20 files, Copilot searches the full contents of all of them.</li>
+        <li>Ground the agent on a single controlled library rather than a whole site where precision matters.</li>
+        <li>Keep it read-only. That is both the safest posture and the clearest in-boundary claim.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="f-onedrive">
+    <h2>F. OneDrive for Business</h2>
+    <p class="lede">Same underlying technology as SharePoint, different ownership model, and therefore a different answer.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Capability</th><th>Detail</th><th class="col-v">Verdict</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="outside">
+            <td>OneDrive as an automation target</td>
+            <td>Sync, Files On-Demand, sharing with expiry and version history all exist, but OneDrive is a distinct, user-owned location. Under a SharePoint-only reading, OneDrive-based automation is likely out of scope. Use team-owned SharePoint document libraries for group work.</td>
+            <td><span class="v outside">Outside</span></td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td>Known Folder Move</td>
+            <td>Redirects Desktop, Documents and Pictures to OneDrive, controlled through Intune or Group Policy with <code>KFMOptInNoWizard</code>, <code>KFMOptInWithWizard</code> and <code>FilesOnDemandEnabled</code>. Microsoft recommends throttling silent rollout to 1,000 devices per day and 4,000 per week.</td>
+            <td><span class="v outside">Outside</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>OneDrive Copilot features</td>
+            <td>Copilot summarisation and comparison of files in OneDrive, governed by Copilot licensing rather than Power Platform rules.</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><strong>Practical consequence.</strong> Anything the group depends on belongs in a SharePoint document library, not in an individual's OneDrive. That is the correct answer on governance grounds and on continuity grounds.</div>
+  </section>
+
+  <section id="g-office">
+    <h2>G. Client-side Office automation</h2>
+    <p class="lede">None of this enters the Power Platform governance surface at all, which makes it the quietest path to a working result.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Capability</th><th>What it does</th><th class="col-v">Verdict</th><th>Limits</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted">
+            <td>Excel Power Query against SharePoint</td>
+            <td><code>Data &gt; Get Data &gt; From SharePoint Online List</code>, then transform and load. Refresh on demand.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>OData URL limited to roughly 2,100 characters. Set explicit data types to avoid TRUE/FALSE versus 1/0 mismatches. Power Query generally cannot refresh in Excel for the web; desktop refresh works. Large-list refresh can be slow.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Excel Data Model and Power Pivot</td>
+            <td>In-workbook relational model with DAX measures.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Client-side. No service dependency.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Office Scripts run manually</td>
+            <td>Recorded or authored TypeScript automation of a workbook, run from the <code>Automate</code> tab in Excel for the web.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Requests and responses to the workbook capped at 5 MB. A range is limited to five million cells.</td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td>Office Scripts triggered by Power Automate</td>
+            <td>The same scripts invoked through the <code>Excel Online (Business)</code> <code>Run script</code> action.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+            <td>Now a flow and the Excel connector are involved, so it inherits the section C ambiguity. 1,600 <code>Run script</code> calls per user per day, 120-second synchronous timeout, parameters capped at roughly 28.6 MB, business Microsoft 365 licence required.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Word mail merge, Quick Parts, content controls</td>
+            <td>Document generation and structured fields.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Client-side.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Outlook rules and Quick Steps</td>
+            <td>Client-side mail automation.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Not SharePoint, but not Power Platform either.</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Teams tabs over SharePoint libraries</td>
+            <td>Surfaces a document library as a Teams tab.</td>
+            <td><span class="v permitted">Permitted</span></td>
+            <td>Standard Teams and SharePoint integration, surfacing SharePoint content.</td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td>Microsoft Forms into a SharePoint list</td>
+            <td>Collects responses and routes them into a list.</td>
+            <td><span class="v confirm">Confirm first</span></td>
+            <td>The form itself is client-side, but the routing flow uses the <code>Microsoft Forms</code> Standard connector, so it inherits the section C ambiguity.</td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td>Planner and To Do</td>
+            <td>Task tracking adjacent to SharePoint.</td>
+            <td><span class="v outside">Outside</span></td>
+            <td>Not SharePoint data. Out under a strict reading.</td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td>Power BI</td>
+            <td>Publishing and refreshing datasets and reports from SharePoint data.</td>
+            <td><span class="v outside">Outside</span></td>
+            <td>A separate licensed service. Scheduled refresh against SharePoint lists is historically unreliable and needs service configuration. Route to IT Advisor.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="patterns">
+    <h2>Worked patterns</h2>
+    <p class="lede">Six end-to-end designs built to stay inside the boundary, with every gray-area step flagged so it can be removed if ruled out.</p>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>1. Request intake to approval to archived record</h3><span class="v permitted">Permitted core</span></div>
+      <p>A SharePoint list with a customised form via <code>Customize forms</code> handles intake. A flow on <code>When an item is created</code> sets status and calls the SharePoint connector's <code>Create an approval request for an item or file</code>. On approval, <code>Update item</code> sets the status and <code>Move file</code> archives the record to a library carrying a retention label.</p>
+      <p><span class="v confirm">Confirm first</span> Notifications through <code>Office 365 Outlook</code>, and richer multi-stage routing through the <code>Approvals</code> connector, are the gray-area steps. Keep them in a single isolated branch.</p>
+    </div>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>2. Recurring quarterly collection replacing an emailed workbook</h3><span class="v permitted">Permitted core</span></div>
+      <p>Replace the workbook with a SharePoint list, one row per line item, with the quarter as a column. A scheduled recurrence flow using only the SharePoint connector opens the collection window and flips a status column. Contributors edit directly in the list. A SharePoint page with a list web part becomes the live view, and Excel Power Query or Copilot in Excel reads the list for analysis.</p>
+      <p><span class="v confirm">Confirm first</span> Reminder emails to contributors.</p>
+    </div>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>3. Reconciliation of two lists with variance flagging</h3><span class="v permitted">Fully permitted</span></div>
+      <p>An inventory list and a billing list. A flow runs <code>Get items</code> against both, matches on a key, and writes variances to a reconciliation list. A <code>Variance</code> column with JSON column formatting shows red and green at a glance. This pattern is entirely SharePoint-scoped provided you avoid the Excel and Outlook connectors.</p>
+      <p><span class="v confirm">Confirm first</span> An emailed summary of the variance run, if permitted.</p>
+    </div>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>4. Controlled document library with an agent</h3><span class="v permitted">Fully permitted</span></div>
+      <p>A library with content types, content approval enabled, and a default retention label, plus a read-only SharePoint agent grounded on that library. Up to 20 source items, documents rather than Lists. This is the canonical in-boundary knowledge base pattern and needs no review.</p>
+    </div>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>5. Reminder and escalation on overdue items</h3><span class="v permitted">Permitted variant available</span></div>
+      <p>A scheduled flow queries the list for items past due, using an indexed date column to stay under the view threshold. The fully in-boundary variant writes an <code>Escalated</code> flag and relies on a <code>Rule</code> or a filtered view to surface it, avoiding Outlook entirely.</p>
+      <p><span class="v confirm">Confirm first</span> Emailing the owner, then the manager after a set number of days, which requires <code>Office 365 Users</code> to resolve the manager.</p>
+    </div>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>6. Recurring status page or news post</h3><span class="v permitted">Fully permitted</span></div>
+      <p>Copilot in SharePoint drafts a status page or news post from a prompt, or a flow uses <code>Create file</code> and page provisioning to publish a recurring status page from list data. Copilot authoring is covered by the Copilot licence, and flow-based page creation stays within the SharePoint connector.</p>
+    </div>
+  </section>
+
+  <section id="coordinator">
+    <h2>Coordinator workflow, mapped</h2>
+    <p class="lede">The invoice-to-closeout coordinator process placed onto the permitted stack, stage by stage. Three of the source guide's eight automation opportunities sit outside the boundary as written, and one cannot work at all for a reason unrelated to governance.</p>
+
+    <div class="note"><strong>Where the source guide's own evidence lives.</strong> The references in the coordinator guide follow the pattern <code>bchydro.sharepoint.com/:fl:/r/contentstorage/.../CopilotNotebooks/..._nb/&lt;name&gt;.page</code>, ending in <code>p=%40fluidx%2Floop-page-container</code>. Those are Copilot Pages inside a Copilot Notebook, held in a SharePoint Embedded container: not visible in the SharePoint admin center site list, bound to one user's identity, with no library, no inherited permissions and no navigation. The guide is a governed file; its sources are not. Publish those pages into the document library before the guide circulates further.</div>
+
+    <h3>Tool placement across the lifecycle</h3>
+<pre><code>STAGE     1      2      3      4      5      6      7      8      9
+        Intake  Req.  Approve Billing Invoice Payment  Cost  Recon  Close
+          |      |      |      |      |      |      |      |      |
+RECORD  +-------------------------------------------------------------+
+        |        ONE SHAREPOINT LIST, 20 columns, status-driven       |
+        +-------------------------------------------------------------+
+                 |             |                    |        |
+FILES   +-------------------------------------------------------------+
+        |  DOCUMENT LIBRARY: requisitions, cost reports,              |
+        |  reconciliation workbooks, closeout packages                |
+        +-------------------------------------------------------------+
+
+CAPTURE  Lists
+         form
+         (no connector)
+
+AUTOMATE        Flow   Flow    Flow          Flow    ---    Flow   Flow
+                                                   (SAP = manual)
+
+WORKING                                            Loop   Loop
+SURFACE                                            notes  recon notes
+
+TASKS                                                     Planner Basic
+                                                          (closeout tasks)
+
+ASK                    Copilot Notebook (your own analysis)
+                       SharePoint agent (others' questions, LIBRARY only)
+
+WALL     ============== SAP FPL9: no connector, ever ==================
+</code></pre>
+
+    <h3>Stage-by-stage mapping</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Stage</th><th>System of record</th><th>Capture or working surface</th><th>Automation</th><th class="col-v">Verdict</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted">
+            <td>1. Intake</td><td>The list</td>
+            <td>A <strong>Lists form</strong> with required fields, replacing the shared mailbox as the queue</td>
+            <td>A <code>Rule</code> or flow sets <code>Status = Missing Information</code> when required fields are blank</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>2. Requisition</td><td>List and library</td>
+            <td>Requisition attached to the item. <code>Customize forms</code> for the data entry screen</td>
+            <td>Flow on <code>Status = Ready for Requisition</code> sets owner and due date</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="confirm">
+            <td>3. IM approval</td><td>The list</td>
+            <td>SharePoint connector <code>Create an approval request for an item or file</code></td>
+            <td>Flow writes <code>IM Approval Status</code>, date and approver</td>
+            <td><span class="v permitted">Permitted</span> with the SharePoint action, <span class="v confirm">Confirm</span> with the <code>Approvals</code> connector</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>4. Sundry Billing submission</td><td>The list</td>
+            <td>Submission date field</td>
+            <td>Scheduled flow flags items with no <code>Invoice Number</code> after a set threshold</td>
+            <td><span class="v permitted">Permitted</span> core, notification is the gray area</td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>5. Invoice issued</td><td>The list</td>
+            <td><code>Invoice Number</code> and <code>Invoice Date</code></td>
+            <td>Flow moves status to <code>Payment Monitoring</code> when the invoice number is entered</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>6. Payment monitoring</td><td>The list</td>
+            <td>Manual FPL9 check, recorded in <code>Last FPL9 Check Date</code></td>
+            <td>Scheduled flow builds the daily check worklist. It cannot read SAP</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>7. Cost reporting</td><td>Library</td>
+            <td>Cost report saved to the library and linked from the item</td>
+            <td>Flow sets <code>Cost Report Requested</code> on an IM request</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>8. Reconciliation</td><td>List and library</td>
+            <td>Six Yes/No checklist columns. A <strong>Loop page</strong> for live working notes during an active reconciliation</td>
+            <td>Calculated <code>Ready for Closeout</code> column</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>9. Finance review and closeout</td><td>List and library</td>
+            <td>Closeout package in the library. <strong>Planner Basic</strong> for the four parallel distribution tasks</td>
+            <td>Flow on <code>Reconciliation Complete</code>, retention label applied on close</td>
+            <td><span class="v permitted">Permitted</span> core</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Three corrections to the source roadmap</h3>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>1. The aging dashboard does not need Power BI</h3><span class="v permitted">Permitted substitute</span></div>
+      <p>The guide proposes SharePoint plus Power BI. Power BI is a separate licensed service outside the boundary, and its scheduled refresh against SharePoint lists is historically unreliable. Build it natively instead:</p>
+      <ul>
+        <li>A calculated column <code>Days Outstanding</code> from <code>TODAY()</code> minus <code>Invoice Date</code>. SharePoint calculated columns do not recompute on their own, so a nightly scheduled flow touches open items to force recalculation, or writes the bucket directly.</li>
+        <li>A choice column <code>Aging Bucket</code> with values <code>&lt;30</code>, <code>30-60</code>, <code>60-90</code>, <code>&gt;90</code>.</li>
+        <li>JSON view formatting to colour the bucket, and a view grouped by bucket, surfaced on the site page as a list web part.</li>
+      </ul>
+      <p>Same dashboard, inside the boundary, with no licensing conversation.</p>
+    </div>
+
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>2. Intake should be a Lists form, not Microsoft Forms</h3><span class="v permitted">Removes a gray-area dependency</span></div>
+      <p>"SharePoint Request Form" is ambiguous in the guide, and the two readings differ sharply. Microsoft Forms plus a routing flow uses the <code>Microsoft Forms</code> connector, inherits the section C ambiguity, and creates a second store of truth. A Microsoft Lists form is a shareable link that writes straight into the list: no connector, no flow, no gray area.</p>
+      <p>Use the Lists form and send IMs the link. The only reasons to prefer Forms would be anonymous responses or branching logic, and neither applies here.</p>
+    </div>
+
+    <div class="card outside f" data-v="outside">
+      <div class="cardhead"><h3>3. Copilot-generated project summaries will not work as described</h3><span class="v outside">Blocked, not by governance</span></div>
+      <p>Native SharePoint agents cannot use Lists as a knowledge source. They ground on sites, pages and document libraries only. An agent therefore cannot answer "has the customer paid on this WBS" from the tracking list, however well the list is built.</p>
+      <p>Three ways around it, in order of preference:</p>
+      <ul>
+        <li><strong>Generate a recurring status page.</strong> A scheduled flow writes current list data into a SharePoint page. The agent reads pages. This gives IMs a Copilot-answerable surface without exposing the list.</li>
+        <li><strong>Copilot Chat with the list open.</strong> Works for you, ad hoc, not for a self-serve IM.</li>
+        <li><strong>Export a status workbook to the library.</strong> Uses <code>Excel Online (Business)</code>, so this one is a gray-area step.</li>
+      </ul>
+      <p>Do not build the agent expecting to point it at the list. It will ground on nothing and answer confidently anyway.</p>
+    </div>
+
+    <h3>SAP FPL9 is a permanent wall</h3>
+    <p class="prose">No connector to SAP exists inside the boundary, and no IT Advisor ruling will create one. Payment status will be entered by a person indefinitely. What automation can remove is the deciding, not the checking:</p>
+    <ul class="prose">
+      <li>A <code>Next Follow-Up Date</code> column written by a flow from the invoice date and payment status.</li>
+      <li>A view filtered to <code>Next Follow-Up Date &lt;= today</code> and <code>Payment Status &lt;&gt; Paid</code>. That view is the day's FPL9 worklist, generated rather than remembered.</li>
+      <li>After the check, the coordinator updates two fields and the flow recalculates the next follow-up date.</li>
+    </ul>
+    <p class="prose">The person still opens SAP. They no longer decide what to open, and nothing falls through because someone was on leave.</p>
+
+    <h3>Where each modern tool earns its place</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Use it for</th><th>Do not use it for</th><th class="col-v">Verdict</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted">
+            <td>Copilot Notebooks</td>
+            <td>Pinning the cost report, invoice history, requisitions and correspondence for one active reconciliation, then interrogating only that set</td>
+            <td>Holding the analysis permanently. Publish outputs into the library when done</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Loop</td>
+            <td>A live reconciliation working page shared with the IM: open questions, unmatched amounts, who is chasing what</td>
+            <td>The reconciliation record itself. A component created in a Teams chat lands in the creator's OneDrive, reintroducing the single-point-of-failure risk in a new form</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Planner Basic</td>
+            <td>Stage 9 distribution: four parallel sends plus a Finance review to chase. That is a task board, not a status column. Attachments land in the group's SharePoint library</td>
+            <td>Anything needing dependencies or timelines, which requires Planner Premium</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+          <tr class="f" data-v="outside">
+            <td>Planner Premium</td>
+            <td>Nothing here</td>
+            <td>All of it. Premium is powered by Project for the web on Dataverse, which the governance model excludes</td>
+            <td><span class="v outside">Outside</span></td>
+          </tr>
+          <tr class="f" data-v="permitted">
+            <td>Copilot Pages</td>
+            <td>Turning a Copilot answer about a project's financial position into a page you send the IM, rather than retyping it into an email</td>
+            <td>Record keeping. Same Embedded container caveat as Notebooks</td>
+            <td><span class="v permitted">Permitted</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><strong>The common rule.</strong> Stages 1 through 9 all resolve to one list row. Every modern tool above is a surface over that row, never a substitute for it.</div>
+
+    <h3>What this actually fixes</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Risk in the source guide</th><th>Addressed by</th><th>Residual</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted"><td>1. Coordinator is a single point of failure</td><td>The list becomes the process. Any coordinator can pick up any row</td><td>Real only if nothing important sits in personal OneDrive, personal Forms, or chat-created Loop components</td></tr>
+          <tr class="f" data-v="permitted"><td>2. Manual mailbox triage</td><td>Lists form replaces intake</td><td>IMs will still email. Keep the mailbox, log to the list, and stop treating the mailbox as the queue</td></tr>
+          <tr class="f" data-v="permitted"><td>3. Duplicate data entry</td><td>One list, requisition generated from list fields</td><td>SAP re-entry is unavoidable</td></tr>
+          <tr class="f" data-v="permitted"><td>4. Approval delays</td><td>SharePoint approval action plus an aging view of pending approvals</td><td>Reminder emails are the gray-area step</td></tr>
+          <tr class="f" data-v="permitted"><td>5. Manual Sundry Billing follow-up</td><td>Scheduled flow flags missing invoice numbers</td><td>Still needs a person to chase</td></tr>
+          <tr class="f" data-v="permitted"><td>6. Manual payment monitoring</td><td>Generated worklist, not generated data</td><td>The FPL9 check stays manual, permanently</td></tr>
+          <tr class="f" data-v="permitted"><td>7. Reconciliation depends on manual review</td><td>Six checklist columns plus the calculated readiness field</td><td>Judgement stays human. Notebooks reduce reading time</td></tr>
+          <tr class="f" data-v="permitted"><td>8. Closure readiness is hard to see</td><td>Calculated field plus a portfolio view grouped by readiness</td><td>None</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">Risks 1, 3, 4, 7 and 8 substantially resolve. Risk 6 does not, and any plan implying otherwise is overselling.</p>
+
+    <h3>Revised roadmap, sequenced by boundary dependency</h3>
+    <div class="card permitted">
+      <div class="cardhead"><h3>Phase 1, no ruling needed</h3><span class="v permitted">Permitted</span></div>
+      <p>One list with the twenty columns, one document library, Lists form intake, <code>Customize forms</code> for the requisition screen, JSON formatting for status and aging, the calculated <code>Ready for Closeout</code> field, and the six reconciliation checklist columns. Retention label on the library. This is most of the value and none of the governance risk.</p>
+    </div>
+    <div class="card confirm">
+      <div class="cardhead"><h3>Phase 2, after the section C ruling</h3><span class="v confirm">Confirm first</span></div>
+      <p>Flows for approval routing, status movement, Sundry Billing follow-up flags and payment reminder scheduling. Design each with the notification step in a single isolated branch so it can be removed cleanly.</p>
+    </div>
+    <div class="card permitted">
+      <div class="cardhead"><h3>Phase 3, once the list is populated</h3><span class="v permitted">Permitted</span></div>
+      <p>A recurring status page generated from list data, then the SharePoint agent grounded on that page and the document library. Not before: an agent grounded on an empty library is worse than no agent.</p>
+    </div>
+    <div class="stopnote"><strong>Not on the roadmap.</strong> Power BI, Planner Premium, and anything reaching SAP.</div>
+  </section>
+
+  <section id="questions">
+    <h2>Questions for your IT Advisor</h2>
+    <p class="lede">Six specific rulings that between them unlock or close off most of the gray area. Copy them into an email as they stand.</p>
+
+    <p><button class="copybtn" id="copyq">Copy all six questions</button> <span id="copyok" style="font-size:.8rem;color:var(--permitted)"></span></p>
+
+    <div class="card confirm f" data-v="confirm">
+      <h3>1. Standard connectors in a SharePoint-originated flow</h3>
+      <p>Are SharePoint-triggered flows that use only Standard Microsoft 365 connectors (<code>Office 365 Outlook</code>, <code>Microsoft Teams</code>, <code>Approvals</code>, <code>Office 365 Users</code>, <code>Excel Online (Business)</code>) in scope, or must the flow use the SharePoint connector exclusively?</p>
+    </div>
+    <div class="card confirm f" data-v="confirm">
+      <h3>2. <code>Send an HTTP request to SharePoint</code></h3>
+      <p>Is this action permitted for SharePoint-only solutions, given that it reaches only the SharePoint REST API of the specified site, or does the breadth of the REST surface require review?</p>
+    </div>
+    <div class="card confirm f" data-v="confirm">
+      <h3>3. SharePoint agents versus Copilot Studio</h3>
+      <p>Does the organisation agree that native SharePoint agents are governed by Copilot licensing rather than Power Platform citizen-development rules, and that Copilot Studio agents fall under Power Platform governance?</p>
+    </div>
+    <div class="card confirm f" data-v="confirm">
+      <h3>4. Office Scripts invoked by a flow</h3>
+      <p>Is a flow-invoked Office Script in scope when the workbook is stored in the SharePoint library, or does involving the <code>Excel Online (Business)</code> connector place it outside?</p>
+    </div>
+    <div class="card confirm f" data-v="confirm">
+      <h3>5. <code>Excel Online (Business)</code> against SharePoint-resident workbooks</h3>
+      <p>Where the workbook physically resides in a SharePoint document library, does reading and writing its tables count as interacting with SharePoint?</p>
+    </div>
+    <div class="card confirm f" data-v="confirm">
+      <h3>6. OneDrive for Business</h3>
+      <p>Is OneDrive for Business considered part of the permitted SharePoint scope, given that it shares the same underlying platform, or is it a distinct location that falls outside?</p>
+    </div>
+  </section>
+
+  <section id="limits">
+    <h2>Limits and thresholds</h2>
+    <p class="lede">The numbers that change a design decision. Check these before building, not after.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Limit</th><th>Value</th><th>What it means for a build</th></tr></thead>
+        <tbody>
+          <tr class="f" data-v="permitted"><td>List view threshold</td><td>5,000 items per view or query</td><td>Cannot be changed in SharePoint Online. Design filtered views and indexed columns from the start. A list can hold far more items than a view can return.</td></tr>
+          <tr class="f" data-v="permitted"><td>List or library capacity</td><td>Up to 30,000,000 items or files</td><td>Storage is not the constraint. Query shape is.</td></tr>
+          <tr class="f" data-v="permitted"><td>Automatic index creation</td><td>Under 20,000 items</td><td>Sorting in the modern experience creates an index automatically below 20,000 items. Above that, the index is created in the background. Index key columns early.</td></tr>
+          <tr class="f" data-v="permitted"><td>Bulk operations</td><td>Roughly 100 items</td><td>Batch anything larger.</td></tr>
+          <tr class="f" data-v="permitted"><td>Power Automate requests</td><td>6,000 per 24 hours on Standard licensing</td><td>Rolling window. Sustained overage for 14 days disables the flow.</td></tr>
+          <tr class="f" data-v="permitted"><td>Flow run duration</td><td>Up to 30 days</td><td>Pending approvals also time out after 30 days.</td></tr>
+          <tr class="f" data-v="permitted"><td>SharePoint connector file size</td><td>100 MB</td><td>Larger files need a different approach.</td></tr>
+          <tr class="f" data-v="permitted"><td>Lookup columns per action</td><td>12</td><td>Standard <code>Get items</code> and <code>Update item</code> ceiling.</td></tr>
+          <tr class="f" data-v="permitted"><td>SharePoint agent sources</td><td>20 source items</td><td>Sites, libraries, folders and files. Not Lists.</td></tr>
+          <tr class="f" data-v="permitted"><td>Agent grounding per file</td><td>Roughly 36,000 characters</td><td>About 15 to 20 pages for reliable full-content retrieval.</td></tr>
+          <tr class="f" data-v="permitted"><td>Office Scripts payload</td><td>5 MB request and response; five million cells per range</td><td>Manual execution.</td></tr>
+          <tr class="f" data-v="confirm"><td>Office Scripts via Power Automate</td><td>1,600 <code>Run script</code> calls per user per day; 120-second timeout</td><td>Parameters capped at roughly 28.6 MB.</td></tr>
+          <tr class="f" data-v="permitted"><td>Power Query OData URL</td><td>Roughly 2,100 characters</td><td>Long filter expressions will break the query.</td></tr>
+          <tr class="f" data-v="permitted"><td>Column formatting output</td><td>Roughly 1,000 characters</td><td>Display limit on the formatted result.</td></tr>
+          <tr class="f" data-v="permitted"><td>Retention label publication</td><td>Up to 7 days</td><td>Allow for the delay before a published label appears on a site.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="plan">
+    <h2>Staged plan</h2>
+    <p class="lede">Sequenced so that nothing in stage one waits on a governance answer.</p>
+
+    <div class="card permitted">
+      <div class="cardhead"><h3>Stage one, start now, no review required</h3><span class="v permitted">Permitted</span></div>
+      <ul>
+        <li>Consolidate onto a single SharePoint site and move shared-drive content into document libraries with content types, versioning and retention labels.</li>
+        <li>Convert recurring workbooks and reference data into SharePoint lists with indexed key and date columns. Stay under the 5,000-item view threshold from the start.</li>
+        <li>Use <code>Rules</code> for simple notifications, JSON column and view formatting for status and variance visibility, and content approval on controlled libraries.</li>
+        <li>Stand up the read-only SharePoint knowledge agent on the controlled document library.</li>
+        <li>Use Copilot in Excel and Word, and Excel Power Query with manual refresh, for analysis.</li>
+      </ul>
+    </div>
+
+    <div class="card confirm">
+      <div class="cardhead"><h3>Stage two, build once the section C ruling lands</h3><span class="v confirm">Confirm first</span></div>
+      <ul>
+        <li>Build SharePoint-originated flows for intake, approval, reconciliation and reminders.</li>
+        <li>Design them SharePoint-connector-first, isolating any Outlook, Teams, Approvals or Office 365 Users step so it can be removed cleanly if ruled out.</li>
+        <li>Customise list forms using <code>Integrate &gt; Power Apps &gt; Customize forms</code> only.</li>
+      </ul>
+    </div>
+
+    <div class="card outside">
+      <div class="cardhead"><h3>Stage three, federated model only</h3><span class="v outside">Outside</span></div>
+      <ul>
+        <li>Anything needing a premium connector, a standalone app or flow, Copilot Studio, Dataverse, SQL or Power BI.</li>
+        <li>Any reconciliation requiring a data source beyond SharePoint, including partner or enterprise systems. This is automatically out of boundary.</li>
+      </ul>
+    </div>
+
+    <div class="note"><strong>Thresholds that change the plan.</strong> If a list will exceed 5,000 items in a single view, redesign with metadata and filtered views before building. If a flow will exceed 6,000 actions per user per day, it needs a premium licence and therefore review.</div>
+  </section>
+
+  <section id="caveats">
+    <h2>Caveats</h2>
+    <div class="prose">
+      <ul>
+        <li><strong>The wording "interacts only with SharePoint" is the decisive ambiguity.</strong> Every adjacent-connector step in this reference is flagged. Do not treat a "Confirm first" item as approved until an IT Advisor rules on it.</li>
+        <li><strong>The 3 MB per-file SharePoint agent limit that circulates online is not supported by Microsoft documentation.</strong> The documented per-file grounding limits of 7 MB, 200 MB and 512 MB apply to Copilot Studio agents, not native SharePoint agents. The relevant figure for native agents is the 36,000-character optimisation guideline across up to 20 files.</li>
+        <li><strong>Copilot in SharePoint remains a preview, not generally available, as of August 2026,</strong> and is unavailable in government and sovereign clouds. Its underlying model changed from Anthropic in the early 2026 preview to a Microsoft-managed OpenAI model. Treat any claim that it runs on Anthropic as outdated. The Anthropic sub-processor admin setting is a separate matter; the Anthropic independent-processor setting was decommissioned on 1 May 2026.</li>
+        <li><strong>Feature status here goes stale quickly.</strong> The Copilot in-app licensing change (MC1253858) was announced for 15 April 2026, rescheduled to 16 May 2026, and applies fully only above 2,000 seats. Power Automate action caps are in a documented transition period. Verify before committing.</li>
+        <li><strong>Retention-label auto-apply and several compliance features require E5, E5 Compliance or an add-on,</strong> not base E3. Confirm the exact SKU in use.</li>
+        <li><strong>Native SharePoint agents cannot use Lists as a knowledge source,</strong> only sites, pages and document libraries. List-grounded question answering is a Copilot Studio or declarative-agent capability and falls outside the boundary.</li>
+        <li><strong>Verdicts in this reference are an informed reading, not a ruling.</strong> Section C in particular records an interpretation, not a decision. The organisation's IT Advisor is the only authority on where the line falls.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="sources">
+    <h2>Sources</h2>
+    <p class="lede">Primary references behind the limits and status claims above.</p>
+    <div class="prose">
+      <h4>Microsoft official</h4>
+      <ul>
+        <li>List View Threshold for large lists and libraries, Microsoft Support</li>
+        <li>Working with the List View Threshold limit for all versions of SharePoint, Microsoft Support</li>
+        <li>The number of items in this list exceeds the list view threshold, Microsoft Learn troubleshooting</li>
+        <li>Requests limits and allocations, Microsoft Learn (Power Platform)</li>
+        <li>Customize a list form using Power Apps, Microsoft Learn</li>
+        <li>Frequently asked questions about Copilot in SharePoint, Microsoft Support</li>
+        <li>Optimize content retrieval in your agent, Microsoft Learn</li>
+        <li>Release notes for Microsoft 365 Copilot, Microsoft Learn</li>
+        <li>Power Query SharePoint list connector, Microsoft Learn</li>
+        <li>Office Scripts platform limits and Power Automate troubleshooting, Microsoft Learn</li>
+        <li>Admin-centre notification MC1253858 (Copilot in-app licensing change)</li>
+      </ul>
+      <h4>Practitioner references</h4>
+      <ul>
+        <li>Norm Young, Getting started with Send HTTP requests to SharePoint using Power Automate (2024)</li>
+        <li>Matthew Devaney, Power Apps: Customize a SharePoint list form</li>
+        <li>Bulb Digital, Customised list forms versus standalone canvas apps</li>
+        <li>Joanne C Klein, Auto-applying a retention label to all files in a SharePoint site (February 2026)</li>
+        <li>ShareGate, Demystifying the SharePoint list thresholds</li>
+        <li>David Simpson Apps, SharePoint document library limits (2026)</li>
+        <li>IW Mentor, SharePoint approval requests in Power Automate</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <p>Working reference compiled from Microsoft documentation and practitioner sources. Verdicts are an informed reading of the governance wording, not an authorised ruling. Confirm anything marked "Confirm first" with your IT Advisor before building on it. Verify feature status before committing: this area changes frequently.</p>
+    <p>Use <kbd>/</kbd> to search, the filter buttons to isolate a verdict, and browser print to produce a paper copy of any section.</p>
+  </footer>
+
+</main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var q = document.getElementById('q');
+  var hits = document.getElementById('hits');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip[data-filter]'));
+  var reset = document.getElementById('reset');
+  var items = Array.prototype.slice.call(document.querySelectorAll('.f'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section'));
+  var active = null;
+
+  // cache searchable text
+  items.forEach(function(el){ el._t = (el.textContent || '').toLowerCase(); });
+
+  // verdict counts
+  function count(v){ return items.filter(function(el){ return el.getAttribute('data-v') === v; }).length; }
+  document.getElementById('n-permitted').textContent = count('permitted');
+  document.getElementById('n-confirm').textContent = count('confirm');
+  document.getElementById('n-outside').textContent = count('outside');
+
+  function apply(){
+    var term = q.value.trim().toLowerCase();
+    var shown = 0;
+
+    items.forEach(function(el){
+      var okV = !active || el.getAttribute('data-v') === active;
+      var okT = !term || el._t.indexOf(term) !== -1;
+      var vis = okV && okT;
+      el.classList.toggle('hidden', !vis);
+      if (vis) shown++;
+    });
+
+    // hide a section only when it has filterable items and none are visible
+    sections.forEach(function(sec){
+      var own = Array.prototype.slice.call(sec.querySelectorAll('.f'));
+      if (!own.length){
+        sec.classList.toggle('hidden', !!(term || active));
+        return;
+      }
+      var any = own.some(function(el){ return !el.classList.contains('hidden'); });
+      sec.classList.toggle('hidden', !any);
+    });
+
+    // hide a table whose rows are all filtered out
+    Array.prototype.slice.call(document.querySelectorAll('.tablewrap')).forEach(function(w){
+      var rows = Array.prototype.slice.call(w.querySelectorAll('tbody tr'));
+      if (!rows.length) return;
+      var any = rows.some(function(r){ return !r.classList.contains('hidden'); });
+      w.classList.toggle('hidden', !any);
+    });
+
+    if (!term && !active){
+      hits.textContent = '';
+    } else if (shown === 0){
+      hits.textContent = 'No matches. Clear the filters or try a different term.';
+    } else {
+      hits.textContent = shown + (shown === 1 ? ' entry' : ' entries') + ' shown.';
+    }
+  }
+
+  q.addEventListener('input', apply);
+
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      var v = c.getAttribute('data-filter');
+      active = (active === v) ? null : v;
+      chips.forEach(function(o){
+        o.setAttribute('aria-pressed', String(o.getAttribute('data-filter') === active));
+      });
+      apply();
+    });
+  });
+
+  reset.addEventListener('click', function(){
+    active = null;
+    q.value = '';
+    chips.forEach(function(o){ o.setAttribute('aria-pressed','false'); });
+    apply();
+    q.focus();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === '/' && document.activeElement !== q){
+      e.preventDefault();
+      q.focus();
+      q.select();
+    }
+    if (e.key === 'Escape' && document.activeElement === q){
+      q.value = '';
+      apply();
+    }
+  });
+
+  // scroll spy
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting){
+          links.forEach(function(a){ a.classList.remove('on'); });
+          var a = map[en.target.id];
+          if (a) a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+    sections.forEach(function(s){ if (s.id) io.observe(s); });
+  }
+
+  // copy questions
+  var copyq = document.getElementById('copyq');
+  var copyok = document.getElementById('copyok');
+  var questions = [
+    '1. Are SharePoint-triggered flows that use only Standard Microsoft 365 connectors (Office 365 Outlook, Microsoft Teams, Approvals, Office 365 Users, Excel Online (Business)) in scope, or must the flow use the SharePoint connector exclusively?',
+    '2. Is the "Send an HTTP request to SharePoint" action permitted for SharePoint-only solutions, given that it reaches only the SharePoint REST API of the specified site, or does the breadth of the REST surface require review?',
+    '3. Does the organisation agree that native SharePoint agents are governed by Copilot licensing rather than Power Platform citizen-development rules, and that Copilot Studio agents fall under Power Platform governance?',
+    '4. Is a flow-invoked Office Script in scope when the workbook is stored in the SharePoint library, or does involving the Excel Online (Business) connector place it outside?',
+    '5. Where a workbook physically resides in a SharePoint document library, does reading and writing its tables through Excel Online (Business) count as interacting with SharePoint?',
+    '6. Is OneDrive for Business considered part of the permitted SharePoint scope, given that it shares the same underlying platform, or is it a distinct location that falls outside?'
+  ].join('\n\n');
+
+  copyq.addEventListener('click', function(){
+    function done(){ copyok.textContent = 'Copied.'; setTimeout(function(){ copyok.textContent=''; }, 2500); }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = questions;
+      ta.setAttribute('readonly','');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); }
+      catch(err){ copyok.textContent = 'Copy blocked. Select the questions manually.'; }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(questions).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -35,6 +35,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 a{color:var(--link);text-decoration:none}
 a:hover{color:var(--link-hover)}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:disabled{cursor:default;opacity:.38}
 input::placeholder{color:#5b6270}
 [hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--link);outline-offset:2px}
@@ -61,36 +62,64 @@ input::placeholder{color:#5b6270}
 .tag:hover{background:var(--surface);color:var(--text)}
 .tag.active{background:var(--pill-bg);border-color:var(--pill-border);color:var(--text)}
 .tag .n{color:var(--dim)}
-.rail-foot{margin-top:auto;font-family:var(--mono);font-size:10.5px;line-height:1.8;color:var(--dim)}
+.tags-toggle{display:none;align-items:center;justify-content:space-between;min-height:44px;width:100%;padding:8px 12px;border:1px solid var(--hair);border-radius:8px;color:var(--text-2);font-family:var(--mono);font-size:11px;text-align:left}
+.tags-toggle .n{color:var(--dim)}
 
 /* right column */
-.list-col{padding:34px 44px 90px;max-width:940px;min-width:0}
+.list-col{padding:34px 44px 42px;max-width:1180px;width:100%;min-width:0}
 .list-head{display:flex;align-items:baseline;gap:14px}
 .list-head h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-0.02em;line-height:1.2}
 .meta{font-family:var(--mono);font-size:11.5px;color:var(--dim);white-space:nowrap}
 .clear{margin-left:auto;display:inline-flex;align-items:center;min-height:32px;padding:4px 13px;border-radius:999px;border:1px solid var(--hair);color:var(--text-2);font-family:var(--mono);font-size:11px;white-space:nowrap}
 .clear:hover{background:var(--surface);color:var(--text)}
 .blurb{margin:8px 0 26px;font-size:13px;color:var(--text-2)}
-.rows{display:flex;flex-direction:column;gap:2px}
-.row{display:block;padding:14px 16px;border-radius:9px;border:1px solid transparent;color:var(--text)}
+.rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+.row{display:flex;flex-direction:column;min-height:142px;padding:16px;border-radius:9px;border:1px solid var(--hair);color:var(--text)}
 .row:hover{background:var(--surface);border-color:var(--hair);color:var(--text)}
 .l1{display:flex}
 .pin{flex:none;width:21px;color:var(--pin-idle)}
 .pin.on{color:var(--gold)}
 .ttl{font-size:15.5px;font-weight:500;line-height:1.35;text-wrap:pretty}
 .l2{display:block;margin:5px 0 0 21px;max-width:62ch;font-size:13px;line-height:1.5;color:var(--text-2);text-wrap:pretty}
-.l3{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 0 21px}
+.l3{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:auto 0 0 21px;padding-top:10px}
 .pth{font-family:var(--mono);font-size:11.5px;color:var(--text-2)}
 .chip{font-family:var(--mono);font-size:10px;color:var(--chip-text);background:var(--chip-bg);border:1px solid var(--chip-border);border-radius:4px;padding:2px 7px}
 .empty{font-family:var(--mono);font-size:13px;color:var(--dim);padding:56px 0}
+.pager{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:26px}
+.page-buttons{display:flex;align-items:center;gap:6px}
+.page-control,.page-number{display:inline-flex;align-items:center;justify-content:center;min-height:36px;border:1px solid var(--hair);border-radius:7px;color:var(--text-2);font-family:var(--mono);font-size:11px}
+.page-control{padding:6px 12px}
+.page-number{min-width:36px;padding:6px}
+.page-control:not(:disabled):hover,.page-number:hover{background:var(--surface);color:var(--text)}
+.page-number.active{background:var(--nav-active);border-color:var(--pill-border);color:var(--text)}
+.site-foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--hair);display:flex;gap:8px;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+
+@media (max-width:1080px){
+  .rows{grid-template-columns:1fr}
+}
 
 @media (max-width:860px){
   .wrap{grid-template-columns:1fr}
-  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--hair-rail)}
-  .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:6px}
-  .nav-row{flex:none;width:auto;white-space:nowrap;border:1px solid var(--hair);border-radius:999px;padding:5px 13px}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--hair-rail);padding:22px 20px 18px;gap:14px}
+  .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:2px;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav-row{flex:none;width:auto;min-height:44px;white-space:nowrap;border:1px solid var(--hair);border-radius:999px;padding:7px 13px}
   .nav-label{overflow:visible}
+  .tags-toggle{display:flex}
+  .tags{display:none;border-top:0;padding-top:0}
+  .tags.open{display:flex}
+  .tag{min-height:44px}
   .list-col{padding:24px 20px 64px}
+  .list-head{flex-wrap:wrap}
+  .clear{min-height:44px}
+  .blurb{margin-bottom:18px}
+  .rows{grid-template-columns:1fr}
+  .row{min-height:0}
+  .pth{display:none}
+  .pager{gap:6px}
+  .page-control{min-height:44px;padding:7px 10px}
+  .page-number{min-width:44px;min-height:44px}
+  .site-foot{margin-top:28px}
 }
 </style>
 </head>
@@ -99,64 +128,104 @@ input::placeholder{color:#5b6270}
 <aside class="rail">
 <div class="brand">
 <div class="brand-name">Reference Sites</div>
-<div class="brand-sub">22 pages · 2026-08-27</div>
+<div class="brand-sub">27 pages · 2026-09-05</div>
 </div>
 <input id="q" type="text" placeholder="Filter titles, tags, paths…" autocomplete="off" spellcheck="false">
 <nav class="nav" id="nav">
-<button type="button" class="nav-row active" data-cat="all"><span class="dot" style="background:#6c737f"></span><span class="nav-label">All sites</span><span class="count">22</span></button>
+<button type="button" class="nav-row active" data-cat="all"><span class="dot" style="background:#6c737f"></span><span class="nav-label">All sites</span><span class="count">27</span></button>
 <button type="button" class="nav-row" data-cat="pinned"><span class="dot" style="background:#dfae5c"></span><span class="nav-label">★ Pinned</span><span class="count">3</span></button>
-<button type="button" class="nav-row" data-cat="sharepoint"><span class="dot" style="background:#dfae5c"></span><span class="nav-label">sharepoint</span><span class="count">9</span></button>
-<button type="button" class="nav-row" data-cat="hermes"><span class="dot" style="background:#5b9dff"></span><span class="nav-label">hermes</span><span class="count">5</span></button>
+<button type="button" class="nav-row" data-cat="sharepoint"><span class="dot" style="background:#dfae5c"></span><span class="nav-label">sharepoint</span><span class="count">11</span></button>
+<button type="button" class="nav-row" data-cat="hermes"><span class="dot" style="background:#5b9dff"></span><span class="nav-label">hermes</span><span class="count">3</span></button>
 <button type="button" class="nav-row" data-cat="shared"><span class="dot" style="background:#63c7a6"></span><span class="nav-label">shared</span><span class="count">4</span></button>
 <button type="button" class="nav-row" data-cat="claude"><span class="dot" style="background:#d98a5b"></span><span class="nav-label">claude</span><span class="count">1</span></button>
-<button type="button" class="nav-row" data-cat="codex"><span class="dot" style="background:#a78bfa"></span><span class="nav-label">codex</span><span class="count">3</span></button>
+<button type="button" class="nav-row" data-cat="codex"><span class="dot" style="background:#a78bfa"></span><span class="nav-label">codex</span><span class="count">6</span></button>
+<button type="button" class="nav-row" data-cat="astrology"><span class="dot" style="background:#6c737f"></span><span class="nav-label">astrology</span><span class="count">1</span></button>
+<button type="button" class="nav-row" data-cat="oracle"><span class="dot" style="background:#6c737f"></span><span class="nav-label">oracle</span><span class="count">1</span></button>
 </nav>
-
-<div class="rail-foot">
-<div>generate_index.py</div>
-<div>static · no tracking</div>
+<button type="button" class="tags-toggle" id="tags-toggle" aria-expanded="false" aria-controls="tags"><span id="tags-toggle-label">Filter by tag</span><span class="n">18</span></button>
+<div class="tags" id="tags">
+<div class="tags-head">TAGS</div>
+<div class="tag-wrap">
+<button type="button" class="tag" data-tag="agent-systems">agent-systems <span class="n">7</span></button>
+<button type="button" class="tag" data-tag="astrology">astrology <span class="n">1</span></button>
+<button type="button" class="tag" data-tag="automation">automation <span class="n">4</span></button>
+<button type="button" class="tag" data-tag="blueprint">blueprint <span class="n">3</span></button>
+<button type="button" class="tag" data-tag="bot-mode">bot-mode <span class="n">3</span></button>
+<button type="button" class="tag" data-tag="briefing">briefing <span class="n">1</span></button>
+<button type="button" class="tag" data-tag="copilot">copilot <span class="n">2</span></button>
+<button type="button" class="tag" data-tag="future-state">future-state <span class="n">1</span></button>
+<button type="button" class="tag" data-tag="guide">guide <span class="n">13</span></button>
+<button type="button" class="tag" data-tag="knowledge-hub">knowledge-hub <span class="n">3</span></button>
+<button type="button" class="tag" data-tag="knowledge-system">knowledge-system <span class="n">1</span></button>
+<button type="button" class="tag" data-tag="lab">lab <span class="n">3</span></button>
+<button type="button" class="tag" data-tag="oracle">oracle <span class="n">1</span></button>
+<button type="button" class="tag" data-tag="personal-os">personal-os <span class="n">2</span></button>
+<button type="button" class="tag" data-tag="profile">profile <span class="n">1</span></button>
+<button type="button" class="tag" data-tag="reference">reference <span class="n">4</span></button>
+<button type="button" class="tag" data-tag="runbook">runbook <span class="n">2</span></button>
+<button type="button" class="tag" data-tag="vault">vault <span class="n">2</span></button>
+</div>
 </div>
 </aside>
 <main class="list-col">
 <div class="list-head">
 <h1 id="h1">All sites</h1>
-<div class="meta" id="meta">22 pages</div>
+<div class="meta" id="meta">1–10 of 27</div>
 <button type="button" id="clear" class="clear" hidden>clear filters ×</button>
 </div>
 <p class="blurb" id="blurb">All reference sites across every category, pinned first.</p>
 <div class="rows" id="rows">
-<a class="row" href="hermes/bot-mode-mastery/index.html" data-i="0"><span class="l1"><span class="pin on">★</span><span class="ttl">Hermes Bot Mode Operating Runbook — Editorial Edition</span></span><span class="l3"><span class="pth">/hermes/bot-mode-mastery/</span></span></a>
-<a class="row" href="sharepoint/onedrive-working-memory-playbook/index.html" data-i="1"><span class="l1"><span class="pin on">★</span><span class="ttl">OneDrive Working Memory Playbook</span></span><span class="l3"><span class="pth">/sharepoint/onedrive-working-memory-playbook/</span></span></a>
-<a class="row" href="sharepoint/pic-sharepoint-hub-reference/index.html" data-i="2"><span class="l1"><span class="pin on">★</span><span class="ttl">PIC SharePoint Master Hub — Build Reference</span></span><span class="l3"><span class="pth">/sharepoint/pic-sharepoint-hub-reference/</span></span></a>
-<a class="row" href="sharepoint/bc-hydro-copilot-operating-model/index.html" data-i="3"><span class="l1"><span class="pin">·</span><span class="ttl">BC Hydro Microsoft 365 Copilot Operating Model</span></span><span class="l3"><span class="pth">/sharepoint/bc-hydro-copilot-operating-model/</span></span></a>
-<a class="row" href="hermes/bot-mode-handoff/index.html" data-i="4"><span class="l1"><span class="pin">·</span><span class="ttl">Handoff Logic</span></span><span class="l3"><span class="pth">/hermes/bot-mode-handoff/</span></span></a>
-<a class="row" href="shared/bot-roster/index.html" data-i="5"><span class="l1"><span class="pin">·</span><span class="ttl">Bot Roster</span></span><span class="l3"><span class="pth">/shared/bot-roster/</span></span></a>
-<a class="row" href="claude/claude-code-control-stack/index.html" data-i="6"><span class="l1"><span class="pin">·</span><span class="ttl">Claude Code Control Stack</span></span><span class="l3"><span class="pth">/claude/claude-code-control-stack/</span></span></a>
-<a class="row" href="codex/codex-agent-mastery/index.html" data-i="7"><span class="l1"><span class="pin">·</span><span class="ttl">OpenAI Codex Agent Mastery Guide - August 2026 Interactive Platform</span></span><span class="l3"><span class="pth">/codex/codex-agent-mastery/</span></span></a>
-<a class="row" href="codex/codex-mastery/index.html" data-i="8"><span class="l1"><span class="pin">·</span><span class="ttl">Clearance Stack</span></span><span class="l3"><span class="pth">/codex/codex-mastery/</span></span></a>
-<a class="row" href="codex/codex-vault-circuit/index.html" data-i="9"><span class="l1"><span class="pin">·</span><span class="ttl">Codex Vault Circuit — Obsidian + AI Mastery</span></span><span class="l3"><span class="pth">/codex/codex-vault-circuit/</span></span></a>
-<a class="row" href="sharepoint/copilot-field-guide/index.html" data-i="10"><span class="l1"><span class="pin">·</span><span class="ttl">Envelope — Citizen Copilot field guide</span></span><span class="l3"><span class="pth">/sharepoint/copilot-field-guide/</span></span></a>
-<a class="row" href="sharepoint/copilot-power-platform-hub/index.html" data-i="11"><span class="l1"><span class="pin">·</span><span class="ttl">Enterprise M365 Copilot &amp; Power Platform Knowledge Hub</span></span><span class="l3"><span class="pth">/sharepoint/copilot-power-platform-hub/</span></span></a>
-<a class="row" href="sharepoint/ddm-future-state/index.html" data-i="12"><span class="l1"><span class="pin">·</span><span class="ttl">JUAS DDM Future State</span></span><span class="l3"><span class="pth">/sharepoint/ddm-future-state/</span></span></a>
-<a class="row" href="hermes/hermes-bot-mode/index.html" data-i="13"><span class="l1"><span class="pin">·</span><span class="ttl">Bot Roster</span></span><span class="l3"><span class="pth">/hermes/hermes-bot-mode/</span></span></a>
-<a class="row" href="hermes/hermes-bot-mode-by-hermes/index.html" data-i="14"><span class="l1"><span class="pin">·</span><span class="ttl">Hermes Creates Bot Fleet</span></span><span class="l3"><span class="pth">/hermes/hermes-bot-mode-by-hermes/</span></span></a>
-<a class="row" href="hermes/hermes-flightpath/index.html" data-i="15"><span class="l1"><span class="pin">·</span><span class="ttl">Hermes Flightpath</span></span><span class="l3"><span class="pth">/hermes/hermes-flightpath/</span></span></a>
-<a class="row" href="sharepoint/ipc-forecast-briefing/index.html" data-i="16"><span class="l1"><span class="pin">·</span><span class="ttl">IPC Forecast: Excel to SharePoint</span></span><span class="l3"><span class="pth">/sharepoint/ipc-forecast-briefing/</span></span></a>
-<a class="row" href="sharepoint/ipc-scoped-flow/index.html" data-i="17"><span class="l1"><span class="pin">·</span><span class="ttl">Scoped Flow</span></span><span class="l3"><span class="pth">/sharepoint/ipc-scoped-flow/</span></span></a>
-<a class="row" href="sharepoint/master-hub-blueprint/index.html" data-i="18"><span class="l1"><span class="pin">·</span><span class="ttl">SharePoint Online Master Hub Architecture &amp; Governance Blueprint</span></span><span class="l3"><span class="pth">/sharepoint/master-hub-blueprint/</span></span></a>
-<a class="row" href="shared/obsidian-vault-circuit/index.html" data-i="19"><span class="l1"><span class="pin">·</span><span class="ttl">Vault Circuit</span></span><span class="l3"><span class="pth">/shared/obsidian-vault-circuit/</span></span></a>
-<a class="row" href="shared/steven-os/index.html" data-i="20"><span class="l1"><span class="pin">·</span><span class="ttl">Humanoid OS — Steven Nguyen</span></span><span class="l3"><span class="pth">/shared/steven-os/</span></span></a>
-<a class="row" href="shared/working-with-steven/index.html" data-i="21"><span class="l1"><span class="pin">·</span><span class="ttl">Working with Steven Nguyen</span></span><span class="l3"><span class="pth">/shared/working-with-steven/</span></span></a>
+<a class="row" href="hermes/bot-mode-mastery/index.html" data-i="0"><span class="l1"><span class="pin on">★</span><span class="ttl">Hermes Bot Mode Operating Runbook — Editorial Edition</span></span><span class="l2">Copy-ready Bot Mode runbook for team prompts, group patterns, escalation, and smoke tests.</span><span class="l3"><span class="pth">/hermes/bot-mode-mastery/</span><span class="chip">runbook</span><span class="chip">bot-mode</span></span></a>
+<a class="row" href="sharepoint/onedrive-working-memory-playbook/index.html" data-i="1"><span class="l1"><span class="pin on">★</span><span class="ttl">OneDrive Working Memory Playbook</span></span><span class="l2">Use OneDrive as governed working memory for retrieval, versioning, sharing, and Copilot-ready files.</span><span class="l3"><span class="pth">/sharepoint/onedrive-working-memory-playbook/</span><span class="chip">runbook</span><span class="chip">knowledge-system</span></span></a>
+<a class="row" href="sharepoint/pic-sharepoint-hub-reference/index.html" data-i="2"><span class="l1"><span class="pin on">★</span><span class="ttl">PIC SharePoint Master Hub — Build Reference</span></span><span class="l2">Implementation reference for the PIC SharePoint hub, information architecture, migration, and workflow replacement.</span><span class="l3"><span class="pth">/sharepoint/pic-sharepoint-hub-reference/</span><span class="chip">reference</span><span class="chip">knowledge-hub</span></span></a>
+<a class="row" href="sharepoint/bc-hydro-copilot-operating-model/index.html" data-i="3"><span class="l1"><span class="pin">·</span><span class="ttl">BC Hydro Microsoft 365 Copilot Operating Model</span></span><span class="l2">Choose Copilot surfaces, govern records and privacy, and redesign BC Hydro knowledge work.</span><span class="l3"><span class="pth">/sharepoint/bc-hydro-copilot-operating-model/</span><span class="chip">guide</span><span class="chip">copilot</span></span></a>
+<a class="row" href="sharepoint/bc-hydro-m365-automation-blueprint/index.html" data-i="4"><span class="l1"><span class="pin">·</span><span class="ttl">M365 Automation Blueprint — BC Hydro Partially Federated Model</span></span><span class="l2">Map M365 automation opportunities to approved lanes, controls, licensing, and delivery stages.</span><span class="l3"><span class="pth">/sharepoint/bc-hydro-m365-automation-blueprint/</span><span class="chip">blueprint</span><span class="chip">automation</span></span></a>
+<a class="row" href="hermes/bot-mode-handoff/index.html" data-i="5"><span class="l1"><span class="pin">·</span><span class="ttl">Handoff Logic</span></span><span class="l2">Design reliable specialist handoffs, cascades, group rooms, and evidence-return loops in Bot Mode.</span><span class="l3"><span class="pth">/hermes/bot-mode-handoff/</span><span class="chip">guide</span><span class="chip">bot-mode</span></span></a>
+<a class="row" href="shared/bot-roster/index.html" data-i="6"><span class="l1"><span class="pin">·</span><span class="ttl">Bot Roster</span></span><span class="l2">Build and operate a durable Hermes Bot fleet across profiles, groups, routines, peers, and boards.</span><span class="l3"><span class="pth">/shared/bot-roster/</span><span class="chip">guide</span><span class="chip">bot-mode</span></span></a>
+<a class="row" href="claude/claude-code-control-stack/index.html" data-i="7"><span class="l1"><span class="pin">·</span><span class="ttl">Claude Code Control Stack</span></span><span class="l2">Master Claude Code context, instructions, permissions, hooks, subagents, MCP, and unattended runs.</span><span class="l3"><span class="pth">/claude/claude-code-control-stack/</span><span class="chip">guide</span><span class="chip">agent-systems</span></span></a>
+<a class="row" href="codex/codex-agent-mastery/index.html" data-i="8"><span class="l1"><span class="pin">·</span><span class="ttl">OpenAI Codex Agent Mastery Guide - August 2026 Interactive Platform</span></span><span class="l2">Explore Codex lifecycle, rules, sandboxes, AGENTS.md, MCP, skills, and subagents through interactive simulators.</span><span class="l3"><span class="pth">/codex/codex-agent-mastery/</span><span class="chip">reference</span><span class="chip">agent-systems</span></span></a>
+<a class="row" href="codex/codex-mastery/index.html" data-i="9"><span class="l1"><span class="pin">·</span><span class="ttl">Clearance Stack</span></span><span class="l2">Operate Codex CLI through instructions, profiles, skills, approvals, hooks, MCP, and parallel work.</span><span class="l3"><span class="pth">/codex/codex-mastery/</span><span class="chip">guide</span><span class="chip">agent-systems</span></span></a>
+<a class="row" href="codex/codex-vault-circuit/index.html" data-i="10"><span class="l1"><span class="pin">·</span><span class="ttl">Codex Vault Circuit — Obsidian + AI Mastery</span></span><span class="l2">Connect Codex to an Obsidian vault with safe context, retrieval, provenance, and automation guardrails.</span><span class="l3"><span class="pth">/codex/codex-vault-circuit/</span><span class="chip">guide</span><span class="chip">vault</span></span></a>
+<a class="row" href="sharepoint/copilot-field-guide/index.html" data-i="11"><span class="l1"><span class="pin">·</span><span class="ttl">Envelope — Citizen Copilot field guide</span></span><span class="l2">Learn the citizen Copilot envelope, prompt formula, approved surfaces, and three starter automations.</span><span class="l3"><span class="pth">/sharepoint/copilot-field-guide/</span><span class="chip">guide</span><span class="chip">copilot</span></span></a>
+<a class="row" href="sharepoint/copilot-power-platform-hub/index.html" data-i="12"><span class="l1"><span class="pin">·</span><span class="ttl">Enterprise M365 Copilot &amp; Power Platform Knowledge Hub</span></span><span class="l2">Design an enterprise M365 knowledge hub using Copilot, Power Platform, RAG, and governed rollout.</span><span class="l3"><span class="pth">/sharepoint/copilot-power-platform-hub/</span><span class="chip">blueprint</span><span class="chip">knowledge-hub</span></span></a>
+<a class="row" href="sharepoint/ddm-future-state/index.html" data-i="13"><span class="l1"><span class="pin">·</span><span class="ttl">JUAS DDM Future State</span></span><span class="l2">Visual reference for the JUAS DDM future-state information and workflow architecture.</span><span class="l3"><span class="pth">/sharepoint/ddm-future-state/</span><span class="chip">reference</span><span class="chip">future-state</span></span></a>
+<a class="row" href="codex/harness-field-manual/index.html" data-i="14"><span class="l1"><span class="pin">·</span><span class="ttl">Harness Field Manual</span></span><span class="l2">Design agent harnesses across instructions, tools, boundaries, lifecycle, orchestration, and proof.</span><span class="l3"><span class="pth">/codex/harness-field-manual/</span><span class="chip">guide</span><span class="chip">agent-systems</span></span></a>
+<a class="row" href="hermes/hermes-flightpath/index.html" data-i="15"><span class="l1"><span class="pin">·</span><span class="ttl">Hermes Flightpath</span></span><span class="l2">Operate Hermes end to end through models, context, tools, skills, profiles, gateways, schedules, and recovery.</span><span class="l3"><span class="pth">/hermes/hermes-flightpath/</span><span class="chip">guide</span><span class="chip">agent-systems</span></span></a>
+<a class="row" href="codex/hooksmith-field-guide/index.html" data-i="16"><span class="l1"><span class="pin">·</span><span class="ttl">Hooksmith Field Guide</span></span><span class="l2">Engineer Codex hooks from event matching and handlers through policy decisions, testing, and rollout.</span><span class="l3"><span class="pth">/codex/hooksmith-field-guide/</span><span class="chip">guide</span><span class="chip">agent-systems</span></span></a>
+<a class="row" href="codex/horizon-loop-lab/index.html" data-i="17"><span class="l1"><span class="pin">·</span><span class="ttl">Horizon Loop Lab</span></span><span class="l2">Build long-horizon agents with mission contracts, task graphs, durable state, gates, recovery, and evaluation.</span><span class="l3"><span class="pth">/codex/horizon-loop-lab/</span><span class="chip">lab</span><span class="chip">agent-systems</span></span></a>
+<a class="row" href="sharepoint/ipc-forecast-briefing/index.html" data-i="18"><span class="l1"><span class="pin">·</span><span class="ttl">IPC Forecast: Excel to SharePoint</span></span><span class="l2">Briefing for moving IPC forecasting from Excel and email into governed SharePoint workflows.</span><span class="l3"><span class="pth">/sharepoint/ipc-forecast-briefing/</span><span class="chip">briefing</span><span class="chip">automation</span></span></a>
+<a class="row" href="sharepoint/ipc-scoped-flow/index.html" data-i="19"><span class="l1"><span class="pin">·</span><span class="ttl">Scoped Flow</span></span><span class="l2">Build SharePoint-scoped IPC flows with safe triggers, guards, actions, Copilot assistance, and recovery.</span><span class="l3"><span class="pth">/sharepoint/ipc-scoped-flow/</span><span class="chip">lab</span><span class="chip">automation</span></span></a>
+<a class="row" href="sharepoint/master-hub-blueprint/index.html" data-i="20"><span class="l1"><span class="pin">·</span><span class="ttl">SharePoint Online Master Hub Architecture &amp; Governance Blueprint</span></span><span class="l2">Reusable SharePoint hub toolkit for topology, metadata, search, apps, formatting, and migration.</span><span class="l3"><span class="pth">/sharepoint/master-hub-blueprint/</span><span class="chip">blueprint</span><span class="chip">knowledge-hub</span></span></a>
+<a class="row" href="astrology/natal-mastery-drill-gym/index.html" data-i="21"><span class="l1"><span class="pin">·</span><span class="ttl">Natal Mastery — drill gym</span></span><span class="l2">Drill natal synthesis through planetary condition, rulership, houses, aspects, and timed judgment.</span><span class="l3"><span class="pth">/astrology/natal-mastery-drill-gym/</span><span class="chip">lab</span><span class="chip">astrology</span></span></a>
+<a class="row" href="shared/obsidian-vault-circuit/index.html" data-i="22"><span class="l1"><span class="pin">·</span><span class="ttl">Vault Circuit</span></span><span class="l2">Build a governed Obsidian and AI knowledge circuit with retrieval, MCP, provenance, hooks, and review gates.</span><span class="l3"><span class="pth">/shared/obsidian-vault-circuit/</span><span class="chip">guide</span><span class="chip">vault</span></span></a>
+<a class="row" href="oracle/oracle-field-school/index.html" data-i="23"><span class="l1"><span class="pin">·</span><span class="ttl">Oracle Field School</span></span><span class="l2">Practice oracle interpretation through symbolic grammar, spreads, synthesis, verification, and ethics.</span><span class="l3"><span class="pth">/oracle/oracle-field-school/</span><span class="chip">guide</span><span class="chip">oracle</span></span></a>
+<a class="row" href="sharepoint/sharepoint-automation-boundary-reference/index.html" data-i="24"><span class="l1"><span class="pin">·</span><span class="ttl">SharePoint-Scoped Automation Boundary Reference</span></span><span class="l2">Decide which SharePoint automations are permitted, need confirmation, or sit outside the approved boundary.</span><span class="l3"><span class="pth">/sharepoint/sharepoint-automation-boundary-reference/</span><span class="chip">reference</span><span class="chip">automation</span></span></a>
+<a class="row" href="shared/steven-os/index.html" data-i="25"><span class="l1"><span class="pin">·</span><span class="ttl">Humanoid OS — Steven Nguyen</span></span><span class="l2">Personal operating-system synthesis spanning cognition, assessments, astrology, numerology, timing, and failure modes.</span><span class="l3"><span class="pth">/shared/steven-os/</span><span class="chip">profile</span><span class="chip">personal-os</span></span></a>
+<a class="row" href="shared/working-with-steven/index.html" data-i="26"><span class="l1"><span class="pin">·</span><span class="ttl">Working with Steven Nguyen</span></span><span class="l2">Practical collaborator guide to Steven&#x27;s thinking style, friction points, management needs, and common misreadings.</span><span class="l3"><span class="pth">/shared/working-with-steven/</span><span class="chip">guide</span><span class="chip">personal-os</span></span></a>
 </div>
 <div class="empty" id="empty" hidden>nothing matches that filter</div>
+<nav class="pager" id="pager" aria-label="Results pages" hidden>
+<button type="button" class="page-control" id="previous" disabled>Previous</button>
+<div class="page-buttons" id="page-buttons">
+<button type="button" class="page-number active" data-page="1" aria-current="page">1</button>
+<button type="button" class="page-number" data-page="2">2</button>
+<button type="button" class="page-number" data-page="3">3</button>
+</div>
+<button type="button" class="page-control" id="next">Next</button>
+</nav>
+<footer class="site-foot">
+<span>generate_index.py</span>
+<span>static · no tracking</span>
+</footer>
 </main>
 </div>
 <script>
-const SITES = [{"category":"hermes","title":"Hermes Bot Mode Operating Runbook \u2014 Editorial Edition","path":"/hermes/bot-mode-mastery/","description":"","tags":[],"pinned":true},{"category":"sharepoint","title":"OneDrive Working Memory Playbook","path":"/sharepoint/onedrive-working-memory-playbook/","description":"","tags":[],"pinned":true},{"category":"sharepoint","title":"PIC SharePoint Master Hub \u2014 Build Reference","path":"/sharepoint/pic-sharepoint-hub-reference/","description":"","tags":[],"pinned":true},{"category":"sharepoint","title":"BC Hydro Microsoft 365 Copilot Operating Model","path":"/sharepoint/bc-hydro-copilot-operating-model/","description":"","tags":[],"pinned":false},{"category":"hermes","title":"Handoff Logic","path":"/hermes/bot-mode-handoff/","description":"","tags":[],"pinned":false},{"category":"shared","title":"Bot Roster","path":"/shared/bot-roster/","description":"","tags":[],"pinned":false},{"category":"claude","title":"Claude Code Control Stack","path":"/claude/claude-code-control-stack/","description":"","tags":[],"pinned":false},{"category":"codex","title":"OpenAI Codex Agent Mastery Guide - August 2026 Interactive Platform","path":"/codex/codex-agent-mastery/","description":"","tags":[],"pinned":false},{"category":"codex","title":"Clearance Stack","path":"/codex/codex-mastery/","description":"","tags":[],"pinned":false},{"category":"codex","title":"Codex Vault Circuit \u2014 Obsidian + AI Mastery","path":"/codex/codex-vault-circuit/","description":"","tags":[],"pinned":false},{"category":"sharepoint","title":"Envelope \u2014 Citizen Copilot field guide","path":"/sharepoint/copilot-field-guide/","description":"","tags":[],"pinned":false},{"category":"sharepoint","title":"Enterprise M365 Copilot & Power Platform Knowledge Hub","path":"/sharepoint/copilot-power-platform-hub/","description":"","tags":[],"pinned":false},{"category":"sharepoint","title":"JUAS DDM Future State","path":"/sharepoint/ddm-future-state/","description":"","tags":[],"pinned":false},{"category":"hermes","title":"Bot Roster","path":"/hermes/hermes-bot-mode/","description":"","tags":[],"pinned":false},{"category":"hermes","title":"Hermes Creates Bot Fleet","path":"/hermes/hermes-bot-mode-by-hermes/","description":"","tags":[],"pinned":false},{"category":"hermes","title":"Hermes Flightpath","path":"/hermes/hermes-flightpath/","description":"","tags":[],"pinned":false},{"category":"sharepoint","title":"IPC Forecast: Excel to SharePoint","path":"/sharepoint/ipc-forecast-briefing/","description":"","tags":[],"pinned":false},{"category":"sharepoint","title":"Scoped Flow","path":"/sharepoint/ipc-scoped-flow/","description":"","tags":[],"pinned":false},{"category":"sharepoint","title":"SharePoint Online Master Hub Architecture & Governance Blueprint","path":"/sharepoint/master-hub-blueprint/","description":"","tags":[],"pinned":false},{"category":"shared","title":"Vault Circuit","path":"/shared/obsidian-vault-circuit/","description":"","tags":[],"pinned":false},{"category":"shared","title":"Humanoid OS \u2014 Steven Nguyen","path":"/shared/steven-os/","description":"","tags":[],"pinned":false},{"category":"shared","title":"Working with Steven Nguyen","path":"/shared/working-with-steven/","description":"","tags":[],"pinned":false}];
-const BLURBS = {"all":"All reference sites across every category, pinned first.","claude":"Claude Code references and control workflows.","codex":"OpenAI Codex mastery guides and vault circuits.","hermes":"Hermes Agent runbooks and references: bot mode, handoffs, flightpath.","pinned":"The sites kept at the top of the list.","shared":"Cross-tool references: rosters, vault circuits, working agreements.","sharepoint":"SharePoint / Microsoft 365 builds: hubs, flows, briefings."};
+const SITES = [{"category":"hermes","title":"Hermes Bot Mode Operating Runbook \u2014 Editorial Edition","path":"/hermes/bot-mode-mastery/","description":"Copy-ready Bot Mode runbook for team prompts, group patterns, escalation, and smoke tests.","tags":["runbook","bot-mode"],"pinned":true},{"category":"sharepoint","title":"OneDrive Working Memory Playbook","path":"/sharepoint/onedrive-working-memory-playbook/","description":"Use OneDrive as governed working memory for retrieval, versioning, sharing, and Copilot-ready files.","tags":["runbook","knowledge-system"],"pinned":true},{"category":"sharepoint","title":"PIC SharePoint Master Hub \u2014 Build Reference","path":"/sharepoint/pic-sharepoint-hub-reference/","description":"Implementation reference for the PIC SharePoint hub, information architecture, migration, and workflow replacement.","tags":["reference","knowledge-hub"],"pinned":true},{"category":"sharepoint","title":"BC Hydro Microsoft 365 Copilot Operating Model","path":"/sharepoint/bc-hydro-copilot-operating-model/","description":"Choose Copilot surfaces, govern records and privacy, and redesign BC Hydro knowledge work.","tags":["guide","copilot"],"pinned":false},{"category":"sharepoint","title":"M365 Automation Blueprint \u2014 BC Hydro Partially Federated Model","path":"/sharepoint/bc-hydro-m365-automation-blueprint/","description":"Map M365 automation opportunities to approved lanes, controls, licensing, and delivery stages.","tags":["blueprint","automation"],"pinned":false},{"category":"hermes","title":"Handoff Logic","path":"/hermes/bot-mode-handoff/","description":"Design reliable specialist handoffs, cascades, group rooms, and evidence-return loops in Bot Mode.","tags":["guide","bot-mode"],"pinned":false},{"category":"shared","title":"Bot Roster","path":"/shared/bot-roster/","description":"Build and operate a durable Hermes Bot fleet across profiles, groups, routines, peers, and boards.","tags":["guide","bot-mode"],"pinned":false},{"category":"claude","title":"Claude Code Control Stack","path":"/claude/claude-code-control-stack/","description":"Master Claude Code context, instructions, permissions, hooks, subagents, MCP, and unattended runs.","tags":["guide","agent-systems"],"pinned":false},{"category":"codex","title":"OpenAI Codex Agent Mastery Guide - August 2026 Interactive Platform","path":"/codex/codex-agent-mastery/","description":"Explore Codex lifecycle, rules, sandboxes, AGENTS.md, MCP, skills, and subagents through interactive simulators.","tags":["reference","agent-systems"],"pinned":false},{"category":"codex","title":"Clearance Stack","path":"/codex/codex-mastery/","description":"Operate Codex CLI through instructions, profiles, skills, approvals, hooks, MCP, and parallel work.","tags":["guide","agent-systems"],"pinned":false},{"category":"codex","title":"Codex Vault Circuit \u2014 Obsidian + AI Mastery","path":"/codex/codex-vault-circuit/","description":"Connect Codex to an Obsidian vault with safe context, retrieval, provenance, and automation guardrails.","tags":["guide","vault"],"pinned":false},{"category":"sharepoint","title":"Envelope \u2014 Citizen Copilot field guide","path":"/sharepoint/copilot-field-guide/","description":"Learn the citizen Copilot envelope, prompt formula, approved surfaces, and three starter automations.","tags":["guide","copilot"],"pinned":false},{"category":"sharepoint","title":"Enterprise M365 Copilot & Power Platform Knowledge Hub","path":"/sharepoint/copilot-power-platform-hub/","description":"Design an enterprise M365 knowledge hub using Copilot, Power Platform, RAG, and governed rollout.","tags":["blueprint","knowledge-hub"],"pinned":false},{"category":"sharepoint","title":"JUAS DDM Future State","path":"/sharepoint/ddm-future-state/","description":"Visual reference for the JUAS DDM future-state information and workflow architecture.","tags":["reference","future-state"],"pinned":false},{"category":"codex","title":"Harness Field Manual","path":"/codex/harness-field-manual/","description":"Design agent harnesses across instructions, tools, boundaries, lifecycle, orchestration, and proof.","tags":["guide","agent-systems"],"pinned":false},{"category":"hermes","title":"Hermes Flightpath","path":"/hermes/hermes-flightpath/","description":"Operate Hermes end to end through models, context, tools, skills, profiles, gateways, schedules, and recovery.","tags":["guide","agent-systems"],"pinned":false},{"category":"codex","title":"Hooksmith Field Guide","path":"/codex/hooksmith-field-guide/","description":"Engineer Codex hooks from event matching and handlers through policy decisions, testing, and rollout.","tags":["guide","agent-systems"],"pinned":false},{"category":"codex","title":"Horizon Loop Lab","path":"/codex/horizon-loop-lab/","description":"Build long-horizon agents with mission contracts, task graphs, durable state, gates, recovery, and evaluation.","tags":["lab","agent-systems"],"pinned":false},{"category":"sharepoint","title":"IPC Forecast: Excel to SharePoint","path":"/sharepoint/ipc-forecast-briefing/","description":"Briefing for moving IPC forecasting from Excel and email into governed SharePoint workflows.","tags":["briefing","automation"],"pinned":false},{"category":"sharepoint","title":"Scoped Flow","path":"/sharepoint/ipc-scoped-flow/","description":"Build SharePoint-scoped IPC flows with safe triggers, guards, actions, Copilot assistance, and recovery.","tags":["lab","automation"],"pinned":false},{"category":"sharepoint","title":"SharePoint Online Master Hub Architecture & Governance Blueprint","path":"/sharepoint/master-hub-blueprint/","description":"Reusable SharePoint hub toolkit for topology, metadata, search, apps, formatting, and migration.","tags":["blueprint","knowledge-hub"],"pinned":false},{"category":"astrology","title":"Natal Mastery \u2014 drill gym","path":"/astrology/natal-mastery-drill-gym/","description":"Drill natal synthesis through planetary condition, rulership, houses, aspects, and timed judgment.","tags":["lab","astrology"],"pinned":false},{"category":"shared","title":"Vault Circuit","path":"/shared/obsidian-vault-circuit/","description":"Build a governed Obsidian and AI knowledge circuit with retrieval, MCP, provenance, hooks, and review gates.","tags":["guide","vault"],"pinned":false},{"category":"oracle","title":"Oracle Field School","path":"/oracle/oracle-field-school/","description":"Practice oracle interpretation through symbolic grammar, spreads, synthesis, verification, and ethics.","tags":["guide","oracle"],"pinned":false},{"category":"sharepoint","title":"SharePoint-Scoped Automation Boundary Reference","path":"/sharepoint/sharepoint-automation-boundary-reference/","description":"Decide which SharePoint automations are permitted, need confirmation, or sit outside the approved boundary.","tags":["reference","automation"],"pinned":false},{"category":"shared","title":"Humanoid OS \u2014 Steven Nguyen","path":"/shared/steven-os/","description":"Personal operating-system synthesis spanning cognition, assessments, astrology, numerology, timing, and failure modes.","tags":["profile","personal-os"],"pinned":false},{"category":"shared","title":"Working with Steven Nguyen","path":"/shared/working-with-steven/","description":"Practical collaborator guide to Steven's thinking style, friction points, management needs, and common misreadings.","tags":["guide","personal-os"],"pinned":false}];
+const BLURBS = {"all":"All reference sites across every category, pinned first.","astrology":"","claude":"Claude Code references and control workflows.","codex":"OpenAI Codex mastery guides and vault circuits.","hermes":"Hermes Agent runbooks and references: bot mode, handoffs, flightpath.","oracle":"","pinned":"The sites kept at the top of the list.","shared":"Cross-tool references: rosters, vault circuits, working agreements.","sharepoint":"SharePoint / Microsoft 365 builds: hubs, flows, briefings."};
+const PAGE_SIZE = 10;
 (function () {
   "use strict";
-  var state = { cat: "all", tag: null, q: "" };
+  var state = { cat: "all", tag: null, q: "", page: 1 };
   var rows = Array.prototype.slice.call(document.querySelectorAll("#rows .row"));
   var qInput = document.getElementById("q");
   var h1 = document.getElementById("h1");
@@ -166,6 +235,16 @@ const BLURBS = {"all":"All reference sites across every category, pinned first."
   var emptyEl = document.getElementById("empty");
   var navBtns = Array.prototype.slice.call(document.querySelectorAll("#nav .nav-row"));
   var tagBtns = Array.prototype.slice.call(document.querySelectorAll("#tags .tag"));
+  var tagsEl = document.getElementById("tags");
+  var tagsToggle = document.getElementById("tags-toggle");
+  var tagsToggleLabel = document.getElementById("tags-toggle-label");
+  var pager = document.getElementById("pager");
+  var previousBtn = document.getElementById("previous");
+  var nextBtn = document.getElementById("next");
+  var pageButtonsEl = document.getElementById("page-buttons");
+  var pageBtns = Array.prototype.slice.call(
+    document.querySelectorAll("#page-buttons .page-number")
+  );
 
   function matches(s) {
     if (state.cat === "pinned") {
@@ -187,23 +266,33 @@ const BLURBS = {"all":"All reference sites across every category, pinned first."
   }
 
   function apply() {
-    var visible = 0;
+    var matched = [];
     for (var i = 0; i < rows.length; i++) {
-      var show = matches(SITES[i]);
-      rows[i].hidden = !show;
-      if (show) visible++;
+      rows[i].hidden = true;
+      if (matches(SITES[i])) matched.push(i);
+    }
+    var total = matched.length;
+    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (state.page > totalPages) state.page = totalPages;
+    var start = (state.page - 1) * PAGE_SIZE;
+    var end = Math.min(start + PAGE_SIZE, total);
+    for (var shown = start; shown < end; shown++) {
+      rows[matched[shown]].hidden = false;
     }
     var name = state.cat === "all" ? "All sites"
              : (state.cat === "pinned" ? "\u2605 Pinned" : state.cat);
     h1.textContent = name;
-    var m = visible + (visible === 1 ? " page" : " pages");
+    var m = total === 0 ? "0 pages" : (start + 1) + "\u2013" + end + " of " + total;
     if (state.tag !== null) m += " \u00b7 tag: " + state.tag;
     meta.textContent = m;
     var b = BLURBS[state.cat] || "";
     blurb.textContent = b;
     blurb.hidden = (b === "");
     clearBtn.hidden = !(state.q !== "" || state.tag !== null || state.cat !== "all");
-    emptyEl.hidden = (visible !== 0);
+    emptyEl.hidden = (total !== 0);
+    pager.hidden = (totalPages <= 1);
+    previousBtn.disabled = (state.page <= 1);
+    nextBtn.disabled = (state.page >= totalPages);
     for (var j = 0; j < navBtns.length; j++) {
       navBtns[j].classList.toggle("active",
         navBtns[j].getAttribute("data-cat") === state.cat);
@@ -212,10 +301,34 @@ const BLURBS = {"all":"All reference sites across every category, pinned first."
       tagBtns[k].classList.toggle("active",
         tagBtns[k].getAttribute("data-tag") === state.tag);
     }
+    for (var p = 0; p < pageBtns.length; p++) {
+      var pageNumber = parseInt(pageBtns[p].getAttribute("data-page"), 10);
+      var isCurrent = pageNumber === state.page;
+      pageBtns[p].hidden = (pageNumber > totalPages);
+      pageBtns[p].classList.toggle("active", isCurrent);
+      if (isCurrent) pageBtns[p].setAttribute("aria-current", "page");
+      else pageBtns[p].removeAttribute("aria-current");
+    }
+    if (tagsToggleLabel) {
+      tagsToggleLabel.textContent = state.tag === null ? "Filter by tag" : "tag: " + state.tag;
+    }
+  }
+
+  function goToPage(page) {
+    state.page = page;
+    apply();
+    if (h1.scrollIntoView) h1.scrollIntoView({ block: "start" });
+  }
+
+  function closeTags() {
+    if (!tagsEl || !tagsToggle) return;
+    tagsEl.classList.remove("open");
+    tagsToggle.setAttribute("aria-expanded", "false");
   }
 
   qInput.addEventListener("input", function () {
     state.q = qInput.value;
+    state.page = 1;
     apply();
   });
 
@@ -223,25 +336,51 @@ const BLURBS = {"all":"All reference sites across every category, pinned first."
     var btn = e.target.closest ? e.target.closest(".nav-row") : null;
     if (!btn) return;
     state.cat = btn.getAttribute("data-cat");
+    state.page = 1;
     apply();
   });
 
-  var tagsEl = document.getElementById("tags");
   if (tagsEl) {
     tagsEl.addEventListener("click", function (e) {
       var btn = e.target.closest ? e.target.closest(".tag") : null;
       if (!btn) return;
       var t = btn.getAttribute("data-tag");
       state.tag = (state.tag === t) ? null : t;
+      state.page = 1;
+      closeTags();
       apply();
     });
   }
+
+  if (tagsToggle) {
+    tagsToggle.addEventListener("click", function () {
+      var open = !tagsEl.classList.contains("open");
+      tagsEl.classList.toggle("open", open);
+      tagsToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+
+  pageButtonsEl.addEventListener("click", function (e) {
+    var btn = e.target.closest ? e.target.closest(".page-number") : null;
+    if (!btn) return;
+    goToPage(parseInt(btn.getAttribute("data-page"), 10));
+  });
+
+  previousBtn.addEventListener("click", function () {
+    if (!previousBtn.disabled) goToPage(state.page - 1);
+  });
+
+  nextBtn.addEventListener("click", function () {
+    if (!nextBtn.disabled) goToPage(state.page + 1);
+  });
 
   clearBtn.addEventListener("click", function () {
     state.cat = "all";
     state.tag = null;
     state.q = "";
+    state.page = 1;
     qInput.value = "";
+    closeTags();
     apply();
   });
 

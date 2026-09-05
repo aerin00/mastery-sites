@@ -1,0 +1,543 @@
+<!doctype html>
+<!-- index:
+description: Practice oracle interpretation through symbolic grammar, spreads, synthesis, verification, and ethics.
+tags: guide, oracle
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A read-only field school for investigating unfamiliar Oracle databases safely and proving every result.">
+<meta name="theme-color" content="#9b1c1f">
+<title>Oracle Field School</title>
+<style>
+:root{
+  --bg:#edf1f5;--paper:#f9fbfd;--raise:#ffffff;--ink:#17212d;--body:#354252;--muted:#667587;--faint:#8c99a8;
+  --line:#d3dbe4;--line2:#b7c3cf;--accent:#9b1c1f;--accent2:#741216;--soft:#f6e3e3;--signal:#146c80;
+  --signal-soft:#dff1f4;--good:#2f6f4e;--good-soft:#e1f0e7;--warn:#8a5a08;--warn-soft:#f7ecd7;
+  --stop:#a02b2b;--stop-soft:#f8e2e1;--code:#101820;--code-ink:#dce8f1;--code-line:#293744;
+  --shadow:0 1px 2px rgba(23,33,45,.06),0 18px 45px -30px rgba(23,33,45,.38);--rail:270px;
+  --display:"Bahnschrift SemiCondensed","Arial Narrow","Segoe UI",sans-serif;
+  --bodyface:"Segoe UI",Tahoma,Arial,sans-serif;--mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e151d;--paper:#151f29;--raise:#1a2631;--ink:#eef4f8;--body:#cad5dd;--muted:#93a4b2;--faint:#728594;
+  --line:#293744;--line2:#40515f;--accent:#ef6b6e;--accent2:#ff9698;--soft:#401d22;--signal:#64c4d7;
+  --signal-soft:#163640;--good:#79c89b;--good-soft:#183528;--warn:#e1b55e;--warn-soft:#3b2e18;
+  --stop:#ef7c79;--stop-soft:#3f2020;--code:#081018;--code-ink:#d8e7f0;--code-line:#263542;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 18px 45px -26px rgba(0,0,0,.75);
+}}
+:root[data-theme="dark"]{
+  --bg:#0e151d;--paper:#151f29;--raise:#1a2631;--ink:#eef4f8;--body:#cad5dd;--muted:#93a4b2;--faint:#728594;
+  --line:#293744;--line2:#40515f;--accent:#ef6b6e;--accent2:#ff9698;--soft:#401d22;--signal:#64c4d7;
+  --signal-soft:#163640;--good:#79c89b;--good-soft:#183528;--warn:#e1b55e;--warn-soft:#3b2e18;
+  --stop:#ef7c79;--stop-soft:#3f2020;--code:#081018;--code-ink:#d8e7f0;--code-line:#263542;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 18px 45px -26px rgba(0,0,0,.75);
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--body);font:16px/1.58 var(--bodyface);overflow-x:hidden}
+button,input,textarea{font:inherit}a{color:var(--accent2);text-underline-offset:3px}code,kbd{font-family:var(--mono)}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:4px}.skip{position:fixed;top:-60px;left:12px;z-index:99;background:var(--ink);color:var(--paper);padding:9px 12px;border-radius:7px}.skip:focus{top:10px}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;font:700 15px var(--display);letter-spacing:.02em;color:var(--ink);white-space:nowrap}.brandmark{width:12px;height:12px;background:var(--accent);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}.brand small{font:10px var(--mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.modes{display:flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--bg);overflow-x:auto}.modes button{border:0;background:transparent;color:var(--muted);font:650 12px var(--display);padding:6px 10px;border-radius:6px;white-space:nowrap;cursor:pointer}.modes button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.spacer{flex:1}.search{position:relative}.search label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}#search{width:min(300px,38vw);border:1px solid var(--line2);border-radius:8px;background:var(--raise);color:var(--ink);padding:7px 10px;font:12px var(--mono)}.iconbtn,.btn{border:1px solid var(--line2);background:var(--raise);color:var(--body);border-radius:8px;padding:7px 10px;font:650 12px var(--display);cursor:pointer}.iconbtn:hover,.btn:hover{border-color:var(--accent);color:var(--ink)}
+.shell{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);align-items:start}.rail{position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;border-right:1px solid var(--line);background:var(--paper);padding:20px 14px 38px}.railhead{font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:0 8px 9px}.pnav{display:flex;flex-direction:column;gap:3px}.pnav a{display:grid;grid-template-columns:23px minmax(0,1fr) 15px;gap:7px;align-items:center;padding:8px;border:1px solid transparent;border-radius:8px;color:var(--body);text-decoration:none;font:600 13px/1.25 var(--display)}.pnav a:hover{background:var(--bg)}.pnav a.active{background:var(--soft);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--accent2)}.pnav .num{font:10px var(--mono);color:var(--faint)}.tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line2);display:grid;place-items:center;font:8px var(--mono);color:transparent}.tick.done{background:var(--good);border-color:var(--good);color:#fff}.tick.part{border-color:var(--accent);background:linear-gradient(90deg,var(--accent) 50%,transparent 50%)}
+.legend{margin-top:22px;border:1px solid var(--line);border-radius:10px;padding:11px;background:var(--bg)}.legend h3{margin:0 0 7px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--faint)}.legend div{display:flex;align-items:center;gap:8px;padding:3px 0;font:12px var(--display);color:var(--muted)}.sw{width:18px;height:4px;border-radius:4px}.sw.q{background:var(--accent)}.sw.o{background:var(--signal)}.sw.p{background:var(--warn)}.sw.v{background:var(--good)}
+main{min-width:0;max-width:1120px;padding:30px 34px 100px}.mode-panel[hidden]{display:none!important}.eyebrow{font:11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}h1,h2,h3,h4{font-family:var(--display);color:var(--ink);text-wrap:balance}.page-title{font-size:clamp(34px,6vw,72px);line-height:.95;letter-spacing:-.035em;margin:13px 0}.lede{font-size:18px;line-height:1.55;max-width:68ch;color:var(--body)}
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--paper);padding:clamp(28px,5vw,62px);box-shadow:var(--shadow);margin-bottom:30px}.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(100deg,transparent 15%,rgba(0,0,0,.28) 80%);opacity:.48}.hero>*{position:relative;z-index:1}.hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:34px;align-items:end}.hero h1{font-size:clamp(44px,8vw,86px);line-height:.87;letter-spacing:-.05em;margin:12px 0 18px}.hero h1 span{color:var(--accent)}.hero-console{background:var(--code);border:1px solid var(--code-line);color:var(--code-ink);border-radius:12px;padding:18px;font:12px/1.65 var(--mono);box-shadow:0 18px 45px -25px #000}.hero-console b{color:#ff9b9e;font-weight:650}.hero-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:23px}.btn.primary{background:var(--accent);border-color:var(--accent);color:white;padding:9px 15px}.btn.secondary{padding:9px 15px}.core-rule{margin-top:26px;padding:14px 16px;border-left:4px solid var(--signal);background:var(--signal-soft);border-radius:0 10px 10px 0;color:var(--ink);font-weight:650;max-width:78ch}
+.progress{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:14px 17px;margin:0 0 28px}.progress-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.progress-label{font:10px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}.progress-pct{font:700 24px var(--display);color:var(--ink)}.progress-bar{display:flex;gap:3px;margin-top:10px}.progress-bar i{height:7px;flex:1;background:var(--line);border-radius:3px}.progress-bar i.done{background:var(--good)}.progress-bar i.part{background:var(--accent)}
+.phase{scroll-margin-top:80px;border-top:1px solid var(--line);padding:42px 0 22px}.phase:first-of-type{border-top:0}.phase-head{display:grid;grid-template-columns:72px minmax(0,1fr);gap:18px;align-items:start}.phase-num{font:700 38px/1 var(--mono);color:var(--line2)}.phase h2{font-size:clamp(29px,4vw,43px);line-height:1.05;margin:0}.meta{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.chip{display:inline-flex;border:1px solid var(--line2);border-radius:999px;padding:3px 8px;font:10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--paper)}.chip.question{background:var(--soft);color:var(--accent2);border-color:var(--accent)}.chip.observe{background:var(--signal-soft);color:var(--signal);border-color:var(--signal)}.chip.prove{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}.chip.validate{background:var(--good-soft);color:var(--good);border-color:var(--good)}.objective{font-size:17px;color:var(--ink);max-width:72ch;margin:12px 0 0;padding:13px 15px;border-left:3px solid var(--accent);background:var(--paper)}
+.section-label{font:10px var(--mono);text-transform:uppercase;letter-spacing:.15em;color:var(--faint);border-bottom:1px solid var(--line);padding-bottom:7px;margin:30px 0 11px}.topics{display:grid;gap:10px}.topic{border:1px solid var(--line);border-radius:11px;background:var(--paper);overflow:hidden}.topic summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;justify-content:space-between;gap:15px;align-items:center;font:650 16px var(--display);color:var(--ink)}.topic summary::-webkit-details-marker{display:none}.topic summary:after{content:"+";font:20px var(--mono);color:var(--accent)}.topic[open] summary:after{content:"−"}.topic-body{padding:0 16px 16px;border-top:1px solid var(--line)}.topic-body p,.topic-body ul{max-width:75ch}.topic-body li{margin:5px 0}.callout{padding:12px 14px;border-radius:9px;background:var(--signal-soft);color:var(--ink);margin:12px 0}.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:13px 0;background:var(--paper)}table{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}th{text-align:left;padding:9px 12px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--faint);border-bottom:1px solid var(--line2)}td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}tr:last-child td{border-bottom:0}td code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+.codewrap{position:relative;margin:12px 0}pre{margin:0;background:var(--code);color:var(--code-ink);border:1px solid var(--code-line);border-radius:10px;padding:15px;overflow-x:auto;font:12.5px/1.65 var(--mono)}pre code{font:inherit}.copy{position:absolute;right:8px;top:8px;border:1px solid rgba(255,255,255,.18);border-radius:6px;background:rgba(255,255,255,.08);color:#b7c7d2;padding:4px 8px;font:10px var(--mono);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}.copy.copied{background:var(--good);color:#fff}.lab{border:1px solid var(--signal);background:var(--signal-soft);border-radius:12px;padding:18px 20px}.lab h3{margin:0 0 6px;font-size:19px}.lab ol{padding-left:22px}.lab li{margin:7px 0}.done-line{border-top:1px solid color-mix(in srgb,var(--signal) 35%,transparent);padding-top:13px;margin-top:13px;display:flex;align-items:center;gap:8px}.done-line label{cursor:pointer;font:650 13px var(--display);color:var(--ink)}input[type="checkbox"]{width:17px;height:17px;accent-color:var(--accent);vertical-align:middle}
+.gotchas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.gotcha{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--paper)}.sev{height:max-content;border-radius:4px;padding:3px 6px;font:9px var(--mono);text-transform:uppercase;letter-spacing:.08em}.sev.trap{background:var(--stop-soft);color:var(--stop)}.sev.cost{background:var(--warn-soft);color:var(--warn)}.sev.stale{background:var(--soft);color:var(--accent2)}.sev.ok{background:var(--good-soft);color:var(--good)}.gotcha b{display:block;font:650 14px var(--display);color:var(--ink);margin-bottom:2px}.gotcha span:last-child{font-size:13.5px}
+.checkpoint{border:1px solid var(--line);background:var(--paper);border-radius:9px;margin:8px 0;overflow:hidden}.checkpoint summary{cursor:pointer;list-style:none;padding:11px 14px;font:650 14px var(--display);color:var(--ink)}.checkpoint summary:before{content:"?";font:12px var(--mono);color:var(--accent);margin-right:9px}.checkpoint[open] summary:before{content:"!"}.answer{border-top:1px solid var(--line);padding:11px 14px 13px 34px;font-size:14px}.sources{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}.sources a{border:1px solid var(--line2);border-radius:999px;padding:4px 9px;text-decoration:none;font:10px var(--mono);color:var(--muted);background:var(--paper)}
+.panel-head{margin:0 0 24px}.panel-head h1{font-size:clamp(34px,5vw,58px);line-height:1;margin:8px 0}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.card{border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:16px}.card h2,.card h3{margin:0 0 7px}.branch{display:grid;grid-template-columns:minmax(130px,.9fr) 20px minmax(0,1.3fr);gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:11px 0}.branch:last-child{border-bottom:0}.branch .arr{font-family:var(--mono);color:var(--faint)}.branch strong{font-family:var(--display);color:var(--ink)}.branch small{display:block;color:var(--muted)}
+.worksheet{display:grid;gap:13px}.field{border:1px solid var(--line);border-radius:11px;background:var(--paper);padding:15px}.field label{display:block;font:650 15px var(--display);color:var(--ink);margin-bottom:4px}.field p{margin:0 0 8px;color:var(--muted);font-size:13px}.field input[type="text"],.field textarea{width:100%;border:1px solid var(--line2);border-radius:8px;background:var(--raise);color:var(--ink);padding:10px;resize:vertical}.field textarea{min-height:90px}.worksheet-actions{position:sticky;bottom:12px;display:flex;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:11px;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(10px);padding:10px;box-shadow:var(--shadow)}
+.flash{min-height:250px;border:1px solid var(--line2);border-radius:16px;background:var(--paper);padding:35px;display:flex;flex-direction:column;justify-content:center;gap:15px;box-shadow:var(--shadow)}.flash .src{font:10px var(--mono);text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}.flash .question{font:650 clamp(20px,3vw,29px)/1.3 var(--display);color:var(--ink)}.flash .answer{padding:14px 0 0;border-top:1px solid var(--line);font-size:16px}.flash-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.counter{margin-left:auto;align-self:center;font:11px var(--mono);color:var(--muted)}
+.fieldguide{font-size:14px}.fg-rule{border:2px solid var(--accent);border-radius:12px;padding:15px;background:var(--soft);font:650 16px var(--display);color:var(--ink)}.sequence{counter-reset:seq;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}.sequence div{counter-increment:seq;border:1px solid var(--line);border-radius:9px;background:var(--paper);padding:11px}.sequence div:before{content:counter(seq,decimal-leading-zero);display:block;font:10px var(--mono);color:var(--accent);margin-bottom:3px}.checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.checkitem{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:9px}.checkitem label{cursor:pointer}
+.search-results .hit{display:block;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:12px 14px;margin:8px 0;text-decoration:none;color:var(--body)}.hit small{display:block;font:10px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--faint)}.hit b{font-family:var(--display);color:var(--ink)}.notice{border:1px solid var(--warn);background:var(--warn-soft);border-radius:10px;padding:12px 14px}.footer{border-top:1px solid var(--line);margin-top:44px;padding-top:18px;color:var(--muted);font-size:12px}.toast{position:fixed;right:18px;bottom:18px;z-index:90;background:var(--ink);color:var(--paper);border-radius:8px;padding:9px 12px;font:12px var(--mono);opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}
+@media(max-width:920px){.shell{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:10px;overflow-x:auto}.railhead,.legend{display:none}.pnav{flex-direction:row}.pnav a{grid-template-columns:20px auto 13px;white-space:nowrap}.hero-grid{grid-template-columns:1fr}.sequence{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:660px){.topbar{align-items:flex-start}.brand{width:100%}.modes{order:3;width:100%}.spacer{display:none}.search{flex:1}.search #search{width:100%}main{padding:22px 15px 70px}.hero{padding:27px 20px}.hero h1{font-size:48px}.hero-console{font-size:11px}.phase-head{grid-template-columns:1fr}.phase-num{font-size:22px}.gotchas,.grid2,.checklist{grid-template-columns:1fr}.branch{grid-template-columns:1fr}.branch .arr{display:none}.sequence{grid-template-columns:1fr 1fr}.flash{padding:24px 20px}.counter{width:100%;margin-left:0}}
+@media print{.topbar,.rail,.hero-actions,.copy,.worksheet-actions,.flash-controls{display:none!important}.shell{display:block}main{max-width:none;padding:0}.mode-panel[hidden]{display:none!important}.topic{break-inside:avoid}.topic>summary:after{display:none}.topic>.topic-body{display:block!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="topbar">
+  <div class="brand"><span class="brandmark" aria-hidden="true"></span><span>Oracle Field School</span><small>read-only</small></div>
+  <div class="modes" role="group" aria-label="Site mode">
+    <button data-mode="path" aria-pressed="true">Path</button>
+    <button data-mode="reference" aria-pressed="false">Reference</button>
+    <button data-mode="worksheet" aria-pressed="false">Worksheet</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="field" aria-pressed="false">Field guide</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="search"><label for="search">Search the site</label><input id="search" type="search" placeholder="Search · / to focus" autocomplete="off"></div>
+  <button class="iconbtn" id="theme" type="button" title="Toggle light and dark theme" aria-label="Toggle light and dark theme">◐</button>
+</header>
+<div class="shell">
+  <aside class="rail" aria-label="Learning path">
+    <div class="railhead">Progressive path</div>
+    <nav class="pnav" id="phase-nav"></nav>
+    <div class="legend"><h3>Evidence chain</h3><div><span class="sw q"></span>Question</div><div><span class="sw o"></span>Observe</div><div><span class="sw p"></span>Prove</div><div><span class="sw v"></span>Validate</div></div>
+  </aside>
+  <main id="content" tabindex="-1">
+    <section id="path-panel" class="mode-panel" data-panel="path">
+      <div class="hero" data-search="landing start core rule read only evidence">
+        <div class="hero-grid">
+          <div><div class="eyebrow">A practical investigation instrument</div><h1>Enter unknown data.<br><span>Leave with proof.</span></h1><p class="lede">Learn a repeatable way to answer business questions in an unfamiliar Oracle database without changing data, guessing the grain, or trusting a join you have not measured.</p><div class="hero-actions"><button class="btn primary" type="button" data-jump="p0">Start the path</button><button class="btn secondary" type="button" data-switch="field">Open field guide</button><button class="btn secondary" type="button" data-switch="worksheet">Open worksheet</button></div></div>
+          <div class="hero-console" aria-label="The investigation loop"><b>QUESTION</b>  what fact is needed?<br>  ↓<br><b>OBSERVE</b>   tables · columns · sample<br>  ↓<br><b>PROVE</b>     grain · key · relationship<br>  ↓<br><b>FILTER</b>    actual values · half-open time<br>  ↓<br><b>VALIDATE</b>  before/after counts · totals</div>
+        </div>
+        <div class="core-rule">Start with the table containing the thing you are measuring. Understand one row, find its key, inspect its relationships, filter only after checking actual values, and verify row counts after every important join.</div>
+      </div>
+      <div class="progress" aria-live="polite"><div class="progress-top"><span class="progress-label">Path progress</span><span class="progress-pct" id="progress-pct">0%</span></div><div class="progress-bar" id="progress-bar"></div></div>
+      <div id="phases"></div>
+    </section>
+
+    <section id="reference-panel" class="mode-panel" data-panel="reference" hidden>
+      <header class="panel-head"><div class="eyebrow">Reference</div><h1>Look up. Decide. Copy.</h1><p class="lede">Decision trees, Oracle syntax differences, catalog views, and a reusable query kit for the moment you are in.</p></header>
+      <div id="reference-content"></div>
+    </section>
+
+    <section id="worksheet-panel" class="mode-panel" data-panel="worksheet" hidden>
+      <header class="panel-head"><div class="eyebrow">Investigation worksheet</div><h1>Make assumptions visible.</h1><p class="lede">Fill this in while you work. Entries stay in this browser only. Nothing is sent anywhere.</p></header>
+      <form id="worksheet" class="worksheet" autocomplete="off"></form>
+      <div class="worksheet-actions"><button class="btn primary" type="button" id="copy-worksheet">Copy worksheet</button><button class="btn" type="button" id="print-worksheet">Print</button><button class="btn" type="button" id="clear-worksheet">Clear worksheet</button></div>
+    </section>
+
+    <section id="drill-panel" class="mode-panel" data-panel="drill" hidden>
+      <header class="panel-head"><div class="eyebrow">Recall drill</div><h1>Prove it without prompts.</h1><p class="lede">Answer aloud before revealing the card. These questions come from every phase checkpoint.</p></header>
+      <div id="drill-content"></div>
+    </section>
+
+    <section id="field-panel" class="mode-panel fieldguide" data-panel="field" hidden>
+      <header class="panel-head"><div class="eyebrow">Compact mode</div><h1>Oracle field guide</h1><p class="lede">The entire investigation on one working page. Use this after you understand the path.</p></header>
+      <div id="field-content"></div>
+    </section>
+
+    <section id="search-panel" class="search-results" hidden aria-live="polite"></section>
+    <footer class="footer"><p><strong>Boundary:</strong> exploratory, read-only SQL for unfamiliar Oracle schemas. This site does not cover database administration, performance tuning, PL/SQL development, DDL, DML, permissions design, or authoritative business semantics.</p><p><strong>Source status:</strong> adapted from the supplied consolidated guide and checked against current Oracle documentation on 3 September 2026. Schema-specific names, status meanings, row-level security, and business definitions must be verified locally.</p></footer>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+const DOCS={
+  select:"https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/SELECT.html",
+  tables:"https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/ALL_TABLES.html",
+  columns:"https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/ALL_TAB_COLUMNS.html",
+  constraints:"https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/ALL_CONSTRAINTS.html",
+  conscols:"https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/ALL_CONS_COLUMNS.html",
+  comments:"https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/ALL_TAB_COMMENTS.html",
+  joins:"https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/Joins.html",
+  count:"https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/COUNT.html",
+  nulls:"https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/Nulls.html",
+  literals:"https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/Literals.html",
+  trunc:"https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/TRUNC-date.html",
+  syscontext:"https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/SYS_CONTEXT.html"
+};
+const lines=a=>a.join("\n");
+const PHASES=[
+{
+ id:"p0",n:"00",title:"Set the boundary",layer:"question",layerLabel:"Question",time:"15 min",pre:"None",
+ objective:"Establish a read-only operating boundary and a baseline for what your account can actually see.",
+ topics:[
+  {h:"Your instrument is SELECT",p:"<p>Use <code>SELECT</code> and <code>WITH ... SELECT</code> for retrieval and temporary query logic. Do not issue <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, <code>MERGE</code>, <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, or <code>TRUNCATE</code>. Avoid <code>SELECT ... FOR UPDATE</code>.</p><div class=\"callout\"><strong>Read-only is both a permission model and a working discipline.</strong> A database account may technically allow more than your investigation should use.</div>"},
+  {h:"Visibility is part of the result",p:"<p><code>USER_*</code> views describe objects owned by the current user. <code>ALL_*</code> views describe objects accessible to the current user. If policies restrict rows or schemas, an apparently complete answer may only be complete within your visible slice.</p>",code:lines(["SELECT","    USER AS session_user,","    SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') AS current_schema","FROM dual;"])},
+  {h:"The evidence chain",p:"<p>Every investigation follows one spine: <strong>question → observe → prove → validate</strong>. Metadata starts a hypothesis. Data profiles test it. Documentation or a data owner confirms business meaning.</p>"}
+ ],
+ lab:{title:"Write your safety contract",steps:["Choose one real business question and the account you will use.","Record the current schema and the schemas you expect to access.","List the allowed statement forms: SELECT and WITH ... SELECT.","Deliberately draft, but do not run, one prohibited statement such as UPDATE. Mark why it is outside the boundary.","Run one harmless metadata SELECT and save the result count."],verify:"You have a written boundary, a confirmed current schema, and one observed metadata count."},
+ gotchas:[
+  {s:"trap",t:"Read-only account means complete visibility",d:"Row-level policies and missing grants can silently hide schemas or rows."},
+  {s:"trap",t:"A WITH clause is automatically safe",d:"Judge the complete statement. Keep the final operation a SELECT."},
+  {s:"cost",t:"Starting with a full-table scan",d:"A syntactically safe query can still consume significant resources."},
+  {s:"ok",t:"Record the access boundary",d:"Your conclusion is valid only for the objects and rows visible to the account."}
+ ],
+ quiz:[
+  {q:"Name the two statement shapes allowed by this field school.",a:"SELECT, and WITH ... SELECT."},
+  {q:"What do USER_* and ALL_* mean?",a:"USER_* describes objects owned by the current user. ALL_* describes objects accessible to the current user."},
+  {q:"Why can a valid query still be incomplete?",a:"The account may lack schema privileges or may be subject to row-level security."}
+ ],docs:[["SELECT",DOCS.select],["ALL_TABLES",DOCS.tables],["SYS_CONTEXT",DOCS.syscontext]]
+},
+{
+ id:"p1",n:"01",title:"Frame the question",layer:"question",layerLabel:"Question",time:"20 min",pre:"Phase 00",
+ objective:"Translate a business request into a fact, a likely grain, a time window, and a falsifiable expected result.",
+ topics:[
+  {h:"Start with the thing being measured",p:"<p>Write the request in plain language, then name the fact at its center. For unpaid invoices, start with invoices. Customers are descriptive context to add later, not the starting grain.</p>"},
+  {h:"Write the expected output sentence",p:"<p>Complete this sentence before opening a join: <strong>The result should contain one row per ___.</strong> That sentence becomes your cardinality contract.</p>"},
+  {h:"Separate business time from system time",p:"<p>Invoice date, service date, created timestamp, import timestamp, and last-updated timestamp answer different questions. A column name is a clue, not proof of meaning.</p>"},
+  {h:"Define plausibility before seeing the answer",p:"<p>Record an expected order of magnitude, known examples, boundary dates, and a comparison total. Validation is stronger when you cannot move the goalposts after seeing the result.</p>"}
+ ],
+ lab:{title:"Turn one request into a query contract",steps:["Write the business question in one sentence.","Underline the thing being measured.","Write the expected one-row-per sentence.","Record the requested period as an inclusive start and exclusive end.","Deliberately choose the wrong main entity, then explain how it would distort the grain.","Write two independent plausibility checks."],verify:"A colleague can name the fact table candidate, expected grain, time boundary, and two checks from your contract."},
+ gotchas:[
+  {s:"trap",t:"Starting from the descriptive table",d:"Beginning with customers for an invoice question invites one-to-many expansion before the fact is understood."},
+  {s:"trap",t:"The date-looking column is the business date",d:"CREATED_AT may be load time, not event time."},
+  {s:"cost",t:"Joining every possibly related table",d:"More tables create more failure surfaces without answering the core question."},
+  {s:"ok",t:"One row per ___ is a control",d:"It tells you which duplicates are expected and which joins are dangerous."}
+ ],
+ quiz:[
+  {q:"What four items belong in a query contract before SQL?",a:"The business fact, expected row grain, time boundary, and validation evidence."},
+  {q:"For unpaid invoices with customer names, which entity should you usually inspect first?",a:"Invoices, because invoices are the thing being measured. Add customer details later."}
+ ],docs:[]
+},
+{
+ id:"p2",n:"02",title:"Map what is visible",layer:"observe",layerLabel:"Observe",time:"30 min",pre:"Phase 01",
+ objective:"Find likely tables using accessible Oracle catalog views without confusing visibility, ownership, or statistics with truth.",
+ topics:[
+  {h:"List owned and accessible tables",p:"<p>Use <code>USER_TABLES</code> for tables you own and <code>ALL_TABLES</code> for tables your account can access. Filter <code>OWNER</code> when working in another schema.</p>",code:lines(["SELECT table_name, num_rows, last_analyzed","FROM user_tables","ORDER BY table_name;","","SELECT owner, table_name","FROM all_tables","WHERE owner = 'YOUR_SCHEMA'","ORDER BY table_name;"])},
+  {h:"Search names as clues",p:"<p>Search business terms and synonyms, then inspect candidates. Names such as <code>INVOICE</code>, <code>BILL</code>, <code>RECEIPT</code>, <code>PARTY</code>, <code>TXN</code>, <code>HIST</code>, and <code>LOG</code> narrow the field but do not establish semantics.</p>",code:lines(["SELECT owner, table_name","FROM all_tables","WHERE owner = 'YOUR_SCHEMA'","  AND LOWER(table_name) LIKE '%invoice%'","ORDER BY table_name;"])},
+  {h:"Treat NUM_ROWS as an estimate",p:"<p><code>NUM_ROWS</code> is populated from optimizer statistics and can be stale. Use it to triage candidates, not as your final count. Compare with a live <code>COUNT(*)</code> only when the cost is acceptable.</p>"}
+ ],
+ lab:{title:"Build a candidate table map",steps:["List accessible tables in the target schema.","Search at least three business terms or synonyms.","Record five candidates with their owner and name.","Note NUM_ROWS and LAST_ANALYZED where available.","Deliberately rank candidates by name alone, then reverse any ranking contradicted by columns or comments.","Choose one likely fact table and one likely descriptive table."],verify:"Your map names at least two candidates and gives evidence beyond the table name for each choice."},
+ gotchas:[
+  {s:"trap",t:"No row in ALL_TABLES means the table does not exist",d:"It may exist but be invisible to your account."},
+  {s:"stale",t:"NUM_ROWS is a live count",d:"It reflects collected optimizer statistics and may lag the data."},
+  {s:"trap",t:"A familiar name proves purpose",d:"ORDERS may be a staging, history, or interface table."},
+  {s:"cost",t:"Counting every candidate immediately",d:"Large live counts can be expensive before you have narrowed the field."}
+ ],
+ quiz:[
+  {q:"Which catalog view lists tables accessible to your account?",a:"ALL_TABLES. USER_TABLES is limited to tables owned by the current user."},
+  {q:"Why is NUM_ROWS not validation evidence by itself?",a:"It comes from optimizer statistics and may be stale or absent."}
+ ],docs:[["ALL_TABLES",DOCS.tables]]
+},
+{
+ id:"p3",n:"03",title:"Inspect structure",layer:"observe",layerLabel:"Observe",time:"30 min",pre:"Phase 02",
+ objective:"Read columns and comments before sampling rows, and distinguish structural metadata from business meaning.",
+ topics:[
+  {h:"Inspect columns first",p:"<p>Look for identifiers, foreign-key candidates, dates, statuses, types, amounts, flags, effective dates, audit fields, and version fields.</p>",code:lines(["SELECT","    owner, table_name, column_id, column_name,","    data_type, data_length, data_precision, data_scale, nullable","FROM all_tab_columns","WHERE owner = 'YOUR_SCHEMA'","  AND table_name = 'INVOICES'","ORDER BY column_id;"])},
+  {h:"Read stored comments",p:"<p>Comments can explain purpose and units. They remain documentation, not incontrovertible truth, and may be missing or stale.</p>",code:lines(["SELECT table_name, comments","FROM all_tab_comments","WHERE owner = 'YOUR_SCHEMA'","  AND table_name = 'INVOICES';","","SELECT column_name, comments","FROM all_col_comments","WHERE owner = 'YOUR_SCHEMA'","  AND table_name = 'INVOICES'","ORDER BY column_name;"])},
+  {h:"Oracle naming behavior",p:"<p>Unquoted identifiers are normally stored in uppercase, so catalog filters usually use values such as <code>'INVOICES'</code>. Queries using unquoted identifiers are normally case-insensitive. Quoted mixed-case object names are a special case.</p>"}
+ ],
+ lab:{title:"Create a structural profile",steps:["Retrieve the ordered column list for your fact-table candidate.","Retrieve table and column comments.","Classify each relevant column as identifier, relationship, measure, category, time, or audit field.","Deliberately assign CREATED_AT to business time, then list the evidence needed to defend or reject that choice.","Record three open semantic questions for documentation or the data owner."],verify:"You have a column map plus a separate list of semantic claims that remain unconfirmed."},
+ gotchas:[
+  {s:"trap",t:"Nullable N means populated in every visible row",d:"It is a schema rule, not proof that upstream semantics are correct."},
+  {s:"trap",t:"A comment is current truth",d:"Comments can outlive process changes."},
+  {s:"trap",t:"CREATED_AT means event time",d:"It may be insertion, import, migration, or interface time."},
+  {s:"cost",t:"Sampling a wide table before columns",d:"Large LOBs and irrelevant fields make the first look slower and noisier."}
+ ],
+ quiz:[
+  {q:"Name six column roles worth marking during structure inspection.",a:"Identifier, relationship, measure, category, time, and audit or version field."},
+  {q:"What can comments establish, and what can they not establish?",a:"They document intended meaning, but they cannot by themselves prove current business behavior."}
+ ],docs:[["ALL_TAB_COLUMNS",DOCS.columns],["ALL_TAB_COMMENTS",DOCS.comments]]
+},
+{
+ id:"p4",n:"04",title:"Establish the grain",layer:"prove",layerLabel:"Prove",time:"45 min",pre:"Phase 03",
+ objective:"Form and test a precise sentence for what one row represents before any complex join.",
+ topics:[
+  {h:"Sample narrowly",p:"<p>Select only useful columns and limit the result. Without <code>ORDER BY</code>, a limited sample is not deterministic, so use it for shape discovery rather than a stable top-N claim.</p>",code:lines(["SELECT order_id, customer_id, order_date, amount, status","FROM YOUR_SCHEMA.ORDERS","FETCH FIRST 20 ROWS ONLY;"])},
+  {h:"Compare rows with candidate entities",p:"<p><code>COUNT(*)</code> counts rows, including duplicates and nulls. <code>COUNT(column)</code> counts non-null values. <code>COUNT(DISTINCT column)</code> counts distinct non-null values.</p>",code:lines(["SELECT","    COUNT(*) AS total_rows,","    COUNT(order_id) AS non_null_order_ids,","    COUNT(DISTINCT order_id) AS distinct_order_ids,","    COUNT(DISTINCT customer_id) AS distinct_customer_ids","FROM YOUR_SCHEMA.ORDERS;"])},
+  {h:"Test repeated and time-based grains",p:"<p>Group by a candidate entity, then by the business time unit. For timestamp-like values, grouping the raw value may create almost one group per row. Use <code>TRUNC(date_column)</code> for day-level inspection when that matches the question.</p>",code:lines(["SELECT customer_id, COUNT(*) AS rows_for_customer","FROM YOUR_SCHEMA.ORDERS","GROUP BY customer_id","ORDER BY rows_for_customer DESC","FETCH FIRST 20 ROWS ONLY;","","SELECT TRUNC(order_date) AS order_day, COUNT(*) AS rows_on_day","FROM YOUR_SCHEMA.ORDERS","GROUP BY TRUNC(order_date)","ORDER BY order_day DESC","FETCH FIRST 20 ROWS ONLY;"])},
+  {h:"State a grain hypothesis",p:"<p>Use a complete sentence: “This row is one order,” “one line on one order,” “one account per day,” or “one version of an entity.” Evidence can support the sentence; documentation or a data owner may still be required to confirm it.</p>"}
+ ],
+ lab:{title:"Prove or break a grain hypothesis",steps:["Write your initial one-row sentence.","Run a narrow, limited sample.","Compare total rows, non-null candidate IDs, and distinct candidate IDs.","Group by a likely parent or entity ID.","Deliberately test the wrong grain and capture the count that disproves it.","Revise the sentence and list any remaining uncertainty."],verify:"Your chosen grain survives at least two independent count tests, and the rejected grain has contradictory evidence."},
+ gotchas:[
+  {s:"trap",t:"The first 20 rows prove the grain",d:"A sample can miss duplicates, versions, rare statuses, and nulls."},
+  {s:"trap",t:"Repeated IDs are duplicate data",d:"They may be legitimate detail rows, versions, or status changes."},
+  {s:"trap",t:"Raw timestamp grouping shows daily activity",d:"Fractional times can create nearly one group per row."},
+  {s:"stale",t:"FETCH FIRST without ORDER BY is a stable sample",d:"Oracle documents ORDER BY as necessary for deterministic row limiting."}
+ ],
+ quiz:[
+  {q:"What sentence must you be able to complete before joining?",a:"One row in this table represents ___."},
+  {q:"What does COUNT(column) omit?",a:"Rows where that column is NULL."},
+  {q:"Name three explanations for a repeated candidate ID.",a:"Legitimate detail rows, entity versions or status transitions, an incomplete composite key, or actual duplicates."}
+ ],docs:[["COUNT",DOCS.count],["Row limiting",DOCS.select],["TRUNC",DOCS.trunc]]
+},
+{
+ id:"p5",n:"05",title:"Prove the key",layer:"prove",layerLabel:"Prove",time:"45 min",pre:"Phase 04",
+ objective:"Distinguish declared constraints from tested uniqueness, including composite identifiers.",
+ topics:[
+  {h:"Read the declared primary key",p:"<p>In Oracle catalog views, <code>P</code> marks a primary-key constraint. Order multi-column keys by <code>POSITION</code>. When querying <code>ALL_*</code> views, include <code>OWNER</code> in joins so same-named constraints from different schemas cannot cross-match.</p>",code:lines(["SELECT acc.column_name, acc.position","FROM all_constraints ac","JOIN all_cons_columns acc","  ON acc.owner = ac.owner"," AND acc.constraint_name = ac.constraint_name","WHERE ac.owner = 'YOUR_SCHEMA'","  AND ac.table_name = 'ORDERS'","  AND ac.constraint_type = 'P'","ORDER BY acc.position;"])},
+  {h:"Test the candidate yourself",p:"<p>A strong single-column row identifier normally satisfies <code>TOTAL_ROWS = NON_NULL_IDS = DISTINCT_IDS</code>. The declared key explains schema intent; the count test shows what your visible data actually does.</p>",code:lines(["SELECT","    COUNT(*) AS total_rows,","    COUNT(order_id) AS non_null_ids,","    COUNT(DISTINCT order_id) AS distinct_ids","FROM YOUR_SCHEMA.ORDERS;"])},
+  {h:"Inspect repeats instead of naming them duplicates",p:"<p>Repeated candidate IDs need examples. Their other columns often reveal whether the rows are details, versions, corrections, transitions, or load duplicates.</p>",code:lines(["SELECT order_id, COUNT(*) AS row_count","FROM YOUR_SCHEMA.ORDERS","GROUP BY order_id","HAVING COUNT(*) > 1","ORDER BY row_count DESC","FETCH FIRST 20 ROWS ONLY;"])},
+  {h:"Test composite identifiers without concatenation",p:"<p>Group by the full candidate combination. Concatenating values can create collisions and type-formatting problems. A query that returns no groups supports, but does not semantically prove, uniqueness.</p>",code:lines(["SELECT customer_id, balance_date, COUNT(*) AS row_count","FROM YOUR_SCHEMA.DAILY_CUSTOMER_BALANCES","GROUP BY customer_id, balance_date","HAVING COUNT(*) > 1","ORDER BY row_count DESC","FETCH FIRST 20 ROWS ONLY;"])},
+  {h:"Inspect unique constraints",p:"<p><code>U</code> marks a unique constraint. These can expose business identifiers that differ from the primary key.</p>",code:lines(["SELECT uc.constraint_name, ucc.column_name, ucc.position","FROM user_constraints uc","JOIN user_cons_columns ucc","  ON ucc.constraint_name = uc.constraint_name","WHERE uc.table_name = 'ORDERS'","  AND uc.constraint_type = 'U'","ORDER BY uc.constraint_name, ucc.position;"])}
+ ],
+ lab:{title:"Build a key evidence packet",steps:["Retrieve the declared primary and unique constraints.","Record constraint STATUS and VALIDATED where available.","Run total, non-null, and distinct counts for your candidate key.","Inspect at least five repeated IDs if any exist.","Deliberately test an incomplete subset of a composite key and observe the repeated groups.","Write the identifier and the evidence supporting it."],verify:"You can name the key columns in order, their declared status, and the result of an independent uniqueness test."},
+ gotchas:[
+  {s:"trap",t:"ID in the name means unique",d:"CUSTOMER_ID should repeat in an order table."},
+  {s:"trap",t:"No duplicate groups proves business identity",d:"The data may be incomplete, filtered by access, or coincidentally unique."},
+  {s:"trap",t:"A declared constraint is enforced and validated",d:"Check STATUS and VALIDATED before relying on it as current evidence."},
+  {s:"trap",t:"Concatenation safely tests composite keys",d:"Formatting and delimiter collisions can merge distinct combinations."}
+ ],
+ quiz:[
+  {q:"What equality supports a single-column unique identifier?",a:"COUNT(*) = COUNT(candidate_id) = COUNT(DISTINCT candidate_id)."},
+  {q:"What do P, U, and R mean in Oracle constraint metadata?",a:"Primary key, unique key, and referential integrity (foreign key)."},
+  {q:"How do you safely test a composite key?",a:"GROUP BY all candidate columns and use HAVING COUNT(*) > 1, or count the grouped combinations in an outer query."}
+ ],docs:[["ALL_CONSTRAINTS",DOCS.constraints],["ALL_CONS_COLUMNS",DOCS.conscols],["COUNT",DOCS.count]]
+},
+{
+ id:"p6",n:"06",title:"Trace relationships",layer:"prove",layerLabel:"Prove",time:"60 min",pre:"Phase 05",
+ objective:"Map declared and suspected table relationships, then test coverage and parent uniqueness before joining facts.",
+ topics:[
+  {h:"Find declared foreign keys",p:"<p><code>R</code> marks referential integrity. Pair child and parent columns by <code>POSITION</code>. In <code>ALL_*</code> views, join the parent using both <code>R_OWNER</code> and <code>R_CONSTRAINT_NAME</code>.</p>",code:lines(["SELECT","    child.constraint_name,","    child_cols.column_name AS child_column,","    parent.owner AS parent_owner,","    parent.table_name AS parent_table,","    parent_cols.column_name AS parent_column,","    child.status, child.validated","FROM all_constraints child","JOIN all_cons_columns child_cols","  ON child_cols.owner = child.owner"," AND child_cols.constraint_name = child.constraint_name","JOIN all_constraints parent","  ON parent.owner = child.r_owner"," AND parent.constraint_name = child.r_constraint_name","JOIN all_cons_columns parent_cols","  ON parent_cols.owner = parent.owner"," AND parent_cols.constraint_name = parent.constraint_name"," AND parent_cols.position = child_cols.position","WHERE child.owner = 'YOUR_SCHEMA'","  AND child.table_name = 'ORDERS'","  AND child.constraint_type = 'R'","ORDER BY child.constraint_name, child_cols.position;"])},
+  {h:"Search for undeclared relationships",p:"<p>Matching names and compatible data types are clues only. Record the hypothesis explicitly so later tests can reject it.</p>",code:lines(["SELECT owner, table_name, column_name, data_type","FROM all_tab_columns","WHERE owner = 'YOUR_SCHEMA'","  AND LOWER(column_name) LIKE '%customer%id%'","ORDER BY table_name, column_name;"])},
+  {h:"Measure unmatched child rows",p:"<p>A left join plus a null parent test measures populated child IDs without a visible match. A nonzero result can mean orphans, a wrong relationship, historical parents, data-quality issues, or access restrictions.</p>",code:lines(["SELECT COUNT(*) AS unmatched_orders","FROM YOUR_SCHEMA.ORDERS o","LEFT JOIN YOUR_SCHEMA.CUSTOMERS c","  ON c.customer_id = o.customer_id","WHERE o.customer_id IS NOT NULL","  AND c.customer_id IS NULL;"])},
+  {h:"Prove the parent side is unique",p:"<p>If the supposed parent key repeats, a join can multiply child rows. Test this before attaching parent attributes.</p>",code:lines(["SELECT customer_id, COUNT(*) AS customer_rows","FROM YOUR_SCHEMA.CUSTOMERS","GROUP BY customer_id","HAVING COUNT(*) > 1","ORDER BY customer_rows DESC","FETCH FIRST 20 ROWS ONLY;"])}
+ ],
+ lab:{title:"Verify one real connection",steps:["Retrieve declared foreign keys for your fact table.","If none exists, search candidate column names and compare data types.","Write the expected cardinality, such as many orders to one customer.","Test parent-key uniqueness.","Measure non-null child IDs with no visible parent.","Deliberately join on a plausible but wrong column and compare match rate or row count.","Document the accepted relationship and unresolved exceptions."],verify:"You have a join predicate, expected cardinality, parent-uniqueness result, and unmatched-child count."},
+ gotchas:[
+  {s:"trap",t:"Same column name proves a relationship",d:"Naming conventions can collide across unrelated entities."},
+  {s:"trap",t:"Zero unmatched rows proves semantics",d:"The IDs may align technically while representing the wrong business relationship."},
+  {s:"trap",t:"The parent key is unique because it should be",d:"A non-unique parent multiplies rows silently."},
+  {s:"trap",t:"A nonzero unmatched count means corrupt data",d:"Historical retention or security restrictions can hide valid parents."}
+ ],
+ quiz:[
+  {q:"What four pieces of evidence should support a join?",a:"A join predicate, expected cardinality, parent-key uniqueness result, and child-to-parent coverage result."},
+  {q:"Why must ALL_CONSTRAINTS joins include owner fields?",a:"Constraint names are scoped by owner, so joining only by name can cross-match schemas."},
+  {q:"What can unmatched child rows mean besides bad data?",a:"A wrong relationship, historical or deleted parents, intentional unmatched records, or access restrictions."}
+ ],docs:[["ALL_CONSTRAINTS",DOCS.constraints],["ALL_CONS_COLUMNS",DOCS.conscols],["Joins",DOCS.joins]]
+},
+{
+ id:"p7",n:"07",title:"Profile values and time",layer:"observe",layerLabel:"Observe",time:"45 min",pre:"Phase 06",
+ objective:"Discover actual categories, null patterns, and date coverage before committing filters.",
+ topics:[
+  {h:"Profile categories before filtering",p:"<p>Do not invent status or type values. Count what is stored, including combinations that affect meaning.</p>",code:lines(["SELECT status, COUNT(*) AS row_count","FROM YOUR_SCHEMA.INVOICES","GROUP BY status","ORDER BY row_count DESC;","","SELECT invoice_type, status, COUNT(*) AS row_count","FROM YOUR_SCHEMA.INVOICES","GROUP BY invoice_type, status","ORDER BY row_count DESC;"])},
+  {h:"Handle case deliberately",p:"<p>Exploratory text matching can use <code>LOWER(column) LIKE '%text%'</code>. Once you know stored values, use exact comparisons. Session collation and linguistic settings can affect comparison behavior, so treat “case-sensitive” as an environment-sensitive claim rather than an absolute.</p>"},
+  {h:"Measure nulls correctly",p:"<p><code>COUNT(column)</code> ignores nulls. Test nulls with <code>IS NULL</code>, never <code>= NULL</code>. Oracle currently treats zero-length character values as null, but Oracle warns not to rely on that behavior forever.</p>",code:lines(["SELECT","    COUNT(*) AS total_rows,","    COUNT(invoice_id) AS rows_with_invoice_id,","    COUNT(customer_id) AS rows_with_customer_id,","    COUNT(invoice_date) AS rows_with_invoice_date,","    COUNT(status) AS rows_with_status","FROM YOUR_SCHEMA.INVOICES;"])},
+  {h:"Inspect the date range and density",p:"<p>Oracle <code>DATE</code> stores date and time to seconds. Check minimum, maximum, and monthly or daily distribution before choosing a filter.</p>",code:lines(["SELECT","    MIN(invoice_date) AS earliest_invoice,","    MAX(invoice_date) AS latest_invoice,","    COUNT(*) AS total_rows","FROM YOUR_SCHEMA.INVOICES;","","SELECT TRUNC(invoice_date, 'MM') AS month_start, COUNT(*) AS row_count","FROM YOUR_SCHEMA.INVOICES","GROUP BY TRUNC(invoice_date, 'MM')","ORDER BY month_start;"])},
+  {h:"Use half-open time windows",p:"<p>For a calendar month, use an inclusive start and exclusive next boundary. This includes every time on the final day without constructing 23:59:59.</p>",code:lines(["WHERE invoice_date >= DATE '2026-08-01'","  AND invoice_date <  DATE '2026-09-01'"])}
+ ],
+ lab:{title:"Build a filter evidence sheet",steps:["Profile every candidate status, type, or category.","Count nulls in each required column.","Measure the minimum and maximum business date.","Count rows by the time unit relevant to the request.","Deliberately compare an equality-on-date filter with a half-open day range.","Record exact stored values and the chosen time boundaries."],verify:"Every filter in your draft query traces to an observed stored value or a documented boundary."},
+ gotchas:[
+  {s:"trap",t:"UNPAID must be a stored status",d:"The database may use OPEN, DUE, OUTSTANDING, or a separate balance rule."},
+  {s:"trap",t:"date_column = DATE literal means the whole day",d:"It matches midnight exactly when time fields are present."},
+  {s:"trap",t:"column = NULL finds missing values",d:"The comparison evaluates to UNKNOWN and returns no matching rows."},
+  {s:"stale",t:"Empty string equals NULL is guaranteed forever",d:"Oracle documents current behavior but explicitly warns against future reliance."}
+ ],
+ quiz:[
+  {q:"What is the safest general shape for a month filter?",a:"column >= DATE 'YYYY-MM-01' and column < the first day of the next month."},
+  {q:"How do COUNT(*) and COUNT(column) differ?",a:"COUNT(*) counts rows. COUNT(column) counts rows where that expression is not NULL."},
+  {q:"Why profile statuses before filtering?",a:"To use actual stored values and discover combinations, case variants, nulls, or business states you did not anticipate."}
+ ],docs:[["Nulls",DOCS.nulls],["Date literals",DOCS.literals],["TRUNC",DOCS.trunc],["COUNT",DOCS.count]]
+},
+{
+ id:"p8",n:"08",title:"Join without distortion",layer:"prove",layerLabel:"Prove",time:"60 min",pre:"Phase 07",
+ objective:"Attach needed context while preserving the promised result grain and measuring every cardinality change.",
+ topics:[
+  {h:"Predict cardinality before execution",p:"<p>Write whether the relationship is one-to-one, one-to-many, many-to-one, or many-to-many. Joining invoices to invoice items changes the result from one row per invoice to one row per item unless you aggregate or isolate a single item row.</p>"},
+  {h:"Build a baseline before the join",p:"<p>Count the filtered fact rows and distinct fact keys. After the join, repeat both counts. A row increase may be correct, but it must match the intended grain.</p>",code:lines(["WITH base AS (","    SELECT invoice_id, customer_id, invoice_date, amount, status","    FROM YOUR_SCHEMA.INVOICES","    WHERE invoice_date >= DATE '2026-08-01'","      AND invoice_date <  DATE '2026-09-01'","      AND status = 'OPEN'",")","SELECT COUNT(*) AS base_rows,","       COUNT(DISTINCT invoice_id) AS base_invoices","FROM base;"])},
+  {h:"Join and validate in the same shape",p:"<p>Use explicit ANSI join syntax and table aliases. Oracle table aliases are written directly, such as <code>INVOICES i</code>, not <code>INVOICES AS i</code>.</p>",code:lines(["WITH base AS (","    SELECT invoice_id, customer_id, invoice_date, amount","    FROM YOUR_SCHEMA.INVOICES","    WHERE invoice_date >= DATE '2026-08-01'","      AND invoice_date <  DATE '2026-09-01'","      AND status = 'OPEN'",")","SELECT","    COUNT(*) AS joined_rows,","    COUNT(DISTINCT b.invoice_id) AS joined_invoices","FROM base b","LEFT JOIN YOUR_SCHEMA.CUSTOMERS c","  ON c.customer_id = b.customer_id;"])},
+  {h:"Protect measures from fanout",p:"<p>If one invoice joins to three items, repeating <code>invoice_amount</code> three times makes <code>SUM(invoice_amount)</code> triple that invoice. Aggregate at the intended grain, pre-aggregate the many side, or use a semi-join when you only need existence.</p>"},
+  {h:"Choose inner versus left join intentionally",p:"<p>An inner join drops unmatched fact rows. A left join preserves them and exposes missing context as null. Pick based on the business contract, then report the unmatched count.</p>"}
+ ],
+ lab:{title:"Run a join ledger",steps:["Record filtered base rows, distinct keys, and total measure.","Write the expected join cardinality.","Test parent-key uniqueness and unmatched child rows.","Run the join and record rows, distinct keys, and total measure again.","Deliberately join to a one-to-many table without pre-aggregation and observe the fanout.","Repair the query and explain why the corrected shape preserves the target grain."],verify:"The final join preserves the promised grain, and every changed count has a documented explanation."},
+ gotchas:[
+  {s:"trap",t:"The join returned plausible rows",d:"Plausible detail can conceal fanout in counts and sums."},
+  {s:"trap",t:"COUNT(DISTINCT id) fixes a bad join",d:"It may hide multiplication while repeated measures remain wrong."},
+  {s:"trap",t:"Inner and left joins differ only in nulls",d:"An inner join silently removes unmatched fact rows."},
+  {s:"trap",t:"A join on all same-named columns is safer",d:"Extra predicates can exclude valid matches and change semantics."}
+ ],
+ quiz:[
+  {q:"What three baselines should you capture before and after a consequential join?",a:"Row count, distinct fact-key count, and a relevant control total such as amount."},
+  {q:"How does joining invoices to invoice items usually change grain?",a:"From one row per invoice to one row per invoice item."},
+  {q:"When is a left join preferable during investigation?",a:"When you need to preserve all fact rows and make missing parent matches visible."}
+ ],docs:[["Joins",DOCS.joins],["COUNT",DOCS.count],["SELECT aliases",DOCS.select]]
+},
+{
+ id:"p9",n:"09",title:"Validate and hand off",layer:"validate",layerLabel:"Validate",time:"90 min",pre:"All phases",
+ objective:"Produce a result whose grain, filters, access boundary, and plausibility checks another analyst can independently review.",
+ topics:[
+  {h:"Use layered validation",p:"<p>Combine structural evidence, data evidence, business evidence, and reconciliation evidence. No single count is enough.</p>",table:{head:["Layer","Question","Example evidence"],rows:[["Structure","What does Oracle declare?","Columns, P/U/R constraints, status and validation"],["Data","What do visible rows do?","Distinct counts, nulls, unmatched rows, distributions"],["Business","What should the fields mean?","Owner confirmation, governed documentation"],["Reconciliation","Does the answer agree elsewhere?","Known examples, control totals, prior-period comparison"]]}},
+  {h:"Keep the final query reviewable",p:"<p>Use a <code>WITH</code> chain that names each transformation, explicit column lists, exact filters, and a final grain that matches the contract. Keep diagnostic queries beside the result query in the handoff.</p>"},
+  {h:"Report limitations as part of the answer",p:"<p>State the schema, account visibility, as-of time, chosen business-date field, excluded statuses, unmatched relationships, and any unresolved semantics. A limitation is not a footnote when it can change the result.</p>"},
+  {h:"Know when to stop",p:"<p>Stop when the result grain is proven, filters are based on observed values, joins reconcile to baselines, edge cases are inspected, and remaining uncertainty is explicit. More SQL after that may add noise rather than confidence.</p>"},
+  {h:"What this path excludes",p:"<p>This site stops at read-only exploratory analysis. Administration, grants, schema changes, performance tuning, execution-plan analysis, PL/SQL, data correction, and authoritative business ownership belong to separate workflows.</p>"}
+ ],
+ lab:{title:"Complete one investigation packet",steps:["Fill the worksheet for a real question.","Run the discovery, grain, key, relationship, filter, and join checks.","Deliberately remove one validation check and ask what failure could now pass silently.","Restore the check and record its observed result.","Prepare the final query plus a compact validation ledger.","Ask another analyst to reproduce the conclusion from the packet."],verify:"A second analyst can reproduce the row count, distinct key count, control total, and stated limitations without asking what you assumed."},
+ gotchas:[
+  {s:"trap",t:"The final number is validation",d:"A number can be internally consistent and still answer the wrong business question."},
+  {s:"trap",t:"No duplicates means correct grain",d:"Filtering may have accidentally hidden the rows that expose the true grain."},
+  {s:"trap",t:"Documented means resolved",d:"A limitation must be evaluated for whether it materially changes the answer."},
+  {s:"ok",t:"Stop on falsifiable evidence",d:"The packet is done when another analyst can reproduce the checks and boundaries."}
+ ],
+ quiz:[
+  {q:"Name the four layers of a strong validation packet.",a:"Structural evidence, visible-data evidence, business-semantic evidence, and reconciliation evidence."},
+  {q:"What limitations must accompany a result?",a:"Visibility scope, time boundary and chosen date meaning, excluded categories, unmatched joins, and unresolved business semantics."},
+  {q:"State the stopping criterion for this field school.",a:"The grain is proven, filters come from observed values, joins reconcile, edge cases are inspected, and remaining uncertainty is explicit."}
+ ],docs:[["SELECT",DOCS.select],["Joins",DOCS.joins],["Constraints",DOCS.constraints]]
+}
+];
+
+const TREES=[
+ {title:"Which catalog family do I use?",rows:[["Objects I own","USER_* views","No OWNER column is needed for the current schema."],["Objects I can access","ALL_* views","Includes other schemas visible to the account."],["Every object in the database","DBA_* views","Requires elevated privileges and is outside this read-only analyst path."],["Business meaning","Documentation or data owner","Catalog structure cannot establish process semantics."]]},
+ {title:"My candidate ID repeats. What now?",rows:[["Other columns vary by line or item","Detail grain","The ID names a parent, not a row."],["Effective dates or versions vary","History grain","Add version or effective-time columns to the hypothesis."],["Rows are identical across relevant columns","Possible duplicate load","Inspect lineage and ingestion evidence before judging."],["A second identifier removes repeats","Composite key","Test the complete combination with GROUP BY."],["Only some rows repeat","Inspect examples","Do not force one explanation across mixed cases."]]},
+ {title:"A join increased row count. What now?",rows:[["Distinct fact IDs stayed stable","Expected fanout or duplicate parent","Check target grain and repeated measures."],["Distinct fact IDs fell","Rows were filtered or unmatched","Inspect join type and predicates."],["Control total increased","Measure duplicated","Pre-aggregate the many side or change grain."],["Parent key repeats","Parent is not unique","Find the true key or select one governed record."],["Increase was expected","Document new grain","Validate with counts appropriate to the new grain."]]},
+ {title:"My date filter looks wrong. What now?",rows:[["Only midnight rows match","Equality on a DATE with time","Use a half-open day range."],["Counts stop before expected end","Exclusive boundary is too early","Use the next day or month as the upper bound."],["Rows appear in the wrong period","Wrong date semantics","Distinguish business, creation, load, and update time."],["Grouping yields almost one row each","Raw timestamps were grouped","TRUNC only to the required business unit."],["Implicit conversions behave differently","NLS-dependent text date","Use DATE or TIMESTAMP literals with explicit forms."]]},
+ {title:"Can I trust this evidence?",rows:[["Declared constraint","Structural intent","Also inspect STATUS and VALIDATED."],["Column name match","Relationship clue","Test types, parent uniqueness, and coverage."],["Twenty sample rows","Shape clue","Use full-population aggregates for proof."],["NUM_ROWS","Statistics estimate","Check LAST_ANALYZED; use live counts selectively."],["Owner confirmation plus tests","Strong evidence","Record date, scope, and any exceptions."]]}
+];
+
+const REFS=[
+ {title:"Oracle syntax translations",note:"Portable investigation ideas, Oracle spellings.",head:["Need","Oracle","Watch"],rows:[["Owned metadata","USER_*","Current user's objects"],["Accessible metadata","ALL_*","Only what the account can access"],["Limit rows, 12c+","FETCH FIRST n ROWS ONLY","ORDER BY for deterministic top-N"],["Legacy row limit","ROWNUM <= n","Ordering may require an outer query"],["Month bucket","TRUNC(date_col, 'MM')","Returns a DATE at month start"],["Case-folded search","LOWER(col) LIKE '%text%'","Use exact values after discovery"],["Cross-schema object","SCHEMA.TABLE","Privileges still govern visibility"],["Table alias","FROM orders o","Do not write AS before a table alias"],["Null test","IS NULL","Never = NULL"],["Date literal","DATE '2026-08-01'","Gregorian YYYY-MM-DD, midnight"]]},
+ {title:"Constraint codes",note:"Read STATUS and VALIDATED as well as type.",head:["Code","Meaning","Investigation use"],rows:[["P","Primary key","Declared row identifier"],["U","Unique key","Alternate or business identifier"],["R","Referential integrity","Declared child-to-parent relationship"],["C","Check constraint","Allowed-value or NOT NULL rule"],["O","Read-only on a view","View constraint metadata"]]},
+ {title:"Count semantics",note:"Choose the count that matches the claim.",head:["Expression","Counts","Common use"],rows:[["COUNT(*)","All returned rows","Baseline grain and fanout"],["COUNT(column)","Non-null expression values","Completeness"],["COUNT(DISTINCT column)","Distinct non-null values","Single-column uniqueness"],["GROUP BY a,b HAVING COUNT(*) > 1","Repeated combinations","Composite-key test"],["MIN / MAX","Range endpoints among non-null values","Date coverage"]]},
+ {title:"Evidence ladder",note:"Move downward before calling a claim proven.",head:["Evidence","What it supports","What it cannot prove alone"],rows:[["Name","Candidate relevance","Business meaning"],["Datatype","Technical compatibility","Shared entity"],["Comment","Documented intent","Current process behavior"],["Constraint","Declared integrity intent","Business interpretation or visible completeness"],["Profile","Visible data behavior","Hidden rows or future behavior"],["Owner confirmation","Governed semantics","Mechanical correctness of your query"],["Reconciliation","Result plausibility","Semantic truth without a correct contract"]]}
+];
+
+const SNIPPETS=[
+ {title:"1 · Discover tables",code:lines(["SELECT owner, table_name","FROM all_tables","WHERE owner = 'YOUR_SCHEMA'","  AND LOWER(table_name) LIKE '%invoice%'","ORDER BY table_name;"])},
+ {title:"2 · Inspect columns",code:lines(["SELECT column_id, column_name, data_type, nullable","FROM all_tab_columns","WHERE owner = 'YOUR_SCHEMA'","  AND table_name = 'INVOICES'","ORDER BY column_id;"])},
+ {title:"3 · Test grain and key",code:lines(["SELECT COUNT(*) AS total_rows,","       COUNT(invoice_id) AS non_null_ids,","       COUNT(DISTINCT invoice_id) AS distinct_ids","FROM YOUR_SCHEMA.INVOICES;"])},
+ {title:"4 · Profile status",code:lines(["SELECT status, COUNT(*) AS row_count","FROM YOUR_SCHEMA.INVOICES","GROUP BY status","ORDER BY row_count DESC;"])},
+ {title:"5 · Profile time",code:lines(["SELECT MIN(invoice_date) AS earliest_date,","       MAX(invoice_date) AS latest_date,","       COUNT(*) AS total_rows","FROM YOUR_SCHEMA.INVOICES;"])},
+ {title:"6 · Test relationship coverage",code:lines(["SELECT COUNT(*) AS unmatched_invoices","FROM YOUR_SCHEMA.INVOICES i","LEFT JOIN YOUR_SCHEMA.CUSTOMERS c","  ON c.customer_id = i.customer_id","WHERE i.customer_id IS NOT NULL","  AND c.customer_id IS NULL;"])},
+ {title:"7 · Filter a month",code:lines(["SELECT invoice_id, customer_id, invoice_date, amount, status","FROM YOUR_SCHEMA.INVOICES","WHERE invoice_date >= DATE '2026-08-01'","  AND invoice_date <  DATE '2026-09-01'","  AND status = 'OPEN'","ORDER BY invoice_date, invoice_id;"])},
+ {title:"8 · Join with a baseline",code:lines(["WITH base AS (","    SELECT invoice_id, customer_id, invoice_date, amount","    FROM YOUR_SCHEMA.INVOICES","    WHERE invoice_date >= DATE '2026-08-01'","      AND invoice_date <  DATE '2026-09-01'","      AND status = 'OPEN'",")","SELECT b.invoice_id, b.invoice_date, b.amount, c.customer_name","FROM base b","LEFT JOIN YOUR_SCHEMA.CUSTOMERS c","  ON c.customer_id = b.customer_id","ORDER BY b.invoice_date, b.invoice_id;"])}
+];
+
+const WORKSHEET=[
+ ["question","Business question","What fact are you trying to find, in plain language?"],
+ ["fact","Thing being measured","Which entity or event is the center of the question?"],
+ ["visibility","Access boundary","Which account, schema, and visible-row limitations apply?"],
+ ["main_table","Main table candidate","Owner.table and the evidence that it contains the fact."],
+ ["grain","Row grain","Complete: One row represents ..."],
+ ["key","Identifier","Declared key, tested candidate key, null count, duplicate result."],
+ ["relationships","Relationships","Join predicate, expected cardinality, parent uniqueness, unmatched count."],
+ ["filters","Categories and filters","Observed values, null behavior, exclusions."],
+ ["time","Time definition","Business-date column, inclusive start, exclusive end, timezone if relevant."],
+ ["baseline","Pre-join baseline","Row count, distinct fact IDs, control total."],
+ ["joined","Post-join ledger","Row count, distinct fact IDs, control total, explained differences."],
+ ["checks","Plausibility checks","Known records, period comparison, independent total, edge cases."],
+ ["limitations","Limitations and unknowns","What remains unverified, hidden, or dependent on an owner decision?"],
+ ["result","Expected result","Complete: The final output contains one row per ..."]
+];
+
+const FIELD_CHECKS=["Question names one fact","Read-only boundary recorded","Visible schema confirmed","Columns and comments inspected","Row grain stated and tested","Primary or candidate key tested","Parent key uniqueness checked","Unmatched child rows counted","Actual category values profiled","Nulls measured with IS NULL","Half-open date range used","Pre-join rows and keys recorded","Post-join rows and keys reconciled","Control total reconciled","Limitations stated"];
+
+let DRILLS=[];
+PHASES.forEach(p=>p.quiz.forEach(q=>DRILLS.push({q:q.q,a:q.a,src:"Phase "+p.n+" · "+p.title,pid:p.id})));
+
+const SOURCE_NOTES={
+ holds:[
+  ["USER_* and ALL_* scope","Oracle documents USER_TABLES as owned by the current user and ALL_TABLES as accessible to the current user."],
+  ["Row limiting","FETCH FIRST is part of the row_limiting_clause. Oracle advises ORDER BY for deterministic results."],
+  ["Constraint codes","P, U, and R mean primary key, unique key, and referential integrity."],
+  ["Count behavior","COUNT(*) counts rows; COUNT(expr) ignores null expression values; DISTINCT counts distinct non-null values."],
+  ["Date and null guidance","Oracle DATE contains time fields, DATE literals use YYYY-MM-DD, and nulls require IS NULL tests."],
+  ["Join risk","Oracle combines matching row pairs, so non-unique matches can expand results."]
+ ],
+ refinements:[
+  ["Cross-schema constraint joins","Include OWNER and R_OWNER fields. Constraint names alone are not a safe cross-schema join key."],
+  ["Limited samples","A row limit without ORDER BY is useful for shape discovery, but not a repeatable top-N claim."],
+  ["Constraint state","Read STATUS and VALIDATED. A declared constraint may be disabled or not validated against all existing data."],
+  ["Empty strings","Oracle currently treats zero-length character values as null, but its documentation warns not to rely on that forever."],
+  ["Case behavior","Use LOWER for exploratory matching, but do not state universal case behavior without considering collation and session settings."],
+  ["Business semantics","Catalog metadata and data profiles cannot establish the authoritative meaning of a field such as CREATED_AT."]
+ ]
+};
+
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+const STORAGE_KEY="oracle-field-school-v1";
+let memoryState={progress:{},worksheet:{},field:{}};
+function loadState(){try{const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");if(parsed&&typeof parsed==="object")memoryState=Object.assign(memoryState,parsed);}catch(e){}return memoryState;}
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(memoryState));}catch(e){}}
+loadState();
+
+function showToast(message){const t=$("#toast");t.textContent=message;t.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("show"),1500);}
+function fallbackCopy(text){const ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy");}catch(e){}ta.remove();return ok;}
+function copyText(text,button){
+ const done=()=>{showToast("Copied to clipboard");if(button){button.textContent="copied";button.classList.add("copied");setTimeout(()=>{button.textContent="copy";button.classList.remove("copied");},1300);}};
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>{if(fallbackCopy(text))done();else showToast("Copy unavailable. Select the text manually.");});}
+ else if(fallbackCopy(text))done();else showToast("Copy unavailable. Select the text manually.");
+}
+function codeBlock(code,id){const w=document.createElement("div");w.className="codewrap";if(id)w.id=id;const pre=document.createElement("pre");const c=document.createElement("code");c.textContent=code;pre.appendChild(c);const b=document.createElement("button");b.type="button";b.className="copy";b.textContent="copy";b.setAttribute("aria-label","Copy SQL snippet");b.addEventListener("click",()=>copyText(code,b));w.append(pre,b);return w;}
+function tableBlock(data){const w=document.createElement("div");w.className="tablewrap";const table=document.createElement("table");const thead=document.createElement("thead");const hr=document.createElement("tr");data.head.forEach(h=>{const th=document.createElement("th");th.innerHTML=h;hr.appendChild(th);});thead.appendChild(hr);const tbody=document.createElement("tbody");data.rows.forEach(row=>{const tr=document.createElement("tr");row.forEach(cell=>{const td=document.createElement("td");td.innerHTML=cell;tr.appendChild(td);});tbody.appendChild(tr);});table.append(thead,tbody);w.appendChild(table);return w;}
+function sectionLabel(text){const d=document.createElement("div");d.className="section-label";d.textContent=text;return d;}
+function phaseUnitCount(p){return 1+p.quiz.length;}
+function phaseStatus(p){let done=memoryState.progress["lab:"+p.id]?1:0;done+=p.quiz.filter((q,i)=>memoryState.progress["q:"+p.id+":"+i]).length;return done===phaseUnitCount(p)?"done":done>0?"part":"";}
+
+function buildRail(){
+ const nav=$("#phase-nav");nav.innerHTML="";
+ PHASES.forEach(p=>{const a=document.createElement("a");a.href="#"+p.id;a.dataset.jump=p.id;a.innerHTML="<span class=\"num\">"+p.n+"</span><span>"+p.title+"</span><span class=\"tick "+phaseStatus(p)+"\">✓</span>";a.addEventListener("click",e=>{e.preventDefault();setMode("path");jumpTo(p.id);});nav.appendChild(a);});
+}
+function updateProgress(){
+ const total=PHASES.reduce((sum,p)=>sum+phaseUnitCount(p),0);let done=0;
+ PHASES.forEach(p=>{if(memoryState.progress["lab:"+p.id])done++;p.quiz.forEach((q,i)=>{if(memoryState.progress["q:"+p.id+":"+i])done++;});});
+ $("#progress-pct").textContent=Math.round(done/total*100)+"%";const bar=$("#progress-bar");bar.innerHTML="";PHASES.forEach(p=>{const i=document.createElement("i");i.className=phaseStatus(p);i.title="Phase "+p.n+": "+p.title;bar.appendChild(i);});buildRail();
+}
+function renderPhases(){
+ const root=$("#phases");root.innerHTML="";
+ PHASES.forEach(p=>{
+  const article=document.createElement("article");article.className="phase";article.id=p.id;article.dataset.search=p.title+" "+p.objective;
+  const head=document.createElement("header");head.className="phase-head";head.innerHTML="<div class=\"phase-num\">"+p.n+"</div><div><div class=\"eyebrow\">Phase "+p.n+"</div><h2>"+p.title+"</h2><div class=\"meta\"><span class=\"chip "+p.layer+"\">"+p.layerLabel+"</span><span class=\"chip\">"+p.time+"</span><span class=\"chip\">prereq: "+p.pre+"</span></div><p class=\"objective\">"+p.objective+"</p></div>";article.appendChild(head);
+  article.appendChild(sectionLabel("Topics · "+p.topics.length));const topics=document.createElement("div");topics.className="topics";
+  p.topics.forEach((t,i)=>{const d=document.createElement("details");d.className="topic";d.id=p.id+"-t"+i;d.dataset.search=t.h+" "+(t.p||"")+" "+(t.code||"");const s=document.createElement("summary");s.textContent=t.h;const body=document.createElement("div");body.className="topic-body";if(t.p)body.insertAdjacentHTML("beforeend",t.p);if(t.table)body.appendChild(tableBlock(t.table));if(t.code)body.appendChild(codeBlock(t.code));d.append(s,body);topics.appendChild(d);});article.appendChild(topics);
+  article.appendChild(sectionLabel("Practical lab"));const lab=document.createElement("section");lab.className="lab";lab.id=p.id+"-lab";lab.dataset.search=p.lab.title+" "+p.lab.steps.join(" ")+" "+p.lab.verify;lab.innerHTML="<h3>"+p.lab.title+"</h3><ol>"+p.lab.steps.map(x=>"<li>"+x+"</li>").join("")+"</ol><p><strong>Done when:</strong> "+p.lab.verify+"</p>";const dl=document.createElement("div");dl.className="done-line";const cb=document.createElement("input");cb.type="checkbox";cb.id="lab-"+p.id;cb.checked=!!memoryState.progress["lab:"+p.id];const label=document.createElement("label");label.htmlFor=cb.id;label.textContent=" Lab complete";label.prepend(cb);cb.addEventListener("change",()=>{memoryState.progress["lab:"+p.id]=cb.checked;saveState();updateProgress();});dl.appendChild(label);lab.appendChild(dl);article.appendChild(lab);
+  article.appendChild(sectionLabel("Common failure modes"));const gs=document.createElement("div");gs.className="gotchas";p.gotchas.forEach((g,i)=>{const d=document.createElement("div");d.className="gotcha";d.id=p.id+"-g"+i;d.dataset.search=g.t+" "+g.d;d.innerHTML="<span class=\"sev "+g.s+"\">"+g.s+"</span><span><b>"+g.t+"</b>"+g.d+"</span>";gs.appendChild(d);});article.appendChild(gs);
+  article.appendChild(sectionLabel("Checkpoint · recall before reveal"));p.quiz.forEach((q,i)=>{const d=document.createElement("details");d.className="checkpoint";d.id=p.id+"-q"+i;d.dataset.search=q.q+" "+q.a;const summary=document.createElement("summary");summary.textContent=q.q;const ans=document.createElement("div");ans.className="answer";ans.innerHTML=q.a;const line=document.createElement("div");line.className="done-line";const qcb=document.createElement("input");qcb.type="checkbox";qcb.id="q-"+p.id+"-"+i;qcb.checked=!!memoryState.progress["q:"+p.id+":"+i];const ql=document.createElement("label");ql.htmlFor=qcb.id;ql.textContent=" I could answer without looking";ql.prepend(qcb);qcb.addEventListener("change",()=>{memoryState.progress["q:"+p.id+":"+i]=qcb.checked;saveState();updateProgress();});line.appendChild(ql);ans.appendChild(line);d.append(summary,ans);article.appendChild(d);});
+  if(p.docs.length){const sources=document.createElement("div");sources.className="sources";p.docs.forEach(x=>{const a=document.createElement("a");a.href=x[1];a.target="_blank";a.rel="noopener";a.textContent=x[0]+" ↗";sources.appendChild(a);});article.appendChild(sources);}
+  root.appendChild(article);
+ });
+ updateProgress();
+}
+
+function renderReference(){
+ const root=$("#reference-content");root.innerHTML="";root.appendChild(sectionLabel("Decision trees"));
+ TREES.forEach((tree,i)=>{const card=document.createElement("section");card.className="card";card.id="tree-"+i;card.dataset.search=tree.title+" "+tree.rows.flat().join(" ");const h=document.createElement("h2");h.textContent=tree.title;card.appendChild(h);tree.rows.forEach(r=>{const b=document.createElement("div");b.className="branch";b.innerHTML="<span>"+r[0]+"</span><span class=\"arr\">→</span><span><strong>"+r[1]+"</strong><small>"+r[2]+"</small></span>";card.appendChild(b);});root.appendChild(card);});
+ root.appendChild(sectionLabel("Syntax and evidence tables"));REFS.forEach((ref,i)=>{const card=document.createElement("section");card.className="card";card.id="ref-"+i;card.dataset.search=ref.title+" "+ref.note+" "+ref.rows.flat().join(" ");card.innerHTML="<h2>"+ref.title+"</h2><p>"+ref.note+"</p>";card.appendChild(tableBlock(ref));root.appendChild(card);});
+ root.appendChild(sectionLabel("Reusable SQL kit"));const snippets=document.createElement("div");snippets.className="grid2";SNIPPETS.forEach((s,i)=>{const card=document.createElement("section");card.className="card";card.id="snippet-"+i;card.dataset.search=s.title+" "+s.code;const h=document.createElement("h3");h.textContent=s.title;card.append(h,codeBlock(s.code));snippets.appendChild(card);});root.appendChild(snippets);
+ root.appendChild(sectionLabel("Source audit and refinements"));const audit=document.createElement("div");audit.className="grid2";[["Verified foundations",SOURCE_NOTES.holds,"ok"],["Important refinements",SOURCE_NOTES.refinements,"stale"]].forEach((group,gi)=>{const card=document.createElement("section");card.className="card";card.id="source-note-"+gi;card.dataset.search=group[0]+" "+group[1].flat().join(" ");card.innerHTML="<h2>"+group[0]+"</h2>";group[1].forEach(item=>{const g=document.createElement("div");g.className="gotcha";g.innerHTML="<span class=\"sev "+group[2]+"\">"+(gi===0?"holds":"refine")+"</span><span><b>"+item[0]+"</b>"+item[1]+"</span>";card.appendChild(g);});audit.appendChild(card);});root.appendChild(audit);
+ const note=document.createElement("p");note.className="notice";note.innerHTML="<strong>Local claims remain unverified:</strong> table purpose, field semantics, status definitions, visible-row completeness, time-zone conventions, and acceptable reconciliation tolerances. Confirm them with governed documentation or the data owner.";root.appendChild(note);
+}
+
+function renderWorksheet(){
+ const form=$("#worksheet");form.innerHTML="";
+ WORKSHEET.forEach((f,i)=>{const d=document.createElement("div");d.className="field";d.id="ws-"+f[0];d.dataset.search=f.join(" ");const label=document.createElement("label");label.htmlFor="field-"+f[0];label.textContent=(i+1)+". "+f[1];const p=document.createElement("p");p.textContent=f[2];const ta=document.createElement("textarea");ta.id="field-"+f[0];ta.name=f[0];ta.value=memoryState.worksheet[f[0]]||"";ta.addEventListener("input",()=>{memoryState.worksheet[f[0]]=ta.value;saveState();});d.append(label,p,ta);form.appendChild(d);});
+}
+function worksheetText(){return "ORACLE INVESTIGATION WORKSHEET\n"+"=".repeat(31)+"\n\n"+WORKSHEET.map((f,i)=>(i+1)+". "+f[1]+"\n"+(memoryState.worksheet[f[0]]||"[not recorded]")).join("\n\n");}
+
+let drillIndex=0,drillRevealed=false;
+function shuffleDrills(){for(let i=DRILLS.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=DRILLS[i];DRILLS[i]=DRILLS[j];DRILLS[j]=t;}drillIndex=0;drillRevealed=false;}
+function renderDrill(){
+ const root=$("#drill-content");root.innerHTML="";const d=DRILLS[drillIndex];const card=document.createElement("div");card.className="flash";card.innerHTML="<div class=\"src\">"+d.src+"</div><div class=\"question\">"+d.q+"</div>"+(drillRevealed?"<div class=\"answer\">"+d.a+"</div>":"");root.appendChild(card);const controls=document.createElement("div");controls.className="flash-controls";const flip=document.createElement("button");flip.type="button";flip.className="btn primary";flip.textContent=drillRevealed?"Hide answer":"Reveal answer";flip.onclick=()=>{drillRevealed=!drillRevealed;renderDrill();};const next=document.createElement("button");next.type="button";next.className="btn";next.textContent="Next card →";next.onclick=()=>{drillIndex=(drillIndex+1)%DRILLS.length;drillRevealed=false;renderDrill();};const go=document.createElement("button");go.type="button";go.className="btn";go.textContent="Go to phase";go.onclick=()=>{setMode("path");jumpTo(d.pid);};const sh=document.createElement("button");sh.type="button";sh.className="btn";sh.textContent="Shuffle";sh.onclick=()=>{shuffleDrills();renderDrill();};const count=document.createElement("span");count.className="counter";count.textContent=(drillIndex+1)+" / "+DRILLS.length;controls.append(flip,next,go,sh,count);root.appendChild(controls);const help=document.createElement("p");help.innerHTML="Keyboard: <kbd>space</kbd> reveal · <kbd>→</kbd> next";root.appendChild(help);
+}
+
+function renderFieldGuide(){
+ const root=$("#field-content");root.innerHTML="";const rule=document.createElement("div");rule.className="fg-rule";rule.textContent="Question → visible schema → grain → key → relationships → actual filters → controlled join → reconciliation.";root.appendChild(rule);
+ root.appendChild(sectionLabel("Ten-step sequence"));const seq=document.createElement("div");seq.className="sequence";["Write the fact and target grain","Confirm schema and read-only boundary","Find tables and inspect columns","Sample narrowly","Test grain and key","Map and test relationships","Profile values, nulls, and time","Capture pre-join baselines","Join and repeat the ledger","State limitations and hand off"].forEach(x=>{const d=document.createElement("div");d.textContent=x;seq.appendChild(d);});root.appendChild(seq);
+ root.appendChild(sectionLabel("Portable discovery sequence"));const combined=lines(["-- Replace schema, table, column, and business values before running.","","-- 1. Sample selected columns","SELECT invoice_id, customer_id, invoice_date, amount, status","FROM YOUR_SCHEMA.INVOICES","FETCH FIRST 20 ROWS ONLY;","","-- 2. Test candidate grain and key","SELECT COUNT(*) AS total_rows,","       COUNT(invoice_id) AS non_null_ids,","       COUNT(DISTINCT invoice_id) AS distinct_ids","FROM YOUR_SCHEMA.INVOICES;","","-- 3. Profile an actual category","SELECT status, COUNT(*) AS row_count","FROM YOUR_SCHEMA.INVOICES","GROUP BY status","ORDER BY row_count DESC;","","-- 4. Inspect the time boundary","SELECT MIN(invoice_date) AS earliest_date,","       MAX(invoice_date) AS latest_date","FROM YOUR_SCHEMA.INVOICES;","","-- 5. Test a half-open filtered count","SELECT COUNT(*) AS matching_rows","FROM YOUR_SCHEMA.INVOICES","WHERE invoice_date >= DATE '2026-08-01'","  AND invoice_date <  DATE '2026-09-01'","  AND status = 'OPEN';"]);root.appendChild(codeBlock(combined,"field-sql"));
+ root.appendChild(sectionLabel("Syntax at a glance"));root.appendChild(tableBlock(REFS[0]));
+ root.appendChild(sectionLabel("Silent failure modes"));root.appendChild(tableBlock({head:["Failure","What looks fine","What to measure"],rows:[["Wrong grain","Plausible detail rows","Rows per candidate entity"],["Non-unique parent","Successful join","Parent duplicate groups"],["Inner-join loss","Clean matched output","Base versus joined distinct keys"],["Fanout","More detail","Pre/post rows, keys, and totals"],["Wrong time field","Reasonable period","Field semantics and edge records"],["Invented status","Zero or partial result","Stored value distribution"],["Hidden access scope","Complete-looking answer","Privileges, policy, and owner confirmation"]]}));
+ root.appendChild(sectionLabel("Validation checklist"));const list=document.createElement("div");list.className="checklist";FIELD_CHECKS.forEach((x,i)=>{const d=document.createElement("div");d.className="checkitem";const cb=document.createElement("input");cb.type="checkbox";cb.id="fc-"+i;cb.checked=!!memoryState.field[i];const l=document.createElement("label");l.htmlFor=cb.id;l.textContent=x;cb.onchange=()=>{memoryState.field[i]=cb.checked;saveState();};d.append(cb,l);list.appendChild(d);});root.appendChild(list);
+ root.appendChild(sectionLabel("Stop condition"));const stop=document.createElement("p");stop.className="fg-rule";stop.textContent="Stop when grain is proven, filters trace to observed values, joins reconcile to baselines, edge cases are inspected, and remaining uncertainty is explicit.";root.appendChild(stop);
+}
+
+let currentMode="path";
+function setMode(mode){
+ currentMode=mode;$("#search").value="";$("#search-panel").hidden=true;$$('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==mode);$$('.modes button').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));window.scrollTo({top:0,behavior:"smooth"});
+}
+function jumpTo(id){const target=document.getElementById(id);if(!target)return;const detail=target.closest("details");if(detail)detail.open=true;target.scrollIntoView({behavior:"smooth",block:"start"});}
+
+const SEARCH=[];
+function addSearch(title,kind,text,mode,id){SEARCH.push({title,kind,text:(text||"").replace(/<[^>]+>/g," "),mode,id});}
+function buildSearch(){
+ SEARCH.length=0;PHASES.forEach(p=>{addSearch("Phase "+p.n+": "+p.title,"path",p.objective+" "+p.gotchas.map(g=>g.t+" "+g.d).join(" "),"path",p.id);p.topics.forEach((t,i)=>addSearch(t.h,"topic · phase "+p.n,(t.p||"")+" "+(t.code||""),"path",p.id+"-t"+i));p.quiz.forEach((q,i)=>addSearch(q.q,"checkpoint · phase "+p.n,q.a,"path",p.id+"-q"+i));});
+ TREES.forEach((t,i)=>addSearch(t.title,"decision tree",t.rows.flat().join(" "),"reference","tree-"+i));REFS.forEach((r,i)=>addSearch(r.title,"reference table",r.note+" "+r.rows.flat().join(" "),"reference","ref-"+i));SNIPPETS.forEach((s,i)=>addSearch(s.title,"SQL snippet",s.code,"reference","snippet-"+i));WORKSHEET.forEach(f=>addSearch(f[1],"worksheet",f[2],"worksheet","ws-"+f[0]));addSearch("Portable discovery sequence","field guide",SNIPPETS.map(s=>s.code).join(" "),"field","field-sql");
+}
+function renderSearch(term){
+ const panel=$("#search-panel");$$('[data-panel]').forEach(p=>p.hidden=true);panel.hidden=false;const t=term.toLowerCase();const hits=SEARCH.filter(x=>(x.title+" "+x.kind+" "+x.text).toLowerCase().includes(t)).slice(0,50);panel.innerHTML="<header class=\"panel-head\"><div class=\"eyebrow\">Search</div><h1>"+hits.length+" result"+(hits.length===1?"":"s")+" for “"+esc(term)+"”</h1></header>";if(!hits.length){panel.insertAdjacentHTML("beforeend","<p class=\"notice\">No match. Try a catalog view, keyword, column role, or failure mode.</p>");return;}hits.forEach(h=>{const a=document.createElement("a");a.className="hit";a.href="#"+h.id;a.innerHTML="<small>"+h.kind+"</small><b>"+h.title+"</b>";a.onclick=e=>{e.preventDefault();setMode(h.mode);setTimeout(()=>jumpTo(h.id),0);};panel.appendChild(a);});
+}
+
+$$('.modes button').forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+$$('[data-switch]').forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.switch)));
+$$('[data-jump]').forEach(b=>b.addEventListener("click",()=>{setMode("path");setTimeout(()=>jumpTo(b.dataset.jump),0);}));
+$("#search").addEventListener("input",e=>{const term=e.target.value.trim();if(term.length>1)renderSearch(term);else setMode(currentMode);});
+$("#theme").addEventListener("click",()=>{const root=document.documentElement;const cur=root.getAttribute("data-theme");const isDark=cur?cur==="dark":matchMedia("(prefers-color-scheme: dark)").matches;const next=isDark?"light":"dark";root.setAttribute("data-theme",next);try{localStorage.setItem(STORAGE_KEY+"-theme",next);}catch(e){}});
+try{const savedTheme=localStorage.getItem(STORAGE_KEY+"-theme");if(savedTheme)document.documentElement.setAttribute("data-theme",savedTheme);}catch(e){}
+$("#copy-worksheet").addEventListener("click",()=>copyText(worksheetText()));
+$("#print-worksheet").addEventListener("click",()=>window.print());
+$("#clear-worksheet").addEventListener("click",()=>{if(!confirm("Clear every worksheet field?"))return;memoryState.worksheet={};saveState();renderWorksheet();showToast("Worksheet cleared");});
+document.addEventListener("keydown",e=>{
+ if(e.key==="/"&&document.activeElement!==$("#search")&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$("#search").focus();}
+ if(e.key==="Escape"&&document.activeElement===$("#search")){$("#search").value="";$("#search").blur();setMode(currentMode);}
+ if(currentMode==="drill"&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="TEXTAREA"){if(e.key===" "){e.preventDefault();drillRevealed=!drillRevealed;renderDrill();}if(e.key==="ArrowRight"){drillIndex=(drillIndex+1)%DRILLS.length;drillRevealed=false;renderDrill();}}
+});
+
+renderPhases();renderReference();renderWorksheet();shuffleDrills();renderDrill();renderFieldGuide();buildSearch();
+if("IntersectionObserver" in window){const observer=new IntersectionObserver(entries=>{if(currentMode!=="path")return;const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(!visible)return;$$('#phase-nav a').forEach(a=>a.classList.toggle("active",a.dataset.jump===visible.target.id));},{rootMargin:"-18% 0px -68% 0px",threshold:[0,.1,.4]});$$('.phase').forEach(p=>observer.observe(p));}
+</script>
+</body>
+</html>

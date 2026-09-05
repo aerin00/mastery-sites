@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<!-- index:
+description: Build long-horizon agents with mission contracts, task graphs, durable state, gates, recovery, and evaluation.
+tags: lab, agent-systems
+-->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Horizon Loop Lab</title>
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;%E2%9A%99%EF%B8%8F&lt;/text&gt;&lt;/svg&gt;">
+<style>
+/* =====================================================================
+   TOKENS — light palette lives on the bare :root.
+   >>> CHOOSE PER SUBJECT: the 6 values marked [PICK] below. <<<
+   Derive them from the subject's own world. Keep neutrals biased
+   toward the accent hue. Everything else in this file is structural
+   and should carry over unchanged.
+   ===================================================================== */
+:root{
+  /* [PICK] grounds — page, cards, raised surfaces */
+  --bg:#EEF3F7; --paper:#F9FCFE; --raise:#FFFFFF;
+  --ink:#10202C; --body:#263B49; --muted:#5B7080; --faint:#8296A4;
+  --line:#D3DEE6; --line-2:#B8CAD6;
+  /* [PICK] structural accent — links, active nav, lab cards */
+  --accent:#086B83; --accent-soft:#DCEEF3; --accent-ink:#07566A;
+  /* [PICK] signal — current state, eyebrows, the one loud thing */
+  --signal:#D45C18; --signal-soft:#F9E6D8;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#111A19; --code-ink:#DCE7E4; --code-line:#24322F;
+  --shadow:0 1px 2px rgba(18,26,25,.05), 0 8px 24px -12px rgba(18,26,25,.14);
+  --rail:264px;
+  /* [PICK] type: display / body / mono. Three roles, chosen deliberately. */
+  --f-disp:'Segoe UI Variable Display','Segoe UI',Arial,sans-serif;
+  --f-body:'Segoe UI Variable Text','Segoe UI',Arial,sans-serif;
+  --f-mono:'Cascadia Code','SFMono-Regular',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+    --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+    --line:#26332F; --line-2:#33433E;
+    --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+    --signal:#F09055; --signal-soft:#3A2114;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1413; --paper:#131D1B; --raise:#182422;
+  --ink:#E6EEEB; --body:#C6D3CF; --muted:#8CA09B; --faint:#6A7C78;
+  --line:#26332F; --line-2:#33433E;
+  --accent:#54C6B4; --accent-soft:#12332E; --accent-ink:#8BDFD1;
+  --signal:#F09055; --signal-soft:#3A2114;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#07100F; --code-ink:#CFDEDA; --code-line:#1D2A27;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname">Horizon Loop Lab</span><small id="brandtag">AGENTIC SYSTEMS</small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search · / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">◖</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"><a class="on" href="#hl-contract"><span class="n">00</span><span>Contract the mission</span><span class="tick">✓</span></a><a href="#hl-loop"><span class="n">01</span><span>Close the control loop</span><span class="tick">✓</span></a><a href="#hl-task-graph"><span class="n">02</span><span>Build the task graph</span><span class="tick">✓</span></a><a href="#hl-state"><span class="n">03</span><span>Persist durable state</span><span class="tick">✓</span></a><a href="#hl-planner"><span class="n">04</span><span>Plan with constraints</span><span class="tick">✓</span></a><a href="#hl-executor"><span class="n">05</span><span>Execute bounded tasks</span><span class="tick">✓</span></a><a href="#hl-verifier"><span class="n">06</span><span>Gate every output</span><span class="tick">✓</span></a><a href="#hl-recovery"><span class="n">07</span><span>Recover without spinning</span><span class="tick">✓</span></a><a href="#hl-observe"><span class="n">08</span><span>Make the loop observable</span><span class="tick">✓</span></a><a href="#hl-evaluate"><span class="n">09</span><span>Evaluate the system</span><span class="tick">✓</span></a><a href="#hl-capstone"><span class="n">10</span><span>Run the long horizon</span><span class="tick">✓</span></a></div>
+    <div class="legend" id="legend"><h4>Build stage</h4><div class="row"><span class="swatch" style="background:var(--warn)"></span>Frame: contract + loop</div><div class="row"><span class="swatch" style="background:var(--accent)"></span>Model: graph + state</div><div class="row"><span class="swatch" style="background:var(--stop)"></span>Control: plan + act + verify</div><div class="row"><span class="swatch" style="background:var(--ok)"></span>Operate: recover + measure</div></div>
+  </nav>
+  <main id="view"><div class="prog"><div class="top"><span class="lbl">Path progress</span><span class="pct">0%</span></div><div class="bar"><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div></div><div><div class="eyebrow">Phase 00 · Frame layer</div><h1 class="ptitle">Contract the mission</h1><div class="meta"><span class="chip l1">Frame</span><span class="chip">35 min</span><span class="chip">prereq: None</span></div></div><div class="objective">Introduce the cumulative project and turn an open-ended goal into a <b>bounded loop contract</b>.</div><h2 class="sec">Concepts <span class="cnt">4</span></h2><div class="concept"><h3>The project</h3><p>You will build one <code>ResearchBuildAgent</code>. It accepts a structured goal, plans bounded research and build tasks, verifies artifacts, checkpoints state, recovers from failures, and stops or escalates.</p><div class="codewrap"><pre><code>goal → plan → ready task → execute → verify → checkpoint
+  ↑                                            │
+  └──── resume / replan / escalate / stop ─────┘</code></pre><button class="copy">copy</button></div></div><div class="concept"><h3>Already built</h3><p>A project folder and a goal, nothing else. This phase adds the contract that every later component must obey.</p></div><div class="concept"><h3>A contract makes autonomy finite</h3><div class="tablewrap"><table><thead><tr><th>Field</th><th>Concrete question</th></tr></thead><tbody><tr><td>Purpose</td><td>What outcome should exist?</td></tr><tr><td>Allowed work</td><td>Which reads and writes are in scope?</td></tr><tr><td>Gates</td><td>What must pass before acceptance?</td></tr><tr><td>Budgets</td><td>How many tasks, attempts, and seconds?</td></tr><tr><td>Stop</td><td>What means success, exhaustion, or escalation?</td></tr><tr><td>Owner</td><td>Who may approve expanded authority?</td></tr></tbody></table></div></div><div class="concept"><h3>Typed goal contract</h3><div class="codewrap"><pre><code>from dataclasses import dataclass, field
+from pathlib import Path
+
+@dataclass(frozen=True)
+class Goal:
+    objective: str
+    research_questions: tuple[str, ...]
+    deliverables: tuple[str, ...]
+    workspace: Path
+    max_tasks_per_run: int = 3
+    max_attempts_per_task: int = 2
+    forbidden_paths: tuple[str, ...] = field(default_factory=tuple)
+
+def validate_goal(goal: Goal) -&gt; None:
+    if not goal.objective.strip():
+        raise ValueError("objective is required")
+    if goal.max_tasks_per_run &lt; 1:
+        raise ValueError("max_tasks_per_run must be positive")
+    goal.workspace.mkdir(parents=True, exist_ok=True)</code></pre><button class="copy">copy</button></div></div><h2 class="sec">Lab</h2><div class="lab"><h3>Create the project contract</h3><ol><li>Create <code>research_build_agent/models.py</code> with the shown <code>Goal</code> dataclass.</li><li>Instantiate a goal with two research questions and one Markdown deliverable.</li><li>Call <code>validate_goal</code> and print the goal.</li><li>Write the allowed workspace and forbidden paths before execution.</li><li><b>Break it deliberately:</b> set <code>max_tasks_per_run=0</code> and confirm validation rejects it.</li></ol><p style="margin:14px 0 0"><b>Done when:</b> The valid contract prints; the invalid budget raises ValueError before any task runs.</p><div class="done-line"><label for="lab-hl-contract"><input type="checkbox" id="lab-hl-contract">Lab complete</label></div></div><h2 class="sec">Gotchas <span class="cnt">4</span></h2><div class="gotcha"><span class="sev trap">trap</span><span><b>Goal is only prose</b>The controller cannot reliably derive budgets, paths, or acceptance rules from an unstructured wish.</span></div><div class="gotcha"><span class="sev trap">trap</span><span><b>Autonomy without an owner</b>The system reaches an authority boundary but has nobody to receive escalation.</span></div><div class="gotcha"><span class="sev trap">trap</span><span><b>Success has no witness</b>The agent can declare completion without an artifact or passing gate.</span></div><div class="gotcha"><span class="sev cost">cost</span><span><b>Contract covers every imagined case</b>The project becomes policy design instead of a working first loop.</span></div><h2 class="sec">Checkpoint <span class="cnt">3</span></h2><details class="qa"><summary>What is the reference project?</summary><div class="ans">A ResearchBuildAgent that plans bounded tasks, executes and verifies them, persists state, recovers, and stops or escalates.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><details class="qa"><summary>Why put budgets in the goal contract?</summary><div class="ans">They turn open-ended autonomy into enforceable limits before work begins.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><details class="qa"><summary>Recall from later practice: what must survive a restart?</summary><div class="ans">The last verified state, remaining tasks, attempts, evidence, and stop reason.<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)"><input type="checkbox"> I could answer this without looking</label></div></div></details><h2 class="sec">Source docs</h2><div class="docs"><a href="https://openai.github.io/openai-agents-python/agents/" target="_blank" rel="noopener">Agents overview ↗</a><a href="https://docs.python.org/3/library/dataclasses.html" target="_blank" rel="noopener">Python dataclasses ↗</a></div><div class="done-line" style="border-top: 1px solid var(--line); margin-top: 40px;"><button class="btn prime">Close the control loop →</button></div></main>
+</div>
+
+
+<script>
+/* =====================================================================
+   CONTENT — replace everything below this banner.
+   Three example phases show every field. Delete them and write yours.
+   See the Mastery Site build specification for the full rules. The short version:
+     - 8–14 phases. Phase 00 = read the instrument. Phase 01 = operate it
+       without configuring it. Last = capstone with the exclusions stated.
+     - `id` is STABLE and drives progress keys. `n` is cosmetic.
+     - A gotcha is only a gotcha if it fails SILENTLY.
+     - Every lab has one step that deliberately breaks something.
+     - Quiz items are recall, not recognition. They become the Drill deck.
+     - Assert only what you verified. Mark the rest <span class="unv">unverified</span>.
+   ===================================================================== */
+
+const C = (...l) => l.join('\n');
+
+const SITE = {
+  key:'horizon-loop-lab-v1',
+  title:'Horizon Loop Lab',
+  tag:'AGENTIC SYSTEMS',
+  spine:'Build stage',
+  layers:[
+    {id:'l1',label:'Frame: contract + loop',token:'warn'},
+    {id:'l2',label:'Model: graph + state',token:'accent'},
+    {id:'l3',label:'Control: plan + act + verify',token:'stop'},
+    {id:'l4',label:'Operate: recover + measure',token:'ok'}
+  ],
+  refLede:'A progressive field guide for building one durable ResearchBuildAgent from a goal contract to a supervised, testable long-horizon system.',
+  auditTitle:'Architecture audit',
+  verifiedAgainst:'Concepts checked against official OpenAI Agents SDK and Python documentation, September 4, 2026.'
+};
+
+const PHASES = [
+{id:'hl-contract',n:'00',title:'Contract the mission',layer:'l1',layerLabel:'Frame',time:'35 min',pre:'None',
+ objective:'Introduce the cumulative project and turn an open-ended goal into a <b>bounded loop contract</b>.',
+ concepts:[
+  {h:'The project',p:'<p>You will build one <code>ResearchBuildAgent</code>. It accepts a structured goal, plans bounded research and build tasks, verifies artifacts, checkpoints state, recovers from failures, and stops or escalates.</p>',code:C('goal → plan → ready task → execute → verify → checkpoint','  ↑                                            │','  └──── resume / replan / escalate / stop ─────┘')},
+  {h:'Already built',p:'<p>A project folder and a goal, nothing else. This phase adds the contract that every later component must obey.</p>'},
+  {h:'A contract makes autonomy finite',table:{head:['Field','Concrete question'],rows:[['Purpose','What outcome should exist?'],['Allowed work','Which reads and writes are in scope?'],['Gates','What must pass before acceptance?'],['Budgets','How many tasks, attempts, and seconds?'],['Stop','What means success, exhaustion, or escalation?'],['Owner','Who may approve expanded authority?']]}},
+  {h:'Typed goal contract',code:C('from dataclasses import dataclass, field','from pathlib import Path','','@dataclass(frozen=True)','class Goal:','    objective: str','    research_questions: tuple[str, ...]','    deliverables: tuple[str, ...]','    workspace: Path','    max_tasks_per_run: int = 3','    max_attempts_per_task: int = 2','    forbidden_paths: tuple[str, ...] = field(default_factory=tuple)','','def validate_goal(goal: Goal) -> None:','    if not goal.objective.strip():','        raise ValueError("objective is required")','    if goal.max_tasks_per_run < 1:','        raise ValueError("max_tasks_per_run must be positive")','    goal.workspace.mkdir(parents=True, exist_ok=True)')}
+ ],
+ lab:{title:'Create the project contract',steps:['Create <code>research_build_agent/models.py</code> with the shown <code>Goal</code> dataclass.','Instantiate a goal with two research questions and one Markdown deliverable.','Call <code>validate_goal</code> and print the goal.','Write the allowed workspace and forbidden paths before execution.','<b>Break it deliberately:</b> set <code>max_tasks_per_run=0</code> and confirm validation rejects it.'],verify:'The valid contract prints; the invalid budget raises ValueError before any task runs.'},
+ gotchas:[{s:'trap',t:'Goal is only prose',d:'The controller cannot reliably derive budgets, paths, or acceptance rules from an unstructured wish.'},{s:'trap',t:'Autonomy without an owner',d:'The system reaches an authority boundary but has nobody to receive escalation.'},{s:'trap',t:'Success has no witness',d:'The agent can declare completion without an artifact or passing gate.'},{s:'cost',t:'Contract covers every imagined case',d:'The project becomes policy design instead of a working first loop.'}],
+ quiz:[{q:'What is the reference project?',a:'A ResearchBuildAgent that plans bounded tasks, executes and verifies them, persists state, recovers, and stops or escalates.'},{q:'Why put budgets in the goal contract?',a:'They turn open-ended autonomy into enforceable limits before work begins.'},{q:'Recall from later practice: what must survive a restart?',a:'The last verified state, remaining tasks, attempts, evidence, and stop reason.'}],
+ docs:[['Agents overview','https://openai.github.io/openai-agents-python/agents/'],['Python dataclasses','https://docs.python.org/3/library/dataclasses.html']]},
+
+{id:'hl-loop',n:'01',title:'Close the control loop',layer:'l1',layerLabel:'Frame',time:'45 min',pre:'Phase 00',
+ objective:'Add a deterministic controller that performs <b>one bounded transition at a time</b>.',
+ concepts:[
+  {h:'Already built',p:'<p>A validated <code>Goal</code> defines purpose, workspace, budgets, and boundaries. There is not yet any execution lifecycle.</p>'},
+  {h:'One transition, then observe',p:'<p>The controller, not the model, owns repetition. Every iteration reads current state, chooses one legal action, records the result, and decides whether to continue.</p>',code:C('while budget remains:','    observe durable state','    choose one legal transition','    perform one bounded action','    persist the observation','    stop if success, blocked, or exhausted')},
+  {h:'Finite statuses',code:C('from enum import StrEnum','','class RunStatus(StrEnum):','    NEW = "new"','    RUNNING = "running"','    SUCCEEDED = "succeeded"','    BLOCKED = "blocked"','    EXHAUSTED = "exhausted"','','TERMINAL = {RunStatus.SUCCEEDED, RunStatus.BLOCKED, RunStatus.EXHAUSTED}','','def should_continue(status: RunStatus, used: int, limit: int) -> bool:','    return status not in TERMINAL and used < limit')},
+  {h:'Deterministic shell, bounded judgment',p:'<p>Use ordinary code for budgets, status transitions, routing, and gates. A model may later propose content or plans, but it does not get to silently redefine the loop.</p>'}
+ ],
+ lab:{title:'Run a three-step controller',steps:['Add <code>RunStatus</code>, <code>TERMINAL</code>, and <code>should_continue</code> to <code>models.py</code>.','Write a loop that increments <code>used</code> and prints each transition.','Stop at the goal budget.','Repeat with status set to <code>SUCCEEDED</code> after one step.','<b>Break it deliberately:</b> remove the budget check and observe why the loop has no hard stop.'],verify:'The first run executes exactly the configured number of steps; the second stops immediately after success.'},
+ gotchas:[{s:'trap',t:'Model owns the while loop',d:'A probabilistic component can forget or reinterpret the stopping policy.'},{s:'trap',t:'Status strings drift',d:'Typos create impossible branches; an enum makes the state space explicit.'},{s:'trap',t:'Failure equals retry',d:'The same action repeats even when no evidence or hypothesis changed.'},{s:'trap',t:'Terminal state still mutates',d:'Late work changes artifacts after the run has already declared its outcome.'}],
+ quiz:[{q:'Who owns repetition in this design?',a:'The deterministic controller.'},{q:'What are the three terminal statuses?',a:'Succeeded, blocked, and exhausted.'},{q:'What did Phase 00 contribute?',a:'A typed goal contract with scope, budgets, workspace, and owner boundaries.'}],
+ docs:[['Running agents','https://openai.github.io/openai-agents-python/running_agents/'],['Python enum','https://docs.python.org/3/library/enum.html']]},
+
+{id:'hl-task-graph',n:'02',title:'Build the task graph',layer:'l2',layerLabel:'Model',time:'60 min',pre:'Phase 01',
+ objective:'Represent long work as a <b>directed acyclic graph of bounded tasks</b>.',
+ concepts:[
+  {h:'Already built',p:'<p>The goal is validated and a bounded controller can stop. It still sees work as an undifferentiated sequence.</p>'},
+  {h:'Dependencies, not a to-do list',p:'<p>A task graph says which outputs unlock which later tasks. A task is ready only when all dependencies are accepted.</p>',code:C('[research-a] ─┐','              ├─→ [build-report] ─→ [final-review]','[research-b] ─┘')},
+  {h:'Typed tasks',code:C('from dataclasses import dataclass, field','from enum import StrEnum','','class TaskStatus(StrEnum):','    PENDING = "pending"','    RUNNING = "running"','    ACCEPTED = "accepted"','    FAILED = "failed"','    BLOCKED = "blocked"','','@dataclass','class Task:','    id: str','    kind: str','    instruction: str','    depends_on: tuple[str, ...] = field(default_factory=tuple)','    status: TaskStatus = TaskStatus.PENDING','    attempts: int = 0','    output_path: str | None = None')},
+  {h:'Ready-task selection',code:C('def ready_tasks(tasks: dict[str, Task]) -> list[Task]:','    accepted = {t.id for t in tasks.values() if t.status == TaskStatus.ACCEPTED}','    return sorted(','        (t for t in tasks.values()','         if t.status == TaskStatus.PENDING','         and set(t.depends_on) <= accepted),','        key=lambda t: t.id,','    )')}
+ ],
+ lab:{title:'Model the first plan by hand',steps:['Add <code>TaskStatus</code> and <code>Task</code> to <code>models.py</code>.','Create two research tasks and one build task depending on both.','Call <code>ready_tasks</code> before and after accepting each research task.','Confirm sorting makes selection stable.','<b>Break it deliberately:</b> add a cycle and explain why no task can become ready.'],verify:'Only dependency-free tasks are initially ready; the build task appears only after both prerequisites are accepted.'},
+ gotchas:[{s:'trap',t:'Sequence mistaken for dependency',d:'Independent research waits unnecessarily because the plan stores only one next step.'},{s:'trap',t:'Cycle has no detector',d:'The run appears idle forever even though pending work remains.'},{s:'trap',t:'Dependency success means execution finished',d:'A downstream task unlocks before the upstream verifier accepts its output.'},{s:'cost',t:'Tasks are too small',d:'Coordination and checkpoints cost more than the useful work.'}],
+ quiz:[{q:'When is a task ready?',a:'When it is pending and every dependency is accepted.'},{q:'Why sort ready tasks?',a:'Stable order makes runs and tests deterministic.'},{q:'What did Phase 01 add?',a:'A finite status model and a controller-owned stopping rule.'}],
+ docs:[['Agent orchestration','https://openai.github.io/openai-agents-python/multi_agent/'],['Python data model','https://docs.python.org/3/reference/datamodel.html']]},
+
+{id:'hl-state',n:'03',title:'Persist durable state',layer:'l2',layerLabel:'Model',time:'70 min',pre:'Phase 02',
+ objective:'Make the task graph <b>inspectable, restartable, and atomically checkpointed</b>.',
+ concepts:[
+  {h:'Already built',p:'<p>The controller can select ready tasks from a DAG. All state still disappears when the Python process exits.</p>'},
+  {h:'State is a snapshot, not a transcript',p:'<p>Persist current truth: run status, tasks, attempts, accepted evidence, budget use, and stop reason. Keep conversational narration out of the checkpoint.</p>'},
+  {h:'Run state',code:C('from dataclasses import dataclass, field, asdict','from datetime import datetime, timezone','','@dataclass','class RunState:','    run_id: str','    goal: Goal','    status: RunStatus','    tasks: dict[str, Task] = field(default_factory=dict)','    tasks_used: int = 0','    stop_reason: str | None = None','    updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())','','    def to_dict(self) -> dict[str, object]:','        data = asdict(self)','        data["goal"]["workspace"] = str(self.goal.workspace)','        return data')},
+  {h:'Atomic JSON checkpoint',code:C('import json','from pathlib import Path','','def save_state(state: RunState, path: Path) -> None:','    path.parent.mkdir(parents=True, exist_ok=True)','    temp = path.with_suffix(path.suffix + ".tmp")','    temp.write_text(json.dumps(state.to_dict(), indent=2, sort_keys=True), encoding="utf-8")','    temp.replace(path)')}
+ ],
+ lab:{title:'Survive a restart',steps:['Add <code>RunState</code> and <code>save_state</code>.','Create a graph, accept one task, and save <code>state.json</code>.','Exit Python and inspect the JSON manually.','Implement a matching <code>load_state</code> constructor, then resume selection.','<b>Break it deliberately:</b> truncate a copied checkpoint and confirm load fails closed instead of inventing state.'],verify:'A fresh Python process loads the same statuses and selects the same next ready task.'},
+ gotchas:[{s:'trap',t:'Transcript is the database',d:'A new process cannot reconstruct canonical status from prose and partial tool output.'},{s:'trap',t:'Checkpoint before verification',d:'An untrusted artifact is persisted as accepted truth.'},{s:'trap',t:'In-place JSON write',d:'A crash can leave the only checkpoint half-written.'},{s:'trap',t:'Secrets in state',d:'Durability turns a transient credential exposure into a stored incident.'}],
+ quiz:[{q:'What belongs in durable run state?',a:'Current status, tasks, attempts, accepted evidence, budget use, and stop reason.'},{q:'Why write a temporary file then replace?',a:'It reduces the chance that interruption corrupts the only checkpoint.'},{q:'What did Phase 02 add?',a:'A dependency graph and deterministic ready-task selection.'}],
+ docs:[['Run state','https://openai.github.io/openai-agents-python/ref/run_state/'],['Python json','https://docs.python.org/3/library/json.html'],['Python pathlib','https://docs.python.org/3/library/pathlib.html']]},
+
+{id:'hl-planner',n:'04',title:'Plan with constraints',layer:'l3',layerLabel:'Control',time:'75 min',pre:'Phase 03',
+ objective:'Convert a goal into a <b>valid, bounded task graph</b> while keeping planning judgment behind a typed boundary.',
+ concepts:[
+  {h:'Already built',p:'<p>The system can persist and resume a hand-authored task graph. It cannot yet derive that graph from the goal.</p>'},
+  {h:'Planner proposes, validator decides',p:'<p>A planner may use model judgment, but deterministic code validates IDs, dependency references, cycles, task count, and allowed kinds before state changes.</p>'},
+  {h:'Dependency-light planner',code:C('import hashlib','','def stable_id(kind: str, text: str) -> str:','    digest = hashlib.sha256(f"{kind}:{text}".encode()).hexdigest()[:10]','    return f"{kind}-{digest}"','','def plan(goal: Goal) -> dict[str, Task]:','    tasks: dict[str, Task] = {}','    research_ids: list[str] = []','    for question in goal.research_questions:','        task_id = stable_id("research", question)','        tasks[task_id] = Task(task_id, "research", question)','        research_ids.append(task_id)','    for deliverable in goal.deliverables:','        task_id = stable_id("build", deliverable)','        tasks[task_id] = Task(task_id, "build", deliverable, tuple(research_ids))','    validate_graph(tasks, max_tasks=50)','    return tasks')},
+  {h:'Judgment seam',code:C('from typing import Protocol','','class PlanningBackend(Protocol):','    def propose(self, goal: Goal) -> list[Task]: ...','','# The standard-library planner above is the runnable default.',' # A model-backed adapter may implement the same protocol later,',' # but its proposal must pass validate_graph before acceptance.')}
+ ],
+ lab:{title:'Generate the cumulative plan',steps:['Implement <code>stable_id</code> and <code>plan</code>.','Add <code>validate_graph</code> to reject missing dependencies, duplicate IDs, cycles, unknown kinds, and more than 50 tasks.','Plan the Phase 00 goal twice and compare IDs and dependencies.','Save the validated plan into <code>RunState</code>.','<b>Break it deliberately:</b> make a planner proposal reference a missing dependency and confirm validation rejects the whole proposal.'],verify:'Repeated planning of the same goal produces the same valid DAG; an invalid proposal never reaches durable state.'},
+ gotchas:[{s:'trap',t:'Planner writes state directly',d:'A malformed proposal becomes canonical before policy checks run.'},{s:'trap',t:'Random task IDs',d:'Replanning duplicates equivalent work and complicates resume.'},{s:'trap',t:'Plan is never revisable',d:'New evidence cannot change future work even when the original assumptions fail.'},{s:'trap',t:'Unlimited decomposition',d:'The planner converts one goal into an unbounded coordination problem.'}],
+ quiz:[{q:'What is the planner allowed to do?',a:'Propose tasks and dependencies within a typed interface.'},{q:'What decides whether a plan enters state?',a:'Deterministic graph and policy validation.'},{q:'What did Phase 03 add?',a:'Atomic, inspectable checkpoints that survive a new process.'}],
+ docs:[['Agent orchestration','https://openai.github.io/openai-agents-python/multi_agent/'],['Python protocols','https://docs.python.org/3/library/typing.html#typing.Protocol']]},
+
+{id:'hl-executor',n:'05',title:'Execute bounded tasks',layer:'l3',layerLabel:'Control',time:'80 min',pre:'Phase 04',
+ objective:'Give ready tasks <b>narrow handlers, isolated outputs, and explicit results</b>.',
+ concepts:[
+  {h:'Already built',p:'<p>A validated planner creates a durable DAG. Tasks have no implementation yet.</p>'},
+  {h:'One task, one side-effect boundary',p:'<p>The executor receives a task and workspace, dispatches by kind, and returns a result. It does not choose the next task or mark itself accepted.</p>'},
+  {h:'Typed result and registry',code:C('from dataclasses import dataclass','from pathlib import Path','from typing import Callable','','@dataclass(frozen=True)','class ExecutionResult:','    task_id: str','    output_path: Path | None','    message: str','    retryable: bool = False','','Handler = Callable[[Task, Path], ExecutionResult]','','def execute(task: Task, workspace: Path, handlers: dict[str, Handler]) -> ExecutionResult:','    if task.kind not in handlers:','        return ExecutionResult(task.id, None, f"no handler for {task.kind}")','    return handlers[task.kind](task, workspace)')},
+  {h:'Runnable local research handler',code:C('def research_handler(task: Task, workspace: Path) -> ExecutionResult:','    source_dir = workspace / "sources"','    output = workspace / "artifacts" / f"{task.id}.md"','    output.parent.mkdir(parents=True, exist_ok=True)','    matches: list[str] = []','    terms = {w.lower() for w in task.instruction.split() if len(w) > 4}','    for path in sorted(source_dir.glob("*.txt")):','        text = path.read_text(encoding="utf-8")','        if terms & set(text.lower().split()):','            matches.append(f"## {path.name}\\n\\n{text.strip()}")','    output.write_text("\\n\\n".join(matches), encoding="utf-8")','    return ExecutionResult(task.id, output, f"matched {len(matches)} sources")')}
+ ],
+ lab:{title:'Execute one ready research task',steps:['Add <code>ExecutionResult</code>, the registry dispatcher, and <code>research_handler</code>.','Place two small source notes in <code>workspace/sources</code>.','Execute only the first sorted ready task.','Record its output path and increment its attempt count, but do not accept it yet.','<b>Break it deliberately:</b> request an unknown task kind and confirm the dispatcher returns a controlled failure.'],verify:'Exactly one artifact is created inside the workspace; the task remains unaccepted until the next phase verifies it.'},
+ gotchas:[{s:'trap',t:'Executor chooses strategy',d:'Planning, scheduling, and side effects collapse into one component that is hard to test.'},{s:'trap',t:'Success inferred from no exception',d:'A handler can produce empty or wrong output while returning normally.'},{s:'trap',t:'Shared output filename',d:'Retries and parallel tasks overwrite one another without provenance.'},{s:'trap',t:'Handler escapes workspace',d:'A task instruction becomes an unintended filesystem authority grant.'}],
+ quiz:[{q:'What must the executor not decide?',a:'Which task runs next and whether its output is accepted.'},{q:'What is an ExecutionResult?',a:'A typed observation containing task identity, output path, message, and retryability.'},{q:'What did Phase 04 add?',a:'A deterministic planner plus validation before the plan enters state.'}],
+ docs:[['Tool orchestration','https://openai.github.io/openai-agents-python/multi_agent/'],['Python pathlib','https://docs.python.org/3/library/pathlib.html']]},
+
+{id:'hl-verifier',n:'06',title:'Gate every output',layer:'l3',layerLabel:'Control',time:'80 min',pre:'Phase 05',
+ objective:'Separate creation from acceptance with <b>deterministic gates and durable evidence</b>.',
+ concepts:[
+  {h:'Already built',p:'<p>A bounded executor can produce one artifact. The run still cannot distinguish a real output from an empty or misplaced file.</p>'},
+  {h:'Verification ladder',p:'<p>Use the cheapest objective checks first: path boundary, existence, size, format, task-specific assertions, then semantic or human review only where rules cannot decide.</p>'},
+  {h:'Gate result',code:C('from dataclasses import dataclass','import hashlib','','@dataclass(frozen=True)','class GateResult:','    passed: bool','    checks: tuple[str, ...]','    evidence_sha256: str | None','    reason: str','','def verify_artifact(result: ExecutionResult, workspace: Path) -> GateResult:','    if result.output_path is None:','        return GateResult(False, ("output_path",), None, "missing output path")','    path = result.output_path.resolve()','    if workspace.resolve() not in path.parents:','        return GateResult(False, ("workspace_boundary",), None, "output escaped workspace")','    if not path.is_file() or path.stat().st_size == 0:','        return GateResult(False, ("exists", "nonempty"), None, "artifact missing or empty")','    digest = hashlib.sha256(path.read_bytes()).hexdigest()','    return GateResult(True, ("boundary", "exists", "nonempty"), digest, "accepted")')},
+  {h:'Acceptance transition',code:C('def apply_gate(task: Task, gate: GateResult) -> None:','    if gate.passed:','        task.status = TaskStatus.ACCEPTED','    else:','        task.status = TaskStatus.FAILED')}
+ ],
+ lab:{title:'Reject before accepting',steps:['Add <code>GateResult</code> and <code>verify_artifact</code>.','Run the research task from Phase 05 and apply its gate.','Save the SHA-256 digest with accepted evidence.','Delete source matches so the handler creates an empty file, then run again.','<b>Break it deliberately:</b> point a result outside the workspace and confirm the boundary gate fails.'],verify:'A non-empty in-workspace artifact is accepted with a digest; empty and out-of-workspace artifacts are rejected.'},
+ gotchas:[{s:'trap',t:'Generator certifies itself',d:'The component that created the output also decides it is good enough.'},{s:'trap',t:'Hash mistaken for quality',d:'A digest proves identity, not correctness; task-specific checks still matter.'},{s:'trap',t:'Gate runs after downstream unlock',d:'Dependent tasks consume unaccepted evidence.'},{s:'cost',t:'Semantic judge used for syntax',d:'A model evaluates conditions that deterministic code could decide faster and more consistently.'}],
+ quiz:[{q:'What is the difference between execution and acceptance?',a:'Execution produces an observation; an independent gate decides whether it may enter trusted state.'},{q:'What does SHA-256 prove here?',a:'Artifact identity and later change detection, not semantic quality.'},{q:'What did Phase 05 add?',a:'Narrow task handlers and typed execution results.'}],
+ docs:[['Guardrails','https://openai.github.io/openai-agents-python/guardrails/'],['Testing agents','https://openai.github.io/openai-agents-python/testing/'],['Python hashlib','https://docs.python.org/3/library/hashlib.html']]},
+
+{id:'hl-recovery',n:'07',title:'Recover without spinning',layer:'l4',layerLabel:'Operate',time:'75 min',pre:'Phase 06',
+ objective:'Classify failures, permit only evidence-changing retries, and <b>escalate when the machine should stop guessing</b>.',
+ concepts:[
+  {h:'Already built',p:'<p>Execution is separated from verification. A failed gate currently leaves the task failed with no controlled recovery path.</p>'},
+  {h:'Failure classes',table:{head:['Class','Action','Example'],rows:[['Transient','Retry within cap','Temporary file lock'],['Correctable','Change input or method, then retry','Missing source format'],['Permanent','Block task','Forbidden path'],['Needs human','Escalate with evidence','Ambiguous acceptance judgment']]}},
+  {h:'Recovery decision',code:C('from enum import StrEnum','','class RecoveryAction(StrEnum):','    RETRY = "retry"','    BLOCK = "block"','    ESCALATE = "escalate"','','def choose_recovery(task: Task, result: ExecutionResult, gate: GateResult, limit: int) -> RecoveryAction:','    if task.attempts >= limit:','        return RecoveryAction.ESCALATE','    if result.retryable and not gate.passed:','        return RecoveryAction.RETRY','    if gate.reason in {"output escaped workspace", "missing output path"}:','        return RecoveryAction.BLOCK','    return RecoveryAction.ESCALATE')},
+  {h:'Retry invariant',p:'<p>Before retrying, record what changed: new evidence, corrected input, altered handler, or a transient condition that has plausibly cleared. Same action plus same state is repetition, not recovery.</p>'}
+ ],
+ lab:{title:'Force each recovery branch',steps:['Add <code>RecoveryAction</code> and <code>choose_recovery</code>.','Create one transient failure, one boundary failure, and one ambiguous verifier failure.','Confirm the actions are retry, block, and escalate.','Persist attempt count, last reason, and changed-evidence note before retry.','<b>Break it deliberately:</b> retry the identical failure until the cap and confirm escalation occurs.'],verify:'Every forced failure reaches a deterministic action and no task exceeds its attempt cap.'},
+ gotchas:[{s:'trap',t:'Retry flag is trusted blindly',d:'A handler can label permanent failure transient and waste the entire budget.'},{s:'trap',t:'Attempts reset on restart',d:'Persistence accidentally grants infinite retries across sessions.'},{s:'trap',t:'Escalation says only failed',d:'The human receives no artifact, checks, attempts, or decision needed.'},{s:'trap',t:'Recovery mutates accepted evidence',d:'A repair path overwrites the last known-good checkpoint.'}],
+ quiz:[{q:'What must change before a retry?',a:'Evidence, input, method, or a plausibly transient external condition.'},{q:'When should the controller escalate?',a:'At the attempt cap or when policy and deterministic checks cannot safely decide.'},{q:'What did Phase 06 add?',a:'Independent verification gates and durable evidence hashes.'}],
+ docs:[['Running agents and errors','https://openai.github.io/openai-agents-python/running_agents/'],['Results','https://openai.github.io/openai-agents-python/results/']]},
+
+{id:'hl-observe',n:'08',title:'Make the loop observable',layer:'l4',layerLabel:'Operate',time:'70 min',pre:'Phase 07',
+ objective:'Record structured events and metrics so a person can <b>reconstruct why the run continued or stopped</b>.',
+ concepts:[
+  {h:'Already built',p:'<p>The agent can recover or escalate within caps. Its reasoning is still scattered across console messages and state mutations.</p>'},
+  {h:'Events explain transitions',code:C('from dataclasses import dataclass, asdict','from datetime import datetime, timezone','import json','','@dataclass(frozen=True)','class Event:','    at: str','    run_id: str','    kind: str','    task_id: str | None','    detail: dict[str, object]','','def append_event(path: Path, event: Event) -> None:','    with path.open("a", encoding="utf-8") as handle:','        handle.write(json.dumps(asdict(event), sort_keys=True) + "\\n")','','def event(run_id: str, kind: str, task_id: str | None, **detail: object) -> Event:','    return Event(datetime.now(timezone.utc).isoformat(), run_id, kind, task_id, detail)')},
+  {h:'Minimum event vocabulary',p:'<p>Record <code>planned</code>, <code>task_started</code>, <code>task_finished</code>, <code>gate_passed</code>, <code>gate_failed</code>, <code>retry_scheduled</code>, <code>escalated</code>, and <code>run_stopped</code>.</p>'},
+  {h:'Useful metrics',table:{head:['Metric','Why it matters'],rows:[['Acceptance rate','Detects low-quality execution'],['Attempts per accepted task','Shows retry waste'],['Cost or time per accepted task','Connects effort to useful output'],['Escalation rate','Shows unclear policy or difficult work'],['Escaped defects','Tests whether gates protect users']]} }
+ ],
+ lab:{title:'Replay a run from JSONL',steps:['Add <code>Event</code>, <code>event</code>, and <code>append_event</code>.','Emit an event at every task and gate transition.','Force one retry and one success.','Close Python, then reconstruct the sequence using only <code>events.jsonl</code>.','<b>Break it deliberately:</b> omit <code>run_stopped</code> and note the ambiguity left for an operator.'],verify:'The event stream explains task order, each gate result, retry reason, and final stop without reading console output.'},
+ gotchas:[{s:'trap',t:'Logs contain secrets or full prompts',d:'Observability creates a second sensitive data store.'},{s:'trap',t:'Only happy-path events',d:'Operators can see successes but not where time and attempts disappeared.'},{s:'trap',t:'Timestamps are local and naive',d:'Events from multiple runs cannot be ordered reliably.'},{s:'cost',t:'Every internal detail becomes an event',d:'High-volume noise hides the transitions needed for diagnosis.'}],
+ quiz:[{q:'What question should an event log answer?',a:'What changed, why the loop continued, and why it stopped.'},{q:'Name three operational metrics.',a:'Acceptance rate, attempts per accepted task, time or cost per accepted task, escalation rate, or escaped defects.'},{q:'What did Phase 07 add?',a:'Failure classification, capped retries, blocking, and escalation.'}],
+ docs:[['Tracing','https://openai.github.io/openai-agents-python/tracing/'],['Usage tracking','https://openai.github.io/openai-agents-python/usage/']]},
+
+{id:'hl-evaluate',n:'09',title:'Evaluate the system',layer:'l4',layerLabel:'Operate',time:'90 min',pre:'Phase 08',
+ objective:'Test the whole harness against <b>scenarios, invariants, and readiness criteria</b>, not one impressive run.',
+ concepts:[
+  {h:'Already built',p:'<p>The loop is observable and recoverable. Reliability has not been measured across success, failure, restart, and boundary cases.</p>'},
+  {h:'Evaluation matrix',table:{head:['Scenario','Invariant'],rows:[['Happy path','Every task accepted before dependents run'],['Cold resume','Next action matches pre-restart state'],['Empty artifact','Gate rejects and recovery stays capped'],['Cycle or missing dependency','Plan rejected before execution'],['Boundary escape','Task blocks without external write'],['Budget exhaustion','Run stops truthfully with resumable state'],['Ambiguous judgment','Human escalation contains evidence']]}},
+  {h:'Standard-library test',code:C('import tempfile','import unittest','from pathlib import Path','','class AgentTests(unittest.TestCase):','    def test_empty_artifact_is_rejected(self) -> None:','        with tempfile.TemporaryDirectory() as raw:','            root = Path(raw)','            artifact = root / "artifacts" / "empty.md"','            artifact.parent.mkdir()','            artifact.write_text("", encoding="utf-8")','            result = ExecutionResult("t1", artifact, "created")','            gate = verify_artifact(result, root)','            self.assertFalse(gate.passed)','','if __name__ == "__main__":','    unittest.main()')},
+  {h:'Readiness verdicts',p:'<p><b>Manual only</b>: invariants or recovery are unproven. <b>Supervised loop</b>: bounded runs and recovery pass with a person watching. <b>Unattended loop</b>: repeated evaluations, secure boundaries, durable state, alerts, and recovery are demonstrated.</p>'}
+ ],
+ lab:{title:'Build the evaluation suite',steps:['Create <code>tests/test_agent.py</code> with the empty-artifact test.','Add tests for graph validation, deterministic ordering, attempt caps, boundary escape, and checkpoint resume.','Run <code>python -m unittest -v</code>.','Record pass counts and one supervised manual run.','<b>Break it deliberately:</b> change the verifier to accept empty files and confirm the regression test fails.'],verify:'The suite rejects the deliberate regression and passes after restoration; the readiness verdict cites evidence rather than confidence.'},
+ gotchas:[{s:'trap',t:'One golden trace',d:'The evaluation memorizes one route and misses alternate failures.'},{s:'trap',t:'Mocks replace every boundary',d:'Tests pass while filesystem, serialization, or restart behavior remains unknown.'},{s:'trap',t:'Metric without threshold',d:'A number is collected but cannot drive a stop, release, or investigation decision.'},{s:'trap',t:'Unattended before supervised',d:'The first real recovery test happens without a human available.'}],
+ quiz:[{q:'What earns supervised-loop readiness?',a:'Bounded execution, objective gates, durable state, tested recovery, and a successful supervised run.'},{q:'Why is one successful run insufficient?',a:'It does not exercise failure, restart, boundary, or budget invariants.'},{q:'What did Phase 08 add?',a:'Structured events and metrics that make decisions reconstructable.'}],
+ docs:[['Testing agents','https://openai.github.io/openai-agents-python/testing/'],['Python unittest','https://docs.python.org/3/library/unittest.html']]},
+
+{id:'hl-capstone',n:'10',title:'Run the long horizon',layer:'l4',layerLabel:'Operate',time:'2–4 h',pre:'All phases',
+ objective:'Integrate the components into a <b>slice-based, restartable ResearchBuildAgent</b> and prove its stopping behavior.',
+ concepts:[
+  {h:'Already built',p:'<p>The project now has a contract, bounded controller, validated DAG, atomic state, planner, handlers, verifier, recovery policy, event stream, and evaluation suite.</p>'},
+  {h:'Complete controller',code:C('def run_slice(state: RunState, handlers: dict[str, Handler], state_path: Path) -> RunState:','    state.status = RunStatus.RUNNING','    while should_continue(state.status, state.tasks_used, state.goal.max_tasks_per_run):','        ready = ready_tasks(state.tasks)','        if not ready:','            pending = [t for t in state.tasks.values() if t.status == TaskStatus.PENDING]','            state.status = RunStatus.BLOCKED if pending else RunStatus.SUCCEEDED','            state.stop_reason = "no ready tasks" if pending else "all tasks accepted"','            break','        task = ready[0]','        task.status = TaskStatus.RUNNING','        task.attempts += 1','        save_state(state, state_path)','        result = execute(task, state.goal.workspace, handlers)','        gate = verify_artifact(result, state.goal.workspace)','        apply_gate(task, gate)','        state.tasks_used += 1','        save_state(state, state_path)','        if not gate.passed:','            action = choose_recovery(task, result, gate, state.goal.max_attempts_per_task)','            if action == RecoveryAction.RETRY:','                task.status = TaskStatus.PENDING','            elif action == RecoveryAction.BLOCK:','                task.status = TaskStatus.BLOCKED','                state.status = RunStatus.BLOCKED','            else:','                state.status = RunStatus.BLOCKED','                state.stop_reason = f"escalate {task.id}: {gate.reason}"','    if state.status == RunStatus.RUNNING:','        state.status = RunStatus.EXHAUSTED','        state.stop_reason = "slice budget exhausted"','    save_state(state, state_path)','    return state')},
+  {h:'Long horizon means many safe slices',p:'<p>A run does not need to finish the mission. It must make bounded verified progress, checkpoint, and leave a truthful reason for the next scheduled or human-triggered slice.</p>',code:C('slice 1: plan + research A → checkpoint → EXHAUSTED','slice 2: research B → checkpoint → EXHAUSTED','slice 3: build → verify → checkpoint → SUCCEEDED')},
+  {h:'Final acceptance',table:{head:['Claim','Required witness'],rows:[['Goal converted to plan','Validated deterministic DAG'],['Tasks bounded','Per-slice and per-task caps'],['Outputs verified','Independent gates plus evidence hashes'],['State durable','Cold-process resume test'],['Failure recoverable','Forced retry, block, and escalation'],['Operation observable','Replayable event log and metrics'],['Safe stopping','Success, blocked, or exhausted reason']]} }
+ ],
+ lab:{title:'Graduate the ResearchBuildAgent',steps:['Assemble modules under <code>research_build_agent/</code> and wire <code>run_slice</code>.','Add a build handler that combines accepted research artifacts into the requested Markdown deliverable.','Set <code>max_tasks_per_run=1</code> and invoke the program repeatedly from fresh processes.','Run the full unit suite and the evaluation matrix.','Force empty output, missing dependency, boundary escape, and exhausted budget cases.','Perform one supervised end-to-end run and assign a readiness verdict.','<b>Break it deliberately:</b> corrupt a copied state file and confirm the system stops for recovery instead of silently starting over.'],verify:'Fresh invocations advance exactly one accepted task at a time, produce the final deliverable, preserve evidence, and terminate with an accurate status and reason.'},
+ gotchas:[{s:'trap',t:'Exhausted means failed',d:'A safe slice may stop before the mission is complete; durable state distinguishes bounded progress from failure.'},{s:'trap',t:'Resume silently replans',d:'The agent duplicates or invalidates accepted work instead of continuing from the checkpoint.'},{s:'trap',t:'Final file bypasses its own gate',d:'Research is verified, but the user-facing deliverable is trusted without acceptance criteria.'},{s:'cost',t:'Harness becomes the product',d:'Control machinery grows faster than the research-and-build value it protects.'}],
+ quiz:[{q:'What is the long-horizon unit of progress?',a:'A bounded slice that accepts verified tasks, checkpoints state, and stops truthfully.'},{q:'When is the mission successful?',a:'All required tasks and the final deliverable are independently accepted.'},{q:'State the full loop in one line.',a:'Contract, plan, select, execute, verify, checkpoint, recover or escalate, then stop or run the next slice.'}],
+ docs:[['Running agents','https://openai.github.io/openai-agents-python/running_agents/'],['Run state','https://openai.github.io/openai-agents-python/ref/run_state/'],['Testing agents','https://openai.github.io/openai-agents-python/testing/'],['Tracing','https://openai.github.io/openai-agents-python/tracing/']]}
+];
+
+const TREES = [
+{title:'What should decide this?',rows:[['Budget, routing, status, path boundary','Deterministic code','The answer must be repeatable'],['Task wording or research synthesis','Model or human judgment','Meaning matters more than exact rules'],['Acceptance with objective signals','Verifier','Creation and certification stay separate'],['Ambiguous risk or authority expansion','Human escalation','The machine must not guess permission']]},
+{title:'What happens after a task fails?',rows:[['Transient reason and attempts remain','Record changed condition, retry','One more attempt may produce new evidence'],['Correctable input or method','Patch the bounded cause, retry','The hypothesis changed'],['Boundary or policy violation','Block','Retry cannot make the action authorized'],['Ambiguous acceptance or cap reached','Escalate','Human judgment or authority is required']]},
+{title:'Why did the loop stop?',rows:[['All required artifacts accepted','SUCCEEDED','Mission completion is witnessed'],['Ready work remains but slice cap reached','EXHAUSTED','Resume in a later slice'],['Pending work has no legal ready transition','BLOCKED','Repair graph, input, or authority'],['State cannot be trusted','BLOCKED','Recover checkpoint; never invent progress']]},
+{title:'Which representation should I use?',rows:[['Current truth across restarts','RunState JSON','Compact durable snapshot'],['Dependencies and readiness','Task DAG','Controls legal execution order'],['Controller lifecycle','State diagram','Makes transitions and terminal states visible'],['Operator history','JSONL events','Append-only reconstruction'],['Correctness criteria','Tests and gate results','Reproducible evidence']]}
+];
+
+const REF = [
+{id:'architecture',title:'Cumulative architecture',note:'Every phase adds one component to this same project.',head:['Component','Owns','Must not own'],rows:[['Goal contract','Purpose, scope, budgets','Execution'],['Planner','Task proposals','Acceptance or state writes'],['Graph','Dependencies and readiness','Task content'],['State store','Durable current truth','Policy'],['Controller','Transitions, budgets, stopping','Semantic judgment'],['Executor','One bounded side effect','Scheduling or acceptance'],['Verifier','Acceptance evidence','Artifact creation'],['Recovery policy','Retry, block, escalate','Unlimited attempts'],['Event log','Transition history','Canonical state'],['Evaluation suite','System invariants','Production mutation']]},
+{id:'state-machine',title:'Run state machine',head:['From','Condition','To'],rows:[['NEW','Validated plan saved','RUNNING'],['RUNNING','Task gate passes','RUNNING'],['RUNNING','All tasks accepted','SUCCEEDED'],['RUNNING','Slice budget reached','EXHAUSTED'],['RUNNING','No legal transition','BLOCKED'],['RUNNING','Escalation required','BLOCKED'],['EXHAUSTED','New slice authorized','RUNNING'],['BLOCKED','Human repairs state or input','RUNNING']]},
+{id:'contract',title:'Loop contract checklist',head:['Area','Required decision'],rows:[['Owner','Who approves authority and receives escalation?'],['Purpose','What observable artifact or decision is required?'],['Trigger','Manual, scheduled, CI, or event-driven?'],['Inputs','Which sources are allowed and trusted?'],['Actions','Which reads, writes, and tools are permitted?'],['Isolation','Where may artifacts and state live?'],['Gates','Which checks accept each output?'],['State','What survives restart?'],['Budgets','Task, attempt, time, cost, and concurrency caps'],['Recovery','What retries, blocks, or escalates?'],['Logs','Which events and metrics are retained?'],['Stop','Exact success, exhausted, and blocked conditions']]},
+{id:'phase-map',title:'Curriculum build map',head:['Phase','Adds','Spaced recall'],rows:[['00','Goal and loop contract','Stop and state'],['01','Bounded controller','Contract'],['02','Task DAG','Controller stops'],['03','Atomic state','Graph readiness'],['04','Validated planner','Durable checkpoint'],['05','Task executor','Plan boundary'],['06','Verifier gates','Executor boundary'],['07','Recovery policy','Evidence and attempts'],['08','Events and metrics','Recovery reasons'],['09','Evaluation suite','All prior invariants'],['10','Slice-based capstone','Complete loop']]},
+{id:'readiness',title:'Readiness rubric',head:['Verdict','Minimum evidence'],rows:[['MANUAL ONLY','Missing objective gates, durable state, hard caps, or tested recovery'],['READY FOR SUPERVISED LOOP','Bounded tests pass and one supervised end-to-end run succeeds'],['READY FOR UNATTENDED LOOP','Repeated supervised evidence, secure isolation, alerts, rollback or disable path, and acceptable operational metrics']]},
+{id:'source-index',title:'Primary source index',head:['Topic','Official source'],rows:[['Agent loop','<a href="https://openai.github.io/openai-agents-python/running_agents/">Running agents</a>'],['Orchestration','<a href="https://openai.github.io/openai-agents-python/multi_agent/">Agent orchestration</a>'],['State snapshots','<a href="https://openai.github.io/openai-agents-python/ref/run_state/">Run state</a>'],['Guardrails','<a href="https://openai.github.io/openai-agents-python/guardrails/">Guardrails</a>'],['Testing','<a href="https://openai.github.io/openai-agents-python/testing/">Testing agents</a>'],['Tracing','<a href="https://openai.github.io/openai-agents-python/tracing/">Tracing</a>'],['Dataclasses','<a href="https://docs.python.org/3/library/dataclasses.html">Python dataclasses</a>'],['Unit tests','<a href="https://docs.python.org/3/library/unittest.html">Python unittest</a>']]}
+];
+
+const AUDIT = {
+ intro:'This guide distinguishes a teaching implementation from production infrastructure. The cumulative Python project is intentionally standard-library-first and deterministic so each control decision is inspectable.',
+ groups:[
+  {label:'Grounded architecture',tag:'holds',items:[{c:'An agent loop alternates model decisions, tool actions, and observations until final output or a stopping limit.',f:'Mapped to a deterministic controller with explicit terminal states and slice budgets.'},{c:'Orchestration can be model-led, code-led, or mixed.',f:'This guide uses code for routing and limits, with a typed seam for model judgment.'},{c:'Serializable run state supports pause and resume.',f:'Mapped to atomic JSON checkpoints and a cold-process resume lab.'}]},
+  {label:'Teaching simplifications',tag:'stale',items:[{c:'The local research handler is a production research system.',f:'No. It is a runnable offline handler for learning execution and verification boundaries.'},{c:'File existence and a hash prove semantic correctness.',f:'No. They prove basic structure and identity; real goals need task-specific and sometimes human or model evaluation.'},{c:'JSON files are sufficient for every deployment.',f:'No. Multi-process or distributed systems need transactional storage, locking, identity, and stronger recovery.'}]},
+  {label:'Unsafe interpretations',tag:'wrong',items:[{c:'Long horizon means one process should run indefinitely.',f:'Wrong. The guide defines bounded slices with durable checkpoints and explicit resume.'},{c:'Retrying is persistence.',f:'Wrong. A retry requires changed evidence or a plausibly cleared transient condition.'},{c:'The planner may expand authority to complete the goal.',f:'Wrong. Planning proposes work inside the contract; authority changes require escalation.'}]},
+  {label:'Production extensions',tag:'gap',items:[{c:'Model-backed planning and semantic evaluation are intentionally adapters, not hidden dependencies.',f:'Add them behind typed protocols and keep deterministic validation outside the model.'},{c:'Distributed scheduling is out of scope.',f:'Add leases, idempotency keys, transactional queues, and concurrency tests before multiple workers.'},{c:'Unattended operation needs deployment controls.',f:'Add authentication, secret management, monitoring alerts, disable controls, retention policy, and repeated supervised evidence.'}]}
+ ]
+};
+
+
+/* ============================================================
+   Horizon Loop Lab - app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip — the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+
+
+
+
+
+</body></html>
