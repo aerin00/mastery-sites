@@ -17,10 +17,11 @@ its own index.html:
     description: One-line description shown under the title.
     tags: runbook, mastery
     pinned: true
+    ingested: 2026-09-10T16:27:00-07:00
     -->
 
-All three fields are optional. A missing block (or missing field) falls back
-to description "", tags [], pinned false, and the layout degrades gracefully
+All fields are optional. A missing block (or missing field) falls back
+to description "", tags [], pinned false, ingestion unknown, and the layout degrades gracefully
 (no description line, no tag chips, no TAGS rail section). Titles come from
 each page's <title> element; the prettified folder name is the fallback.
 
@@ -29,6 +30,9 @@ Order
 Sites keep this generator's historical order (natural sort by folder name,
 categories in first-appearance order). When PINNED_FIRST is true, pinned
 sites additionally float to the top of the list (stable within each group).
+Recent Sites instead sorts by the persisted ingestion timestamp, newest first,
+with unknown dates last and site path breaking ties. No Git or filesystem
+timestamps are consulted during generation.
 
 Determinism: identical inputs on the same calendar day produce
 byte-identical HTML.
@@ -45,7 +49,7 @@ import json
 import re
 import sys
 from collections import OrderedDict
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__", ".venv", "venv"}
@@ -71,6 +75,7 @@ DOT_PINNED = "#dfae5c"
 # One-line blurb shown under the heading for each nav target. Unknown
 # categories get "" and the blurb line is hidden.
 ALL_SITES_BLURB = "All reference sites across every category, pinned first."
+RECENT_SITES_BLURB = "Most recently ingested first, regardless of pins. Dates are first-ingest dates, not last edits."
 PINNED_BLURB = "The sites kept at the top of the list."
 CATEGORY_BLURBS = {
     "hermes": "Hermes Agent runbooks and references: bot mode, handoffs, flightpath.",
@@ -106,7 +111,7 @@ def prettify(name: str) -> str:
 
 def parse_front_matter(text: str) -> dict:
     """Parse the optional <!-- index: ... --> block. Degrades to defaults."""
-    meta = {"description": "", "tags": [], "pinned": False}
+    meta = {"description": "", "tags": [], "pinned": False, "ingested": ""}
     m = FRONT_MATTER_RE.search(text[:FRONT_MATTER_WINDOW])
     if not m:
         return meta
@@ -121,6 +126,8 @@ def parse_front_matter(text: str) -> dict:
             meta["pinned"] = line.split(":", 1)[1].strip().lower() in {
                 "true", "yes", "1", "on",
             }
+        elif line.startswith("ingested:"):
+            meta["ingested"] = line.split(":", 1)[1].strip()
     return meta
 
 
@@ -132,6 +139,7 @@ def make_entry(category, slug: str, html_path: Path) -> dict:
     tm = TITLE_RE.search(text)
     title = html_mod.unescape(tm.group(1).strip()) if tm else prettify(slug)
     meta = parse_front_matter(text)
+    ingested_date, ingested_sort = ingestion_date(meta["ingested"])
     if category:
         path_disp = f"/{category}/{slug}/"
         href = f"{category}/{slug}/index.html"
@@ -145,9 +153,23 @@ def make_entry(category, slug: str, html_path: Path) -> dict:
         "description": meta["description"],
         "tags": meta["tags"],
         "pinned": meta["pinned"],
+        "ingested_date": ingested_date,
+        "ingested_sort": ingested_sort,
         "slug": slug,
         "href": href,
     }
+
+
+def ingestion_date(value: str) -> tuple[str, str]:
+    """Keep the source's calendar date; normalize chronology to UTC."""
+    if not value:
+        return "", ""
+    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}(?:T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:Z|[+-][0-9]{2}:[0-9]{2}))?", value):
+        raise ValueError("ingested must be YYYY-MM-DD or an ISO timestamp with timezone")
+    timestamp = datetime.fromisoformat(value)
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+    return timestamp.date().isoformat(), timestamp.astimezone(timezone.utc).isoformat()
 
 
 def collect(root: Path) -> list:
@@ -248,6 +270,13 @@ input::placeholder{color:#5b6270}
 .l3{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:auto 0 0 21px;padding-top:10px}
 .pth{font-family:var(--mono);font-size:11.5px;color:var(--text-2)}
 .chip{font-family:var(--mono);font-size:10px;color:var(--chip-text);background:var(--chip-bg);border:1px solid var(--chip-border);border-radius:4px;padding:2px 7px}
+.ingested-date{display:none}
+.recent-columns{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:16px;padding:0 16px 10px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+.recent-columns span:last-child{text-align:right;white-space:nowrap}
+.rows.recent{grid-template-columns:1fr}
+.recent .row{display:grid;grid-template-columns:minmax(0,1fr) 120px;column-gap:16px;min-height:0}
+.recent .l1,.recent .l2,.recent .l3{grid-column:1;min-width:0}
+.recent .ingested-date{display:block;grid-column:2;grid-row:1 / span 3;align-self:center;text-align:right;white-space:nowrap;font-family:var(--mono);font-size:12px;color:var(--text-2)}
 .empty{font-family:var(--mono);font-size:13px;color:var(--dim);padding:56px 0}
 .pager{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:26px}
 .page-buttons{display:flex;align-items:center;gap:6px}
@@ -279,6 +308,8 @@ input::placeholder{color:#5b6270}
   .blurb{margin-bottom:18px}
   .rows{grid-template-columns:1fr}
   .row{min-height:0}
+  .recent-columns,.recent .row{grid-template-columns:minmax(0,1fr) 96px;column-gap:10px;padding-left:12px;padding-right:12px}
+  .recent .ingested-date{font-size:11px}
   .pth{display:none}
   .pager{gap:6px}
   .page-control{min-height:44px;padding:7px 10px}
@@ -292,6 +323,16 @@ JS_CORE = """\
   "use strict";
   var state = { cat: "all", tag: null, q: "", page: 1 };
   var rows = Array.prototype.slice.call(document.querySelectorAll("#rows .row"));
+  var rowsEl = document.getElementById("rows");
+  var recentColumns = document.getElementById("recent-columns");
+  var defaultOrder = rows.map(function (_, i) { return i; });
+  var recentOrder = defaultOrder.slice().sort(function (a, b) {
+    var left = SITES[a], right = SITES[b];
+    if (left.ingested_sort !== right.ingested_sort) {
+      return left.ingested_sort > right.ingested_sort ? -1 : 1;
+    }
+    return left.path < right.path ? -1 : (left.path > right.path ? 1 : 0);
+  });
   var qInput = document.getElementById("q");
   var h1 = document.getElementById("h1");
   var meta = document.getElementById("meta");
@@ -314,7 +355,7 @@ JS_CORE = """\
   function matches(s) {
     if (state.cat === "pinned") {
       if (!s.pinned) return false;
-    } else if (state.cat !== "all" && s.category !== state.cat) {
+    } else if (state.cat !== "all" && state.cat !== "recent" && s.category !== state.cat) {
       return false;
     }
     if (state.tag !== null && s.tags.indexOf(state.tag) === -1) return false;
@@ -332,9 +373,15 @@ JS_CORE = """\
 
   function apply() {
     var matched = [];
-    for (var i = 0; i < rows.length; i++) {
-      rows[i].hidden = true;
-      if (matches(SITES[i])) matched.push(i);
+    var recent = state.cat === "recent";
+    var order = recent ? recentOrder : defaultOrder;
+    rowsEl.classList.toggle("recent", recent);
+    recentColumns.hidden = !recent;
+    for (var i = 0; i < order.length; i++) {
+      var index = order[i];
+      rows[index].hidden = true;
+      rowsEl.appendChild(rows[index]);
+      if (matches(SITES[index])) matched.push(index);
     }
     var total = matched.length;
     var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -344,7 +391,8 @@ JS_CORE = """\
     for (var shown = start; shown < end; shown++) {
       rows[matched[shown]].hidden = false;
     }
-    var name = state.cat === "all" ? "All sites"
+    var name = state.cat === "all" ? "All Sites"
+             : state.cat === "recent" ? "Recent Sites"
              : (state.cat === "pinned" ? "\\u2605 Pinned" : state.cat);
     h1.textContent = name;
     var m = total === 0 ? "0 pages" : (start + 1) + "\\u2013" + end + " of " + total;
@@ -478,6 +526,9 @@ def build_row(i: int, e: dict) -> str:
     parts.append(
         f'<span class="l3"><span class="pth">{esc(e["path"])}</span>{chips}</span>'
     )
+    ingested = e.get("ingested_date", "")
+    date_html = f'<time datetime="{esc(ingested)}">{esc(ingested)}</time>' if ingested else "Unknown"
+    parts.append(f'<span class="ingested-date">{date_html}</span>')
     parts.append("</a>")
     return "".join(parts)
 
@@ -504,7 +555,8 @@ def build_html(entries: list) -> str:
     tags_sorted = sorted(tag_counts, key=lambda t: (t.lower(), t))
 
     # --- left rail ---
-    nav_lines = [nav_button("all", "All sites", DOT_ALL, len(entries), active=True)]
+    nav_lines = [nav_button("all", "All Sites", DOT_ALL, len(entries), active=True)]
+    nav_lines.append(nav_button("recent", "Recent Sites", DOT_ALL, len(entries)))
     pinned_count = sum(1 for e in entries if e["pinned"])
     nav_lines.append(nav_button("pinned", "\u2605 Pinned", DOT_PINNED, pinned_count))
     for cat in category_order:
@@ -554,13 +606,15 @@ def build_html(entries: list) -> str:
             "description": e["description"],
             "tags": e["tags"],
             "pinned": e["pinned"],
+            "ingested_date": e.get("ingested_date", ""),
+            "ingested_sort": e.get("ingested_sort", ""),
         }
         for e in display
     ]
     sites_js = json.dumps(
         sites_payload, ensure_ascii=True, separators=(",", ":")
     ).replace("</", "<\\/")
-    blurbs = {"all": ALL_SITES_BLURB, "pinned": PINNED_BLURB}
+    blurbs = {"all": ALL_SITES_BLURB, "recent": RECENT_SITES_BLURB, "pinned": PINNED_BLURB}
     for cat in category_order:
         blurbs[cat] = CATEGORY_BLURBS.get(cat, "")
     blurbs_js = json.dumps(blurbs, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
@@ -597,11 +651,13 @@ def build_html(entries: list) -> str:
         "</aside>",
         '<main class="list-col">',
         '<div class="list-head">',
-        '<h1 id="h1">All sites</h1>',
+        '<h1 id="h1">All Sites</h1>',
         f'<div class="meta" id="meta">{initial_meta}</div>',
         '<button type="button" id="clear" class="clear" hidden>clear filters \u00d7</button>',
         "</div>",
         f'<p class="blurb" id="blurb">{esc(ALL_SITES_BLURB)}</p>',
+        '<div class="recent-columns" id="recent-columns" hidden>'
+        '<span>Site</span><span>Date ingested</span></div>',
         '<div class="rows" id="rows">',
         rows_html,
         "</div>",

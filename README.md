@@ -62,7 +62,7 @@ When in doubt, start a new category folder. A sparse category is better than a w
 
 3. Set a descriptive `<title>` in that `index.html`. The generator always reads it as the row label (the prettified folder name is the fallback).
 
-4. Optionally add a front-matter block (see below) for a description line, tag chips, and pinning.
+4. Add the ingestion timestamp to the front-matter block (see below). Description, tags, and pinning are optional. Keep the original ingestion timestamp when updating or moving an existing site.
 
 5. Regenerate the homepage:
    ```bash
@@ -82,10 +82,17 @@ Each page may carry an HTML comment block near the top of its own `index.html` (
 description: One-line description shown under the title.
 tags: runbook, mastery
 pinned: true
+ingested: 2026-09-10T16:27:00-07:00
 -->
 ```
 
-All three fields are optional. Missing block or field falls back to no description, no tags, not pinned. `pinned: true` floats the site to the top of the list (the generator's `PINNED_FIRST` flag controls this globally). Tags also appear as a TAGS filter section in the rail once any site has tags.
+Missing description, tags, or pinning fall back to no description, no tags, and not pinned. `pinned: true` floats the site to the top outside Recent Sites (the generator's `PINNED_FIRST` flag controls this globally). Tags also appear as a TAGS filter section in the rail once any site has tags.
+
+`ingested` records when the site first entered this repository, not its latest edit. Use an ISO timestamp including seconds and timezone, as in the example; `YYYY-MM-DD` is also accepted when only a date is known (sorted as midnight UTC). Missing dates display **Unknown** and sort last; malformed dates stop generation instead of silently inventing a date. New imports should always include this field.
+
+**Recent Sites**, directly below **All Sites**, shows a site/date-ingested list ordered newest first. It retains search, tag filters, and pagination without giving pins priority. Timestamps sort by UTC instant, while the date column preserves the source timestamp's calendar date. Identical timestamps use site path as a deterministic tie-breaker.
+
+Historical dates were backfilled from the first Git commit adding each current site's `index.html`. These are repository-entry proxies, not claims about when the source document was originally created. Metadata is persisted with each page so rebuilding or cloning the repository cannot reset its ingestion date; generation does not need Git.
 
 ## Regenerating the index
 
@@ -100,6 +107,16 @@ python generate_index.py --dry-run    # print HTML instead of writing
 The output is one static HTML file with inline style and script: a left rail with category navigation, search, and tag filters, plus a responsive grid paginated at 10 sites per page. There is no frontend compilation or tracking; Google Fonts loads externally. Run the generator any time you change a site's title or index metadata, or add, remove, rename, or move a site. The generated `index.html` overwrites the previous one. Identical inputs on the same calendar day produce byte-identical HTML.
 
 Category dot colors and per-category blurbs live in `generate_index.py` (`CATEGORY_DOTS`, `CATEGORY_BLURBS`). Unknown categories get a fallback dot and no blurb.
+
+### Tests
+
+```bash
+python -m unittest discover -s tests -v
+python generate_index.py
+node tests/test_index.cjs index.html
+```
+
+The Python tests cover ingestion metadata and date validation. The Node harness executes the generated inline JavaScript against a small DOM stub, checking ordering, filters, pagination, unknown dates, and the empty index. No package installation is required; these checks do not replace visual browser inspection.
 
 ## Deploy
 
