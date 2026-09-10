@@ -1,0 +1,860 @@
+<!doctype html>
+<!-- index:
+description: Structure Grok Bots, skills, routines, shared workspaces, and coordinated research teams.
+tags: guide, agent-systems, bot-mode
+pinned: false
+-->
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical, source-grounded reference for Grok Bot structure, skills, routines, multi-Bot coordination, and emerging operating patterns.">
+  <title>Grok Bot Structure & Coordination Guide</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #081018;
+      --panel: #0e1823;
+      --panel-2: #132130;
+      --panel-3: #17293a;
+      --text: #ecf3f8;
+      --muted: #9dafbd;
+      --line: #263b4d;
+      --cyan: #66d9e8;
+      --blue: #7aa2ff;
+      --amber: #f5c26b;
+      --green: #72d6a0;
+      --red: #ff8d8d;
+      --violet: #b89cff;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .24);
+      --radius: 16px;
+      --max: 1480px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 28px; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(102, 217, 232, .10), transparent 30rem),
+        radial-gradient(circle at 92% 12%, rgba(122, 162, 255, .09), transparent 32rem),
+        var(--bg);
+      color: var(--text);
+      font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: var(--cyan); text-underline-offset: 3px; }
+    a:hover { color: #a8eef5; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+
+    .page-shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 34px;
+      align-items: start;
+      padding: 28px 0 72px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      background: rgba(14, 24, 35, .88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      padding: 2px 2px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: linear-gradient(145deg, var(--cyan), var(--blue));
+      color: #061017;
+      font-weight: 900;
+      box-shadow: 0 8px 24px rgba(102, 217, 232, .20);
+    }
+
+    .brand strong { display: block; line-height: 1.2; }
+    .brand small { color: var(--muted); }
+
+    nav { margin-top: 16px; }
+    nav a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: .91rem;
+    }
+    nav a:hover, nav a:focus-visible {
+      background: var(--panel-3);
+      color: var(--text);
+      outline: none;
+    }
+    nav .nav-label {
+      display: block;
+      margin: 18px 10px 6px;
+      color: #718798;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-note {
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #0a141e;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    main { min-width: 0; }
+    .hero {
+      padding: 22px 0 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 10px 0 14px;
+      font-size: clamp(2.35rem, 6vw, 5rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .lede {
+      max-width: 880px;
+      margin: 0;
+      color: #c7d5df;
+      font-size: clamp(1rem, 2vw, 1.22rem);
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .chip, .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: rgba(19, 33, 48, .7);
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 750;
+    }
+
+    .status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .documented { color: var(--green); }
+    .convention { color: var(--amber); }
+    .unverified { color: var(--red); }
+
+    section { padding: 38px 0 8px; }
+    section + section { border-top: 1px solid rgba(38, 59, 77, .72); }
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      letter-spacing: -.035em;
+      line-height: 1.15;
+    }
+    h3 { margin: 28px 0 8px; font-size: 1.12rem; }
+    p { max-width: 920px; }
+    .section-intro { color: var(--muted); margin-top: 0; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .card {
+      position: relative;
+      background: linear-gradient(160deg, rgba(19, 33, 48, .94), rgba(11, 21, 31, .94));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, .15);
+    }
+    .card h3 { margin: 12px 0 7px; }
+    .card p { margin: 0; color: var(--muted); }
+    .card code { color: #d9e8f2; }
+    .card-accent { border-top: 3px solid var(--cyan); }
+    .card-accent:nth-child(2) { border-top-color: var(--amber); }
+    .card-accent:nth-child(3) { border-top-color: var(--violet); }
+
+    .callout {
+      margin: 22px 0;
+      padding: 17px 18px;
+      border: 1px solid #31546a;
+      border-left: 4px solid var(--cyan);
+      border-radius: 12px;
+      background: rgba(18, 40, 54, .68);
+    }
+    .callout strong { color: #baf4fb; }
+    .callout.warning { border-left-color: var(--amber); border-color: #624f2f; background: rgba(58, 43, 20, .35); }
+    .callout.warning strong { color: #ffe1a8; }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: minmax(150px, .75fr) 52px minmax(230px, 1.25fr) 52px minmax(230px, 1.25fr);
+      gap: 10px;
+      align-items: center;
+      margin: 26px 0;
+    }
+    .arch-box {
+      min-height: 112px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--panel);
+      text-align: center;
+    }
+    .arch-box strong { font-size: 1.02rem; }
+    .arch-box span { color: var(--muted); font-size: .84rem; }
+    .arch-arrow { color: var(--cyan); font-size: 1.6rem; text-align: center; }
+    .arch-stack { display: grid; gap: 9px; }
+    .arch-stack .arch-box { min-height: 68px; }
+
+    .shared-layer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-top: 10px;
+    }
+    .shared-layer div {
+      padding: 12px;
+      border: 1px dashed #46677f;
+      border-radius: 11px;
+      color: #bdd0de;
+      background: rgba(8, 16, 24, .55);
+      text-align: center;
+      font-size: .86rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; background: rgba(14, 24, 35, .72); }
+    th, td { padding: 14px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { color: var(--cyan); background: #101e2a; font-size: .78rem; letter-spacing: .07em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { color: #f5f8fa; font-weight: 750; white-space: nowrap; }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .decision {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--panel);
+    }
+    .decision .question { color: var(--muted); font-size: .88rem; }
+    .decision .answer { margin-top: 4px; color: var(--text); font-weight: 800; }
+
+    .file-tree, .codebox {
+      position: relative;
+      margin: 16px 0 24px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #050b11;
+    }
+    pre {
+      margin: 0;
+      padding: 20px;
+      overflow: auto;
+      color: #d5e4ed;
+      font-size: .86rem;
+      line-height: 1.62;
+      white-space: pre;
+    }
+    .code-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #0d1720;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 750;
+    }
+    .copy-button {
+      border: 1px solid #3b5b72;
+      border-radius: 8px;
+      padding: 6px 10px;
+      background: #142534;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-size: .78rem;
+      font-weight: 750;
+    }
+    .copy-button:hover { border-color: var(--cyan); }
+    .copy-button:focus-visible { outline: 3px solid rgba(102, 217, 232, .28); outline-offset: 2px; }
+
+    .team-map {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin: 26px 0;
+    }
+    .coordinator {
+      width: min(440px, 100%);
+      margin: 0 auto;
+      border-color: #5689a6;
+      background: linear-gradient(150deg, #15334a, #102333);
+    }
+    .team-line {
+      width: 2px;
+      height: 24px;
+      margin: -12px auto 0;
+      background: #426579;
+    }
+    .specialists {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 11px;
+    }
+    .role {
+      min-height: 150px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+    .role strong { display: block; color: #dff8fa; margin-bottom: 7px; }
+    .role span { display: block; color: var(--muted); font-size: .87rem; }
+
+    .steps {
+      counter-reset: step;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .step {
+      counter-increment: step;
+      position: relative;
+      min-height: 125px;
+      padding: 18px 18px 18px 62px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+    .step::before {
+      content: counter(step);
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: #183a4e;
+      color: var(--cyan);
+      font-weight: 900;
+    }
+    .step strong { display: block; margin-bottom: 5px; }
+    .step span { color: var(--muted); font-size: .91rem; }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .source-list a {
+      display: block;
+      height: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      color: #d7eef3;
+      text-decoration: none;
+    }
+    .source-list a:hover { border-color: #4d7b92; background: var(--panel-2); }
+    .source-list small { display: block; color: var(--muted); margin-top: 3px; }
+
+    .top-link {
+      display: inline-block;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: .82rem;
+      text-decoration: none;
+    }
+
+    footer {
+      margin-top: 42px;
+      padding: 22px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    @media (max-width: 1080px) {
+      .page-shell { grid-template-columns: 220px minmax(0, 1fr); gap: 22px; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .architecture { grid-template-columns: 1fr; }
+      .arch-arrow { transform: rotate(90deg); }
+      .specialists { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .page-shell { width: min(100% - 22px, 980px); grid-template-columns: 1fr; padding-top: 12px; }
+      .sidebar { position: relative; top: 0; max-height: none; padding: 13px; }
+      .brand { padding-bottom: 11px; }
+      nav { display: flex; gap: 5px; overflow-x: auto; margin-top: 10px; padding-bottom: 2px; }
+      nav .nav-label, .sidebar-note { display: none; }
+      nav a { flex: 0 0 auto; background: #111e2a; border: 1px solid var(--line); }
+      .hero { padding-top: 8px; }
+      h1 { font-size: clamp(2.45rem, 14vw, 4rem); }
+      .shared-layer, .decision-grid, .steps, .source-list { grid-template-columns: 1fr; }
+      .specialists { grid-template-columns: 1fr; }
+      section { padding-top: 30px; }
+      pre { font-size: .79rem; padding: 16px; }
+    }
+
+    @media print {
+      :root { color-scheme: light; --bg: #fff; --panel: #fff; --panel-2: #fff; --panel-3: #f3f6f8; --text: #111; --muted: #46515a; --line: #c7d0d7; }
+      body { background: #fff; }
+      .page-shell { width: 100%; display: block; padding: 0; }
+      .sidebar, .copy-button, .top-link { display: none; }
+      .card, .callout, .role, .step, .decision, .arch-box, .file-tree, .codebox { box-shadow: none; break-inside: avoid; }
+      a { color: #064b68; }
+      pre { color: #111; background: #f6f8fa; white-space: pre-wrap; }
+      section { break-before: auto; }
+    }
+  </style>
+<script type="text/javascript" nonce="1ba9ae73a12546db9d4368b90ad" src="//local.adguard.org?ts=1789080831243&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_00000000a1688246b6bd0f80163cab9a%26ts%3D496967%26p%3Dfs%26cid%3D1%26sig%3D966ba9afc45eeb6a945d52de3b882b3712d01e5f4fb02ed03348298ddd469181%26v%3D0&amp;app=brave.exe&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="1ba9ae73a12546db9d4368b90ad" src="//local.adguard.org?ts=1789080831243&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head>
+<body>
+  <div class="page-shell" id="top">
+    <aside class="sidebar" aria-label="Page navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">G</div>
+        <div><strong>Grok Bot Guide</strong><small>Structure & coordination</small></div>
+      </div>
+      <nav aria-label="Contents">
+        <span class="nav-label">Understand</span>
+        <a href="#answer">Quick answer</a>
+        <a href="#architecture">How it runs</a>
+        <a href="#components">Component map</a>
+        <a href="#files">Files & conventions</a>
+        <span class="nav-label">Build</span>
+        <a href="#decide">What to create</a>
+        <a href="#team">Starter team</a>
+        <a href="#coordinator">Coordinator prompt</a>
+        <a href="#research-chat">Research group prompt</a>
+        <a href="#tips">Tips & failure modes</a>
+        <a href="#security">Safety boundaries</a>
+        <a href="#sources">Sources</a>
+      </nav>
+      <div class="sidebar-note">Research current as of September 10, 2026. Product behavior may change during beta.</div>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <div class="eyebrow">Practical reference</div>
+        <h1>How Grok Bot structures itself</h1>
+        <p class="lede">A plain-English map of Bots, memory, shared files, skills, routines, coordinators, group chats, and the operating patterns that make a multi-Bot system easier to trust.</p>
+        <div class="meta-row">
+          <span class="chip">Updated Sep 10, 2026</span>
+          <span class="chip">Official docs + practitioner patterns</span>
+          <span class="chip">Standalone, printable HTML</span>
+        </div>
+      </header>
+
+      <section id="answer">
+        <div class="eyebrow">Quick answer</div>
+        <h2>The three naming questions</h2>
+        <div class="summary-grid">
+          <article class="card card-accent">
+            <span class="status documented">Documented</span>
+            <h3><code>SKILL.md</code></h3>
+            <p>Yes. Each file-based skill uses one singular <code>SKILL.md</code> inside its own folder. There is no standard plural <code>SKILLS.md</code>.</p>
+          </article>
+          <article class="card card-accent">
+            <span class="status convention">User convention</span>
+            <h3><code>TEAMS.md</code></h3>
+            <p>Useful as a shared roster, but not documented as a reserved Grok Bot file. A coordinator may create it to track roles and handoffs.</p>
+          </article>
+          <article class="card card-accent">
+            <span class="status documented">Documented</span>
+            <h3><code>AGENTS.md</code></h3>
+            <p>Recognized by Cursor agents in coding projects. It is not the documented global operating manual for ordinary Grok Bot work.</p>
+          </article>
+        </div>
+        <div class="callout">
+          <strong>Most important correction:</strong> your Bots share one persistent cloud computer. They have separate screens and separate learned memories, but share files, browser sessions, command-line credentials, and installed plugins.
+        </div>
+        <p><span class="status unverified">Unverified</span> Grok Bot may generate <code>TEAMS.md</code> during a particular onboarding or coordinator workflow, but current official documentation does not assign special automatic behavior to that filename.</p>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="architecture">
+        <div class="eyebrow">System map</div>
+        <h2>How the pieces fit together</h2>
+        <p class="section-intro">Think of Grok Bot as a small office. Bots are the staff, the cloud computer is the shared office, skills are procedure manuals, and routines are the calendar.</p>
+
+        <div class="architecture" role="img" aria-label="You message a coordinator, which routes work to specialist Bots that use shared files, sessions, plugins and credentials">
+          <div class="arch-box"><strong>You</strong><span>Outcome, boundaries, approval</span></div>
+          <div class="arch-arrow" aria-hidden="true">→</div>
+          <div class="arch-box"><strong>Coordinator Bot</strong><span>Scopes, routes, tracks, assembles</span></div>
+          <div class="arch-arrow" aria-hidden="true">→</div>
+          <div class="arch-stack">
+            <div class="arch-box"><strong>Specialist Bots</strong><span>Durable jobs and separate memories</span></div>
+            <div class="arch-box"><strong>Temporary workers</strong><span>Bounded parallel execution</span></div>
+          </div>
+        </div>
+        <div class="shared-layer" aria-label="Shared account resources">
+          <div><strong>/workspace</strong><br>shared files</div>
+          <div><strong>Browser</strong><br>shared sessions</div>
+          <div><strong>Plugins</strong><br>account-wide tools</div>
+          <div><strong>Credentials</strong><br>shared computer access</div>
+        </div>
+        <div class="callout warning">
+          <strong>Do not mistake separate screens for separate security zones.</strong> If one Bot should never access a credential, do not place that credential on the shared computer.
+        </div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="components">
+        <div class="eyebrow">Component map</div>
+        <h2>What actually makes Grok Bot run</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Component</th><th>Plain-English purpose</th><th>Scope</th><th>Best use</th></tr></thead>
+            <tbody>
+              <tr><td>Bot profile</td><td>Permanent job description, working style, and boundaries.</td><td>One Bot</td><td>Rules that should remain true across tasks.</td></tr>
+              <tr><td>Bot memory</td><td>Stable preferences, important facts, and summaries learned by that Bot.</td><td>One Bot</td><td>Stable context, not changing source data.</td></tr>
+              <tr><td>Conversation</td><td>That Bot's visible working history with you.</td><td>One Bot</td><td>Task instructions and corrections.</td></tr>
+              <tr><td><code>/workspace</code></td><td>The shared filing cabinet on the cloud computer.</td><td>All your Bots</td><td>Durable artifacts, rosters, state, source packages.</td></tr>
+              <tr><td>Plugin</td><td>A structured connection to Gmail, Notion, Slack, or another service.</td><td>Account-wide</td><td>Reliable app access without browser clicking.</td></tr>
+              <tr><td>Browser login</td><td>A saved website session on the shared computer.</td><td>All your Bots</td><td>Services that lack a suitable plugin.</td></tr>
+              <tr><td>Skill</td><td>A reusable playbook explaining how to complete one kind of job.</td><td>Available across Bots</td><td>Repeatable procedures and validation rules.</td></tr>
+              <tr><td>Routine</td><td>A schedule or event that starts a workflow automatically.</td><td>Owned by one Bot</td><td>Proven recurring work with defined failure handling.</td></tr>
+              <tr><td>Group chat</td><td>A shared room for you and two to six Bots.</td><td>One project/thread</td><td>One shared outcome with visible handoffs.</td></tr>
+              <tr><td>Direct handoff</td><td>One Bot asynchronously gives work to another.</td><td>Two Bots</td><td>Clean stage-to-stage ownership.</td></tr>
+              <tr><td>Cloud Agent</td><td>A temporary execution worker, commonly used for coding.</td><td>One run</td><td>Bounded work that does not need durable identity.</td></tr>
+              <tr><td>Approval rules</td><td>Stops consequential actions for human review.</td><td>Personal or team</td><td>Sending, publishing, buying, deleting, permissions, production.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="files">
+        <div class="eyebrow">Files & conventions</div>
+        <h2>A practical shared workspace</h2>
+        <p class="section-intro">These files are an operating convention, not a claim that Grok Bot automatically loads every filename. Put an instruction in the coordinator's profile telling it which files to read.</p>
+        <div class="file-tree">
+          <div class="code-toolbar"><span>Suggested folder structure</span><button class="copy-button" data-copy="tree">Copy</button></div>
+          <pre id="tree">/workspace/agent-system/
+├── TEAMS.md                 # roster, responsibilities, handoff rules
+├── OPERATING_RULES.md       # shared safety and evidence rules
+├── PROJECTS.md              # active projects and current owners
+├── DECISIONS.md             # consequential human decisions
+├── projects/
+│   └── project-name/
+│       ├── BRIEF.md         # outcome, scope, sources, acceptance checks
+│       ├── STATE.md         # stage, blocker, next action, updated time
+│       ├── SOURCES.md       # source register and freshness
+│       ├── HANDOFFS.md      # who gave what to whom
+│       └── deliverables/
+└── skills/
+    └── evidence-review/
+        ├── SKILL.md
+        ├── references/
+        └── scripts/</pre>
+        </div>
+
+        <h3>What belongs where</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Information</th><th>Best home</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td>Permanent Bot responsibility</td><td>Bot description</td><td>It should shape every task for that Bot.</td></tr>
+              <tr><td>Team roster</td><td><code>TEAMS.md</code></td><td>All Bots can consult one current roster.</td></tr>
+              <tr><td>Repeatable method</td><td><code>SKILL.md</code></td><td>Loaded when the procedure is relevant.</td></tr>
+              <tr><td>Current status or deadline</td><td><code>STATE.md</code> or task board</td><td>Changing facts should not depend on learned memory.</td></tr>
+              <tr><td>Repository build and test rules</td><td><code>AGENTS.md</code></td><td>Recognized by Cursor agents in coding projects.</td></tr>
+              <tr><td>Scheduled execution</td><td>Routine</td><td>The platform owns the trigger and run history.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="decide">
+        <div class="eyebrow">Decision guide</div>
+        <h2>Should this be a Bot, skill, routine, or group?</h2>
+        <div class="decision-grid">
+          <div class="decision"><div class="question">Does the work need a durable owner, separate memory, tools, or approval boundary?</div><div class="answer">Create a focused Bot.</div></div>
+          <div class="decision"><div class="question">Is it one reusable procedure that an existing Bot can perform?</div><div class="answer">Create a skill.</div></div>
+          <div class="decision"><div class="question">Has the procedure worked safely and repeatedly with a stable trigger?</div><div class="answer">Add a routine.</div></div>
+          <div class="decision"><div class="question">Do several existing Bots need one outcome and visible handoffs?</div><div class="answer">Create a group chat.</div></div>
+          <div class="decision"><div class="question">Is it a temporary, bounded, independent task?</div><div class="answer">Use a temporary worker or Cloud Agent.</div></div>
+          <div class="decision"><div class="question">Is the proposed Bot merely a new format, schedule, audience, or prompt?</div><div class="answer">Keep the existing Bot; use a skill or routine.</div></div>
+        </div>
+        <div class="callout"><strong>Best default:</strong> improve an existing Bot, add a skill, prove it manually, then consider a routine. New persistent Bots should be the last step, not the first.</div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="team">
+        <div class="eyebrow">Recommended setup</div>
+        <h2>A five-Bot research team</h2>
+        <p class="section-intro">This structure fits your source-heavy work, including financial-astrology claims, technical research, Copilot documentation, and knowledge-base design.</p>
+        <div class="team-map">
+          <div class="role coordinator"><strong>Coordinator</strong><span>Defines the finish line, assigns one owner per stage, tracks blockers, and assembles the reviewed result.</span></div>
+          <div class="team-line" aria-hidden="true"></div>
+          <div class="specialists">
+            <div class="role"><strong>Source Researcher</strong><span>Finds and consumes authoritative sources. Preserves links, dates, and exact supporting passages.</span></div>
+            <div class="role"><strong>Claim Extractor</strong><span>Turns sources into discrete claims, conditions, variables, exceptions, and testable rules.</span></div>
+            <div class="role"><strong>Skeptical Reviewer</strong><span>Independently opens sources and checks provenance, contradictions, freshness, and overreach.</span></div>
+            <div class="role"><strong>Publisher</strong><span>Produces the final readable report, HTML, spreadsheet, or document using only reviewed material.</span></div>
+          </div>
+        </div>
+        <div class="callout warning"><strong>Keep research and verification separate.</strong> The Reviewer should inspect the sources independently, not merely review the Researcher's summary.</div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="coordinator">
+        <div class="eyebrow">Paste-ready template</div>
+        <h2>Coordinator Bot description</h2>
+        <p class="section-intro">Put durable rules in the Bot description. Keep project-specific assignments in messages.</p>
+        <div class="codebox">
+          <div class="code-toolbar"><span>Coordinator profile</span><button class="copy-button" data-copy="coordinator-prompt">Copy prompt</button></div>
+          <pre id="coordinator-prompt">You are my Bot Coordinator.
+
+Your job is to understand the requested outcome, choose the smallest suitable
+team, give each stage one clear owner, monitor progress, resolve handoffs, and
+return one integrated result.
+
+At the start of a project:
+1. Read /workspace/agent-system/TEAMS.md.
+2. Define the deliverable, authoritative sources, constraints, acceptance
+   checks, approval stops, deadline, and unresolved questions.
+3. Reuse existing Bots and skills first.
+4. Create no Bot, group, skill, routine, connection, or external write without
+   my explicit approval.
+
+Delegation:
+- Give every handoff the objective, inputs, constraints, expected output,
+  validation check, and approval boundary.
+- Parallelize only independent workstreams.
+- Never send the same task to multiple Bots unless I request independent review.
+- Use one owner per stage.
+- Require the Reviewer to work from original sources.
+- Do not recursively create more coordinators.
+
+Status:
+- Maintain the project ledger.
+- Record owner, stage, deliverable, sources, blocker, next action, and update time.
+- Stay quiet when nothing materially changed.
+- Contact me only for a decision, approval, blocker, material risk, or result.
+
+Safety:
+- Never send, publish, purchase, delete, change permissions, expose confidential
+  information, or modify production without explicit approval.
+- Separate verified facts, inferences, unresolved items, completed actions, and
+  proposed actions.</pre>
+        </div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="research-chat">
+        <div class="eyebrow">Paste-ready template</div>
+        <h2>Research group kickoff</h2>
+        <p class="section-intro">Use a group when the Bots need one shared outcome and visible handoffs. Use direct messages when only the next owner needs the result.</p>
+        <div class="codebox">
+          <div class="code-toolbar"><span>Group-chat kickoff</span><button class="copy-button" data-copy="research-prompt">Copy prompt</button></div>
+          <pre id="research-prompt">We are producing one source-grounded research brief.
+
+@Source Researcher
+Find the authoritative and relevant sources. Record title, author, publication
+date, event date, URL, and the exact claim supported. Consume the actual source,
+not only search-result summaries.
+
+@Claim Extractor
+Turn the evidence into discrete claims. Preserve exact numbers, dates,
+conditions, exceptions, and uncertainty. Separate source statements from your
+inferences.
+
+@Skeptical Reviewer
+Independently open the sources and check every material claim. Identify missing
+evidence, contradictions, outdated information, circular sourcing, and claims
+broader than the evidence supports.
+
+@Publisher
+Wait for the review. Produce the final brief using only supported claims. Keep
+disputes and unresolved questions visible.
+
+@Coordinator
+Own routing, status, blocked work, acceptance checks, and final assembly. Do not
+duplicate specialist work.
+
+Do not publish or contact anyone. A stage is complete only when its artifact,
+source trail, and unresolved issues are available for review.</pre>
+        </div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="tips">
+        <div class="eyebrow">Emerging practices</div>
+        <h2>Tips worth trying</h2>
+        <div class="steps">
+          <div class="step"><strong>One project, one group, one roster</strong><span>Separate projects to control noise. Reuse existing specialists and keep the group small.</span></div>
+          <div class="step"><strong>Use a visible task ledger</strong><span>Track task, owner, stage, sources, deliverable, blocker, next action, and update time outside chat.</span></div>
+          <div class="step"><strong>Keep changing facts out of memory</strong><span>Put current projects, deadlines, and source status in files or a board. Use memory for stable preferences.</span></div>
+          <div class="step"><strong>Teach, then harden</strong><span>A screen recording captures clicks, not judgment. Add decision rules, failure handling, validation, and approval stops.</span></div>
+          <div class="step"><strong>Parallelize independent branches only</strong><span>Split by source set or research question. Do not ask several Bots to perform the same stage unless testing agreement.</span></div>
+          <div class="step"><strong>Log every handoff</strong><span>Record who sent what, supporting sources, acceptance check, and whether the next Bot accepted or rejected it.</span></div>
+          <div class="step"><strong>Make silence the default</strong><span>Tell Bots to report only material changes, blockers, approvals, and completed results.</span></div>
+          <div class="step"><strong>Prepare before executing</strong><span>Let early routines gather, reconcile, draft, and recommend. Keep external actions behind human approval.</span></div>
+          <div class="step"><strong>Cap spawning depth</strong><span>Let the coordinator call existing Bots and temporary workers, but do not allow coordinators to create coordinators.</span></div>
+          <div class="step"><strong>Require reviewable evidence</strong><span>Ask for direct source links, dates, action logs, validation results, and an explicit list of anything not verified.</span></div>
+          <div class="step"><strong>Audit the roster weekly</strong><span>Find duplicate Bots, overlapping skills, unused routines, noisy notifications, and missing human owners.</span></div>
+          <div class="step"><strong>Revise the same artifact</strong><span>Ask Bots to improve an existing deliverable instead of producing disconnected copies with competing truth.</span></div>
+        </div>
+
+        <h3>Common failure modes</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Failure</th><th>What it looks like</th><th>Control</th></tr></thead>
+            <tbody>
+              <tr><td>Bot zoo</td><td>Many narrow Bots with overlapping jobs and unclear ownership.</td><td>Require a durable responsibility before creating a Bot.</td></tr>
+              <tr><td>Memory dump</td><td>Every fact gets saved, including stale project status.</td><td>Use memory only for stable context; use source files for changing facts.</td></tr>
+              <tr><td>Coordinator bottleneck</td><td>The manager repeats specialist work or rewrites every result.</td><td>Coordinator routes and checks completion; specialists own the work.</td></tr>
+              <tr><td>Duplicate parallel work</td><td>Several Bots answer the same question and create noise.</td><td>Assign one owner per stage and split only independent branches.</td></tr>
+              <tr><td>Polished wrong answer</td><td>The Publisher hides unsupported claims in a fluent report.</td><td>Require independent source review before publication.</td></tr>
+              <tr><td>Brittle recorded skill</td><td>A website changes and the Bot clicks the wrong nearby control.</td><td>Add outcome checks, failure states, and a safe test before scheduling.</td></tr>
+              <tr><td>Invisible failure</td><td>The final output is wrong but nobody knows which handoff broke.</td><td>Maintain a task and handoff ledger with validation results.</td></tr>
+              <tr><td>Recursive spawning</td><td>Managers create more managers and usage grows without clearer output.</td><td>Cap delegation depth and require approval for persistent Bot creation.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="security">
+        <div class="eyebrow">Safety</div>
+        <h2>Boundaries that should remain human</h2>
+        <p class="section-intro">Bots can do preparation autonomously. Consequential actions should stop at an explicit review point.</p>
+        <div class="summary-grid">
+          <article class="card"><h3>Usually safe to prepare</h3><p>Research, reconcile, classify, draft, summarize, propose, create a review list, or assemble evidence.</p></article>
+          <article class="card"><h3>Require approval</h3><p>Send, publish, purchase, delete, change permissions, expose confidential data, modify production, or make commitments.</p></article>
+          <article class="card"><h3>Verify before approving</h3><p>Show the exact target, current state, proposed change, expected effect, sources, and reversal plan when relevant.</p></article>
+        </div>
+        <div class="callout warning">
+          <strong>For BC Hydro work:</strong> do not connect internal systems, upload protected material, or let Grok Bot act inside corporate services unless the platform and exact workflow have been approved under your organization's security and AI-governance rules.
+        </div>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <section id="sources">
+        <div class="eyebrow">Source trail</div>
+        <h2>Documentation and practitioner material</h2>
+        <p class="section-intro">Official documentation establishes product behavior. Practitioner guides and marketplace examples show emerging operating patterns.</p>
+        <ul class="source-list">
+          <li><a href="https://cursor.com/docs/grok-bot" target="_blank" rel="noreferrer">Grok Bot overview<small>Persistent Bots, shared computer, coordination, memory</small></a></li>
+          <li><a href="https://cursor.com/docs/grok-bot/work" target="_blank" rel="noreferrer">Work with Grok Bot<small>Groups, handoffs, workspace, skills, routines</small></a></li>
+          <li><a href="https://cursor.com/docs/skills" target="_blank" rel="noreferrer">Cursor Agent Skills<small><code>SKILL.md</code> format, locations, scripts and references</small></a></li>
+          <li><a href="https://cursor.com/docs/rules" target="_blank" rel="noreferrer">Cursor Rules<small><code>AGENTS.md</code> and repository instruction behavior</small></a></li>
+          <li><a href="https://cursor.com/docs/subagents" target="_blank" rel="noreferrer">Cursor Subagents<small>Context isolation, parallel execution, custom workers</small></a></li>
+          <li><a href="https://cursor.com/docs/grok-bot/security" target="_blank" rel="noreferrer">Grok Bot security<small>Approvals, identity, logging, egress, prompt injection</small></a></li>
+          <li><a href="https://x.ai/bot/guides/how-i-run-multiple-teams-of-grok-bots" target="_blank" rel="noreferrer">How I run multiple teams<small>Project channels, rosters, boards, staffing rules</small></a></li>
+          <li><a href="https://x.ai/bot/guides/grok-bot-for-pms" target="_blank" rel="noreferrer">Grok Bot for PMs<small>Specialist roles, quiet agents, attention lists, verification</small></a></li>
+          <li><a href="https://x.ai/bot/guides/grok-bot-for-gtm" target="_blank" rel="noreferrer">Grok Bot for GTM<small>Chief-of-staff patterns, recorded skills, parallel tasks</small></a></li>
+          <li><a href="https://x.ai/bot/marketplace/bots/alfred" target="_blank" rel="noreferrer">Alfred marketplace example<small>Smallest useful Bot organization and approval gates</small></a></li>
+          <li><a href="https://x.ai/bot/marketplace/bots/researchy" target="_blank" rel="noreferrer">Researchy marketplace example<small>Source-grounded research and agent communication rules</small></a></li>
+          <li><a href="https://www.linkedin.com/posts/nateherkelman_a-week-of-grok-bot-lessons-in-10-minutes-activity-7495677379462385664-njNa" target="_blank" rel="noreferrer">Community lessons<small>Shared context, work logging, skills, routines, coordinator use</small></a></li>
+        </ul>
+        <p><span class="status convention">Interpretation rule</span> Where official documentation and community terminology differ, this guide follows the official description and labels the community pattern separately.</p>
+        <a class="top-link" href="#top">Back to top ↑</a>
+      </section>
+
+      <footer>
+        Grok Bot Structure & Coordination Guide · Research current as of September 10, 2026 · External links open in a new tab.
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll('[data-copy]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const target = document.getElementById(button.dataset.copy);
+        if (!target) return;
+        const original = button.textContent;
+        try {
+          await navigator.clipboard.writeText(target.innerText);
+          button.textContent = 'Copied';
+        } catch {
+          const range = document.createRange();
+          range.selectNodeContents(target);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          button.textContent = 'Selected';
+        }
+        window.setTimeout(() => { button.textContent = original; }, 1600);
+      });
+    });
+  </script>
+</body>
+</html>

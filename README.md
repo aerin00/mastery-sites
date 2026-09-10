@@ -1,47 +1,21 @@
 # Mastery Sites
 
-A monorepo of standalone static HTML sites, organized by category and deployed as a single project to Cloudflare Pages. Each subfolder with an `index.html` is one site. A generated root `index.html` links to all of them.
+A monorepo of standalone static HTML sites, organized by category and deployed through Cloudflare Workers Builds. Each site folder contains an `index.html`. The generated root `index.html` links to all sites through a left rail and responsive paginated grid with in-memory filtering.
 
 ## Layout
 
 ```
 00_Mastery_Sites/
-├── index.html              ← generated homepage, links to every site
-├── generate_index.py      ← regenerates index.html
-├── README.md               ← this file
-│
-├── hermes/                 ← category: Hermes Agent
-│   ├── bot-mode-handoff/
-│   ├── bot-mode-mastery/
-│   ├── hermes-bot-mode/
-│   ├── hermes-bot-mode-by-hermes/
-│   └── hermes-flightpath/
-│
-├── codex/                  ← category: OpenAI Codex
-│   ├── codex-agent-mastery/
-│   ├── codex-mastery/
-│   └── codex-vault-circuit/
-│
-├── claude/                 ← category: Claude Code
-│   └── claude-code-control-stack/
-│
-├── sharepoint/             ← category: SharePoint / Microsoft 365
-│   ├── bc-hydro-copilot-operating-model/
-│   ├── copilot-field-guide/
-│   ├── copilot-power-platform-hub/
-│   ├── ddm-future-state/
-│   ├── ipc-forecast-briefing/
-│   ├── ipc-scoped-flow/
-│   ├── master-hub-blueprint/
-│   ├── onedrive-working-memory-playbook/
-│   └── pic-sharepoint-hub-reference/
-│
-└── shared/                 ← category: cross-tool / general
-    ├── bot-roster/
-    ├── obsidian-vault-circuit/
-    ├── steven-os/
-    └── working-with-steven/
+├── index.html              ← generated homepage and current site inventory
+├── generate_index.py       ← regenerates index.html
+├── README.md               ← conventions and workflow
+└── <category>/
+    └── <site-slug>/
+        ├── index.html
+        └── <local assets, if needed>
 ```
+
+Use the [generated homepage](index.html) for the current inventory. Do not maintain a second per-site list here.
 
 ## Category convention
 
@@ -66,6 +40,10 @@ You can nest one level deep. Deeper nesting is not supported and not needed.
 | Claude Code (control stack, workflows)           | `claude/`  |
 | SharePoint / Microsoft 365 (hubs, flows, Copilot, briefings) | `sharepoint/` |
 | Cross-tool, shared infrastructure, general tools | `shared/`  |
+| Grok Bots and coordination                      | `grok/`    |
+| Trading indicators and TradingView field guides | `trading/` |
+| Natal and financial astrology                   | `astrology/` |
+| Oracle practice                                | `oracle/`  |
 | Something new that doesn't fit any of the above  | make a new category folder |
 
 When in doubt, start a new category folder. A sparse category is better than a wrong one.
@@ -91,7 +69,9 @@ When in doubt, start a new category folder. A sparse category is better than a w
    python generate_index.py
    ```
 
-6. Commit and push. Cloudflare Pages deploys automatically.
+6. Verify the pages and index locally, then commit and push to `origin/main` with approval. Cloudflare Workers Builds deploys automatically.
+
+For inbox imports, preserve source HTML and add metadata only to the deployed copy. After the live deployment is verified, move only successfully imported sources into the sibling `00_Mastery_Sites_Inbox/archive/` folder. Leave unprocessed files in the inbox and never overwrite an existing archive file.
 
 ## Site front-matter (optional)
 
@@ -117,19 +97,19 @@ python generate_index.py --dry-run    # print HTML instead of writing
 
 `--titles` is still accepted for backward compatibility but is a no-op: titles are always read.
 
-The output is one self-contained static HTML file: left rail with category nav, search box, and tag filters, plus a single-column list. Inline style and script, no build step, no tracking; the only network request besides the sites themselves is the Google Fonts stylesheet. Run it any time you add, remove, rename, or move a site. The generated `index.html` overwrites the previous one. Safe to run repeatedly; identical inputs on the same calendar day produce byte-identical HTML.
+The output is one static HTML file with inline style and script: a left rail with category navigation, search, and tag filters, plus a responsive grid paginated at 10 sites per page. There is no frontend compilation or tracking; Google Fonts loads externally. Run the generator any time you change a site's title or index metadata, or add, remove, rename, or move a site. The generated `index.html` overwrites the previous one. Identical inputs on the same calendar day produce byte-identical HTML.
 
 Category dot colors and per-category blurbs live in `generate_index.py` (`CATEGORY_DOTS`, `CATEGORY_BLURBS`). Unknown categories get a fallback dot and no blurb.
 
 ## Deploy
 
-This repo is designed for **Cloudflare Pages** as a single project. Every folder becomes a path:
+The production site is deployed by **Cloudflare Workers Builds** from `origin/main`. Every site folder becomes a path:
 
-- `https://your-domain.com/` → the generated homepage
-- `https://your-domain.com/hermes/bot-mode-mastery/` → that site
-- `https://your-domain.com/sharepoint/ipc-scoped-flow/` → that site
+- https://mastery-sites.stenguye.workers.dev/ → the generated homepage
+- https://mastery-sites.stenguye.workers.dev/hermes/bot-mode-mastery/ → that site
+- https://mastery-sites.stenguye.workers.dev/sharepoint/ipc-scoped-flow/ → that site
 
-No build step needed. Set the build command to empty and the output directory to the repo root.
+Regenerate and commit the root index before pushing. Check the GitHub commit's `Workers Builds: mastery-sites` result and verify the live homepage and changed site paths before considering deployment complete. Build settings are managed outside this repository; this workflow does not change them.
 
 ## Rules
 
@@ -137,5 +117,5 @@ No build step needed. Set the build command to empty and the output directory to
 2. Max one level of nesting: `category/site/index.html`. Not `category/subcategory/site/index.html`.
 3. Always set a `<title>` in each site's `index.html`.
 4. Always run `python generate_index.py` after structural changes.
-5. Don't commit the `index.html` at the root if you're also auto-generating it in CI, pick one source of truth. Manual is fine for now.
-6. Don't put non-site files at the root (scripts, configs) inside category folders. The generator skips dotfiles and known noise (`.git`, `node_modules`, `__pycache__`), but anything else looks like a site to it.
+5. The generator is the source of truth for the root `index.html`; regenerate and commit its output rather than hand-editing it.
+6. Keep repository tooling at the root and site assets beside their page. The generator discovers only folders containing `index.html`, directly or one category level down; it skips dot-directories and known noise (`.git`, `node_modules`, `__pycache__`).
