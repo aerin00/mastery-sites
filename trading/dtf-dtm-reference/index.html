@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<!-- index:
+description: Combined field guide to Dynamic Momentum DTF and Dynamic Time Map, including signals, dashboards, and coordinated use.
+tags: reference, trading, indicators
+ingested: 2026-09-11T08:59:24-07:00
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DTF and DTM Reference</title>
+<style>
+  :root {
+    --bg: #0f1116; --panel: #171a22; --panel2: #1e2230; --text: #e6e8ee; --muted: #9aa3b2;
+    --line: #2a3040; --aqua: #26c6da; --orange: #ff9800; --purple: #ab47bc; --teal: #26a69a;
+    --red: #ef5350; --lime: #9ccc65; --fuchsia: #e040fb; --yellow: #ffd54f; --grey: #787b86;
+    --magenta: #e91e63; --trz: #26a69a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 28px 32px 18px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #141822, var(--bg)); }
+  header h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: .3px; }
+  header p { margin: 0; color: var(--muted); }
+  nav { position: sticky; top: 0; z-index: 5; background: rgba(15,17,22,.96); border-bottom: 1px solid var(--line); padding: 10px 32px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; }
+  nav a { color: var(--aqua); text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 32px 80px; }
+  section { margin: 36px 0; }
+  h2 { font-size: 22px; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 17px; margin: 26px 0 8px; color: #fff; }
+  h4 { font-size: 15px; margin: 18px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+  p { margin: 8px 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .legend { display: grid; grid-template-columns: 34px 1fr; gap: 10px 12px; align-items: start; }
+  .sw { width: 30px; height: 18px; border-radius: 4px; margin-top: 3px; border: 1px solid rgba(255,255,255,.15); }
+  .sw.line { height: 4px; margin-top: 10px; border: none; }
+  .sw.dash { height: 0; margin-top: 11px; border: none; border-top: 3px dashed; }
+  .sw.mark { background: none; border: none; font-weight: 700; text-align: center; height: auto; margin-top: 0; }
+  .legend b { color: #fff; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; background: var(--panel2); }
+  .wrap { overflow-x: auto; }
+  code, kbd { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 13px; background: #0b0d12; border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+  .callout { border-left: 4px solid var(--orange); background: #1c1a14; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+  .callout.blue { border-color: var(--aqua); background: #12191c; }
+  .callout.red { border-color: var(--red); background: #1d1414; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  svg text { font-family: system-ui, sans-serif; }
+  .small { color: var(--muted); font-size: 13px; }
+  ol li, ul li { margin: 4px 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
+  footer { color: var(--muted); font-size: 13px; text-align: center; padding: 20px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<header>
+  <h1>DTF and DTM Reference</h1>
+  <p>Field guide to <code>Dynamic_Momentum_DTF.pine</code> and <code>Dynamic_Time_Map.pine</code>: what every mark means, how to read the dashboards, and how the two fit together. Both scripts are ticker-agnostic; the <code>BTC-</code> originals are kept unchanged beside them.</p>
+</header>
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#dtf">DTF: momentum</a>
+  <a href="#dtf-visuals">DTF visuals</a>
+  <a href="#dtf-lifecycle">Setup lifecycle</a>
+  <a href="#dtf-table">DTF table</a>
+  <a href="#dtm">DTM: time</a>
+  <a href="#dtm-visuals">DTM visuals</a>
+  <a href="#dtm-models">Time models</a>
+  <a href="#dtm-dash">DTM dashboards</a>
+  <a href="#together">Using both</a>
+  <a href="#caveats">Caveats</a>
+</nav>
+
+<main>
+
+<section id="overview">
+  <h2>Overview</h2>
+  <div class="two">
+    <div class="card">
+      <h3 style="margin-top:0">DTF: Dual Time Frame Momentum</h3>
+      <p>Answers <b>which direction</b> and <b>when a pullback has ended</b>. A higher-timeframe stochastic grants permission (long or short); a chart-timeframe stochastic crossover after a qualifying pullback arms a setup; a later close beyond the prior close is the price trigger. Based on Robert Miner's DTF rules (see claim <code>MINER-HPT-001</code>).</p>
+      <p class="small">Pane: separate oscillator pane, with price markers forced onto the main chart.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">DTM: Dynamic Time Map</h3>
+      <p>Answers <b>when the next turn is probable</b>. It builds a confirmed pivot path, measures the calendar-day durations between pivots, and projects several historical duration models forward from the last confirmed pivot. Where the models overlap it issues ranked windows. Based on Miner's Time Rhythm Zones and Time Bands (see claim <code>MINER-DT-030</code>).</p>
+      <p class="small">Pane: overlay on price. Intended for daily charts.</p>
+    </div>
+  </div>
+  <div class="callout blue">
+    <b>Division of labour.</b> DTM never says which way price goes; DTF never says when a turn is due. A DTF setup that lands inside a DTM ranked window is the highest-quality condition either script can describe on its own.
+  </div>
+</section>
+
+<section id="dtf">
+  <h2>DTF: Dynamic Momentum</h2>
+  <h3>The idea in one diagram</h3>
+  <div class="card">
+    <svg viewBox="0 0 900 230" width="100%" role="img" aria-label="DTF logic flow">
+      <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa3b2"/></marker></defs>
+      <g font-size="13" fill="#e6e8ee">
+        <rect x="20" y="30" width="200" height="70" rx="8" fill="#1e2230" stroke="#26a69a"/>
+        <text x="120" y="58" text-anchor="middle" font-weight="700">Higher TF stochastic</text>
+        <text x="120" y="80" text-anchor="middle" fill="#9aa3b2">fast &gt; slow = long permission</text>
+        <rect x="20" y="130" width="200" height="70" rx="8" fill="#1e2230" stroke="#26c6da"/>
+        <text x="120" y="158" text-anchor="middle" font-weight="700">Chart TF stochastic</text>
+        <text x="120" y="180" text-anchor="middle" fill="#9aa3b2">leg dipped below 50, then crosses up</text>
+        <line x1="220" y1="65" x2="330" y2="105" stroke="#9aa3b2" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="220" y1="165" x2="330" y2="125" stroke="#9aa3b2" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="340" y="80" width="170" height="70" rx="8" fill="#1e2230" stroke="#26a69a"/>
+        <text x="425" y="108" text-anchor="middle" font-weight="700">Setup armed  (S)</text>
+        <text x="425" y="130" text-anchor="middle" fill="#9aa3b2">invalidation = leg low − ticks</text>
+        <line x1="510" y1="115" x2="600" y2="115" stroke="#9aa3b2" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="610" y="30" width="270" height="60" rx="8" fill="#1e2230" stroke="#9ccc65"/>
+        <text x="745" y="54" text-anchor="middle" font-weight="700" fill="#9ccc65">Price trigger  (T / DTF)</text>
+        <text x="745" y="76" text-anchor="middle" fill="#9aa3b2">first close above prior close within 3 bars</text>
+        <rect x="610" y="140" width="270" height="60" rx="8" fill="#1e2230" stroke="#787b86"/>
+        <text x="745" y="164" text-anchor="middle" font-weight="700" fill="#9aa3b2">Cancelled / expired  (×)</text>
+        <text x="745" y="186" text-anchor="middle" fill="#9aa3b2">invalidation hit, permission lost, or 3 bars pass</text>
+        <line x1="600" y1="110" x2="610" y2="65" stroke="#9aa3b2" stroke-width="2"/>
+        <line x1="600" y1="120" x2="610" y2="165" stroke="#9aa3b2" stroke-width="2"/>
+      </g>
+    </svg>
+    <p class="small">Mirror everything for shorts: HTF fast below slow, leg rose above 50, crossunder, first lower close.</p>
+  </div>
+
+  <h3>Timeframe pairs</h3>
+  <div class="wrap"><table>
+    <tr><th>Chart</th><th>Context (HTF)</th><th>Pair label</th></tr>
+    <tr><td>60 min</td><td>240 min</td><td>1H / 4H</td></tr>
+    <tr><td>240 min</td><td>Daily</td><td>4H / Daily</td></tr>
+    <tr><td>Daily</td><td>Weekly</td><td>Daily / Weekly</td></tr>
+  </table></div>
+  <p class="small">Any other chart timeframe shows "Use a 1H, 4H or Daily chart" and draws nothing. Non-standard candles (Heikin Ashi, Renko) are also refused.</p>
+
+  <h3>Default settings</h3>
+  <div class="wrap"><table>
+    <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+    <tr><td>Engine</td><td>Stochastic</td><td>Course-based default. Smoothed RSI, Stochastic RSI and Directional Efficiency are experimental substitutes, not Miner's proprietary DTosc.</td></tr>
+    <tr><td>Lookback / fast / slow</td><td>8 / 3 / 3</td><td>Both timeframes. Miner's "833" from the course.</td></tr>
+    <tr><td>Extremes</td><td>20 / 80</td><td>Both lines must be beyond the level to count as an extreme. RSI-type engines use 30 / 70.</td></tr>
+    <tr><td>Pullback qualification</td><td>Midpoint</td><td>The correcting leg's fast line must have crossed 50. "Extreme" requires the leg to have reached 20 / 80; "Any" accepts every corrective cross.</td></tr>
+    <tr><td>Follow-through window</td><td>3 bars</td><td>How long an armed setup waits for its price trigger.</td></tr>
+    <tr><td>Invalidation basis</td><td>Wick + 1 tick</td><td>Leg extreme plus padding. "Closing price" uses the leg's extreme close.</td></tr>
+    <tr><td>Block at context extremes</td><td>Off</td><td>When on, a bullish but overbought HTF refuses new longs (Miner's Table 2.2 row 2). Off lets a strong HTF trend keep issuing continuation setups.</td></tr>
+  </table></div>
+</section>
+
+<section id="dtf-visuals">
+  <h2>DTF visuals</h2>
+  <h3>On the price chart</h3>
+  <div class="card legend">
+    <div class="sw mark" style="color:var(--lime)">▲</div><div><b>DTF, lime triangle below bar.</b> Long price trigger: an armed long setup got its first higher close while the HTF still permitted it. This is the entry event, not the setup.</div>
+    <div class="sw mark" style="color:var(--fuchsia)">▼</div><div><b>DTF, fuchsia triangle above bar.</b> Short price trigger, mirror of the above.</div>
+    <div class="sw mark" style="color:var(--yellow)">●</div><div><b>2U, yellow circle.</b> The illustrative two-unit campaign opened on that trigger, both halves protected at the setup's invalidation. Requires "Show two-unit management".</div>
+    <div class="sw line" style="background:var(--aqua)"></div><div><b>Aqua line, U1 protection.</b> Stop for the first half. It sits at the setup leg's extreme until two opposing chart-TF crossovers occur, then trails one bar behind price, which is why it climbs steeply late in a move.</div>
+    <div class="sw line" style="background:var(--purple)"></div><div><b>Purple line, U2 protection.</b> Stop for the second half. It stays at the cycle level until the HTF reaches an extreme and a later opposing crossover arms it. It lags U1 on purpose so the runner can breathe.</div>
+    <div class="sw mark" style="color:var(--aqua)">✕</div><div><b>U1 / U2 X marks.</b> That half exited because price breached its protection (wick by default). Two X marks close together mean the campaign is flat.</div>
+    <div class="sw line" style="background:var(--orange)"></div><div><b>Orange line, pending invalidation.</b> The level that cancels an armed setup before it triggers. Visible only while a setup is pending, so its absence means nothing is armed.</div>
+  </div>
+
+  <h3>In the DTF pane</h3>
+  <div class="card legend">
+    <div class="sw line" style="background:var(--aqua)"></div><div><b>Aqua, chart fast line.</b> The 8-period stochastic smoothed by 3. Provisional on the forming bar.</div>
+    <div class="sw line" style="background:var(--orange)"></div><div><b>Orange, chart slow line.</b> Fast smoothed by 3 again. Fast crossing above slow is a bullish momentum reversal, below is bearish. Every setup starts from one of these crosses.</div>
+    <div class="sw dash" style="border-color:var(--red)"></div><div><b>Red dashed 80 / green dashed 20.</b> Extreme zones. Long setups need the cross to happen below 80; short setups above 20.</div>
+    <div class="sw dash" style="border-color:var(--grey)"></div><div><b>Dotted 50.</b> Midpoint. With the default pullback rule, a long setup needs the correcting leg's fast line to have been below 50.</div>
+    <div class="sw line" style="background:#4d6b6b"></div><div><b>Grey and purple step lines.</b> The confirmed HTF fast and slow (optional "Show confirmed context lines"). Fast above slow is long permission, below is short permission. Steps because they update only on HTF bar closes.</div>
+    <div class="sw" style="background:linear-gradient(90deg,var(--teal),var(--orange),var(--red))"></div><div><b>Ribbon at 104.</b> HTF context at a glance. <span class="pill" style="background:var(--teal);color:#000">teal</span> bullish, <span class="pill" style="background:var(--red);color:#000">red</span> bearish, <span class="pill" style="background:var(--orange);color:#000">orange</span> at or leaving an extreme (Transition, Upper or Lower extreme), <span class="pill" style="background:var(--grey);color:#000">grey</span> not ready. Orange is the caution colour: permission may still exist but the HTF is stretched.</div>
+    <div class="sw mark" style="color:var(--teal)">●</div><div><b>S circles (teal / red) at 8 or 92.</b> Setup armed. Note the invalidation level and wait.</div>
+    <div class="sw mark" style="color:var(--lime)">▲</div><div><b>T triangles at 8 or 92.</b> Price trigger, the same event as the DTF marker on the price chart.</div>
+    <div class="sw mark" style="color:var(--grey)">✕</div><div><b>Grey X at 50.</b> A pending setup was cancelled (invalidation breached, permission lost, chart TF reached its extreme) or expired after three bars without follow-through.</div>
+  </div>
+</section>
+
+<section id="dtf-lifecycle">
+  <h2>Setup lifecycle</h2>
+  <div class="card">
+    <svg viewBox="0 0 900 150" width="100%" role="img" aria-label="Setup state machine">
+      <g font-size="13" fill="#e6e8ee">
+        <circle cx="70" cy="75" r="34" fill="#1e2230" stroke="#787b86"/><text x="70" y="79" text-anchor="middle">Waiting</text>
+        <line x1="104" y1="75" x2="196" y2="75" stroke="#9aa3b2" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="150" y="62" text-anchor="middle" fill="#9aa3b2" font-size="11">qualifying cross</text>
+        <circle cx="240" cy="75" r="34" fill="#1e2230" stroke="#26a69a"/><text x="240" y="79" text-anchor="middle">Armed</text>
+        <line x1="274" y1="60" x2="386" y2="35" stroke="#9ccc65" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="330" y="36" text-anchor="middle" fill="#9ccc65" font-size="11">follow-through close</text>
+        <circle cx="430" cy="30" r="28" fill="#1e2230" stroke="#9ccc65"/><text x="430" y="34" text-anchor="middle" font-size="12">Trigger</text>
+        <line x1="274" y1="90" x2="386" y2="115" stroke="#787b86" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="330" y="126" text-anchor="middle" fill="#9aa3b2" font-size="11">breach / lost permission / 3 bars</text>
+        <circle cx="430" cy="120" r="28" fill="#1e2230" stroke="#787b86"/><text x="430" y="124" text-anchor="middle" font-size="12">Retired</text>
+        <line x1="458" y1="30" x2="560" y2="30" stroke="#ffd54f" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="510" y="20" text-anchor="middle" fill="#ffd54f" font-size="11">if management on</text>
+        <rect x="570" y="8" width="310" height="44" rx="8" fill="#1e2230" stroke="#ffd54f"/>
+        <text x="725" y="27" text-anchor="middle" font-size="12">2U campaign: U1 and U2 at invalidation</text>
+        <text x="725" y="44" text-anchor="middle" font-size="11" fill="#9aa3b2">U1 tightens after 2 opposing crosses; U2 after HTF extreme + 1</text>
+        <line x1="458" y1="120" x2="104" y2="150" stroke="#9aa3b2" stroke-width="1" stroke-dasharray="4 4"/>
+        <line x1="104" y1="150" x2="70" y2="109" stroke="#9aa3b2" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arr)"/>
+      </g>
+    </svg>
+  </div>
+  <div class="callout">
+    <b>Cancellation order matters.</b> On each bar the script checks, in order: data unavailable, invalidation breached, permission lost, chart-TF extreme reached, expiry, then follow-through. A bar that both breaches the invalidation and closes higher is a cancellation, not a trigger.
+  </div>
+</section>
+
+<section id="dtf-table">
+  <h2>DTF status table</h2>
+  <div class="wrap"><table>
+    <tr><th>Row</th><th>What it tells you</th></tr>
+    <tr><td>Pair</td><td>Which chart / HTF pair is active, or "Unsupported".</td></tr>
+    <tr><td>Feed</td><td>Exchange, ticker and type. Different feeds of the same asset produce slightly different crossovers.</td></tr>
+    <tr><td>Engine</td><td>Which oscillator is running; anything other than Stochastic is flagged experimental.</td></tr>
+    <tr><td>Chart / HTF N/range/F/S</td><td>Lookback, RSI range (Stochastic RSI only), fast and slow smoothing, and the extreme levels in use.</td></tr>
+    <tr><td>Confirmed context</td><td>HTF direction (Bullish, Bearish, Neutral) and zone (Middle, Transition, Upper or Lower extreme). Coloured like the ribbon.</td></tr>
+    <tr><td>HTF close (UTC)</td><td>Timestamp of the HTF bar the context comes from. It should lag the chart by one HTF bar; if it equals the current bar, the context is provisional.</td></tr>
+    <tr><td>Status</td><td>What the script is doing now: warming up, armed long or short, "Context blocks new entries", or "Waiting for qualifying crossover".</td></tr>
+    <tr><td>Last event</td><td>The most recent state change and its reason, such as "Price trigger" or "Cancelled: invalidation breached".</td></tr>
+    <tr><td>Last trigger / invalidation</td><td>Close at the last trigger and the invalidation that applied to it. This is your reference for a live stop.</td></tr>
+    <tr><td>U1 / U2 next protection</td><td>With management on: the stop each half will use on the next bar, and whether it is at the Cycle level, Armed, or trailing 1-bar. "Flat" means exited.</td></tr>
+  </table></div>
+</section>
+
+<section id="dtm">
+  <h2>DTM: Dynamic Time Map</h2>
+  <h3>How a forecast is built</h3>
+  <div class="card">
+    <svg viewBox="0 0 900 260" width="100%" role="img" aria-label="DTM pipeline">
+      <g font-size="13" fill="#e6e8ee">
+        <rect x="20" y="20" width="230" height="64" rx="8" fill="#1e2230" stroke="#26a69a"/>
+        <text x="135" y="45" text-anchor="middle" font-weight="700">1. Confirm pivots</text>
+        <text x="135" y="66" text-anchor="middle" fill="#9aa3b2" font-size="12">depth 5 + 1.5 ATR deviation</text>
+        <line x1="250" y1="52" x2="300" y2="52" stroke="#9aa3b2" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="310" y="20" width="230" height="64" rx="8" fill="#1e2230" stroke="#26c6da"/>
+        <text x="425" y="45" text-anchor="middle" font-weight="700">2. Measure durations</text>
+        <text x="425" y="66" text-anchor="middle" fill="#9aa3b2" font-size="12">low→high, high→low, high→high, low→low</text>
+        <line x1="540" y1="52" x2="590" y2="52" stroke="#9aa3b2" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="600" y="20" width="280" height="64" rx="8" fill="#1e2230" stroke="#ff9800"/>
+        <text x="740" y="45" text-anchor="middle" font-weight="700">3. Project from last pivot</text>
+        <text x="740" y="66" text-anchor="middle" fill="#9aa3b2" font-size="12">five models, each a set of candidate dates or a band</text>
+        <line x1="740" y1="84" x2="740" y2="120" stroke="#9aa3b2" stroke-width="2" marker-end="url(#arr)"/>
+        <rect x="470" y="130" width="410" height="110" rx="8" fill="#1e2230" stroke="#ffd54f"/>
+        <text x="675" y="155" text-anchor="middle" font-weight="700">4. Score every future day, rank windows</text>
+        <text x="675" y="178" text-anchor="middle" fill="#9aa3b2" font-size="12">points = one vote per historical interval landing within ±1 day</text>
+        <text x="675" y="196" text-anchor="middle" fill="#9aa3b2" font-size="12">+ range bonus if inside TRZ / Time Band overlap</text>
+        <text x="675" y="214" text-anchor="middle" fill="#9aa3b2" font-size="12">+ maximum bonus (conditional) + theory bonus (optional)</text>
+        <text x="675" y="232" text-anchor="middle" fill="#ffd54f" font-size="12">Output: up to 3 windows ≤ 5 days wide, within a 90-day horizon</text>
+        <rect x="20" y="130" width="400" height="110" rx="8" fill="#1e2230" stroke="#787b86"/>
+        <text x="220" y="155" text-anchor="middle" font-weight="700">5. Resolve</text>
+        <text x="220" y="178" text-anchor="middle" fill="#9aa3b2" font-size="12">When the next opposite pivot is confirmed, its date is</text>
+        <text x="220" y="196" text-anchor="middle" fill="#9aa3b2" font-size="12">tested against the issued windows: hit if inside any.</text>
+        <text x="220" y="214" text-anchor="middle" fill="#9aa3b2" font-size="12">Expired windows stay pending until a pivot confirms.</text>
+        <text x="220" y="232" text-anchor="middle" fill="#9aa3b2" font-size="12">A new pivot issues a new forecast version (#id).</text>
+      </g>
+    </svg>
+  </div>
+  <div class="callout red">
+    <b>Scores are evidence counts, not probabilities.</b> A window scored 4.97 had roughly five independent historical intervals pointing at it plus bonuses. It says nothing about how far price will move.
+  </div>
+</section>
+
+<section id="dtm-visuals">
+  <h2>DTM visuals</h2>
+  <div class="card legend">
+    <div class="sw" style="background:linear-gradient(90deg,var(--teal) 50%,var(--orange) 50%)"></div><div><b>Green / orange zigzag.</b> The confirmed pivot path. Green legs advance, orange legs decline. Every projection is measured from these pivots, so if the path looks wrong the forecasts are wrong.</div>
+    <div class="sw mark" style="color:#e6e8ee">▣</div><div><b>"Confirmed L" / "Confirmed H" label.</b> The most recent confirmed pivot and the anchor for the live forecast. Placed at the pivot's date, not the bar where it was confirmed. Optional "Show provisional leg" draws the unconfirmed leg from it.</div>
+    <div class="sw" style="background:rgba(255,152,0,.35);border-color:var(--orange)"></div><div><b>Orange vertical bands.</b> The ranked forecast windows for the next opposite pivot (up to 3, each ≤ 5 days). Darker means higher score. The label on each shows dates, width and score.</div>
+    <div class="sw dash" style="border-color:var(--orange)"></div><div><b>Orange dashed vertical, Maximum boundary.</b> Latest date the historical maximum-duration model expects the turn by. Conditional on no other pivot confirming first, hence the asterisk in the table.</div>
+    <div class="sw" style="background:rgba(38,166,154,.25);border-color:var(--trz)"></div><div><b>TRZ cycle (teal, top).</b> Trimmed same-type duration range (high→high for a HIGH forecast) projected from the last same-type pivot. Miner's Time Rhythm Zone, broad on its own.</div>
+    <div class="sw" style="background:rgba(38,166,154,.45);border-color:var(--trz)"></div><div><b>TRZ overlap (teal, narrower).</b> Intersection of the same-type range with the directional range (low→high) projected from the anchor. The classic TRZ zone.</div>
+    <div class="sw" style="background:rgba(233,30,99,.2);border-color:var(--magenta)"></div><div><b>Time Band directional (magenta, wide).</b> Range of the most recent directional durations (default last 10) projected from the anchor. Adapts faster than TRZ because it ignores older history.</div>
+    <div class="sw" style="background:rgba(233,30,99,.3);border-color:var(--magenta)"></div><div><b>Time Band cycle (magenta).</b> Recent same-type durations projected from the last same-type pivot.</div>
+    <div class="sw" style="background:rgba(233,30,99,.5);border-color:var(--magenta)"></div><div><b>Time Band overlap (magenta, narrowest).</b> Intersection of the two Time Band ranges. Ranked windows inside both this and the TRZ overlap earn the range bonus.</div>
+    <div class="sw" style="background:rgba(120,123,134,.3);border-color:var(--grey)"></div><div><b>Grey bands (optional).</b> "Earliest-window baseline": the same number of covered days placed as early as possible. Display-only comparison so you can see whether the model's windows differ from a naive placement.</div>
+    <div class="sw" style="background:rgba(255,255,255,.08);border-color:var(--grey)"></div><div><b>Faded historical bands (optional).</b> "Previous issued forecasts to display" shows earlier versions with their outcome text so you can eyeball hits and misses.</div>
+  </div>
+  <p class="small">The empty pane below price is left over from the DTF layout; DTM draws nothing there.</p>
+</section>
+
+<section id="dtm-models">
+  <h2>The five time models</h2>
+  <div class="wrap"><table>
+    <tr><th>Model</th><th>Source durations</th><th>Projected from</th><th>Contributes</th><th>Preset</th></tr>
+    <tr><td>Directional time symmetry</td><td>Prior low→high (for a HIGH forecast) and their 62 / 100 / 162 percent alternates</td><td>Anchor pivot</td><td>Point votes, one per historical interval</td><td>All</td></tr>
+    <tr><td>Cycle votes</td><td>Prior high→high</td><td>Last same-type pivot</td><td>Point votes</td><td>V1 control only</td></tr>
+    <tr><td>Automatic TRZ</td><td>Both families, trimmed to the central 80 percent</td><td>Both anchors, intersected</td><td>Range bonus</td><td>All</td></tr>
+    <tr><td>Recent Time Bands</td><td>Last 10 of each family, untrimmed</td><td>Both anchors, intersected</td><td>Range bonus</td><td>All</td></tr>
+    <tr><td>Maximum probable boundary</td><td>Longest historical duration</td><td>Anchor pivot</td><td>Conditional bonus and the dashed line</td><td>All</td></tr>
+  </table></div>
+  <p><b>Alternative anchors</b> (off by default) add closing-price extremes and nearby secondary extremes as extra anchor variants. They share one vote per interval so they cannot inflate scores. <b>Theoretical correction</b> draws the 38.2 to 61.8 percent time-retracement window and can optionally score.</p>
+</section>
+
+<section id="dtm-dash">
+  <h2>DTM dashboard views</h2>
+  <p>Chosen under <b>Inputs › 7. Dashboard and review</b>. Same panel, four depths.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Compact <span class="small">(default)</span></h3>
+    <div class="wrap"><table>
+      <tr><th>Row</th><th>Reading</th></tr>
+      <tr><td>Next HIGH? / LOW? | #id</td><td>Pivot type expected next and the forecast version number. A new number appears every time a pivot confirms.</td></tr>
+      <tr><td>State</td><td><b>Upcoming</b>: no window has started. <b>Active</b>: inside a window now. <b>Elapsed</b>: all windows passed, confirmation pending. Or "No usable future support".</td></tr>
+      <tr><td>Nearest remaining</td><td>First window still ahead, with its score.</td></tr>
+      <tr><td>Strongest at issuance</td><td>Top-scored window when the forecast was created. Often differs from nearest.</td></tr>
+      <tr><td>Countdown</td><td>Days until the nearest window opens, or days remaining inside it.</td></tr>
+      <tr><td>Maximum boundary*</td><td>The dashed-line date, marked "conditional" or "exceeded".</td></tr>
+      <tr><td>Coverage / continuous span</td><td>Total days covered by all windows, and the longest unbroken run. Fifteen days of cover in a 90-day horizon is a specific forecast; forty is vague.</td></tr>
+      <tr><td>Last resolved forecast</td><td>Outcome text of the previous version, such as "Occurrence inside issued window".</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Detailed</h3>
+    <p>The Compact rows plus the ingredients: detector in use; pivot date versus the date it became known and the lag in days; observation counts for the directional and cycle families against the minimum; how many each TRZ trim retained; the TRZ, Time Band, and shared overlap ranges as dates; which alternative anchors are on; the theoretical window; history counts; data gaps; lead and elapsed days; preset and adjacency mode; and the baseline text. Use it when a window looks odd and you want to see which family produced it.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Window evidence</h3>
+    <p>One window dissected. Pick <b>Strongest</b>, <b>Nearest remaining</b>, or <b>Window 1 to 3</b> under "Window to inspect".</p>
+    <ul>
+      <li><b>Score components at peak</b>: points + range bonus + maximum bonus + theory bonus, summing to the displayed score.</li>
+      <li><b>Directional unique / cycle unique</b>: how many independent historical intervals voted. Five uniques from five different swings is stronger than five votes from anchor variants of one swing.</li>
+      <li><b>Primary / close / secondary</b>: which anchor variant produced each vote, so you can see whether closing or secondary anchors are carrying the score.</li>
+      <li><b>Supporting sample IDs and anchor dates</b>: the actual historical swings behind the window. Cross-check them on the chart.</li>
+      <li><b>Range support at peak</b>: whether the peak day sits inside TRZ and Time Band, or is a "broad empirical overlap" with no point-supported peak.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Scorecard</h3>
+    <p>Track record over the last 100 forecast versions, recalculated with current inputs.</p>
+    <div class="wrap"><table>
+      <tr><th>Row</th><th>Reading</th></tr>
+      <tr><td>Model hits / misses, hit rate</td><td>Of resolved forecasts, how many next-pivots landed inside any issued window.</td></tr>
+      <tr><td>Mean distance to nearest window</td><td>Average days from the actual pivot to the closest window edge; inside counts as zero. Low distance with a low hit rate means near misses.</td></tr>
+      <tr><td>Mean confirmation delay</td><td>How many daily bars after a pivot it took to confirm. This is the operational lag you live with.</td></tr>
+      <tr><td>Mean covered days / forecast</td><td>Average specificity. Compare with the horizon.</td></tr>
+      <tr><td>Pending / no-window resolved</td><td>Forecasts awaiting a pivot, and forecasts that issued no window.</td></tr>
+      <tr><td>Excluded: gaps / turn before issue</td><td>Forecasts dropped for data gaps or because the turn came before the forecast existed.</td></tr>
+      <tr><td style="color:var(--yellow)">Paired model / baseline hits</td><td style="color:var(--yellow)">For forecasts where an equal-coverage earliest-window baseline could be built: model hits versus baseline hits on the same forecasts.</td></tr>
+      <tr><td style="color:var(--yellow)">Paired model minus baseline</td><td style="color:var(--yellow)"><b>The only line that says whether the timing models beat naive placement.</b> Positive percentage points mean the models add information; near zero means the coverage alone explains the hits.</td></tr>
+    </table></div>
+    <p class="small">The panel's own caveat applies: not an immutable journal, not an independent holdout, timing accuracy only, small samples do not establish an edge.</p>
+  </div>
+</section>
+
+<section id="together">
+  <h2>Using DTF and DTM together</h2>
+  <div class="card">
+    <ol>
+      <li><b>Start with DTM.</b> Note the next expected pivot type (HIGH or LOW), the nearest window, and whether it sits inside both overlaps. Set the Countdown as your attention timer.</li>
+      <li><b>Check the DTF ribbon.</b> If DTM expects a HIGH and the HTF ribbon is orange (Transition or Upper extreme), the two agree that a top is plausible. Teal with a HIGH forecast means the timing model is calling a pause inside a trend; treat it as an exit or tightening cue rather than a reversal.</li>
+      <li><b>Wait for the DTF setup.</b> An S inside a DTM window, in the direction of the expected turn, is the condition you are looking for. Note the orange invalidation line.</li>
+      <li><b>Act on the trigger, not the setup.</b> The T / DTF marker is the entry event. If no trigger comes within three bars the setup retires with a grey X and you wait for the next one.</li>
+      <li><b>Manage with U1 / U2 or your own rules.</b> The purple U2 line is the cycle stop; the aqua U1 line shows how a tight trail would have behaved. Neither places orders.</li>
+      <li><b>Score the window afterwards.</b> When the pivot confirms, DTM resolves the forecast. Over time the Scorecard's paired difference tells you whether the timing filter is earning its keep on this symbol.</li>
+    </ol>
+  </div>
+  <div class="callout blue">
+    <b>What agreement looks like:</b> DTM State "Active", DTF ribbon orange or freshly flipped, a DTF S then T in the forecast direction, and the setup's invalidation just beyond the recent extreme. <b>What disagreement looks like:</b> a DTF trigger with no DTM window for weeks, or a DTM window that passes with the DTF stochastic still mid-range and no cross.
+  </div>
+
+  <h3>Worked examples</h3>
+  <p class="small">Dates and prices are illustrative. Each example names the exact visual cue at every step so you can match it on screen.</p>
+
+  <div class="card" style="border-left:4px solid var(--teal)">
+    <h3 style="margin-top:0;color:var(--teal)">Example 1: Long, trend continuation</h3>
+
+    <svg viewBox="0 0 900 400" width="100%" role="img" aria-label="Long example">
+      <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9aa3b2"/></marker></defs>
+      <rect x="0" y="0" width="900" height="400" fill="#0b0d12"/>
+      <rect x="40" y="16" width="820" height="200" fill="#12151d" stroke="#2a3040"/>
+      <rect x="40" y="244" width="820" height="140" fill="#12151d" stroke="#2a3040"/>
+      <text x="46" y="30" font-size="11" fill="#9aa3b2">Price (daily)</text>
+      <text x="46" y="258" font-size="11" fill="#9aa3b2">DTF pane</text>
+      <line x1="40" y1="272" x2="860" y2="272" stroke="#ef5350" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="276" font-size="10" fill="#ef5350">80</text>
+      <line x1="40" y1="314" x2="860" y2="314" stroke="#787b86" stroke-dasharray="2 4" opacity=".6"/><text x="864" y="318" font-size="10" fill="#9aa3b2">50</text>
+      <line x1="40" y1="356" x2="860" y2="356" stroke="#26a69a" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="360" font-size="10" fill="#26a69a">20</text>
+  <rect x="455" y="16" width="120" height="200" fill="#ff9800" opacity=".18"/>
+  <rect x="490" y="16" width="55" height="200" fill="#ff9800" opacity=".28"/>
+  <rect x="470" y="16" width="100" height="14" fill="#26a69a" opacity=".55"/>
+  <text x="520" y="27" font-size="11" fill="#0b0d12" text-anchor="middle">TRZ overlap</text>
+  <text x="515" y="44" font-size="11" fill="#ff9800" text-anchor="middle">DTM window: Next LOW? 09-24 to 09-28</text>
+  <line x1="80" y1="140" x2="80" y2="160" stroke="#26a69a" stroke-width="1.5"/><rect x="76" y="140" width="8" height="10" fill="#26a69a"/><line x1="110" y1="128" x2="110" y2="150" stroke="#26a69a" stroke-width="1.5"/><rect x="106" y="130" width="8" height="10" fill="#26a69a"/><line x1="140" y1="118" x2="140" y2="142" stroke="#26a69a" stroke-width="1.5"/><rect x="136" y="120" width="8" height="10" fill="#26a69a"/><line x1="170" y1="108" x2="170" y2="132" stroke="#26a69a" stroke-width="1.5"/><rect x="166" y="110" width="8" height="10" fill="#26a69a"/><line x1="200" y1="100" x2="200" y2="124" stroke="#26a69a" stroke-width="1.5"/><rect x="196" y="104" width="8" height="6" fill="#26a69a"/><line x1="230" y1="96" x2="230" y2="118" stroke="#26a69a" stroke-width="1.5"/><rect x="226" y="100" width="8" height="4" fill="#26a69a"/><line x1="260" y1="94" x2="260" y2="114" stroke="#26a69a" stroke-width="1.5"/><rect x="256" y="96" width="8" height="4" fill="#26a69a"/><line x1="290" y1="90" x2="290" y2="110" stroke="#26a69a" stroke-width="1.5"/><rect x="286" y="92" width="8" height="4" fill="#26a69a"/><line x1="320" y1="88" x2="320" y2="106" stroke="#ef5350" stroke-width="1.5"/><rect x="316" y="92" width="8" height="4" fill="#ef5350"/><line x1="350" y1="92" x2="350" y2="112" stroke="#ef5350" stroke-width="1.5"/><rect x="346" y="96" width="8" height="8" fill="#ef5350"/><line x1="380" y1="98" x2="380" y2="118" stroke="#ef5350" stroke-width="1.5"/><rect x="376" y="104" width="8" height="8" fill="#ef5350"/><line x1="410" y1="106" x2="410" y2="128" stroke="#ef5350" stroke-width="1.5"/><rect x="406" y="112" width="8" height="10" fill="#ef5350"/><line x1="440" y1="116" x2="440" y2="140" stroke="#ef5350" stroke-width="1.5"/><rect x="436" y="122" width="8" height="12" fill="#ef5350"/><line x1="470" y1="128" x2="470" y2="150" stroke="#ef5350" stroke-width="1.5"/><rect x="466" y="134" width="8" height="12" fill="#ef5350"/><line x1="500" y1="140" x2="500" y2="160" stroke="#ef5350" stroke-width="1.5"/><rect x="496" y="146" width="8" height="4" fill="#ef5350"/><line x1="530" y1="142" x2="530" y2="158" stroke="#26a69a" stroke-width="1.5"/><rect x="526" y="144" width="8" height="6" fill="#26a69a"/><line x1="560" y1="128" x2="560" y2="150" stroke="#26a69a" stroke-width="1.5"/><rect x="556" y="132" width="8" height="12" fill="#26a69a"/><line x1="590" y1="112" x2="590" y2="138" stroke="#26a69a" stroke-width="1.5"/><rect x="586" y="118" width="8" height="14" fill="#26a69a"/><line x1="620" y1="98" x2="620" y2="126" stroke="#26a69a" stroke-width="1.5"/><rect x="616" y="104" width="8" height="14" fill="#26a69a"/><line x1="650" y1="90" x2="650" y2="112" stroke="#26a69a" stroke-width="1.5"/><rect x="646" y="94" width="8" height="10" fill="#26a69a"/><line x1="680" y1="84" x2="680" y2="100" stroke="#26a69a" stroke-width="1.5"/><rect x="676" y="88" width="8" height="6" fill="#26a69a"/>
+  <line x1="500" y1="164" x2="600" y2="164" stroke="#ff9800" stroke-width="2"/>
+  <text x="604" y="168" font-size="11" fill="#ff9800" text-anchor="start">invalidation = leg low − 1 tick</text>
+  <polygon points="560,168 552,180 568,180" fill="#9ccc65"/><text x="560" y="194" font-size="11" fill="#9ccc65" text-anchor="middle">DTF</text>
+  <circle cx="560" cy="122" r="6" fill="#ffd54f"/><text x="572" y="126" font-size="11" fill="#ffd54f" text-anchor="start">2U</text>
+  <polyline points="560,164 590,164 620,150 650,120 680,100" fill="none" stroke="#26c6da" stroke-width="2"/><text x="684" y="104" font-size="11" fill="#26c6da" text-anchor="start">U1</text>
+  <polyline points="560,166 680,166" fill="none" stroke="#ab47bc" stroke-width="3"/><text x="684" y="170" font-size="11" fill="#ab47bc" text-anchor="start">U2</text>
+  <rect x="40" y="228" width="820" height="8" fill="#26a69a"/><text x="46" y="224" font-size="11" fill="#26a69a" text-anchor="start">ribbon: teal = weekly bullish, longs permitted</text>
+  <polyline points="80,268 140,262 200,270 260,290 320,300 380,306 440,318 500,340 530,350 560,338 590,318 620,296 650,280 680,270" fill="none" stroke="#26c6da" stroke-width="2.5"/>
+  <polyline points="80,272 140,266 200,272 260,286 320,296 380,302 440,312 500,330 530,342 560,344 590,330 620,308 650,290 680,278" fill="none" stroke="#ff9800" stroke-width="2.5"/>
+  <circle cx="530" cy="374" r="6" fill="#26a69a"/><text x="530" y="394" font-size="11" fill="#26a69a" text-anchor="middle">S</text>
+  <polygon points="560,368 553,380 567,380" fill="#9ccc65"/><text x="560" y="394" font-size="11" fill="#9ccc65" text-anchor="middle">T</text>
+  <line x1="530" y1="346" x2="530" y2="366" stroke="#9aa3b2" stroke-width="1" marker-end="url(#ar2)"/>
+  <text x="430" y="392" font-size="11" fill="#9aa3b2" text-anchor="end">leg dipped below 50 → aqua crosses above orange inside window</text>
+
+    </svg>
+    <ol>
+      <li><b>DTM.</b> Panel reads <em>Next LOW? | #361 · State: Upcoming · Nearest remaining 09-24 to 09-28 (4.1)</em>. Label on chart says <b>Confirmed H</b>. The map wants a bottom; the countdown is your alarm.</li>
+      <li><b>DTF ribbon.</b> Teal, table says <em>Bullish · Middle</em>. Longs permitted. A low inside the window would be a Table 2.2 row-1 continuation entry.</li>
+      <li><b>Pullback.</b> Aqua and orange fall below the dotted 50 while price drifts toward the window. Midpoint requirement met. No action.</li>
+      <li><b>Setup.</b> On 09-25, inside the orange DTM band and the teal TRZ overlap, aqua crosses above orange. A teal <b>S</b> prints at the bottom of the pane and the orange invalidation line appears on price one tick under the leg low. Stop level is now known.</li>
+      <li><b>Trigger.</b> Next bar closes above the prior close. Lime <b>▲ DTF</b> under the bar, <b>T</b> in the pane. Enter long at that close.</li>
+      <li><b>Manage.</b> Yellow <b>2U</b>; aqua U1 and purple U2 both at the invalidation. Scale half on <b>U1 ✕</b> after the trail tightens; let U2 ride the cycle stop until the ribbon turns orange and a bearish daily cross arms it.</li>
+      <li><b>Resolve.</b> When the low confirms, DTM scores #361 as a hit.</li>
+    </ol>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--red)">
+    <h3 style="margin-top:0;color:var(--red)">Example 2: Short, top inside a window</h3>
+
+    <svg viewBox="0 0 900 400" width="100%" role="img" aria-label="Short example">
+      <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9aa3b2"/></marker></defs>
+      <rect x="0" y="0" width="900" height="400" fill="#0b0d12"/>
+      <rect x="40" y="16" width="820" height="200" fill="#12151d" stroke="#2a3040"/>
+      <rect x="40" y="244" width="820" height="140" fill="#12151d" stroke="#2a3040"/>
+      <text x="46" y="30" font-size="11" fill="#9aa3b2">Price (daily)</text>
+      <text x="46" y="258" font-size="11" fill="#9aa3b2">DTF pane</text>
+      <line x1="40" y1="272" x2="860" y2="272" stroke="#ef5350" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="276" font-size="10" fill="#ef5350">80</text>
+      <line x1="40" y1="314" x2="860" y2="314" stroke="#787b86" stroke-dasharray="2 4" opacity=".6"/><text x="864" y="318" font-size="10" fill="#9aa3b2">50</text>
+      <line x1="40" y1="356" x2="860" y2="356" stroke="#26a69a" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="360" font-size="10" fill="#26a69a">20</text>
+  <rect x="395" y="16" width="120" height="200" fill="#ff9800" opacity=".18"/>
+  <rect x="430" y="16" width="55" height="200" fill="#ff9800" opacity=".28"/>
+  <line x1="590" y1="16" x2="590" y2="216" stroke="#ff9800" stroke-dasharray="5 4" stroke-width="1.5"/>
+  <text x="594" y="30" font-size="11" fill="#ff9800" text-anchor="start">maximum boundary*</text>
+  <text x="455" y="44" font-size="11" fill="#ff9800" text-anchor="middle">DTM window: Next HIGH? 09-11 to 09-15</text>
+  <line x1="80" y1="140" x2="80" y2="158" stroke="#26a69a" stroke-width="1.5"/><rect x="76" y="140" width="8" height="10" fill="#26a69a"/><line x1="110" y1="128" x2="110" y2="148" stroke="#26a69a" stroke-width="1.5"/><rect x="106" y="130" width="8" height="10" fill="#26a69a"/><line x1="140" y1="116" x2="140" y2="138" stroke="#26a69a" stroke-width="1.5"/><rect x="136" y="118" width="8" height="12" fill="#26a69a"/><line x1="170" y1="104" x2="170" y2="126" stroke="#26a69a" stroke-width="1.5"/><rect x="166" y="106" width="8" height="12" fill="#26a69a"/><line x1="200" y1="92" x2="200" y2="114" stroke="#26a69a" stroke-width="1.5"/><rect x="196" y="94" width="8" height="12" fill="#26a69a"/><line x1="230" y1="80" x2="230" y2="102" stroke="#26a69a" stroke-width="1.5"/><rect x="226" y="82" width="8" height="12" fill="#26a69a"/><line x1="260" y1="66" x2="260" y2="90" stroke="#26a69a" stroke-width="1.5"/><rect x="256" y="68" width="8" height="14" fill="#26a69a"/><line x1="290" y1="56" x2="290" y2="76" stroke="#26a69a" stroke-width="1.5"/><rect x="286" y="58" width="8" height="10" fill="#26a69a"/><line x1="320" y1="48" x2="320" y2="66" stroke="#26a69a" stroke-width="1.5"/><rect x="316" y="50" width="8" height="8" fill="#26a69a"/><line x1="350" y1="40" x2="350" y2="58" stroke="#26a69a" stroke-width="1.5"/><rect x="346" y="44" width="8" height="6" fill="#26a69a"/><line x1="380" y1="36" x2="380" y2="54" stroke="#26a69a" stroke-width="1.5"/><rect x="376" y="40" width="8" height="4" fill="#26a69a"/><line x1="410" y1="34" x2="410" y2="50" stroke="#ef5350" stroke-width="1.5"/><rect x="406" y="40" width="8" height="6" fill="#ef5350"/><line x1="440" y1="40" x2="440" y2="58" stroke="#ef5350" stroke-width="1.5"/><rect x="436" y="46" width="8" height="6" fill="#ef5350"/><line x1="470" y1="46" x2="470" y2="62" stroke="#26a69a" stroke-width="1.5"/><rect x="466" y="48" width="8" height="4" fill="#26a69a"/><line x1="500" y1="42" x2="500" y2="58" stroke="#ef5350" stroke-width="1.5"/><rect x="496" y="48" width="8" height="6" fill="#ef5350"/><line x1="530" y1="50" x2="530" y2="68" stroke="#ef5350" stroke-width="1.5"/><rect x="526" y="54" width="8" height="8" fill="#ef5350"/><line x1="560" y1="58" x2="560" y2="76" stroke="#ef5350" stroke-width="1.5"/><rect x="556" y="62" width="8" height="10" fill="#ef5350"/><line x1="590" y1="68" x2="590" y2="90" stroke="#ef5350" stroke-width="1.5"/><rect x="586" y="72" width="8" height="14" fill="#ef5350"/><line x1="620" y1="82" x2="620" y2="106" stroke="#ef5350" stroke-width="1.5"/><rect x="616" y="86" width="8" height="14" fill="#ef5350"/><line x1="650" y1="96" x2="650" y2="120" stroke="#ef5350" stroke-width="1.5"/><rect x="646" y="100" width="8" height="14" fill="#ef5350"/><line x1="680" y1="110" x2="680" y2="134" stroke="#ef5350" stroke-width="1.5"/><rect x="676" y="114" width="8" height="14" fill="#ef5350"/>
+  <line x1="470" y1="32" x2="560" y2="32" stroke="#ff9800" stroke-width="2"/><text x="564" y="36" font-size="11" fill="#ff9800" text-anchor="start">invalidation = leg high + 1 tick</text>
+  <polygon points="530,44 522,32 538,32" fill="#e040fb" transform="translate(0,-6)"/><text x="530" y="22" font-size="11" fill="#e040fb" text-anchor="middle">DTF</text>
+  <circle cx="530" cy="60" r="6" fill="#ffd54f"/><text x="542" y="64" font-size="11" fill="#ffd54f" text-anchor="start">2U</text>
+  <polyline points="530,34 560,34 590,52 620,72 650,90 680,108" fill="none" stroke="#26c6da" stroke-width="2"/><text x="684" y="112" font-size="11" fill="#26c6da" text-anchor="start">U1</text>
+  <polyline points="530,32 680,32" fill="none" stroke="#ab47bc" stroke-width="3"/><text x="684" y="36" font-size="11" fill="#ab47bc" text-anchor="start">U2</text>
+  <rect x="40" y="228" width="400" height="8" fill="#ff9800"/><rect x="440" y="228" width="420" height="8" fill="#ef5350"/>
+  <text x="46" y="224" font-size="11" fill="#ff9800" text-anchor="start">ribbon: orange = bullish but Transition (shorts blocked)</text>
+  <text x="444" y="224" font-size="11" fill="#ef5350" text-anchor="start">→ red = weekly flipped bearish, shorts permitted</text>
+  <polyline points="80,340 140,330 200,310 260,290 320,276 380,268 440,266 470,272 500,282 530,296 560,312 590,326 620,336 650,344 680,350" fill="none" stroke="#26c6da" stroke-width="2.5"/>
+  <polyline points="80,346 140,336 200,318 260,298 320,284 380,274 440,270 470,270 500,276 530,286 560,300 590,314 620,326 650,336 680,344" fill="none" stroke="#ff9800" stroke-width="2.5"/>
+  <circle cx="500" cy="254" r="6" fill="#ef5350"/><text x="500" y="250" font-size="11" fill="#ef5350" text-anchor="middle">S</text>
+  <polygon points="530,262 523,250 537,250" fill="#e040fb"/><text x="530" y="247" font-size="11" fill="#e040fb" text-anchor="middle">T</text>
+  <text x="700" y="392" font-size="11" fill="#9aa3b2" text-anchor="end">leg rose above 50 → aqua crosses below orange, only after ribbon turned red</text>
+
+    </svg>
+    <ol>
+      <li><b>DTM.</b> <em>Next HIGH? | #360 · State: Active · Nearest remaining 09-11 to 09-15 (4.1)</em>, plus <em>Maximum boundary 09-21 | conditional</em>. Label says <b>Confirmed L</b>. Price is already inside the orange band.</li>
+      <li><b>DTF ribbon.</b> Orange, table says <em>Bullish · Transition</em>. Weekly is still bullish but leaving overbought, so with the default setting shorts are <b>not</b> permitted yet. Watch, do not act.</li>
+      <li><b>Context flips.</b> Two days later the confirmed weekly bar prints fast below slow. Ribbon turns red, table says <em>Bearish · Transition</em>, and an alert fires <em>Confirmed context reversal</em>. Shorts now permitted.</li>
+      <li><b>Setup.</b> Still inside the DTM window and before the maximum boundary, the daily aqua line, having been above 50, crosses below orange with fast still under 80. Red <b>S</b> at the top of the pane; orange invalidation line one tick above the leg high.</li>
+      <li><b>Trigger.</b> Within three bars a close prints below the prior close. Fuchsia <b>▼ DTF</b> above the bar, <b>T</b> in the pane. Enter short.</li>
+      <li><b>Manage.</b> <b>2U</b> marks entry with both stops at the invalidation. U1 trails one bar above price after two bullish daily crosses; U2 arms once the weekly reaches oversold.</li>
+      <li><b>Resolve.</b> The high confirms inside the window: DTM hit, and the next forecast (<em>Next LOW?</em>) is issued from it.</li>
+    </ol>
+  </div>
+
+  <div class="card" style="border-left:4px solid var(--grey)">
+    <h3 style="margin-top:0;color:var(--muted)">Example 3: No action, four ways to stand down</h3>
+
+    <svg viewBox="0 0 900 400" width="100%" role="img" aria-label="No-action examples">
+      <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9aa3b2"/></marker></defs>
+      <rect x="0" y="0" width="900" height="400" fill="#0b0d12"/>
+      <rect x="40" y="16" width="820" height="200" fill="#12151d" stroke="#2a3040"/>
+      <rect x="40" y="244" width="820" height="140" fill="#12151d" stroke="#2a3040"/>
+      <text x="46" y="30" font-size="11" fill="#9aa3b2">Price (daily)</text>
+      <text x="46" y="258" font-size="11" fill="#9aa3b2">DTF pane</text>
+      <line x1="40" y1="272" x2="860" y2="272" stroke="#ef5350" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="276" font-size="10" fill="#ef5350">80</text>
+      <line x1="40" y1="314" x2="860" y2="314" stroke="#787b86" stroke-dasharray="2 4" opacity=".6"/><text x="864" y="318" font-size="10" fill="#9aa3b2">50</text>
+      <line x1="40" y1="356" x2="860" y2="356" stroke="#26a69a" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="360" font-size="10" fill="#26a69a">20</text>
+  <line x1="450" y1="16" x2="450" y2="384" stroke="#2a3040"/>
+  <text x="245" y="44" font-size="11" fill="#e6e8ee" text-anchor="middle">A. Window with no setup</text>
+  <rect x="200" y="56" width="120" height="160" fill="#ff9800" opacity=".18"/>
+  <text x="260" y="68" font-size="11" fill="#ff9800" text-anchor="middle">DTM window (Elapsed)</text>
+  <line x1="80" y1="110" x2="80" y2="130" stroke="#26a69a" stroke-width="1.5"/><rect x="76" y="118" width="8" height="2" fill="#26a69a"/><line x1="110" y1="108" x2="110" y2="128" stroke="#26a69a" stroke-width="1.5"/><rect x="106" y="112" width="8" height="6" fill="#26a69a"/><line x1="140" y1="104" x2="140" y2="124" stroke="#ef5350" stroke-width="1.5"/><rect x="136" y="112" width="8" height="8" fill="#ef5350"/><line x1="170" y1="110" x2="170" y2="130" stroke="#26a69a" stroke-width="1.5"/><rect x="166" y="114" width="8" height="6" fill="#26a69a"/><line x1="200" y1="106" x2="200" y2="126" stroke="#ef5350" stroke-width="1.5"/><rect x="196" y="114" width="8" height="8" fill="#ef5350"/><line x1="230" y1="112" x2="230" y2="132" stroke="#26a69a" stroke-width="1.5"/><rect x="226" y="116" width="8" height="6" fill="#26a69a"/><line x1="260" y1="108" x2="260" y2="128" stroke="#ef5350" stroke-width="1.5"/><rect x="256" y="116" width="8" height="8" fill="#ef5350"/><line x1="290" y1="114" x2="290" y2="134" stroke="#26a69a" stroke-width="1.5"/><rect x="286" y="118" width="8" height="6" fill="#26a69a"/><line x1="320" y1="110" x2="320" y2="130" stroke="#ef5350" stroke-width="1.5"/><rect x="316" y="118" width="8" height="8" fill="#ef5350"/><line x1="350" y1="118" x2="350" y2="136" stroke="#26a69a" stroke-width="1.5"/><rect x="346" y="120" width="8" height="6" fill="#26a69a"/><line x1="380" y1="112" x2="380" y2="132" stroke="#ef5350" stroke-width="1.5"/><rect x="376" y="120" width="8" height="8" fill="#ef5350"/>
+  <polyline points="80,310 110,306 140,318 170,312 200,320 230,308 260,316 290,310 320,318 350,306 380,312" fill="none" stroke="#26c6da" stroke-width="2.5"/>
+  <polyline points="80,314 110,312 140,312 170,314 200,314 230,314 260,312 290,314 320,312 350,314 380,314" fill="none" stroke="#ff9800" stroke-width="2.5"/>
+  <text x="245" y="392" font-size="11" fill="#9aa3b2" text-anchor="middle">aqua and orange tangled at 50, no cross → no S → nothing to do</text>
+  <rect x="40" y="228" width="410" height="8" fill="#26a69a"/>
+
+  <text x="675" y="44" font-size="11" fill="#e6e8ee" text-anchor="middle">B. Setup without permission</text>
+  <line x1="500" y1="50" x2="500" y2="72" stroke="#ef5350" stroke-width="1.5"/><rect x="496" y="60" width="8" height="6" fill="#ef5350"/><line x1="530" y1="58" x2="530" y2="80" stroke="#ef5350" stroke-width="1.5"/><rect x="526" y="66" width="8" height="10" fill="#ef5350"/><line x1="560" y1="70" x2="560" y2="92" stroke="#ef5350" stroke-width="1.5"/><rect x="556" y="76" width="8" height="12" fill="#ef5350"/><line x1="590" y1="82" x2="590" y2="104" stroke="#ef5350" stroke-width="1.5"/><rect x="586" y="88" width="8" height="10" fill="#ef5350"/><line x1="620" y1="92" x2="620" y2="114" stroke="#ef5350" stroke-width="1.5"/><rect x="616" y="98" width="8" height="12" fill="#ef5350"/><line x1="650" y1="104" x2="650" y2="126" stroke="#ef5350" stroke-width="1.5"/><rect x="646" y="110" width="8" height="10" fill="#ef5350"/><line x1="680" y1="112" x2="680" y2="130" stroke="#26a69a" stroke-width="1.5"/><rect x="676" y="114" width="8" height="6" fill="#26a69a"/><line x1="710" y1="104" x2="710" y2="124" stroke="#26a69a" stroke-width="1.5"/><rect x="706" y="108" width="8" height="6" fill="#26a69a"/><line x1="740" y1="100" x2="740" y2="120" stroke="#ef5350" stroke-width="1.5"/><rect x="736" y="108" width="8" height="4" fill="#ef5350"/><line x1="770" y1="106" x2="770" y2="124" stroke="#ef5350" stroke-width="1.5"/><rect x="766" y="112" width="8" height="8" fill="#ef5350"/><line x1="800" y1="116" x2="800" y2="134" stroke="#ef5350" stroke-width="1.5"/><rect x="796" y="120" width="8" height="10" fill="#ef5350"/>
+  <rect x="450" y="228" width="410" height="8" fill="#ef5350"/><text x="456" y="224" font-size="11" fill="#ef5350" text-anchor="start">ribbon red = weekly bearish</text>
+  <polyline points="500,340 530,352 560,358 590,352 620,338 650,318 680,300 710,296 740,304 770,316 800,326" fill="none" stroke="#26c6da" stroke-width="2.5"/>
+  <polyline points="500,336 530,346 560,354 590,356 620,348 650,334 680,318 710,306 740,304 770,308 800,316" fill="none" stroke="#ff9800" stroke-width="2.5"/>
+  <circle cx="620" cy="343" r="9" fill="none" stroke="#787b86" stroke-dasharray="3 2"/>
+  <text x="620" y="392" font-size="11" fill="#9aa3b2" text-anchor="middle">bullish cross from below 20, but no S prints: table says Context blocks new entries</text>
+  <text x="675" y="378" font-size="11" fill="#787b86" text-anchor="middle">(a short after the later bearish cross would be the permitted trade)</text>
+
+    </svg>
+    <svg viewBox="0 0 900 400" width="100%" role="img" aria-label="Failed setup example">
+      <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9aa3b2"/></marker></defs>
+      <rect x="0" y="0" width="900" height="400" fill="#0b0d12"/>
+      <rect x="40" y="16" width="820" height="200" fill="#12151d" stroke="#2a3040"/>
+      <rect x="40" y="244" width="820" height="140" fill="#12151d" stroke="#2a3040"/>
+      <text x="46" y="30" font-size="11" fill="#9aa3b2">Price (daily)</text>
+      <text x="46" y="258" font-size="11" fill="#9aa3b2">DTF pane</text>
+      <line x1="40" y1="272" x2="860" y2="272" stroke="#ef5350" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="276" font-size="10" fill="#ef5350">80</text>
+      <line x1="40" y1="314" x2="860" y2="314" stroke="#787b86" stroke-dasharray="2 4" opacity=".6"/><text x="864" y="318" font-size="10" fill="#9aa3b2">50</text>
+      <line x1="40" y1="356" x2="860" y2="356" stroke="#26a69a" stroke-dasharray="4 4" opacity=".6"/><text x="864" y="360" font-size="10" fill="#26a69a">20</text>
+  <rect x="360" y="16" width="130" height="200" fill="#ff9800" opacity=".18"/><text x="425" y="44" font-size="11" fill="#ff9800" text-anchor="middle">DTM window</text>
+  <line x1="80" y1="140" x2="80" y2="160" stroke="#26a69a" stroke-width="1.5"/><rect x="76" y="142" width="8" height="8" fill="#26a69a"/><line x1="140" y1="130" x2="140" y2="150" stroke="#26a69a" stroke-width="1.5"/><rect x="136" y="132" width="8" height="10" fill="#26a69a"/><line x1="200" y1="120" x2="200" y2="140" stroke="#26a69a" stroke-width="1.5"/><rect x="196" y="124" width="8" height="8" fill="#26a69a"/><line x1="260" y1="112" x2="260" y2="134" stroke="#26a69a" stroke-width="1.5"/><rect x="256" y="116" width="8" height="8" fill="#26a69a"/><line x1="320" y1="120" x2="320" y2="140" stroke="#ef5350" stroke-width="1.5"/><rect x="316" y="116" width="8" height="20" fill="#ef5350"/><line x1="380" y1="130" x2="380" y2="158" stroke="#ef5350" stroke-width="1.5"/><rect x="376" y="136" width="8" height="16" fill="#ef5350"/><line x1="440" y1="146" x2="440" y2="164" stroke="#26a69a" stroke-width="1.5"/><rect x="436" y="148" width="8" height="4" fill="#26a69a"/><line x1="500" y1="140" x2="500" y2="176" stroke="#ef5350" stroke-width="1.5"/><rect x="496" y="148" width="8" height="12" fill="#ef5350"/><line x1="560" y1="150" x2="560" y2="170" stroke="#26a69a" stroke-width="1.5"/><rect x="556" y="154" width="8" height="6" fill="#26a69a"/><line x1="620" y1="144" x2="620" y2="162" stroke="#26a69a" stroke-width="1.5"/><rect x="616" y="148" width="8" height="6" fill="#26a69a"/><line x1="680" y1="138" x2="680" y2="156" stroke="#26a69a" stroke-width="1.5"/><rect x="676" y="142" width="8" height="6" fill="#26a69a"/>
+  <line x1="440" y1="167" x2="530" y2="167" stroke="#ff9800" stroke-width="2"/><text x="534" y="171" font-size="11" fill="#ff9800" text-anchor="start">invalidation (leg low − 1 tick)</text>
+  <circle cx="500" cy="176" r="10" fill="none" stroke="#ef5350" stroke-width="2"/><text x="500" y="196" font-size="11" fill="#ef5350" text-anchor="middle">wick through</text>
+  <rect x="40" y="228" width="820" height="8" fill="#26a69a"/>
+  <polyline points="80,270 140,290 200,310 260,330 320,346 380,352 440,344 500,336 560,342 620,350 680,356" fill="none" stroke="#26c6da" stroke-width="2.5"/>
+  <polyline points="80,274 140,292 200,308 260,326 320,340 380,350 440,348 500,342 560,340 620,344 680,350" fill="none" stroke="#ff9800" stroke-width="2.5"/>
+  <circle cx="440" cy="374" r="6" fill="#26a69a"/><text x="440" y="394" font-size="11" fill="#26a69a" text-anchor="middle">S</text>
+  <text x="500" y="320" font-size="18" fill="#787b86" text-anchor="middle">✕</text><text x="500" y="300" font-size="11" fill="#9aa3b2" text-anchor="middle">Cancelled: invalidation breached</text>
+  <text x="700" y="392" font-size="11" fill="#9aa3b2" text-anchor="end">C. Setup that fails: S printed, next bar breached the orange line, grey X, no trigger</text>
+
+    </svg>
+    <div class="wrap"><table>
+      <tr><th style="width:26%">Situation</th><th>What you see</th><th>Why you do nothing</th></tr>
+      <tr>
+        <td><b>Window with no setup</b></td>
+        <td>DTM band is <em>Active</em>, then the countdown passes and State reads <em>Elapsed: confirmation pending</em>. In the DTF pane aqua and orange are tangled mid-range around 50 with no cross.</td>
+        <td>Timing without momentum confirmation is a forecast, not a signal. Wait for the next confirmed pivot; DTM will issue a fresh version.</td>
+      </tr>
+      <tr>
+        <td><b>Setup without permission</b></td>
+        <td>Aqua crosses above orange from below 20, a textbook daily bullish reversal, but no <b>S</b> prints. Ribbon is red, table says <em>Context blocks new entries</em>.</td>
+        <td>The weekly is bearish. Table 2.2 row 3 territory: the only permitted trade is a short after a bearish daily cross. A tempting long here is exactly what the filter exists to refuse.</td>
+      </tr>
+      <tr>
+        <td><b>Setup that fails</b></td>
+        <td>Teal <b>S</b> prints inside a DTM window; orange invalidation line appears. Next bar wicks below that line. Grey <b>✕</b> at 50 in the pane; table says <em>Cancelled: invalidation breached</em>. Orange line disappears.</td>
+        <td>The setup retired before any trigger, so there was never an entry to take. If a fresh cross prints later inside the window, it is a new setup with a new invalidation.</td>
+      </tr>
+      <tr>
+        <td><b>Trigger with no window</b></td>
+        <td>Lime <b>▲ DTF</b> fires in mid-July. DTM shows no orange band for three weeks in either direction; State is <em>Upcoming</em> with a long countdown.</td>
+        <td>Valid DTF signal, but outside the timing filter. Either skip it or take it at reduced size and log it separately, so the Scorecard comparison stays honest.</td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div class="callout">
+    <b>The short version:</b> DTM says <em>when</em>, the ribbon says <em>which way</em>, <b>S</b> says <em>ready</em>, <b>T</b> says <em>go</em>, the orange line says <em>out</em>. Any step missing means no trade.
+  </div>
+</section>
+
+<section id="caveats">
+  <h2>Caveats and known gaps</h2>
+  <ul>
+    <li><b>Both scripts were generalised from BTC versions on 2026-09-10.</b> DTF dropped a base-currency gate; DTM's gate was already disabled. Neither has been compiled in TradingView since the change beyond your own paste.</li>
+    <li><b>Weekend gaps.</b> DTM measures and projects in calendar days, as Miner does. On five-day markets a window can start or end on a weekend with no bar to score against. Faithful to the method, but it will depress hit rates slightly compared with 24/7 crypto.</li>
+    <li><b>Confirmation lag.</b> A DTM pivot confirms only after depth bars plus the ATR deviation. The "Confirmed L" label can appear a week after the low. Forecasts issued from a late-confirmed pivot may already have windows in the past ("Issued after end").</li>
+    <li><b>HTF context is one bar behind by design.</b> DTF reads the last closed HTF bar so it never repaints, which means the first bars of a new HTF trend are systematically missed.</li>
+    <li><b>Not the DT Oscillator.</b> Miner's proprietary DTosc is unpublished. DTF uses a two-line stochastic at his illustrated 8/3/3 settings. Results describe that substitute.</li>
+    <li><b>Scores and hit rates are in-sample.</b> Both dashboards recompute from loaded history with current inputs. Change an input and the Scorecard changes with it.</li>
+    <li><b>Illustrative management only.</b> The 2U / U1 / U2 machinery models equal halves, one campaign at a time, with no position sizing, costs, or orders.</li>
+  </ul>
+  <p class="small">Claim files behind these tools: <code>indicators/claims/MINER-HPT-001_dual-timeframe-momentum-setup.md</code>, <code>MINER-HPT-062_weekly-ob-daily-reversal-marks-weekly-high.md</code>, <code>MINER-CRS-030_weekly-stochastic-exits-overbought-bear-trend.md</code>, <code>MINER-DT-030_time-rhythm-zone-overlap-projects-next-swing-low.md</code>.</p>
+</section>
+
+</main>
+<footer>DTF and DTM Reference · indicators/00_Current_Best · generated 2026-09-10</footer>
+</body>
+</html>

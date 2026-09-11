@@ -196,6 +196,7 @@ footer{border-top:1px solid var(--rule);padding-top:1rem;font-size:.8rem;color:v
     <div class="grp">Applying it</div>
     <a href="#patterns">Worked patterns</a>
     <a href="#coordinator">Coordinator workflow</a>
+    <a href="#build">Build procedures</a>
     <a href="#questions">Questions for IT Advisor</a>
     <a href="#limits">Limits and thresholds</a>
     <a href="#plan">Staged plan</a>
@@ -883,7 +884,7 @@ WALL     ============== SAP FPL9: no connector, ever ==================
       <div class="cardhead"><h3>1. The aging dashboard does not need Power BI</h3><span class="v permitted">Permitted substitute</span></div>
       <p>The guide proposes SharePoint plus Power BI. Power BI is a separate licensed service outside the boundary, and its scheduled refresh against SharePoint lists is historically unreliable. Build it natively instead:</p>
       <ul>
-        <li>A calculated column <code>Days Outstanding</code> from <code>TODAY()</code> minus <code>Invoice Date</code>. SharePoint calculated columns do not recompute on their own, so a nightly scheduled flow touches open items to force recalculation, or writes the bucket directly.</li>
+        <li>A number column <code>Days Outstanding</code> written by a nightly scheduled flow. It cannot be a calculated column: SharePoint calculated columns do not support volatile functions such as <code>TODAY()</code>, and they recompute only when the item is saved. See build procedure 5.</li>
         <li>A choice column <code>Aging Bucket</code> with values <code>&lt;30</code>, <code>30-60</code>, <code>60-90</code>, <code>&gt;90</code>.</li>
         <li>JSON view formatting to colour the bucket, and a view grouped by bucket, surfaced on the site page as a list web part.</li>
       </ul>
@@ -989,6 +990,217 @@ WALL     ============== SAP FPL9: no connector, ever ==================
       <p>A recurring status page generated from list data, then the SharePoint agent grounded on that page and the document library. Not before: an agent grounded on an empty library is worse than no agent.</p>
     </div>
     <div class="stopnote"><strong>Not on the roadmap.</strong> Power BI, Planner Premium, and anything reaching SAP.</div>
+  </section>
+
+  <section id="build">
+    <h2>Build procedures</h2>
+    <p class="lede">Twelve step-by-step procedures covering everything in the permitted stack, in build order. Every one of these can be executed today without an IT Advisor ruling. Where a step would cross into the gray area it is labelled and isolated.</p>
+
+    <div class="note"><strong>Build order matters.</strong> Procedures 1 to 4 establish the record and must come first. Procedures 5 to 8 add automation over a list that already has data in it. Procedures 9 to 12 are independent of the others and can run in parallel.</div>
+
+    <h3>1. Provision the tracking list</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 1</h3><span class="v permitted">Permitted</span></div>
+      <p><strong>Prerequisite:</strong> the site exists and you hold Full Control or Edit on it.</p>
+<pre><code>Site contents  >  New  >  List  >  Blank list
++ Add column  >  See all column types
+</code></pre>
+      <p><strong>Do not use Import from Excel.</strong> Columns brought in from a spreadsheet default to basic text and number types and cannot afterwards be changed to Person or Lookup. Build the columns by hand.</p>
+      <p><strong>Column set.</strong> Intake fields: <code>Request Type</code> (Choice), <code>Customer</code> (Text), <code>Project / WBS</code> (Text), <code>Amount</code> (Currency), <code>IM / Requestor</code> (Person), <code>Billing reason</code> (Multi-line), <code>PO / Reference</code> (Text). Process fields: <code>Status</code> (Choice), <code>Financial Coordinator Owner</code> (Person), <code>IM Approval Status</code> (Choice), <code>Sundry Billing Submitted Date</code> (Date), <code>Invoice Number</code> (Text), <code>Invoice Date</code> (Date), <code>Payment Status</code> (Choice), <code>Payment Received Date</code> (Date), <code>Last FPL9 Check Date</code> (Date), <code>Next Follow-Up Date</code> (Date), <code>Days Outstanding</code> (Number), <code>Aging Bucket</code> (Choice), <code>Reconciliation Status</code> (Choice), <code>Finance Approval Status</code> (Choice), <code>Closeout Date</code> (Date), <code>Notes</code> (Multi-line, append-only). Reconciliation checklist: six Yes/No columns.</p>
+      <p><strong>Index before you have data.</strong></p>
+<pre><code>Settings (gear)  >  List settings  >  Indexed columns  >  Create a new index
+  Index: Status, Invoice Date, Payment Status, Next Follow-Up Date
+</code></pre>
+      <p><strong>Defaults.</strong> Set <code>Status</code> default to <code>New</code> and <code>IM Approval Status</code> default to <code>Pending</code> in each column's settings, so form submissions arrive workflow-ready.</p>
+      <p><strong>Views.</strong> Create the filtered views now, not later. Every view must be capable of returning fewer than 5,000 items. Automatic index creation only happens below 20,000 items; above that the index is built in the background.</p>
+    </div>
+
+    <h3>2. Create the intake form</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 2</h3><span class="v permitted">Permitted</span></div>
+      <p><strong>Prerequisites.</strong> Two, and both will stop you cold if unmet.</p>
+      <ul>
+        <li><strong>Site sharing.</strong> The Forms option is not visible if the sharing level "People in organization with the link" is disabled on the site collection. No <code>Forms</code> button means this setting, not a missing licence. It requires a site administrator.</li>
+        <li><strong>Internal respondents only.</strong> Custom forms support only "People in organization with the link can respond," and guest accounts in the tenant are not authorised. An external respondent sees "This link is only available to internal users," and no setting changes that.</li>
+      </ul>
+<pre><code>Open the list  >  command bar  >  Forms  >  + New form
+  toggle off every column respondents should not see
+  drag to reorder, mark required fields
+  Add new field       (creates a new column on the list)
+  Settings (gear)     (theme, logo, Accept responses toggle)
+  Send form  >  Copy link
+</code></pre>
+      <p><strong>Clicking Copy link is not optional.</strong> To share to all internal accounts the creator must click Copy link at least once. Until then, colleagues get a permission error even though the form exists. This is behind most "some users can access it, some cannot" reports.</p>
+      <p><strong>Permission model.</strong> "People in organization with the link can respond" is a new permission for lists. Respondents can open the form but cannot read or edit the list's content, and the permission is removable through Manage Access. That is the whole reason to prefer this over granting Contribute on the list, which would expose every other row.</p>
+      <p><strong>Authoring rights.</strong> Anyone with Edit permission can customise the form. Drop a group to Contribute to hide the option from them if you do not want IMs redesigning your intake.</p>
+      <p><strong>Fields to expose.</strong> Required: <code>Request Type</code>, <code>Customer</code>, <code>Project / WBS</code>, <code>Amount</code>, <code>IM / Requestor</code>, <code>Billing reason</code>. Optional: <code>PO / Reference</code>, Attachments. Toggle every process field off.</p>
+    </div>
+
+    <div class="note"><strong>Branching trap.</strong> Conditional branching reached general availability in November 2024 and shows or hides questions based on earlier answers. It applies to the form, not the list. If a column is required on the <em>list</em> and branching skips it, the row lands and is then flagged as incomplete. Enforce required-ness on the form, never on the list column, wherever branching can skip that field. If the branching control is absent, click a question, then the "..." menu, then Add branching before assuming the feature is off.</div>
+
+    <div class="stopnote"><strong>Unsupported column types.</strong> Managed Metadata and Average Rating cannot appear on a Lists form. Text, Choice, Date and Time, Multi-line, Person, Number, Yes/No, Hyperlink, Currency, Location, Image, Lookup and Attachments all work.</div>
+
+    <h3>3. Format status and aging with JSON</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 3</h3><span class="v permitted">Permitted</span></div>
+<pre><code>Column header  >  Column settings  >  Format this column  >  Advanced mode
+</code></pre>
+      <p>Status pill, applied to the <code>Status</code> column:</p>
+<pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "div",
+  "txtContent": "@currentField",
+  "style": {
+    "display": "inline-block",
+    "padding": "2px 10px",
+    "border-radius": "10px",
+    "font-weight": "600",
+    "color": "#ffffff",
+    "background-color": "=if(@currentField == 'Closed', '#107c10', if(@currentField == 'Missing Information', '#a4262c', if(@currentField == 'Payment Monitoring', '#8a6100', '#605e5c')))"
+  }
+}
+</code></pre>
+      <p>Aging colour, applied to the <code>Days Outstanding</code> number column:</p>
+<pre><code>{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "div",
+  "txtContent": "@currentField",
+  "style": {
+    "font-weight": "600",
+    "color": "=if(Number(@currentField) &gt; 90, '#a4262c', if(Number(@currentField) &gt; 60, '#8a6100', if(Number(@currentField) &gt; 30, '#605e5c', '#107c10')))"
+  }
+}
+</code></pre>
+      <p><strong>Limits.</strong> Formatted output has a display limit of roughly 1,000 characters and does not render in grid edit view. Keep nested conditions shallow: performance degrades with deeply nested logic on large views.</p>
+    </div>
+
+    <h3>4. Compute closeout readiness</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 4</h3><span class="v permitted">Permitted</span></div>
+<pre><code>+ Add column  >  More...  >  Calculated (calculation based on other columns)
+  Return type: Single line of text
+</code></pre>
+<pre><code>=IF(AND([Cost Report Received],[Invoice Issued],[Payment Received],
+        [Variance Resolved],[Documentation Complete],[IM Signoff]),
+    "Ready","Not ready")
+</code></pre>
+      <p><strong>What calculated columns cannot do.</strong> They do not support volatile functions such as <code>TODAY()</code> or <code>ME()</code>, and they recompute only when the item is saved, never on a schedule. Anything time-dependent must be written by a flow. That is why <code>Days Outstanding</code> is a plain number column filled by procedure 5, not a calculated column.</p>
+    </div>
+
+    <h3>5. Nightly aging flow</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 5</h3><span class="v permitted">Permitted</span> SharePoint connector only</div>
+<pre><code>List  >  Automate  >  Power Automate  >  Create a flow  >  Scheduled cloud flow
+  Recurrence: Day, 1, at 05:00 local
+</code></pre>
+      <p>Action <code>Get items</code>, with a filter tight enough to stay well inside the request ceiling:</p>
+<pre><code>Filter Query:  PaymentStatus ne 'Paid' and InvoiceDate ne null
+Top Count:     500
+</code></pre>
+      <p>Then <code>Apply to each</code> with a single <code>Update item</code>, setting <code>Days Outstanding</code> to:</p>
+<pre><code>div(sub(ticks(utcNow()), ticks(item()?['InvoiceDate'])), 864000000000)
+</code></pre>
+      <p>And <code>Aging Bucket</code> to:</p>
+<pre><code>if(greater(div(sub(ticks(utcNow()), ticks(item()?['InvoiceDate'])), 864000000000), 90), 'Over 90',
+if(greater(div(sub(ticks(utcNow()), ticks(item()?['InvoiceDate'])), 864000000000), 60), '60 to 90',
+if(greater(div(sub(ticks(utcNow()), ticks(item()?['InvoiceDate'])), 864000000000), 30), '30 to 60', 'Under 30')))
+</code></pre>
+      <p><strong>Request budget.</strong> Every <code>Update item</code> is a request against the 6,000 per 24 hours Standard ceiling. Five hundred open items nightly consumes roughly 500 requests plus overhead. Sustained overage for 14 days disables the flow.</p>
+      <p>The same pattern writes <code>Next Follow-Up Date</code>, which drives the FPL9 worklist view.</p>
+    </div>
+
+    <h3>6. Create a Rule</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 6</h3><span class="v permitted">Permitted</span> not Power Automate</div>
+<pre><code>List  >  Automate  >  Rules  >  Create a rule
+  When:  a column changes  /  an item is created  /  an item is deleted
+  Then:  notify someone
+</code></pre>
+      <p><strong>Reach for this before a flow.</strong> A Rule is a native list feature with nothing to maintain, no run history and no request budget.</p>
+      <p><strong>Limits.</strong> Notify, and in libraries move or copy, are the only actions. No digests. The email format is not customisable. You need Edit or Contribute to create one. Rules are unavailable on Site Pages libraries, and multi-line text columns cannot act as a trigger.</p>
+    </div>
+
+    <h3>7. Approval flow using the SharePoint connector</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 7</h3><span class="v permitted">Permitted</span> with one isolated gray-area branch</div>
+<pre><code>List  >  Automate  >  Power Automate  >  Create a flow
+  Trigger:  When an item is created or modified
+  Condition: Status is equal to 'Ready for Approval'
+  Action:   Create an approval request for an item or file   [SharePoint connector]
+  Action:   Update item  ->  IM Approval Status, approval date, approver
+</code></pre>
+      <p><strong>Use the SharePoint connector's own approval action</strong> rather than the separate <code>Approvals</code> connector wherever the approval shape allows. It surfaces in the list and keeps the flow entirely inside the boundary.</p>
+      <p><strong>Isolate anything that is not SharePoint.</strong> If you add an <code>Office 365 Outlook</code> notification, put it in a single scope named <code>GRAY-AREA notification</code> containing nothing else, so the whole scope can be deleted in one action if the IT Advisor rules Standard connectors out of scope.</p>
+      <p><strong>Supported templates.</strong> Flows for lists work only on generic lists (template 100) and generic libraries (template 101). Standard <code>Get items</code> and <code>Update item</code> handle a maximum of 12 lookup columns and cannot write Image columns.</p>
+    </div>
+
+    <h3>8. Customise the list form with Power Apps</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 8</h3><span class="v permitted">Permitted</span> the sanctioned exception</div>
+<pre><code>List  >  Integrate  >  Power Apps  >  Customize forms
+</code></pre>
+      <div class="stopnote" style="margin-top:.6rem"><strong>Not the menu item below it.</strong> <code>Integrate &gt; Power Apps &gt; Create an app</code> builds a standalone canvas app and is outside the boundary.</div>
+      <p>The form opens in Power Apps Studio with a <code>SharePointIntegration</code> control exposing <code>OnNew</code>, <code>OnEdit</code>, <code>OnView</code>, <code>OnSave</code> and <code>OnCancel</code>. Use <code>RequestHide()</code> to close the panel programmatically.</p>
+<pre><code>File  >  Save  >  Publish to SharePoint
+</code></pre>
+      <p><strong>The one rule that keeps it in boundary:</strong> add no second data source. The moment the form connects to anything other than its own list, it leaves the exception. Note also that unlike a Lists form, a customised form requires the user to have access to the list.</p>
+      <p><strong>Limits.</strong> Generic lists and libraries only. On a library it edits metadata only, never the file. It cannot exist outside the list, cannot hide the SharePoint chrome, does not scale responsively for mobile, and has no proper lifecycle management.</p>
+    </div>
+
+    <h3>9. Configure the document library</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 9</h3><span class="v permitted">Permitted</span></div>
+<pre><code>Library settings  >  Versioning settings
+  Require content approval for submitted items:  Yes
+  Create major and minor (draft) versions
+  Who should see draft items:  Only users who can approve items
+
+Library settings  >  Advanced settings
+  Allow management of content types:  Yes
+  then add your content types from the Content Type Hub
+</code></pre>
+      <p><strong>Retention.</strong> Labels are authored in Microsoft Purview and published to the site, then applied as a library default through library settings. Publication can take up to seven days to reach a site, so do this early. Manual labelling works on E3; auto-apply needs E5, E5 Compliance or an add-on.</p>
+      <p><strong>Enable Document Sets</strong> as a site collection feature first if you want a closeout package to behave as one governed unit with shared metadata.</p>
+    </div>
+
+    <h3>10. Create the read-only SharePoint agent</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 10</h3><span class="v permitted">Permitted</span> Copilot licence, not Power Platform</div>
+<pre><code>Document library  >  Copilot  >  Create an agent
+  Add sources     (maximum 20 items: sites, libraries, folders, files)
+  Set behaviour   (read-only: answer from these sources, do not act)
+  Save            (lands as a .agent file in Site Assets > Copilots)
+  Share           (with the group who need to query it)
+</code></pre>
+      <p><strong>The hard limit that shapes the design.</strong> Native SharePoint agents cannot use Lists as a knowledge source. They ground on sites, pages and document libraries only. To make list data answerable, generate a recurring status page from the list with a scheduled flow and add that page as a source.</p>
+      <p><strong>Grounding quality.</strong> Keep individual files to roughly 36,000 characters, about 15 to 20 pages. With up to 20 files specified, Copilot searches their full contents.</p>
+      <p>Because the agent is a file in <code>Site Assets</code>, it carries version history like any other library file.</p>
+    </div>
+
+    <h3>11. Copilot Notebook, and publishing what it produces</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 11</h3><span class="v permitted">Permitted</span> with a discipline attached</div>
+<pre><code>Microsoft 365 Copilot app  >  Notebooks  >  New notebook
+  Add sources    (the specific files and pages for this one problem)
+  Ask            (answers are grounded on that set only)
+  Generate       (Word, Excel, PowerPoint output, or a mind map)
+</code></pre>
+      <p><strong>Then publish.</strong> A Notebook and its Pages live in a SharePoint Embedded container, not a site. The container does not appear in the SharePoint admin center site list, is bound to one user's identity, and has no library, no inherited permissions and no navigation. Purview reaches it, so it is not shadow IT, but nobody will find it.</p>
+      <p><strong>The rule:</strong> the Notebook is where you think, the library is where the thinking lands. Save anything durable into the document library as a file before you close the notebook.</p>
+    </div>
+
+    <h3>12. Connect Excel with Power Query</h3>
+    <div class="card permitted f" data-v="permitted">
+      <div class="cardhead"><h3>Procedure 12</h3><span class="v permitted">Permitted</span> client-side, no Power Platform</div>
+<pre><code>Excel desktop  >  Data  >  Get Data  >  From Online Services
+                       >  From SharePoint Online List
+  URL: the SITE url, not the list url
+  Implementation: 2.0
+  Navigator: pick the list  >  Transform Data
+</code></pre>
+      <p><strong>Set every data type explicitly</strong> in the query editor. Left to itself, Power Query renders Yes/No columns inconsistently as TRUE/FALSE or 1/0 depending on the implementation version.</p>
+      <p><strong>Limits.</strong> The generated OData URL is limited to roughly 2,100 characters, so long filter expressions break the query. Power Query generally cannot refresh in Excel for the web; refresh from the desktop client. Refresh against a large list is slow, so filter server-side in the query rather than after loading.</p>
+    </div>
   </section>
 
   <section id="questions">
