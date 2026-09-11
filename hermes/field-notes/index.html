@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<!-- index:
+description: Periodically updated official-source Hermes research and practical workflows.
+tags: hermes, research, field-notes
+ingested: 2026-09-11T16:11:25Z
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="hermes-field-notes-static-export">
+<title>Make Repeat Work Remember — Hermes Field Notes</title>
+<style>
+:root{--ink:#11110f;--paper:#f3f0e8;--acid:#dfff00;--line:#cbc6b9;--muted:#68665f}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}a{color:inherit;text-decoration:none}nav{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 4vw;position:sticky;top:0;background:rgba(243,240,232,.94);backdrop-filter:blur(12px);z-index:10}.brand{font:bold 12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;display:flex;align-items:center;gap:10px}.brand span{display:grid;place-items:center;background:var(--ink);color:var(--acid);width:30px;height:30px;border-radius:50%;font:700 18px Georgia}.navlinks{margin:auto;display:flex;gap:28px;font-size:13px}.navlinks a:hover{text-decoration:underline}.github{font:12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;border:1px solid var(--ink);padding:9px 13px;border-radius:99px}header{min-height:420px;padding:90px 4vw 40px;position:relative;overflow:hidden}header:after{content:"☤";position:absolute;right:-3vw;top:55px;font:520px/1 Georgia;color:transparent;-webkit-text-stroke:1px #d4cfc1;z-index:-1}.eyebrow,.kicker{font:11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}.eyebrow i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6aa500;margin-right:9px}h1{font:clamp(40px,7vw,92px)/.82 Georgia,serif;letter-spacing:-.06em;margin:45px 0 35px;max-width:1200px}.lede{font:20px/1.5 Georgia;max-width:620px;margin-left:28vw;color:#3d3b36}.actions{margin:35px 0 70px 28vw;display:flex;gap:12px}.actions a{padding:14px 18px;border:1px solid var(--ink);font-size:13px}.actions .primary{background:var(--ink);color:white}.signal{border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);margin-top:auto}.signal div{padding:25px 0;border-right:1px solid var(--line);display:flex;gap:16px;align-items:baseline}.signal b{font:28px Georgia}.signal span{font:11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted);text-transform:uppercase}.section{padding:100px 4vw}.sectionhead{display:flex;justify-content:space-between;gap:40px;margin-bottom:50px}.sectionhead h2{font:clamp(32px,5vw,64px)/.95 Georgia;margin:18px 0 0;letter-spacing:-.045em}.sectionhead>p{max-width:330px;align-self:end;color:var(--muted);line-height:1.5}.plays{border-top:1px solid var(--ink)}.play{display:grid;grid-template-columns:80px 1fr 30px;gap:24px;border-bottom:1px solid var(--line);padding:35px 10px;transition:.2s}.play:hover{background:#ebe7dc;padding-left:22px}.rank,.meta{font:11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted)}.meta{display:flex;gap:16px;text-transform:uppercase;flex-wrap:wrap}.meta span:first-child{color:#476700}.play h3{font:34px Georgia;margin:10px 0}.playbody>p{max-width:700px;color:#55524c;line-height:1.6}.arrow{font-size:24px}.score{color:var(--ink)!important;background:var(--acid);padding:3px 7px}.why{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted);margin-top:16px}.method{display:grid;grid-template-columns:220px 1fr;gap:30px;border:1px solid var(--ink);padding:25px;margin-top:35px}.method p{margin:0;color:var(--muted);line-height:1.55}.stale-warning{background:#fde8e8;border:1px solid #e85d5d;color:#8a2020;padding:14px 18px;margin:20px 0;border-radius:4px;font:14px/1.5 Arial,Helvetica,sans-serif}.confidence{color:var(--muted)!important;background:transparent;padding:0;text-transform:uppercase}.score-breakdown{margin-top:14px}.score-breakdown summary{cursor:pointer;font:11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.score-breakdown summary:hover{color:var(--ink)}.score-bars{margin-top:12px;display:flex;flex-direction:column;gap:6px}.score-bar{display:grid;grid-template-columns:130px 1fr 50px;gap:10px;align-items:center;font:11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.score-bar-label{color:var(--muted);text-transform:uppercase}.score-bar-track{background:#e0dcd1;height:8px;border-radius:4px;overflow:hidden}.score-bar-fill{background:var(--ink);height:100%;border-radius:4px;transition:width .3s}.score-bar-value{color:var(--ink);font-weight:bold;text-align:right}.capabilities{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.capability-tag{font:10px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#e8e4d8;color:#4a4843;padding:3px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}.citations{margin-top:18px;font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted)}.citations b{display:block;margin-bottom:6px}.citations a{display:block;text-decoration:underline;color:#476700}.citations a:hover{color:var(--ink)}.prompt{margin-top:24px;background:#dedacf;padding:14px 16px;display:flex;gap:20px;align-items:center;max-width:850px}.prompt code{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;flex:1;word-break:break-word}.prompt button{background:transparent;border:0;text-decoration:underline;cursor:pointer;font-weight:bold;color:var(--ink);white-space:nowrap}.prompt button:hover{color:#476700}.dark{background:var(--ink);color:#f5f1e8}.dark .sectionhead>p,.dark .kicker{color:#aaa69d}.trickgrid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #444}.trickgrid article{padding:34px;border-right:1px solid #444;border-bottom:1px solid #444;min-height:240px}.trickgrid article>span{color:var(--acid);font:11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.trickgrid h3{font:28px Georgia;margin:45px 0 15px}.trickgrid p{color:#aaa69d;line-height:1.6}.live{display:inline-block;width:8px;height:8px;background:#64a11a;border-radius:50%;margin-right:8px;box-shadow:0 0 0 5px #dbe7c9}.commitlist{border-top:1px solid var(--ink)}.commitlist a{display:grid;grid-template-columns:90px 1fr 30px;padding:24px 8px;border-bottom:1px solid var(--line);align-items:center}.commitlist time,.commitlist span{font:11px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--muted)}.commitlist div{display:flex;flex-direction:column;gap:7px}.loading{padding:30px;color:var(--muted)}.refresh-meta{margin-top:40px;border:1px solid var(--line);padding:24px}.refresh-meta p{margin:8px 0 0;color:var(--muted);line-height:1.6;font:13px Arial,Helvetica,sans-serif}.fallback-notice{color:#8a6500}.sources{margin-top:70px;border:1px solid var(--ink);padding:28px;display:grid;grid-template-columns:160px 1fr 1fr;gap:30px}.sources p{margin:0;line-height:1.5;color:var(--muted)}.sources div{display:flex;flex-direction:column;gap:10px}.sources a{text-decoration:underline}footer{padding:35px 4vw;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}@media(max-width:760px){.navlinks{display:none}nav{justify-content:space-between}header{padding-top:60px;min-height:auto}header:after{font-size:300px}h1{font-size:40px}.lede,.actions{margin-left:0}.actions{flex-direction:column;align-items:flex-start}.signal{grid-template-columns:1fr}.signal div{border-bottom:1px solid var(--line)}.section{padding:70px 5vw}.sectionhead{display:block}.sectionhead>p{margin-top:25px}.play{grid-template-columns:38px 1fr}.play .arrow{display:none}.play h3{font-size:27px}.prompt{align-items:flex-start}.trickgrid{grid-template-columns:1fr}.sources{grid-template-columns:1fr}.commitlist a{grid-template-columns:60px 1fr 20px}footer{gap:20px;align-items:flex-start;flex-direction:column}}
+
+@media(max-width:600px){.method{display:block}.method p{width:auto;min-width:0;max-width:100%;overflow-wrap:anywhere}footer{flex-wrap:wrap;gap:16px}footer p{min-width:0;flex-basis:100%;overflow-wrap:anywhere}}
+</style>
+</head>
+<body>
+<nav>
+<a class="brand" href="#top"><span>H</span> HERMES FIELD NOTES</a>
+<div class="navlinks">
+<a href="#plays">Use cases</a>
+<a href="#tricks">Fieldcraft</a>
+<a href="#pulse">Daily pulse</a>
+</div>
+<a class="github" href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+</nav>
+
+<header id="top">
+<div class="eyebrow"><i></i> Independent field guide · researched Sep 11, 2026, 12:00 AM</div>
+<div class="stale-warning"><strong>Research status warning:</strong> Research has not completed successfully within 48 hours, or the latest check was incomplete. Content may not reflect current Hermes Agent state.</div>
+<h1>Make Repeat Work Remember</h1>
+<p>Last checked: unknown · Last published: unknown · </p>
+<p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
+<div class="actions">
+<a class="primary" href="#plays">Explore the playbook ↓</a>
+<a class="secondary" href="https://hermes-agent.nousresearch.com/docs/getting-started/quickstart/" target="_blank" rel="noopener noreferrer">Start with Hermes ↗</a>
+</div>
+<div class="signal">
+<div><b>04</b><span>ranked use cases</span></div>
+<div><b>06</b><span>practical tips</span></div>
+<div><b>LIVE</b><span>research status</span></div>
+</div>
+</header>
+
+<section id="plays" class="section">
+<div class="sectionhead">
+<div>
+<span class="kicker">01 / THE PLAYBOOK</span>
+<h2>Where Hermes earns its keep</h2>
+</div>
+<p><i class="live"></i> Editorial research judgment. Not user telemetry, adoption metrics, or measured ROI.</p>
+</div>
+<div class="plays">
+<article class="play" id="verified-workflow-skills">
+<span class="rank">01</span>
+<div class="playbody">
+<div class="meta">
+<span>Reusable procedures with explicit checks</span>
+<span>easy setup</span>
+<span class="score">92/100</span>
+<span class="confidence">confidence: high</span>
+</div>
+<h3>Turn a proven workflow into a reusable skill</h3>
+<p>Use Hermes to capture a successfully completed procedure as an on-demand skill containing prerequisites, steps, pitfalls, and verification. The documented /learn workflow can ingest an existing conversation or reference material, while progressive disclosure keeps detailed references out of context until needed.</p>
+<div class="score-breakdown"><details><summary>Score breakdown</summary><div class="score-bars"><div class="score-bar"><span class="score-bar-label">Practical Impact</span><div class="score-bar-track"><div class="score-bar-fill" style="width:93%"></div></div><span class="score-bar-value">28/30</span></div><div class="score-bar"><span class="score-bar-label">Hermes Advantage</span><div class="score-bar-track"><div class="score-bar-fill" style="width:88%"></div></div><span class="score-bar-value">22/25</span></div><div class="score-bar"><span class="score-bar-label">Compounding</span><div class="score-bar-track"><div class="score-bar-fill" style="width:95%"></div></div><span class="score-bar-value">19/20</span></div><div class="score-bar"><span class="score-bar-label">Momentum</span><div class="score-bar-track"><div class="score-bar-fill" style="width:93%"></div></div><span class="score-bar-value">14/15</span></div><div class="score-bar"><span class="score-bar-label">Setup-to-Value</span><div class="score-bar-track"><div class="score-bar-fill" style="width:90%"></div></div><span class="score-bar-value">9/10</span></div></div></details></div>
+<div class="why"><b>Why this rank:</b> Ranks first because it directly uses Hermes&#x27;s procedural learning loop and applies to many recurring tasks without requiring a gateway or scheduler. Value depends on capturing a verified procedure rather than preserving an untested first attempt.</div>
+<div class="capabilities"><span class="capability-tag">skills</span><span class="capability-tag">learn-command</span><span class="capability-tag">progressive-disclosure</span><span class="capability-tag">skill-reference-files</span></div>
+<div class="prompt">
+<code id="copy-verified-workflow-skills-text">/learn the most recent successfully completed repeatable workflow in this conversation. First identify the evidence that it worked; if no verified workflow exists, ask me for one instead of inventing it. Check for an existing matching skill and propose updating it rather than creating a duplicate. Include prerequisites, exact verified steps, known failure modes, a small acceptance test, and actions requiring approval. Exclude secrets and private account details. Show the proposed skill and wait for approval before saving or modifying it.</code>
+<button type="button" aria-label="Copy prompt" data-copy-target="copy-verified-workflow-skills-text">Copy</button>
+</div>
+<div class="citations"><b>Sources:</b><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commits/main/ ↗</a></div>
+</div>
+<span class="arrow">↗</span>
+</article><article class="play" id="continuity-aware-official-briefings">
+<span class="rank">02</span>
+<div class="playbody">
+<div class="meta">
+<span>Change-focused recurring briefings</span>
+<span>moderate setup</span>
+<span class="score">90/100</span>
+<span class="confidence">confidence: medium</span>
+</div>
+<h3>Build a briefing that remembers what it already reported</h3>
+<p>Combine official-source research with skill-backed cron jobs to produce recurring Hermes Agent change briefings. The retrieved v0.21.0 release notes describe persistent cron memory, continuity between runs, and durable job notepads, supporting a workflow designed to avoid repeatedly reporting the same change.</p>
+<div class="score-breakdown"><details><summary>Score breakdown</summary><div class="score-bars"><div class="score-bar"><span class="score-bar-label">Practical Impact</span><div class="score-bar-track"><div class="score-bar-fill" style="width:93%"></div></div><span class="score-bar-value">28/30</span></div><div class="score-bar"><span class="score-bar-label">Hermes Advantage</span><div class="score-bar-track"><div class="score-bar-fill" style="width:96%"></div></div><span class="score-bar-value">24/25</span></div><div class="score-bar"><span class="score-bar-label">Compounding</span><div class="score-bar-track"><div class="score-bar-fill" style="width:95%"></div></div><span class="score-bar-value">19/20</span></div><div class="score-bar"><span class="score-bar-label">Momentum</span><div class="score-bar-track"><div class="score-bar-fill" style="width:87%"></div></div><span class="score-bar-value">13/15</span></div><div class="score-bar"><span class="score-bar-label">Setup-to-Value</span><div class="score-bar-track"><div class="score-bar-fill" style="width:60%"></div></div><span class="score-bar-value">6/10</span></div></div></details></div>
+<div class="why"><b>Why this rank:</b> Strong recurrence and Hermes-specific state handling put this near the top. Scheduler availability, delivery configuration, model ownership, and verification across successive runs create more setup work than a reusable skill.</div>
+<div class="capabilities"><span class="capability-tag">web-research</span><span class="capability-tag">cron</span><span class="capability-tag">skill-backed-jobs</span><span class="capability-tag">cron-continuity</span><span class="capability-tag">gateway-delivery</span></div>
+<div class="prompt">
+<code id="copy-continuity-aware-official-briefings-text">Produce one manual Hermes Agent change briefing using only the official Hermes documentation and NousResearch/hermes-agent repository. Distinguish released features, merged changes, and unresolved reports; cite a specific official source for each item. If a previous briefing is available in this profile, compare against it and omit unchanged items; otherwise label this the baseline. Then draft, but do not create, a recurring job using a reusable research skill and continuity if supported by the installed version. List the proposed timezone, schedule, profile, delivery target, model/provider decision, and no-change behavior. Ask for missing choices and approval before changing configuration, creating a job, or sending a test message.</code>
+<button type="button" aria-label="Copy prompt" data-copy-target="copy-continuity-aware-official-briefings-text">Copy</button>
+</div>
+<div class="citations"><b>Sources:</b><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/messaging ↗</a></div>
+</div>
+<span class="arrow">↗</span>
+</article><article class="play" id="evidence-backed-project-recall">
+<span class="rank">03</span>
+<div class="playbody">
+<div class="meta">
+<span>Grounded restart briefs</span>
+<span>easy setup</span>
+<span class="score">88/100</span>
+<span class="confidence">confidence: high</span>
+</div>
+<h3>Resume a project from evidence, not recollection</h3>
+<p>Use persistent memory for compact conventions and session search for the actual conversations behind earlier decisions. Hermes can retrieve prior messages and inspect neighboring context, allowing a restart brief to distinguish what was decided from what still needs live verification.</p>
+<div class="score-breakdown"><details><summary>Score breakdown</summary><div class="score-bars"><div class="score-bar"><span class="score-bar-label">Practical Impact</span><div class="score-bar-track"><div class="score-bar-fill" style="width:90%"></div></div><span class="score-bar-value">27/30</span></div><div class="score-bar"><span class="score-bar-label">Hermes Advantage</span><div class="score-bar-track"><div class="score-bar-fill" style="width:88%"></div></div><span class="score-bar-value">22/25</span></div><div class="score-bar"><span class="score-bar-label">Compounding</span><div class="score-bar-track"><div class="score-bar-fill" style="width:95%"></div></div><span class="score-bar-value">19/20</span></div><div class="score-bar"><span class="score-bar-label">Momentum</span><div class="score-bar-track"><div class="score-bar-fill" style="width:67%"></div></div><span class="score-bar-value">10/15</span></div><div class="score-bar"><span class="score-bar-label">Setup-to-Value</span><div class="score-bar-track"><div class="score-bar-fill" style="width:100%"></div></div><span class="score-bar-value">10/10</span></div></div></details></div>
+<div class="why"><b>Why this rank:</b> Immediate usefulness and minimal setup make this a strong default for ongoing projects. It ranks below skill capture and recurring briefings because historical context is not proof of current repository or system state.</div>
+<div class="capabilities"><span class="capability-tag">persistent-memory</span><span class="capability-tag">session-search</span><span class="capability-tag">profile-scoped-context</span><span class="capability-tag">project-context-files</span></div>
+<div class="prompt">
+<code id="copy-evidence-backed-project-recall-text">Help me resume the project most recently discussed in this profile. Search actual prior sessions rather than relying only on memory; if multiple projects are plausible, ask which one. Produce a restart brief with the objective, explicit decisions, last verified result, unresolved blockers, and one next action. Cite session identifiers or retrieved message context for important claims. Label historical facts separately from current observations, and verify available project files read-only before asserting their current state. Do not invent owners or deadlines. Propose only compact, durable memory corrections and wait for approval before saving them.</code>
+<button type="button" aria-label="Copy prompt" data-copy-target="copy-evidence-backed-project-recall-text">Copy</button>
+</div>
+<div class="citations"><b>Sources:</b><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a></div>
+</div>
+<span class="arrow">↗</span>
+</article><article class="play" id="gateway-repository-triage">
+<span class="rank">04</span>
+<div class="playbody">
+<div class="meta">
+<span>Remote diagnosis with concrete evidence</span>
+<span>moderate setup</span>
+<span class="score">85/100</span>
+<span class="confidence">confidence: medium</span>
+</div>
+<h3>Triage repository problems from a messaging chat</h3>
+<p>Reach a configured Hermes host through its messaging gateway to inspect a repository, reproduce a failure, and return a concise evidence-backed diagnosis. Project context files and installed skills can preserve repository conventions, while gateway session controls let the user stop or resume work without opening a terminal on that host.</p>
+<div class="score-breakdown"><details><summary>Score breakdown</summary><div class="score-bars"><div class="score-bar"><span class="score-bar-label">Practical Impact</span><div class="score-bar-track"><div class="score-bar-fill" style="width:93%"></div></div><span class="score-bar-value">28/30</span></div><div class="score-bar"><span class="score-bar-label">Hermes Advantage</span><div class="score-bar-track"><div class="score-bar-fill" style="width:84%"></div></div><span class="score-bar-value">21/25</span></div><div class="score-bar"><span class="score-bar-label">Compounding</span><div class="score-bar-track"><div class="score-bar-fill" style="width:80%"></div></div><span class="score-bar-value">16/20</span></div><div class="score-bar"><span class="score-bar-label">Momentum</span><div class="score-bar-track"><div class="score-bar-fill" style="width:87%"></div></div><span class="score-bar-value">13/15</span></div><div class="score-bar"><span class="score-bar-label">Setup-to-Value</span><div class="score-bar-track"><div class="score-bar-fill" style="width:70%"></div></div><span class="score-bar-value">7/10</span></div></div></details></div>
+<div class="why"><b>Why this rank:</b> Remote access to real project tools is useful, and retrieved releases show continued gateway and delivery work. It ranks fourth because correct host selection, authorization, available tools, and safe test execution are prerequisites; messaging access does not itself make repository operations safe.</div>
+<div class="capabilities"><span class="capability-tag">messaging-gateway</span><span class="capability-tag">terminal-tools</span><span class="capability-tag">project-context-files</span><span class="capability-tag">reusable-skills</span><span class="capability-tag">session-resume</span></div>
+<div class="prompt">
+<code id="copy-gateway-repository-triage-text">Triage the repository problem I describe in this chat. First confirm the active host, Hermes profile, and repository path without exposing credentials; ask for the path or failure description if missing. Inspect project instructions, git status, and the relevant manifest before choosing commands. Do not install dependencies, edit files, change services, commit, push, or deploy. If safe local reproduction requires permission under the project rules, show the exact command and ask first. Return the observed failure, relevant path:line references, likely root cause, and smallest proposed fix. Separate pre-existing failures from anything caused by your investigation, and state clearly if the required tools are unavailable.</code>
+<button type="button" aria-label="Copy prompt" data-copy-target="copy-gateway-repository-triage-text">Copy</button>
+</div>
+<div class="citations"><b>Sources:</b><a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/messaging ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases ↗</a></div>
+</div>
+<span class="arrow">↗</span>
+</article>
+</div>
+<div class="method">
+<b>Ranking methodology</b>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), with momentum grounded in retrieved official documentation, release notes, and repository activity rather than assumed adoption. Timestamps represent session-date precision normalized to midnight UTC, not measured execution times; retrieval may lag upstream, and executable JSON/schema validation was unavailable in this research session.</p>
+</div>
+</section>
+
+<section id="tricks" class="dark section">
+<div class="sectionhead">
+<div>
+<span class="kicker">02 / FIELDCRAFT</span>
+<h2>Small moves, sharper agent</h2>
+</div>
+<p>Operational details that separate a demo from a dependable daily system.</p>
+</div>
+<div class="trickgrid">
+<article><span>01</span><h3>Capture the successful procedure, not the whole transcript</h3><p>Use /learn after a workflow has passed its acceptance check. Ask for a lean skill with prerequisites, pitfalls, and verification, placing longer material in reference files loaded on demand.</p></article><article><span>02</span><h3>Keep memory compact and search history for detail</h3><p>Hermes memory is bounded and injected into the prompt; session_search retrieves actual stored conversations when specifics are needed. Keep durable preferences and conventions in memory rather than logs, transcripts, or temporary debugging state.</p></article><article><span>03</span><h3>Give repository cron jobs an explicit workdir</h3><p>The cron documentation says jobs are detached from repository context by default. Set an existing absolute workdir when approving a project job so its tools and project instructions resolve against the intended repository.</p></article><article><span>04</span><h3>Check delivery separately from job execution</h3><p>Hermes supports local output and configured messaging targets, which are not interchangeable. Specify the intended destination and verify an approved test run reaches it rather than assuming a saved output means a notification arrived.</p></article><article><span>05</span><h3>Do not share one Hermes home between independent agents</h3><p>The memory documentation warns that concurrent agents sharing a Hermes home can compound each other&#x27;s automatic writes. Give independent agents separate profiles and verify the active scope before changing skills, memory, or scheduled jobs.</p></article><article><span>06</span><h3>Make recurring inference selection deliberate</h3><p>Hermes documents per-job model/provider pins and a cron-level default, with a drift guard for jobs following unpinned global settings. Have the user choose inference routing explicitly instead of assuming a chat-model switch should change unattended jobs.</p></article>
+</div>
+</section>
+
+<section id="pulse" class="section pulse">
+
+<div class="sectionhead">
+<div>
+<span class="kicker">03 / RECENT ACTIVITY</span>
+<h2>What changed in Hermes</h2>
+</div>
+<p><i class="live"></i> From official sources, captured during the last research cycle</p>
+</div>
+<div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/releases" target="_blank" rel="noopener noreferrer">
+<time>Aug 31, 2026, 12:00 AM</time>
+<div><b>The retrieved release page lists v0.21.0, dated August 31, 2026, with cron continuity and persistent memory, live subagent steering, desktop browser control, and security hardening. This timestamp represents the stated release date at day precision.</b><span>github.com/NousResearch/hermes-agent/releases</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Sep 1, 2026, 12:00 AM</time>
+<div><b>The retrieved main-branch commit listing shows September 1 work on configurable agent-created skill directories, cron missed-fire visibility, and an updater/cron restart deadlock. These are repository changes, not a claim that every installed release contains them; the timestamp is day precision.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a></div>
+<div class="refresh-meta">
+<div>
+<b>Research status</b>
+<p>
+State: success
+<br>
+Last attempt: Sep 11, 2026, 1:32 PM
+<br>
+Last success: Sep 11, 2026, 1:32 PM
+
+</p>
+</div>
+</div>
+<div class="sources">
+<b>Research standard</b>
+<p>Editorial research judgment. Not user telemetry, adoption metrics, or measured ROI.</p>
+<div><a href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/ ↗</a><a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases ↗</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commits/main/ ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/messaging ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a></div>
+</div>
+</section>
+
+<footer>
+<div class="brand"><span>H</span> HERMES FIELD NOTES</div>
+<p>Built for people doing real work with Hermes Agent.</p>
+<a href="#top">Back to top ↑</a>
+</footer>
+
+<script type="application/json" id="field-notes-data">{"edition_id":"hermes-compounding-workflows-2026-09-11","title":"Make Repeat Work Remember","researched_at":"2026-09-11T00:00:00Z","generated_at":"2026-09-11T00:00:00Z","last_checked_at":"2026-09-11T13:32:13Z","use_cases_count":4,"tips_count":6,"status":{"state":"success","last_attempt_at":"2026-09-11T13:32:13Z","last_success_at":"2026-09-11T13:32:13Z"}}</script>
+<script>
+(function(){
+  function copyText(text, btn){
+    // Clipboard fallback is kept for browsers without the async API.
+    var ta=document.createElement("textarea");
+    ta.value=text;
+    ta.style.position="fixed";
+    ta.style.left="-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try{document.execCommand("copy");}catch(e){}
+    document.body.removeChild(ta);
+    if(btn){
+      var orig=btn.textContent;
+      btn.textContent="Copied ✓";
+      setTimeout(function(){btn.textContent=orig;},1600);
+    }
+  }
+  var data=JSON.parse(document.getElementById("field-notes-data").textContent);
+  var checked=Date.parse(data.last_checked_at);
+  if((!Number.isFinite(checked)||Date.now()-checked>48*3600000)&&!document.querySelector(".stale-warning")){
+    var warning=document.createElement("div");
+    warning.className="stale-warning";
+    warning.textContent="Research status warning: no successful research check in the last 48 hours. Showing the last published edition.";
+    var heading=document.querySelector("h1");
+    heading.parentNode.insertBefore(warning,heading);
+  }
+  document.addEventListener("click",function(e){
+    var btn=e.target.closest("[data-copy-target]");
+    if(!btn)return;
+    var targetId=btn.getAttribute("data-copy-target");
+    var el=document.getElementById(targetId);
+    if(el){
+      var text=el.textContent;
+      try{
+        if(navigator.clipboard&&navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(function(){
+            var orig=btn.textContent;
+            btn.textContent="Copied ✓";
+            setTimeout(function(){btn.textContent=orig;},1600);
+          }).catch(function(){copyText(text,btn);});
+        }else{
+          copyText(text,btn);
+        }
+      }catch(err){copyText(text,btn);}
+    }
+  });
+})();
+</script>
+</body>
+</html>
