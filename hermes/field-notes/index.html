@@ -29,10 +29,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Sep 11, 2026, 4:19 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Sep 13, 2026, 4:54 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Sep 11, 2026, 4:20 PM · Last published: Sep 11, 2026, 4:20 PM · published</p>
+<p>Last checked: Sep 13, 2026, 4:55 PM · Last published: Sep 13, 2026, 4:55 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -40,7 +40,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="signal">
 <div><b>04</b><span>ranked use cases</span></div>
-<div><b>06</b><span>practical tips</span></div>
+<div><b>07</b><span>practical tips</span></div>
 <div><b>LIVE</b><span>research status</span></div>
 </div>
 </header>
@@ -142,7 +142,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), grounded in official documentation, release notes, and repository activity, not assumed adoption. This daily review updates material official-source findings without reranking the evergreen use cases; their original date-only research timestamps are preserved. New retrieval and publication times come from code, exact release/commit dates come from official metadata, and unknown documentation dates remain null. The publication workflow validates JSON and tests the export; suggested Hermes workflows were not independently executed.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), grounded in official documentation, release notes, and repository activity, not assumed adoption. This daily review updates material official-source findings without reranking the evergreen use cases; their original date-only research timestamps are preserved. New retrieval and publication times come from code, release dates use official publication metadata, new commit dates use committer timestamps, and unknown documentation dates remain null. Release notes and repository ancestry distinguish tagged capabilities from later main-branch changes. The publication workflow validates JSON and tests the export; suggested Hermes workflows were not independently executed.</p>
 </div>
 </section>
 
@@ -155,29 +155,41 @@ ingested: 2026-09-11T16:11:25Z
 <p>Operational details that separate a demo from a dependable daily system.</p>
 </div>
 <div class="trickgrid">
-<article><span>01</span><h3>Capture the successful procedure, not the whole transcript</h3><p>Use /learn after a workflow has passed its acceptance check. Ask for a lean skill with prerequisites, pitfalls, and verification, placing longer material in reference files loaded on demand.</p></article><article><span>02</span><h3>Keep memory compact and search history for detail</h3><p>Hermes memory is bounded and injected into the prompt; session_search retrieves actual stored conversations when specifics are needed. Keep durable preferences and conventions in memory rather than logs, transcripts, or temporary debugging state.</p></article><article><span>03</span><h3>Give repository cron jobs an explicit workdir</h3><p>The cron documentation says jobs are detached from repository context by default. Set an existing absolute workdir when approving a project job so its tools and project instructions resolve against the intended repository.</p></article><article><span>04</span><h3>Check delivery separately from job execution</h3><p>Hermes supports local output and configured messaging targets, which are not interchangeable. Specify the intended destination and verify an approved test run reaches it rather than assuming a saved output means a notification arrived.</p></article><article><span>05</span><h3>Do not share one Hermes home between independent agents</h3><p>The memory documentation warns that concurrent agents sharing a Hermes home can compound each other&#x27;s automatic writes. Give independent agents separate profiles and verify the active scope before changing skills, memory, or scheduled jobs.</p></article><article><span>06</span><h3>Make recurring inference selection deliberate</h3><p>The current cron guide describes per-job pins, then a cron-level default, then creation-time provider/model snapshots for otherwise unpinned jobs; jobs predating snapshots still follow the live global default. Verify installed-version behavior and let the user approve inference routing explicitly rather than assuming a chat-model switch retargets or stops unattended jobs.</p></article>
+<article><span>01</span><h3>Capture the successful procedure, not the whole transcript</h3><p>Use /learn after a workflow has passed its acceptance check. Ask for a lean skill with prerequisites, pitfalls, and verification, placing longer material in reference files loaded on demand.</p></article><article><span>02</span><h3>Keep memory compact and search history for detail</h3><p>Hermes memory is bounded and injected into the prompt; session_search retrieves actual stored conversations when specifics are needed. Keep durable preferences and conventions in memory rather than logs, transcripts, or temporary debugging state.</p></article><article><span>03</span><h3>Give repository cron jobs an explicit workdir</h3><p>The cron documentation says jobs are detached from repository context by default. Set an existing absolute workdir when approving a project job so its tools and project instructions resolve against the intended repository.</p></article><article><span>04</span><h3>Check delivery separately from job execution</h3><p>Hermes supports local output and configured messaging targets, which are not interchangeable. Specify the intended destination and verify an approved test run reaches it rather than assuming a saved output means a notification arrived.</p></article><article><span>05</span><h3>Do not share one Hermes home between independent agents</h3><p>The memory documentation warns that concurrent agents sharing a Hermes home can compound each other&#x27;s automatic writes. Give independent agents separate profiles and verify the active scope before changing skills, memory, or scheduled jobs.</p></article><article><span>06</span><h3>Make recurring inference selection deliberate</h3><p>The current cron guide describes per-job pins, then a cron-level default, then creation-time provider/model snapshots for otherwise unpinned jobs. A new `hermes cron resnap` command refreshes an unpinned job&#x27;s stored snapshot to the current global resolution without pinning it, so it keeps tracking future changes. Verify installed-version behavior and let the user approve inference routing explicitly rather than assuming a chat-model switch retargets or stops unattended jobs.</p></article><article><span>07</span><h3>Run /new at natural boundaries on messaging platforms</h3><p>The memory documentation now explains that the whole system is built around session end: MEMORY.md and USER.md carry essentials into the next session, and session_search fills the gaps once old context is gone. On messaging platforms where a chat is one continuous session surviving restarts, never resetting means compaction runs over an ever-longer history and the learning loop rarely fires. Run /new at finished tasks, topic changes, or the start of a day so memory pays off.</p></article>
 </div>
 </section>
 
 <section id="pulse" class="section pulse">
 <article>
-<h3>v0.21.1 is the new tagged patch release</h3>
-<p><strong>released</strong> · The September 7 release supersedes the previous edition&#x27;s v0.21.0 release listing and rolls up cron scheduling/delivery, MCP authorization, startup, and delegation work. The release notes defer full curated feature details to v0.22.0; they do not verify every later documentation claim.</p>
-<blockquote>The rollup includes the codebase modularization, file-operation and startup performance work, provider and model updates, desktop session controls and browser annotations, MCP authorization improvements, cron scheduling and delivery fixes, and delegation reliability improvements.</blockquote>
-<p>Compare the installed version with this tag before planning an approved update; managed deployments should use their deployment tooling. Do not assume September 11 main-branch fixes are in this September 7 release.</p>
-<a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.7" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+<h3>v0.21.2 targets session-database reliability and profile isolation</h3>
+<p><strong>released</strong> · The September 11 patch supersedes v0.21.1. Its official notes cover competing state.db writers, false corruption reports, full-text-index failures interrupting conversations, malformed rows breaking session listings, and multi-profile credential/delivery isolation. These fixes matter directly to project recall and unattended gateway work. They are release claims, not an independent verification of a local repair.</p>
+<blockquote>An error scoped to the full-text-search index was classified as whole-file corruption and fail-closed the conversation.</blockquote>
+<p>Review the installed version and this tagged release before an approved update. Preserve a recoverable backup first; use managed deployment tooling where applicable. Treat diagnosis, database recovery, and upgrades as separate approved actions, not as something this publication performed.</p>
+<a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.11" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article><article>
-<h3>Cron model-selection guidance now describes creation-time snapshots</h3>
-<p><strong>documented-unverified</strong> · The current guide&#x27;s model-selection section differs from the earlier drift-guard tip: otherwise unpinned jobs with snapshots keep their creation-time provider/model when the chat default changes. Per-job pins and the cron-level default take precedence; older jobs without snapshots still follow the live default. Installed-version behavior was not tested.</p>
-<blockquote>An unpinned job stays on the provider/model it was created under, so changing your chat model never changes (or stops) your cron fleet.</blockquote>
-<p>Review each job&#x27;s resolved route read-only on the installed version before any user-approved inference change. A chat-model change alone is not a reliable way to retarget scheduled jobs.</p>
-<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
-</article><article>
-<h3>Main-branch session lookup stops silently scanning other profiles</h3>
-<p><strong>merged-unreleased</strong> · Commit df0eed4 removes the cross-profile fallback after a session-ID miss and keeps explicit profile-qualified lookup available. This matters for evidence-backed project recall across separate profiles. It appears on main after the latest collected release, not as a verified capability of every installed build.</p>
-<blockquote>A miss now stays a miss, with a hint to name the owning profile (profile=&lt;name&gt; / @session:&lt;profile&gt;/&lt;id&gt;), which remains the sanctioned, explicit cross-profile read.</blockquote>
+<h3>Explicit-profile session lookup fix is now included in v0.21.2</h3>
+<p><strong>released</strong> · The previously main-only df0eed4 fix is now included in tag v2026.9.11, confirmed by the official release notes and repository ancestry. A bare session-ID miss no longer silently scans sibling profiles; the retained commit source describes explicit profile-qualified lookup as the authorized path. This changes release availability, not proof that any particular installation has been updated.</p>
+<blockquote>Sessions never bind to or read another profile&#x27;s database.</blockquote>
 <p>Keep project-recall requests scoped to the intended profile. If a session is missing, do not silently search other profiles; name a different profile only when the user has authorized that scope.</p>
-<a href="https://github.com/NousResearch/hermes-agent/commit/df0eed4f6bb4c2621b9bde81ea0c9da41650d38d" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+<a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.11" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
+<h3>Creation-snapshot cron routing is now confirmed in tagged release notes</h3>
+<p><strong>released</strong> · v0.21.2 explicitly lists creation-snapshot routing for unpinned jobs (#106499), upgrading the earlier documentation-only finding to released for that behavior. The cron guide still supplies the precedence and legacy-job caveats: per-job pins and cron-level defaults take precedence, and older jobs without snapshots follow the live global default. The installed runtime was not tested.</p>
+<blockquote>unpinned jobs run on their creation-snapshot model (#106499)</blockquote>
+<p>Review each job&#x27;s resolved route read-only on the installed version before any user-approved inference change. A chat-model change alone is not a reliable way to retarget scheduled jobs.</p>
+<a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.11" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
+<h3>Main closes a cron restart gap that could silently lose a scheduled run</h3>
+<p><strong>merged-unreleased</strong> · Commit eaa5ac9 records an occurrence advanced off the schedule but not yet claimed, so a later scan can restore it when its owner is gone. Completed occurrences are guarded against duplicate firing, and a long backlog collapses to one catch-up rather than replaying every missed slot. Grace, pause, and catch-up policy still apply. This September 12 change is after v0.21.2 and was not runtime-tested here.</p>
+<blockquote>fix(cron): fire one catch-up for a slot missed during a restart gap (#107485)</blockquote>
+<p>When evaluating a build containing this fix, use an isolated test job to check one missed occurrence, no duplicate completion, and paused-job behavior. Do not restart a production gateway or alter cron.catch_up_missed merely to validate this research note.</p>
+<a href="https://github.com/NousResearch/hermes-agent/commit/eaa5ac94eaf3256a8942dc26d0eb394529769b54" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
+<h3>Main adds HEIF/HEIC/AVIF image decoding for vision_analyze (iPhone photos)</h3>
+<p><strong>merged-unreleased</strong> · Commit 0a545f7 on September 13 adds ISO-BMFF ftyp-box sniffing to vision_analyze, recognizing HEIC/AVIF brands and re-encoding to PNG via pillow-heif before embed. iPhones capture HEIC and upload pipelines often mislabel it as .jpg; the magic-byte sniff previously rejected these bytes before normalization. Missing decoder yields an actionable pip install pillow-heif error. This is after v0.21.2 and was not runtime-tested here.</p>
+<blockquote>feat(vision): decode HEIF/HEIC/AVIF images (iPhone photos)</blockquote>
+<p>Before adopting a build with this change, verify pillow-heif installs cleanly on the target platform and that existing vision_analyze paths for JPEG and PNG are unaffected. Do not install dependencies on a production host without approval.</p>
+<a href="https://github.com/NousResearch/hermes-agent/commit/0a545f7fa5ecc614924cc2229b234b4c3b642337" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article>
 <div class="sectionhead">
 <div>
@@ -186,17 +198,25 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
-<div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commit/df0eed4f6bb4c2621b9bde81ea0c9da41650d38d" target="_blank" rel="noopener noreferrer">
-<time>Sep 11, 2026, 1:24 PM</time>
-<div><b>Merged on main: df0eed4 removes implicit cross-profile session-ID fallback. Explicit profile-qualified reads remain available. The timestamp is the official commit time, not a release date; this was not runtime-tested here.</b><span>github.com/NousResearch/hermes-agent/commit/df0eed4f…</span></div>
+<div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commit/5dea46d13deec9549bdc2ea703ae9201d733c28d" target="_blank" rel="noopener noreferrer">
+<time>Sep 13, 2026, 4:40 PM</time>
+<div><b>Merged on main after v0.21.2: 5dea46d adds a single-flight refresh coalescer for the dashboard cookie gate and native route, preventing token-replay revocation on concurrent bursts and moving the synchronous provider HTTP call off the event loop. This is the committer timestamp; runtime behavior was not tested here.</b><span>github.com/NousResearch/hermes-agent/commit/5dea46d1…</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.7" target="_blank" rel="noopener noreferrer">
-<time>Sep 7, 2026, 10:17 PM</time>
-<div><b>Released v0.21.1 (tag v2026.9.7): patch rollup covering startup/file operations, provider/model updates, desktop controls, MCP authorization, cron, and delegation. Full curated feature notes are deferred to v0.22.0. The timestamp is the official publication time.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
+</a><a href="https://github.com/NousResearch/hermes-agent/commit/0a545f7fa5ecc614924cc2229b234b4c3b642337" target="_blank" rel="noopener noreferrer">
+<time>Sep 13, 2026, 4:18 PM</time>
+<div><b>Merged on main after v0.21.2: 0a545f7 adds HEIF/HEIC/AVIF image decoding to vision_analyze so iPhone photos are no longer rejected as unrecognized image formats. The magic-byte sniff now recognizes ISO-BMFF ftyp brands and re-encodes via pillow-heif. This is the committer timestamp.</b><span>github.com/NousResearch/hermes-agent/commit/0a545f7f…</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/releases" target="_blank" rel="noopener noreferrer">
-<time>Aug 31, 2026, 12:00 AM</time>
-<div><b>The retrieved release page lists v0.21.0, dated August 31, 2026, with cron continuity and persistent memory, live subagent steering, desktop browser control, and security hardening. This timestamp represents the stated release date at day precision.</b><span>github.com/NousResearch/hermes-agent/releases</span></div>
+</a><a href="https://github.com/NousResearch/hermes-agent/commit/be2f7e9c3616bf0f915c384d48bf9ec197da6863" target="_blank" rel="noopener noreferrer">
+<time>Sep 12, 2026, 12:56 PM</time>
+<div><b>Merged on main after v0.21.2: be2f7e9 changes curator stale/archive defaults to 14/30 days, preserves customized non-default windows, and makes manual prune follow the archive setting. This is the committer timestamp; runtime behavior was not tested here.</b><span>github.com/NousResearch/hermes-agent/commit/be2f7e9c…</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commit/eaa5ac94eaf3256a8942dc26d0eb394529769b54" target="_blank" rel="noopener noreferrer">
+<time>Sep 12, 2026, 8:51 AM</time>
+<div><b>Merged on main after v0.21.2: eaa5ac9 adds a pending-slot record to recover a scheduled occurrence lost between schedule advance and fire claim. Catch-up remains bounded by policy, not a replay of every missed slot. This is the committer timestamp.</b><span>github.com/NousResearch/hermes-agent/commit/eaa5ac94…</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.11" target="_blank" rel="noopener noreferrer">
+<time>Sep 11, 2026, 7:20 PM</time>
+<div><b>Released v0.21.2 (tag v2026.9.11): session-database reliability, multi-profile isolation, and cron creation-snapshot routing. This is the official release publication time; the September 12 and 13 catch-up, curator, vision, and dashboard-auth changes remain later main-branch work.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
 <strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
@@ -205,9 +225,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Sep 11, 2026, 4:20 PM
+Last attempt: Sep 13, 2026, 4:55 PM
 <br>
-Last success: Sep 11, 2026, 4:20 PM
+Last success: Sep 13, 2026, 4:55 PM
 
 </p>
 </div>
@@ -215,7 +235,7 @@ Last success: Sep 11, 2026, 4:20 PM
 <div class="sources">
 <b>Research standard</b>
 <p>Editorial research judgment. Not user telemetry, adoption metrics, or measured ROI.</p>
-<div><a href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/ ↗</a><a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases ↗</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commits/main/ ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/messaging ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.7" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases/tag/v2… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commit/df0eed4f6bb4c2621b9bde81ea0c9da41650d38d" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commit/df0eed4f… ↗</a></div>
+<div><a href="https://hermes-agent.nousresearch.com/docs/" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/ ↗</a><a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases ↗</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commits/main/ ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/messaging" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/messaging ↗</a><a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files" target="_blank" rel="noopener noreferrer">hermes-agent.nousresearch.com/docs/user-guide/featur… ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.7" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases/tag/v2… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commit/df0eed4f6bb4c2621b9bde81ea0c9da41650d38d" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commit/df0eed4f… ↗</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.11" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/releases/tag/v2… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commit/eaa5ac94eaf3256a8942dc26d0eb394529769b54" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commit/eaa5ac94… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commit/be2f7e9c3616bf0f915c384d48bf9ec197da6863" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commit/be2f7e9c… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commit/6cd4fbd64090a6ed61e4e4aeeba0fad1e523a259" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commit/6cd4fbd6… ↗</a><a href="https://github.com/NousResearch/hermes-agent/compare/df0eed4f6bb4c2621b9bde81ea0c9da41650d38d...v2026.9.11" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/compare/df0eed4… ↗</a><a href="https://github.com/NousResearch/hermes-agent/compare/v2026.9.11...eaa5ac9" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/compare/v2026.9… ↗</a><a href="https://github.com/NousResearch/hermes-agent/compare/v2026.9.11...be2f7e9" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/compare/v2026.9… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commit/0a545f7fa5ecc614924cc2229b234b4c3b642337" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commit/0a545f7f… ↗</a><a href="https://github.com/NousResearch/hermes-agent/commit/5dea46d13deec9549bdc2ea703ae9201d733c28d" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/commit/5dea46d1… ↗</a><a href="https://github.com/NousResearch/hermes-agent/compare/v2026.9.11...0a545f7" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/compare/v2026.9… ↗</a><a href="https://github.com/NousResearch/hermes-agent/compare/v2026.9.11...5dea46d" target="_blank" rel="noopener noreferrer">github.com/NousResearch/hermes-agent/compare/v2026.9… ↗</a></div>
 </div>
 </section>
 
@@ -225,7 +245,7 @@ Last success: Sep 11, 2026, 4:20 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260911t162026466z","title":"Make Repeat Work Remember","researched_at":"2026-09-11T16:19:43.440Z","generated_at":"2026-09-11T16:20:26.466Z","last_checked_at":"2026-09-11T16:20:26.466Z","use_cases_count":4,"tips_count":6,"status":{"state":"success","last_attempt_at":"2026-09-11T16:20:26.466Z","last_success_at":"2026-09-11T16:20:26.466Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260913t165510309z","title":"Make Repeat Work Remember","researched_at":"2026-09-13T16:54:51.048Z","generated_at":"2026-09-13T16:55:10.309Z","last_checked_at":"2026-09-13T16:55:10.309Z","use_cases_count":4,"tips_count":7,"status":{"state":"success","last_attempt_at":"2026-09-13T16:55:10.309Z","last_success_at":"2026-09-13T16:55:10.309Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
