@@ -55,14 +55,11 @@ When in doubt, start a new category folder. A sparse category is better than a w
    mkdir -p sharepoint/new-site-name
    ```
 
-2. Add your `index.html`:
-   ```bash
-   echo "<!DOCTYPE html><html><head><title>New Site Name</title></head><body><h1>Hello</h1></body></html>" > sharepoint/new-site-name/index.html
-   ```
+2. Add your `index.html` with a `<title>`, the `<!-- index: ... -->` block, and the All-sites bar as the first thing in `<body>` (see below).
 
 3. Set a descriptive `<title>` in that `index.html`. The generator always reads it as the row label (the prettified folder name is the fallback).
 
-4. Add the ingestion timestamp to the front-matter block (see below). Description, tags, and pinning are optional. Keep the original ingestion timestamp when updating or moving an existing site.
+4. Add the ingestion timestamp to the front-matter block (see below). Description, tags, and pinning are optional. Keep the original ingestion timestamp when updating or moving an existing site. Every site page also needs the All-sites bar so a reader can return to https://mastery-sites.stenguye.workers.dev/ .
 
 5. Regenerate the homepage:
    ```bash
@@ -133,6 +130,7 @@ Regenerate and commit the root index before pushing. Check the GitHub commit's `
 1. Every site is a folder with an `index.html`. No exceptions.
 2. Max one level of nesting: `category/site/index.html`. Not `category/subcategory/site/index.html`.
 3. Always set a `<title>` in each site's `index.html`.
-4. Always run `python generate_index.py` after structural changes.
-5. The generator is the source of truth for the root `index.html`; regenerate and commit its output rather than hand-editing it.
-6. Keep repository tooling at the root and site assets beside their page. The generator discovers only folders containing `index.html`, directly or one category level down; it skips dot-directories and known noise (`.git`, `node_modules`, `__pycache__`).
+4. Always include the `<!-- index: ... -->` block (description, tags, ingested date, pinned) and the All-sites bar (`#ms-homebar`) as the first child of `<body>`.
+5. Always run `python generate_index.py` after structural changes.
+6. The generator is the source of truth for the root `index.html`; regenerate and commit its output rather than hand-editing it.
+7. Keep repository tooling at the root and site assets beside their page. The generator discovers only folders containing `index.html`, directly or one category level down; it skips dot-directories and known noise (`.git`, `node_modules`, `__pycache__`).
