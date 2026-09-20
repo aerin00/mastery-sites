@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!-- index:
 ingested: 2026-09-10T16:27:00-07:00
-description: Follow practitioner runbooks for Hellenistic natal analysis, cycles, and financial astrology.
+description: Follow the Astrolog-first v2 Hellenistic natal runbook, plus cycles and financial astrology.
+updated: 2026-09-20
 tags: runbook, astrology
 pinned: false
 -->
@@ -11,7 +12,7 @@ pinned: false
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Practitioner Runbooks: Hellenistic Natal Astrology, Cycles and Financial Astrology</title>
-<meta name="description" content="Two provenance-tagged practitioner runbooks: traditional Hellenistic natal astrology, and cycles and financial astrology with evidence grading.">
+<meta name="description" content="Astrolog-first v2 runbooks for natal astrology and market-cycle research, with explicit settings, event extraction, provenance, and separate statistical validation.">
 <style>
 :root{
   --paper:#E7EBEF; --surface:#FFFFFF; --ink:#17222E; --ink-soft:#4C5C6B;
@@ -182,6 +183,29 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
   .tag{color:#000;background:none;border:1px solid #666;font-size:8pt}
   pre{background:#f2f2f2;color:#000;border:1px solid #ccc}
 }
+
+/* Astrolog v2 reference content */
+.bar{top:32px}
+.rail{top:calc(4.1rem + 32px);max-height:calc(100vh - 5rem - 32px)}
+html{scroll-padding-top:calc(4.5rem + 32px)}
+@media(max-width:900px){.rail{max-height:none}html{scroll-padding-top:9rem}.sec table{display:block;max-width:100%;overflow-x:auto}}
+#doc-natal .astro-operation{margin:1.2rem 0 1.6rem;padding:0 0 1rem;border-bottom:1px solid var(--rule)}
+#doc-natal .astro-operation h3{margin-top:0}
+#doc-natal .astro-date{font-family:var(--sans);font-size:.78rem;color:var(--ink-soft)}
+#doc-natal p,#doc-natal li,#doc-natal td{overflow-wrap:anywhere}
+#doc-natal pre{max-width:100%;white-space:pre;overflow-wrap:normal}
+#doc-natal .astro-table{max-width:100%;overflow-x:auto;margin-bottom:1rem}
+#doc-natal .astro-table table{min-width:32rem;margin-bottom:0}
+#doc-natal .astro-table code{white-space:normal}
+
+/* Financial event-research v2 content */
+#doc-finance .astro-operation{margin:1.2rem 0 1.6rem;padding:0 0 1rem;border-bottom:1px solid var(--rule)}
+#doc-finance .astro-operation h3{margin-top:0}
+#doc-finance .astro-date{font-family:var(--sans);font-size:.78rem;color:var(--ink-soft)}
+#doc-finance p,#doc-finance li,#doc-finance td{overflow-wrap:anywhere}
+#doc-finance pre{max-width:100%;white-space:pre;overflow-wrap:normal}
+#doc-finance .astro-table{max-width:100%;overflow-x:auto;margin-bottom:1rem}
+#doc-finance .astro-table table{min-width:32rem;margin-bottom:0}
 </style>
 </head>
 <body data-doc="natal"><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
@@ -206,16 +230,16 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <article class="doc" id="doc-natal" data-doc="natal">
   <header class="doc-head">
     <p class="doc-kicker">Runbook I</p>
-    <h1>Practitioner Runbook: Traditional/Hellenistic Natal Astrology</h1>
-    <p class="doc-lede">Tropical zodiac. Whole-sign houses. Domicile rulerships only.</p>
+    <h1>Practitioner Runbook v2: Traditional/Hellenistic Natal Astrology</h1>
+    <p class="doc-lede">Astrolog as the primary calculation tool. Tropical zodiac. Whole-sign houses. Traditional domicile rulerships. Updated 20 September 2026.</p>
     <div class="ledger" role="group" aria-label="Filter by provenance">
       <p class="ledger-hint">Provenance labels in this runbook. Select one to isolate the sections that carry it.</p>
       <div class="ledger-row"><button class="led" data-tag="hell" type="button"><span class="led-n">37</span><span class="led-l">Hellenistic</span></button>
 <button class="led" data-tag="med" type="button"><span class="led-n">12</span><span class="led-l">Medieval-Persian</span></button>
 <button class="led" data-tag="ren" type="button"><span class="led-n">4</span><span class="led-l">Renaissance</span></button>
-<button class="led" data-tag="mod" type="button"><span class="led-n">12</span><span class="led-l">Modern</span></button>
+<button class="led" data-tag="mod" type="button"><span class="led-n">26</span><span class="led-l">Modern</span></button>
 <button class="led" data-tag="recon" type="button"><span class="led-n">3</span><span class="led-l">Contemporary reconstruction</span></button>
-<button class="led" data-tag="unv" type="button"><span class="led-n">6</span><span class="led-l">Unverified</span></button></div>
+<button class="led" data-tag="unv" type="button"><span class="led-n">9</span><span class="led-l">Unverified</span></button></div>
     </div>
   </header>
   <div class="doc-body">
@@ -224,7 +248,74 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p>Two structural corrections drive the revised order. First, the ancient sources begin universal/whole-life analysis (length-of-life, eminence, temperament) BEFORE topical delineation; the draft inverts this. Second, predictive time-lords are meant to be layered in a HIERARCHY, not run as co-equal parallel tracks. The draft's stages 8 (progressions/directions) and 9 (returns) are also largely outside Hellenistic scope and are demoted and flagged below. The revised running order is at the end.</p>
 <p>Sourcing honesty note: primary-source page/chapter references are given where obtainable. Many primary texts here are being read through modern translations and secondary scholarship (Brennan, George, Dykes, Schmidt, Riley, Robbins, Pingree); where I rely on a secondary source describing a primary one, I say so. Claims I could not attach to a citation are labelled <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span>.</p>
 </section>
+<section class="sec astro-v2" id="sec-n-astrolog-operating-standard" data-tags="mod unv" data-title="v2 operating standard: astrolog first"><h2 id="n-astrolog-operating-standard">V2 operating standard: Astrolog first<a class="anchor" href="#n-astrolog-operating-standard" aria-label="Link to this section">#</a></h2><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span> <span class="astro-date">V2 · 20 September 2026</span></p>
+<p>Use <strong>Astrolog as the primary calculation and event-search engine</strong> for this runbook. The practitioner supplies the traditional doctrine, chooses the technique, checks the settings, and interprets the evidence. Software output is a calculation record, not authority for historical claims or proof that an interpretation predicts events.</p>
+<p>Verified local installation on 2026-09-20:</p>
+<ul>
+<li>Executable: <code>C:\Astrolog_8\engine\astrolog.exe</code>, reporting version 8.00.</li>
+<li>Bundled manual: <code>C:\Astrolog_8\engine\astrolog.htm</code>.</li>
+<li>Default settings: <code>C:\Astrolog_8\engine\astrolog.as</code>; ephemeris directory: <code>C:\Astrolog_8\engine\ephem</code>.</li>
+<li>Run from the engine directory so its relative resource paths resolve. Keep custom settings, inputs, and outputs outside <code>engine</code>; do not edit the vendor defaults for an individual reading.</li>
+</ul>
+<p>The installed defaults select <strong>Placidus</strong>, so explicitly select <strong>Whole Sign (<code>-c 14</code>)</strong> for every topical chart. Force tropical (<code>_s</code>), geocentric (<code>-h 0</code>, <code>_YV</code>), apparent (<code>_YT</code>) positions and retain nutation (<code>_Yn0</code>). Enable ephemeris files (<code>=b</code>), record which files/backend actually support the date, and investigate any fallback or missing-file message. Requesting Swiss Ephemeris does not prove which numerical backend supplied every result.</p>
+<p>Use the seven visible planets for traditional rulership and interpretation. The domicile map is fixed: Aries/Scorpio Mars; Taurus/Libra Venus; Gemini/Virgo Mercury; Cancer Moon; Leo Sun; Sagittarius/Pisces Jupiter; Capricorn/Aquarius Saturn. Restricting outer-planet display does not by itself change every built-in dignity, influence, or interpretation table. Use the explicit traditional map and selected source tables instead of accepting automatic scores.</p>
+<h3 id="n-astrolog-operating-standard-1">Tool responsibilities</h3>
+<div class="astro-table" role="region" aria-label="Astrolog reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Work</th>
+<th>Astrolog&#39;s role</th>
+<th>Required companion check</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Natal longitudes, velocities, angles, whole-sign placements</td>
+<td>Primary calculator</td>
+<td>Independently enter the same birth data in a second calculator</td>
+</tr>
+<tr>
+<td>Horizon positions, event searches, stations, transits, return contacts</td>
+<td>Primary calculator/search tool</td>
+<td>Confirm event type, timezone, search coverage, and before/after behavior</td>
+</tr>
+<tr>
+<td>Fortune, Spirit, other Lots</td>
+<td>Supply base coordinates and candidate Parts output</td>
+<td>Recompute the selected source formula and day/night reversal</td>
+</tr>
+<tr>
+<td>Dignities, sect, sign aspects, dispositors, natal promise</td>
+<td>Supply measured inputs</td>
+<td>Apply this runbook&#39;s doctrine in a worksheet</td>
+</tr>
+<tr>
+<td>Annual profections</td>
+<td>Supply natal Ascendant; optional documented macro aid</td>
+<td>Check completed-age arithmetic and traditional year-lord</td>
+</tr>
+<tr>
+<td>Dual Fortune/Spirit ZR, decennials, firdaria</td>
+<td>Supply verified natal inputs; use only audited routines</td>
+<td>Preserve a separately verified period table and its conventions</td>
+</tr>
+<tr>
+<td>Primary directions/circumambulation</td>
+<td>Supply natal astronomical inputs</td>
+<td>Use a method-specific implementation verified for projection, latitude treatment, and time key</td>
+</tr>
+<tr>
+<td>Heliacal visibility, parans, historical rectification</td>
+<td>Supply positions and relevant searches</td>
+<td>Separate method and observational assumptions required</td>
+</tr>
+</tbody></table></div>
+<p><strong>Verification boundary:</strong> two programs using Swiss Ephemeris provide an independent input/settings check, not two independent ephemerides. Record both program and backend names. A second Astrolog installation is not an independent engine. Where genuinely independent astronomical verification is required, use a different backend with matched coordinate conventions.</p>
+<p><strong>Revision boundary:</strong> the original twelve stages, interpretive framework, source anchors, disputes, and ethics remain. The new operational notes take precedence for software use. Historical assertions inherited from v1 have not all been rechecked. In particular, do not implement its brief ZR or monthly-profection descriptions as a timing algorithm without a technique-specific source and tested period table.</p>
+</section>
 <section class="sec" id="sec-n-stage-1-birth-data-and-provenance" data-tags="hell mod" data-title="stage 1: birth data and provenance"><h2 id="n-stage-1-birth-data-and-provenance">Stage 1: Birth data and provenance<a class="anchor" href="#n-stage-1-birth-data-and-provenance" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-1-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Create one subject-specific <code>.as</code> input from the verified birth record, rather than reusing another person&#39;s default chart. Record local civil time, resolved UTC, explicit DST offset, longitude/latitude, calendar interpretation, source grade, and uncertainty separately. Astrolog&#39;s atlas and timezone tables are lookup aids, not documentary birth-time evidence. Prefer explicit DST input (<code>-qb</code> or <code>-qc</code>) to an inherited autodetect setting. Check the printed date, zone, and coordinates before reading positions.</p>
+<p>For uncertain times, calculate at the earliest plausible time, central estimate, and latest plausible time. Track changes in Ascendant sign/degree, Sun altitude, Fortune/Spirit signs, and downstream time-lords. Never average conflicting sects into one unqualified reading. Preserve the three inputs and outputs.</p>
+</div>
 <p><strong>Purpose.</strong> Establish the evidentiary grade of the birth time before any calculation, because the Ascendant degree, sect near the horizon, and every time-lord count depend on it.</p>
 <p><strong>Inputs.</strong> Claimed date, time, place; documentary source; jurisdiction and era.</p>
 <p><strong>Ordered operations.</strong></p>
@@ -262,12 +353,21 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Do the ancient sources address data quality?</strong> Partly. Ptolemy, Tetrabiblos III.2 (on the degree of the horoscopic point), explicitly raises that the exact moment of birth is hard to capture and discusses instruments (the astrolabe and water clock) and the adjustment via the moment of conception. Valens repeatedly collected and cross-checked charts against known life events (his Anthology is built from example nativities used this way). A data-quality consciousness is therefore genuinely ancient (<span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span>), even though the Rodden apparatus is <span class="tag t-mod" data-tag="mod" title="Provenance: modern">Modern</span>.</p>
 </section>
 <section class="sec" id="sec-n-stage-2-calculation-and-verification" data-tags="hell med mod recon ren unv" data-title="stage 2: calculation and verification"><h2 id="n-stage-2-calculation-and-verification">Stage 2: Calculation and verification<a class="anchor" href="#n-stage-2-calculation-and-verification" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-2-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><ol>
+<li>Load the validated birth input, then apply the explicit traditional settings. The order matters because <code>.as</code> files may contain settings as well as birth data.</li>
+<li>Export the seven planets&#39; longitudes, latitudes, and absolute velocities, plus the actual Ascendant/MC and whole-sign cusps. In Whole Sign, the first cusp is the start of the rising sign, not the Ascendant degree; the tenth cusp is not necessarily the MC.</li>
+<li>Record tropical/geocentric/apparent settings, node choice, house system, ephemeris resources, engine version, exact command, and output timezone. Mean node (<code>_Yn</code>) is the reproducible example default here; a declared true-node study uses <code>=Yn</code> consistently.</li>
+<li>Independently re-enter birth data in the second calculator. Compare seven-planet longitudes, Ascendant/MC, and selected node using the same conventions. Log discrepancies and resolve them before interpretation. Arcminute agreement is an input/settings QC threshold, not proof of historical time accuracy.</li>
+<li>Recompute Lots and sign houses from the saved coordinates. Preserve the raw output alongside the comparison table.</li>
+</ol>
+<p>Do not let a broad wheel or influence report silently introduce modern rulerships, minor aspects, alternative house systems, or numeric dignity scores. Display precision does not increase birth-time precision.</p>
+</div>
 <p><strong>Purpose.</strong> Produce an accurate chart and independently verify it.</p>
-<p><strong>Inputs.</strong> Verified birth data from Stage 1; two independent calculation engines.</p>
+<p><strong>Inputs.</strong> Verified birth data from Stage 1; Astrolog as primary calculator; a separately configured second calculator, with backend independence recorded.</p>
 <p><strong>Ordered operations.</strong></p>
 <ol>
-<li>Compute with a Swiss Ephemeris-based engine.</li>
-<li>Cross-check positions, Ascendant, and MC against a second independent engine.</li>
+<li>Compute with Astrolog using the explicit traditional profile and ephemeris files; record backend and date coverage.</li>
+<li>Cross-check positions, Ascendant, and MC in a second calculator; disclose if both share Swiss Ephemeris.</li>
 <li>Set true equinox of date; geocentric; apparent positions.</li>
 <li>Decide true vs mean node.</li>
 <li>Compute derived points (Lots, bounds, decans, triplicities, phases, antiscia, fixed stars/parans).</li>
@@ -336,7 +436,10 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 </ul>
 <p><strong>QC gate.</strong> Chart passes when two engines agree on all planet signs and degrees (to arcminute), the Ascendant/MC agree, and sect is unambiguous. If sect is ambiguous (Sun within a few degrees of the horizon), return to Stage 1.</p>
 </section>
-<section class="sec" id="sec-n-stage-3-natal-architecture" data-tags="hell" data-title="stage 3: natal architecture"><h2 id="n-stage-3-natal-architecture">Stage 3: Natal architecture<a class="anchor" href="#n-stage-3-natal-architecture" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-n-stage-3-natal-architecture" data-tags="hell mod" data-title="stage 3: natal architecture"><h2 id="n-stage-3-natal-architecture">Stage 3: Natal architecture<a class="anchor" href="#n-stage-3-natal-architecture" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-3-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Use the horizon listing (<code>-Z</code>) to inspect the Sun&#39;s altitude when checking day/night status; retain the horizon/refraction assumptions and run the birth-time interval near sunrise or sunset. Do not infer sect from the Sun&#39;s whole-sign house alone. Keep the actual angles alongside topical whole-sign houses; calculate a separate, labelled quadrant chart only if assessing dynamic strength.</p>
+<p>Build sign-based configurations from the seven planets&#39; signs first. Astrolog&#39;s degree-orb aspect lists (<code>-a</code> or <code>-g</code>) are a secondary check and can omit a valid whole-sign configuration. Determine aversion, superior position, joys, and sect membership explicitly in the worksheet. Do not read an influence ranking as a Hellenistic testimony ranking.</p>
+</div>
 <p>Sect, angularity, aspects and configuration.</p>
 <p><strong>Purpose.</strong> Build the structural skeleton before condition and synthesis.</p>
 <p><strong>Sect determination.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span> Day chart if the Sun is above the horizon (whole-sign houses 7 to 12 broadly, or precisely above the Asc-Desc degree axis); night if below.</p>
@@ -365,7 +468,11 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Aversion and its mitigation.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span> A planet in aversion to its own domicile, or to a significator, is disconnected. Mitigations include antiscia (a shadow connection), co-presence or bonds (same sign), and reception by rulership.</p>
 <p><strong>QC gate.</strong> Sect fixed and defensible; angular and advantageous places mapped; aspects-by-sign drawn before any degree-based refinement.</p>
 </section>
-<section class="sec" id="sec-n-stage-4-planetary-condition-and-rulership" data-tags="hell med ren" data-title="stage 4: planetary condition and rulership"><h2 id="n-stage-4-planetary-condition-and-rulership">Stage 4: Planetary condition and rulership<a class="anchor" href="#n-stage-4-planetary-condition-and-rulership" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-n-stage-4-planetary-condition-and-rulership" data-tags="hell med mod ren" data-title="stage 4: planetary condition and rulership"><h2 id="n-stage-4-planetary-condition-and-rulership">Stage 4: Planetary condition and rulership<a class="anchor" href="#n-stage-4-planetary-condition-and-rulership" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-4-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Populate a seven-planet worksheet from Astrolog: longitude/sign, topical house, velocity/direction, solar separation, and relevant configurations. Apply Egyptian bounds, Dorothean day/night/participating triplicity rulers, and the traditional domicile map from a named table. Verify exact table boundaries rather than copying unexplained dignity letters from the output.</p>
+<p>Compute solar separation as the smaller angular distance; record the chosen beams/combustion/cazimi thresholds. A separation threshold is not an observed heliacal rising or setting. Visibility also depends on latitude, atmosphere, brightness, and horizon conditions. Label visibility inferred from elongation alone as a proxy.</p>
+<p>Use event searches and nearby snapshots to establish stations and applications/separations. For ancient lunar void-of-course, search until the Moon has advanced the next 30 degrees and inspect exact major aspects to the other six classical planets, including across sign boundaries. A current aspect list or a next-sign-ingress cutoff cannot establish this condition. Derive waxing/waning and dispositor chains explicitly.</p>
+</div>
 <p><strong>Purpose.</strong> Grade each planet's essential and accidental condition and establish rulership chains.</p>
 <p><strong>Essential dignities.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span> core, later systematized.</p>
 <ul>
@@ -440,7 +547,9 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 </ul>
 <p><strong>QC gate.</strong> Every planet graded for dignity, solar phase, speed, and (Moon) phase and course; dispositor chains drawn; the correct bounds and triplicity tables used consistently.</p>
 </section>
-<section class="sec" id="sec-n-stage-5-whole-chart-synthesis-universal-analysis" data-tags="hell med" data-title="stage 5: whole-chart synthesis (universal analysis)"><h2 id="n-stage-5-whole-chart-synthesis-universal-analysis">Stage 5: Whole-chart synthesis (universal analysis)<a class="anchor" href="#n-stage-5-whole-chart-synthesis-universal-analysis" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-n-stage-5-whole-chart-synthesis-universal-analysis" data-tags="hell med mod" data-title="stage 5: whole-chart synthesis (universal analysis)"><h2 id="n-stage-5-whole-chart-synthesis-universal-analysis">Stage 5: Whole-chart synthesis (universal analysis)<a class="anchor" href="#n-stage-5-whole-chart-synthesis-universal-analysis" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-5-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Assemble the whole-chart worksheet from the verified sect, actual angles, condition table, sect-light rulers, and checked Lots. Every statement about vitality, temperament, or eminence must point to those measured inputs and the selected interpretive method. Built-in interpretations (<code>-I</code>) and influence scores (<code>-j</code>) are not the synthesis authority. Astrolog&#39;s ability to calculate a point does not validate a lifespan estimate; retain the existing symbolic-vitality and client-care boundaries.</p>
+</div>
 <p><strong>Purpose.</strong> Read the chart as a whole for life-quality, vitality, temperament, and eminence BEFORE topical detail. This is where the original draft order is wrong: the ancients front-load universal judgment.</p>
 <p><strong>Documented order of operations in the sources.</strong></p>
 <p>Ptolemy Tetrabiblos Book III proceeds in a deliberate topical sequence and puts LENGTH OF LIFE first among post-natal inquiries, stating (III.10, Robbins trans.): "The consideration of the length of life takes the leading place among inquiries about events following birth, for, as the ancient says, it is ridiculous to attach particular predictions to one who, by the constitution of the years of his life, will never attain at all to the time of the predicted events." He then treats bodily form and temperament, injuries and diseases, quality of soul (III.13 to III.14), then moves outward to fortune and dignity, and Book IV for material and relational topics.</p>
@@ -456,7 +565,15 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Adjudicating contradictory testimony.</strong> The sources give few explicit conflict-resolution rules. The working principle is to weight by (a) dignity, (b) place strength and advantageousness, and (c) sect, and to require multiple concurring testimonies before affirming an outcome. There is no ancient formula that resolves conflicts arithmetically; this is judgment.</p>
 <p><strong>QC gate.</strong> Length-of-life/vitality and eminence assessed at the whole-chart level before any single topic is delineated.</p>
 </section>
-<section class="sec" id="sec-n-stage-6-topical-natal-promise" data-tags="hell med unv" data-title="stage 6: topical natal promise"><h2 id="n-stage-6-topical-natal-promise">Stage 6: Topical natal promise<a class="anchor" href="#n-stage-6-topical-natal-promise" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-n-stage-6-topical-natal-promise" data-tags="hell med mod unv" data-title="stage 6: topical natal promise"><h2 id="n-stage-6-topical-natal-promise">Stage 6: Topical natal promise<a class="anchor" href="#n-stage-6-topical-natal-promise" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-6-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Use the Parts listing (<code>-P</code>) as a candidate calculation list, then check each selected Lot&#39;s formula. <code>-YP 0</code> reverses only Parts flagged for reversal at night; it does not certify that every built-in Part matches Paulus, Olympiodorus, or the chosen author. <code>-YP 1</code> suppresses reversal; <code>-YP -1</code> forces reversal even by day, so it is not an automatic night-mode setting.</p>
+<p>Recompute with all longitudes expressed from 0 to 360 degrees, normalizing with <code>((x % 360) + 360) % 360</code>:</p>
+<ul>
+<li>Fortune: day = Asc + Moon - Sun; night = Asc + Sun - Moon.</li>
+<li>Spirit: day = Asc + Sun - Moon; night = Asc + Moon - Sun.</li>
+</ul>
+<p>For all other Lots, record author, exact formula, reversal rule, input degrees, result, whole-sign house, and traditional lord. Check same-named Parts for formula differences. Produce a topic matrix with place, lord/condition, Lot/lord, natural significator, and promise verdict. Derive turned houses by sign counting; retain the original natal chart as the base record.</p>
+</div>
 <p><strong>Purpose.</strong> For each life topic, establish whether the thing is PROMISED (signified at all).</p>
 <p><strong>Per-topic method.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span> For each topic examine the quartet: (a) the relevant PLACE (whole-sign house), (b) its LORD (domicile ruler) and that lord's condition and place, (c) the relevant LOT and its lord, (d) the natural significator. Cross-check by turning the chart from the significator.</p>
 <p><strong>Standard significators.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span> unless noted.</p>
@@ -551,13 +668,18 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Promise vs timing.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span>, explicit in the sources. The ancients clearly separate whether an event is signified (promise, read from the natal significators) from when it is activated (timing, read from time-lords and transits). Valens and Dorotheus both structure work this way: establish natal testimony, then release, profect, or direct to time it. Do not time an event the natal chart does not promise.</p>
 <p><strong>QC gate.</strong> For each topic, all four testimonies (place, lord, lot, natural significator) checked and a promise / no-promise / mixed verdict recorded before any timing.</p>
 </section>
-<section class="sec" id="sec-n-stage-7-time-lord-activation-the-predictive-core" data-tags="hell med" data-title="stage 7: time-lord activation (the predictive core)"><h2 id="n-stage-7-time-lord-activation-the-predictive-core">Stage 7: Time-lord activation (the predictive core)<a class="anchor" href="#n-stage-7-time-lord-activation-the-predictive-core" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-n-stage-7-time-lord-activation-the-predictive-core" data-tags="hell med mod unv" data-title="stage 7: time-lord activation (the predictive core)"><h2 id="n-stage-7-time-lord-activation-the-predictive-core">Stage 7: Time-lord activation (the predictive core)<a class="anchor" href="#n-stage-7-time-lord-activation-the-predictive-core" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-7-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Calculate the profected house as <strong>1 + (completed age mod 12)</strong>, then count from the natal rising sign and use its traditional domicile lord. Record the birthday/year-boundary convention. This clarifies v1&#39;s zero-based shorthand. Define the monthly-profection convention explicitly: twelve 28-day periods total only 336 days, so the inherited phrase &quot;roughly 28 days&quot; is not a complete annual subdivision rule.</p>
+<p>The bundled manual documents annual-profection macro <code>-M 44</code>, firdaria macro <code>-M 45</code>, and ZR macro <code>-M 46</code> as bi-wheel/sidebar aids using natal chart slot 1 and target date slot 2. These are <strong>documented, not runtime-validated for this v2</strong>. Do not assume their graphics/sidebar behavior is available as a complete table in the console build.</p>
+<p>The documented <code>-M 46</code> starts from <strong>Fortune</strong>. It is not a verified dual Fortune/Spirit period-map generator. Keep separately verified tables for both tracks, recording start Lot/sign, period lengths, calendar/day-count convention, L1-L4 boundaries as needed, loosing-of-the-bond rules, and the chosen peak-reference convention. The manual describes a bond jump upon returning to the starting sign; v1&#39;s simplified &quot;reaches the opposite sign&quot; description must not be used as executable logic. Reconcile this with the chosen ZR source before dating a bond change.</p>
+<p>The manual&#39;s firdaria macro description uses a 78-year period, while v1 lists a 75-year sequence. Treat the macro&#39;s compatibility with the selected tradition as <span class="tag t-unv" data-tag="unv" title="Verification status: unverified">Unverified</span> until its actual sequence and durations are checked. Do not silently substitute it. Apply the same evidence requirement to decennials and other custom routines. Import only verified period boundaries into the Astrolog transit workflow.</p>
+</div>
 <p><strong>Purpose.</strong> Determine which planets and places are activated now, in a HIERARCHY of time-lord systems. This is the correct Hellenistic predictive engine and precedes transits.</p>
 <p><strong>Annual profections.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span> Near-universal in the sources: Valens, Ptolemy, Dorotheus, Firmicus, Paulus, Manilius.</p>
 <ul>
-<li>Whole-sign, one sign per year from the Ascendant. Age 0 = 1st (Asc sign); active house = (age mod 12) counting forward from the Asc.</li>
+<li>Whole-sign, one sign per year from the Ascendant. Age 0 = 1st (Asc sign); active house = 1 + (completed age mod 12), counting forward from the Ascendant sign.</li>
 <li>The domicile lord of the profected sign is the LORD OF THE YEAR. Examine its natal condition, its transits, and its position in the current solar return.</li>
-<li>Monthly profections advance one sign per roughly 28 days (12 sub-periods across the year); daily profections subdivide further.</li>
+<li>Monthly profections require a declared subdivision convention. The inherited roughly-28-day shorthand is incomplete: twelve such periods total 336 days. Verify period boundaries against the chosen method before use.</li>
 <li>Co-ruler or participating ruler: a planet in, or aspecting, the profected sign participates. Valens sometimes gives lordship to a planet BODILY in the profected sign over the sign's ruler.</li>
 <li>The profected Ascendant is overlaid on the solar return (Stage 9); the year-lord anchors the year.</li>
 </ul>
@@ -566,7 +688,7 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <li>Release from the Lot of Spirit for career, action, and eminence; from the Lot of Fortune for body, circumstance, and material. Some also release from Eros; experimental.</li>
 <li>Period structure L1 (largest) through L4 (finest), nested. L1 periods run in zodiacal order from the lot's sign; each sign's period length equals the ruling planet's minor years. L2 subdivides L1 in the same proportions, and so on.</li>
 <li>Planetary period lengths (lesser or minor years, Valens): Saturn 30, Jupiter 12, Mars 15, Sun 19, Venus 8, Mercury 20, Moon 25. A sign takes its ruler's years; the seven sum to 129, the basis of the decennials.</li>
-<li>Loosing of the Bond: when an L2 sequence reaches the sign opposite the L1 sign, it jumps to the sign after the opposite (a discontinuity), marking a major turning point.</li>
+<li>Loosing of the Bond: use a verified period table for the selected ZR method. The v1 opposite-sign shortcut is not valid executable logic; Astrolog’s documented macro describes a six-sign jump upon returning to the starting sign. Compatibility with the chosen timing method remains <span class="tag t-unv" data-tag="unv" title="Verification status: unverified">Unverified</span> until checked.</li>
 <li>Peak periods: periods falling in the angular signs from the releasing lot (the angular triads), especially the 10th sign from the lot, mark high points of activity and eminence.</li>
 <li>The Fortune/Spirit distinction (Valens): Fortune is the more embodied and circumstantial track; Spirit is the volitional and career track.</li>
 </ul>
@@ -584,7 +706,10 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p>Adjudication when systems disagree: prioritize the system whose scope matches the question (ZR-Spirit for career magnitude; profection lord-of-year for the year's dominant topic), require agreement for a confident call, and treat lone testimonies as weak.</p>
 <p><strong>QC gate.</strong> Lord of the year identified with its condition and transits noted; current ZR L1 to L2 (from both Spirit and Fortune) identified; loosing-of-bond and peak status checked; any medieval systems (firdaria) explicitly labelled.</p>
 </section>
-<section class="sec" id="sec-n-stage-8-progressions-and-directions-honest-historical-status" data-tags="hell mod ren" data-title="stage 8: progressions and directions (honest historical status)"><h2 id="n-stage-8-progressions-and-directions-honest-historical-status">Stage 8: Progressions and directions (honest historical status)<a class="anchor" href="#n-stage-8-progressions-and-directions-honest-historical-status" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-n-stage-8-progressions-and-directions-honest-historical-status" data-tags="hell mod ren unv" data-title="stage 8: progressions and directions (honest historical status)"><h2 id="n-stage-8-progressions-and-directions-honest-historical-status">Stage 8: Progressions and directions (honest historical status)<a class="anchor" href="#n-stage-8-progressions-and-directions-honest-historical-status" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-8-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Use Astrolog natal coordinates as the shared input record. A routine labelled progression or direction is not sufficient evidence that it implements the chosen primary-direction method. In particular, <code>-p</code> is secondary progression and <code>-p0</code> is solar arc; neither is a substitute for traditional circumambulation.</p>
+<p>For primary directions, record the releaser, promissor, direct/converse choice, projection, latitude treatment, bounds table, arc-to-time key, and a worked comparison against a verified implementation. Until that comparison passes, use a dedicated method-specific calculator as a companion and label Astrolog-only directional dates <span class="tag t-unv" data-tag="unv" title="Verification status: unverified">Unverified</span>. Retain exported arcs and dates, not just a chart image.</p>
+</div>
 <p><strong>Purpose.</strong> Apply directional timing IF used, with explicit provenance.</p>
 <p><strong>Honest status.</strong></p>
 <ul>
@@ -601,6 +726,9 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Recommendation</strong> for this practitioner: use primary directions and bound-circumambulation (Stage 7) as the directional layer; treat secondary progressions and solar arc as OUTSIDE the traditional standard (<span class="tag t-mod" data-tag="mod" title="Provenance: modern">Modern</span>; admit only if labelled and clearly separated). Say plainly: secondary progressions and lunar returns have no Hellenistic warrant.</p>
 </section>
 <section class="sec" id="sec-n-stage-9-solar-and-lunar-returns" data-tags="med mod unv" data-title="stage 9: solar and lunar returns"><h2 id="n-stage-9-solar-and-lunar-returns">Stage 9: Solar and lunar returns<a class="anchor" href="#n-stage-9-solar-and-lunar-returns" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-9-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Use Astrolog&#39;s return search (<code>-tr &lt;month&gt; &lt;year&gt;</code>) to locate candidate planet-to-own-natal-position conjunctions, then select the Sun-to-natal-Sun contact for a solar return. This switch searches returns; it does not by itself document a fully cast return chart at the chosen location. Search adjacent months when the date range or timezone requires it.</p>
+<p>Record the event instant in UTC and its displayed timezone. Recast a separate Whole Sign chart at that instant using the explicitly chosen return location and local offset. Confirm the tropical Sun longitude matches the verified natal Sun, and inspect samples before/after to confirm the contact. Compare return placements with the natal chart and verified year-lord. Use the same procedure for an optional lunar return, preserving its weaker historical status.</p>
+</div>
 <p><strong>Purpose.</strong> Annual (and monthly) charts, read in the Persian and medieval manner AGAINST the natal, not standalone.</p>
 <p><strong>Solar revolutions.</strong> <span class="tag t-med" data-tag="med" title="Provenance: medieval Persian">Medieval-Persian</span> Masha'allah, Abu Ma'shar; later Bonatti, Morin.</p>
 <ul>
@@ -618,6 +746,10 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>QC gate.</strong> Profected Ascendant and lord of the year established (Stage 7) BEFORE reading the return; return read against the natal, not standalone; location convention stated.</p>
 </section>
 <section class="sec" id="sec-n-stage-10-transits-as-triggers" data-tags="hell med mod ren" data-title="stage 10: transits as triggers"><h2 id="n-stage-10-transits-as-triggers">Stage 10: Transits as triggers<a class="anchor" href="#n-stage-10-transits-as-triggers" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-10-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Use <code>-t &lt;month&gt; &lt;year&gt;</code> for transit-to-natal event searches; <code>-T &lt;month&gt; &lt;day&gt; &lt;year&gt;</code> is an influence-ordered date snapshot, not an exact-event search. Use <code>-d</code>/<code>-dm</code> for moving-chart events such as ingresses, stations, and transit-to-transit aspects. Keep those event types distinct in the ledger.</p>
+<p>Restrict natal targets and transiting bodies separately (<code>-R0</code> and <code>-RT0</code>) and record the allowed major aspects. Include required angles and verified Lots deliberately. Built-in Fortune is a supported transit target; do not assume Spirit or every Part from <code>-P</code> automatically becomes a transit target. A custom target requires a documented, tested setup or an external calculation from the saved longitude.</p>
+<p>Record every exact hit, including retrograde repeats, its timezone, natal target, aspect, and active time-lord link. Recheck important hits with narrower searches and snapshots before/after; inspect search resolution before claiming completeness. Reject events missing either the natal promise or period activation required by this runbook. Optional outer-planet observations remain separately labelled and confer no rulership.</p>
+</div>
 <p><strong>Purpose.</strong> Use transits to TRIGGER what the natal chart promises and the time-lords have released. Transits are subordinate.</p>
 <p><strong>The hierarchy.</strong> <span class="tag t-hell" data-tag="hell" title="Provenance: Hellenistic">Hellenistic</span> and medieval. Valens and the Persian authors treat transits as the finest, most subordinate layer; they activate what is already promised (Stage 6) and already released or profected (Stage 7). A transit to a place or planet that is neither a current time-lord nor natally promised carries little weight.</p>
 <p><strong>Which transits are given weight.</strong></p>
@@ -632,7 +764,10 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Orbs and moieties.</strong> The traditional degree-based moiety system (half-orbs assigned per planet, combining for an aspect's orb) is chiefly a <span class="tag t-med" data-tag="med" title="Provenance: medieval">Medieval</span> and <span class="tag t-ren" data-tag="ren" title="Provenance: Renaissance">Renaissance</span> (Lilly) apparatus. The Hellenistic model is primarily configuration-by-sign, with a tighter degree-based "with rays" overlay (roughly 3 degrees for application or adherence). Use sign-based configuration first; use tight degree orbs for application and perfection.</p>
 <p><strong>QC gate.</strong> Every transit claim tied to (a) a natal promise and (b) an active time-lord; transits to non-active, non-promised points down-weighted or dropped.</p>
 </section>
-<section class="sec" id="sec-n-stage-11-convergent-timing-window" data-tags="recon" data-title="stage 11: convergent timing window"><h2 id="n-stage-11-convergent-timing-window">Stage 11: Convergent timing window<a class="anchor" href="#n-stage-11-convergent-timing-window" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-n-stage-11-convergent-timing-window" data-tags="mod recon" data-title="stage 11: convergent timing window"><h2 id="n-stage-11-convergent-timing-window">Stage 11: Convergent timing window<a class="anchor" href="#n-stage-11-convergent-timing-window" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-11-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Build a dated evidence ledger: topic; natal testimony reference; profection/year-lord; ZR track/levels and period-table source; optional direction/return testimony; Astrolog transit hit(s); proposed window; uncertainty; and later outcome. Link each event to its raw output and exact command. Multiple displays of the same contact are one testimony, not independent corroboration.</p>
+<p>Keep three precision levels distinct: numerical event time, birth-data uncertainty, and interpretive window. An event printed to seconds does not justify an equally precise life-event prediction. Record any widening caused by uncertain angles, Lot signs, sect, or period boundaries. Software agreement establishes calculation consistency, not predictive validity or a calibrated probability.</p>
+</div>
 <p><strong>Purpose.</strong> Identify windows where multiple layers agree, and state the prediction so it can be checked.</p>
 <p><strong>Honest status of convergence.</strong> Requiring agreement across profection + ZR + firdaria + return + transit is a <span class="tag t-recon" data-tag="recon" title="Provenance: contemporary reconstruction">Contemporary reconstruction</span>, not a single documented ancient procedure. The ancients DID combine testimonies and required multiple concurring significators (Valens repeatedly; Abu Ma'shar's explicit hierarchy of techniques), so the PRINCIPLE of corroboration is ancient; the specific multi-system stack scoring is modern.</p>
 <p><strong>What the sources say about confidence.</strong> Affirm an outcome only when several significators concur; a lone testimony is weak; contradictory testimonies lower confidence. No ancient arithmetic converts testimonies into a probability.</p>
@@ -642,6 +777,9 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>QC gate.</strong> A written, dated, directional, confidence-tagged prediction exists before the window opens.</p>
 </section>
 <section class="sec" id="sec-n-stage-12-client-interpretation-decisions-uncertainty" data-tags="mod unv" data-title="stage 12: client interpretation, decisions, uncertainty"><h2 id="n-stage-12-client-interpretation-decisions-uncertainty">Stage 12: Client interpretation, decisions, uncertainty<a class="anchor" href="#n-stage-12-client-interpretation-decisions-uncertainty" aria-label="Link to this section">#</a></h2>
+<div class="astro-operation"><h3 id="n-stage-12-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Deliver the interpretation with a short calculation note: Astrolog version, tropical/Whole Sign/traditional-ruler standard, node convention, birth-data grade, second-calculator check status, and methods supplied by companion tools. Distinguish verified calculations from interpretation and unresolved technique choices.</p>
+<p>Retain a private evidence packet: intake and source notes, <code>.as</code> input, settings and command log, raw natal/horizon/event outputs, formula worksheets, comparison results, period tables, interpretation, and dated outcome log. If a required calculation or comparison is missing, mark the affected conclusion pending rather than writing as though the QC gate passed.</p>
+</div>
 <p><strong>Purpose.</strong> Deliver ethically, communicate uncertainty, and respect legal and mental-health duties.</p>
 <p><strong>Fate and agency: the philosophical frame.</strong></p>
 <ul>
@@ -715,7 +853,7 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <h3 id="n-modern">Modern</h3>
 <ul>
 <li>Rodden Rating system; AstroDatabank</li>
-<li>Swiss Ephemeris and JPL DE ephemerides</li>
+<li>Astrolog (primary modern calculation tool); Swiss Ephemeris and JPL DE ephemerides</li>
 <li>Secondary progressions; solar arc directions</li>
 <li>Natal eclipse doctrine (eclipses on natal points as personal predictors)</li>
 <li>Outer-planet transits as triggers</li>
@@ -785,16 +923,103 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <li>Swiss Ephemeris and Astrodienst documentation (DE431, DE441; 0.001 arcsecond agreement). AstroDatabank Help:RR (Rodden Ratings).</li>
 </ul>
 <p><strong>Verification caution.</strong> Where facts rest on practitioner blogs (Seven Stars Astrology, Anthony Louis, Augurine, Skyscript forum threads) rather than primary texts, treat them as corroborating or illustrative and verify against the named primary authors before publishing degree-precise or page-precise claims. Do not cite page numbers not personally confirmed in the physical editions; several chapter references above (Tetrabiblos I.18 vs I.19; exact Brennan 2017 pages for the detriment discussion) should be checked in the edition you cite.</p></section>
+<section class="sec astro-v2" id="sec-n-astrolog-quick-start" data-tags="mod unv" data-title="astrolog quick start and reproducibility record"><h2 id="n-astrolog-quick-start">Astrolog quick start and reproducibility record<a class="anchor" href="#n-astrolog-quick-start" aria-label="Link to this section">#</a></h2><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span> <span class="astro-date">V2 · 20 September 2026</span></p>
+<h3 id="n-astrolog-quick-start-1">Verified example, synthetic data only</h3>
+<p>This PowerShell example uses <strong>1 January 2000, 12:00 UTC, 0 degrees longitude, 51 degrees 30 minutes north</strong>. It is a software check, not a client&#39;s chart. Replace it with validated birth data for real work. <code>-qb</code> arguments are month, day, year, time, DST offset, timezone, longitude, latitude. Use explicit east/west and north/south notation; Astrolog&#39;s numeric zone sign convention is not interchangeable with every ISO UTC-offset convention.</p>
+<pre><code class="language-powershell">Set-Location &#39;C:\Astrolog_8\engine&#39;
+&amp; &#39;.\astrolog.exe&#39; -H
+&amp; &#39;.\astrolog.exe&#39; -qb 1 1 2000 12:00 0 0 0E 51N30 _s -c 14 -h 0 _YV _YT _Yn0 =b _Yn -R0 Sun Moon Mercury Venus Mars Jupiter Saturn 22 31 -A 5 _k =b0 -v
+</code></pre>
+<p>Object IDs 22 and 31 are the actual Ascendant and Midheaven, verified with the local <code>-HO</code> object table. The example selects the seven planets and those angles. Add a declared node or checked Fortune target when the task needs it. <code>=b0</code> requests seconds in the output; <code>_k</code> disables ANSI coloring. <code>_</code> forces a Boolean option off and <code>=</code> forces it on; many ordinary <code>-</code> switches toggle, so blindly repeating one can undo a setting.</p>
+<p>For a saved chart, replace the <code>-qb</code> input segment with <code>-i &#39;C:\path\to\subject-natal.as&#39;</code>, keeping the explicit settings after it. That path is a placeholder, not a supplied chart. Store new inputs/outputs in a subject-specific working folder outside <code>engine</code>. Use <code>-o &lt;new-file&gt;</code> to save chart parameters and <code>-os &lt;new-file&gt;</code> for text output, after checking destination paths; do not overwrite another subject&#39;s files.</p>
+<h3 id="n-astrolog-quick-start-2">Documented operation reference</h3>
+<p>These switches were checked against the bundled 8.00 manual/help. Only the synthetic natal and horizon commands were executed for this revision; the remaining workflows require case-specific validation.</p>
+<div class="astro-table" role="region" aria-label="Astrolog reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Switch</th>
+<th>Scope/check</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Natal coordinates</td>
+<td><code>-v</code></td>
+<td>Read header, object set, actual angles, velocities</td>
+</tr>
+<tr>
+<td>Local horizon positions</td>
+<td><code>-Z</code></td>
+<td>Sun altitude; near-horizon uncertainty</td>
+</tr>
+<tr>
+<td>Degree aspect list/grid</td>
+<td><code>-a</code>, <code>-g</code></td>
+<td>Supplement separately derived sign configurations</td>
+</tr>
+<tr>
+<td>Parts listing</td>
+<td><code>-P</code>, <code>-YP 0</code></td>
+<td>Verify formulas and nocturnal flip flags</td>
+</tr>
+<tr>
+<td>Monthly transit-to-natal search</td>
+<td><code>-t 9 2026</code></td>
+<td>Example month only; declare targets and transiting bodies</td>
+</tr>
+<tr>
+<td>Date snapshot</td>
+<td><code>-T 9 20 2026</code></td>
+<td>Influence-ordered list; not exact event timing</td>
+</tr>
+<tr>
+<td>Moving-chart events in month</td>
+<td><code>-dm</code></td>
+<td>Uses loaded chart month; check event/object restrictions</td>
+</tr>
+<tr>
+<td>Return contacts in month</td>
+<td><code>-tr 9 2026</code></td>
+<td>Select correct body, then cast return chart separately</td>
+</tr>
+<tr>
+<td>Help/settings reference</td>
+<td><code>-H</code>, <code>-Y</code>, <code>-HO</code>, <code>-HA</code></td>
+<td>Save relevant settings and inspect object/aspect IDs</td>
+</tr>
+</tbody></table></div>
+<h3 id="n-astrolog-quick-start-3">Minimum completion checklist</h3>
+<ul>
+<li>Birth record, UTC conversion, calendar, coordinates, uncertainty, and printed header checked.</li>
+<li>Astrolog version, exact command, settings file, resource paths, and ephemeris coverage recorded.</li>
+<li>Tropical, Whole Sign, geocentric/apparent settings and node choice confirmed.</li>
+<li>Seven-planet coordinates, actual angles, and whole-sign assignments exported.</li>
+<li>Second-calculator comparison passed, with shared-backend limitations disclosed.</li>
+<li>Sect and birth-time sensitivity checked; Fortune/Spirit independently recomputed.</li>
+<li>Traditional rulerships, dignity tables, sign aspects, and natal topic matrix documented.</li>
+<li>Selected period tables verified, including dual-track ZR and boundary conventions where used.</li>
+<li>Return/direction/transit records retain provenance, exact times, and uncertainty.</li>
+<li>Interpretation and outcome log distinguish measured inputs, traditional doctrine, and unverified claims.</li>
+</ul>
+<h3 id="n-astrolog-quick-start-4">V2 technical sources and verification limits</h3>
+<ul>
+<li>Local primary technical source: <code>C:\Astrolog_8\engine\astrolog.htm</code>, especially command syntax/forced flags, house systems, horizon charts, transit/return searches, Parts reversal, and macros 44-46.</li>
+<li>Runtime reference: installed Astrolog 8.00 <code>-H</code> and <code>-HO</code>; local default configuration <code>C:\Astrolog_8\engine\astrolog.as</code>.</li>
+<li>Local installation/layout reference: <code>C:\Astrolog_8\README.md</code>.</li>
+<li>This revision tested a synthetic natal chart and horizon listing. No real birth data were calculated, no independent ephemeris comparison was performed, and macro-based timing/primary directions were not runtime-validated.</li>
+<li>The original historical source section remains above. Adding Astrolog does not establish the accuracy of every inherited quotation, historical attribution, or predictive technique.</li>
+</ul>
+</section>
   </div>
 </article>
 <article class="doc" id="doc-finance" data-doc="finance">
   <header class="doc-head">
     <p class="doc-kicker">Runbook II</p>
-    <h1>Practitioner Runbook: Cycles and Financial Astrology</h1>
-    <p class="doc-lede">Source material for the Astrolog briefing pipeline and the <code>claims.yaml</code> backtesting engine.</p>
+    <h1>Practitioner Runbook v2: Cycles and Financial Astrology</h1>
+    <p class="doc-lede">Astrolog-first event calculation, reproducible market alignment, and separate statistical validation. Updated 20 September 2026.</p>
     <div class="ledger" role="group" aria-label="Filter by provenance">
       <p class="ledger-hint">Provenance labels in this runbook. Select one to isolate the sections that carry it.</p>
-      <div class="ledger-row"><button class="led" data-tag="astro" type="button"><span class="led-n">5</span><span class="led-l">Astronomical</span></button>
+      <div class="ledger-row"><button class="led" data-tag="mod" type="button"><span class="led-n">16</span><span class="led-l">Modern tool</span></button><button class="led" data-tag="astro" type="button"><span class="led-n">5</span><span class="led-l">Astronomical</span></button>
 <button class="led" data-tag="trad" type="button"><span class="led-n">5</span><span class="led-l">Traditional-mundane</span></button>
 <button class="led" data-tag="fa20" type="button"><span class="led-n">7</span><span class="led-l">20th-c. financial astrology</span></button>
 <button class="led" data-tag="prac" type="button"><span class="led-n">6</span><span class="led-l">Contemporary practitioner</span></button>
@@ -803,7 +1028,7 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <button class="led" data-tag="mix" type="button"><span class="led-n">6</span><span class="led-l">Empirically tested: mixed</span></button>
 <button class="led" data-tag="nosup" type="button"><span class="led-n">2</span><span class="led-l">Empirically tested: not supported</span></button>
 <button class="led" data-tag="recon" type="button"><span class="led-n">2</span><span class="led-l">Contemporary reconstruction</span></button>
-<button class="led" data-tag="unv" type="button"><span class="led-n">20</span><span class="led-l">Unverified</span></button></div>
+<button class="led" data-tag="unv" type="button"><span class="led-n">22</span><span class="led-l">Unverified</span></button></div>
     </div>
   </header>
   <div class="doc-body">
@@ -822,7 +1047,7 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>5. The classical financial-astrology canon is untested.</strong> Bradley's own text is the honest baseline: at no time must the reader gain the impression that a siderograph is a prediction of what the stock market will actually do, and a limitation of the siderograph is that it cannot be construed as a forecast of secular trends. Merriman reports his own hit rates; no independent peer-reviewed verification exists.</p>
 </section>
 <section class="sec" id="sec-f-scope-and-standing-conventions" data-tags="astro econ fa20 mix nosup prac recon sup trad unv" data-title="scope and standing conventions"><h2 id="f-scope-and-standing-conventions">Scope and standing conventions<a class="anchor" href="#f-scope-and-standing-conventions" aria-label="Link to this section">#</a></h2>
-<p>Source material for a two-phase Astrolog 7.80 briefing pipeline and a <code>claims.yaml</code> geocosmic backtesting engine. Evidentiary posture is deliberately harsh: financial claims are testable against price data, so assertion and result must never blur.</p>
+<p>Source material for an Astrolog 8.00 astronomical calculation workflow and a separate <code>claims.yaml</code> geocosmic backtesting workflow. Evidentiary posture is deliberately harsh: financial claims are testable against price data, so assertion and result must never blur.</p>
 <p><strong>Standing rules.</strong></p>
 <ul>
 <li>Every stage carries a provenance label.</li>
@@ -832,7 +1057,51 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 </ul>
 <p><strong>Provenance labels.</strong> <span class="tag t-astro" data-tag="astro" title="Provenance: astronomical fact">Astronomical</span> (computable fact); <span class="tag t-trad" data-tag="trad" title="Provenance: traditional mundane">Traditional-mundane</span> (Ptolemy, Abu Ma'shar, Bonatti, Lilly, Ramesey); <span class="tag t-fa20" data-tag="fa20" title="Provenance: 20th-c. financial astrology">20th-c. financial astrology</span> (Gann, Bradley, McWhirter, Williams, Sepharial, Jensen); <span class="tag t-prac" data-tag="prac" title="Provenance: contemporary practitioner">Contemporary practitioner</span> (Merriman, Meridian, Weingarten, Morris, Skinner, Pancholi, Tomes); <span class="tag t-econ" data-tag="econ" title="Provenance: economic cycle research">Economic / statistical cycle research</span>; <span class="tag t-sup" data-tag="sup" title="Provenance: tested, supported">Empirically tested: supported</span>, <span class="tag t-mix" data-tag="mix" title="Provenance: tested, mixed">Empirically tested: mixed</span>, <span class="tag t-nosup" data-tag="nosup" title="Provenance: tested, not supported">Empirically tested: not supported</span>; <span class="tag t-recon" data-tag="recon" title="Provenance: contemporary reconstruction">Contemporary reconstruction</span>; <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span>.</p>
 </section>
-<section class="sec" id="sec-f-stage-1-question-framing-asset-scope-hypothesis-specificatio" data-tags="econ" data-title="stage 1: question framing, asset scope, hypothesis specification"><h2 id="f-stage-1-question-framing-asset-scope-hypothesis-specificatio">Stage 1: Question framing, asset scope, hypothesis specification<a class="anchor" href="#f-stage-1-question-framing-asset-scope-hypothesis-specificatio" aria-label="Link to this section">#</a></h2>
+<section class="sec astro-v2" id="sec-f-astrolog-operating-standard" data-tags="mod unv" data-title="v2 operating standard: astrolog for event research"><h2 id="f-astrolog-operating-standard">V2 operating standard: Astrolog for event research<a class="anchor" href="#f-astrolog-operating-standard" aria-label="Link to this section">#</a></h2><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span> <span class="astro-date">V2 · 20 September 2026</span></p><p>Use <strong>Astrolog 8.00 as the primary astronomical calculation and event-search tool</strong>. Feed its checked output to a separate market-data and statistical workflow. Astrolog supplies positions and event times; it does not supply adjusted prices, exchange calendars, statistical significance, or evidence of a trading edge.</p>
+<p>The local executable is <code>C:\Astrolog_8\engine\astrolog.exe</code>, with the bundled manual at <code>C:\Astrolog_8\engine\astrolog.htm</code>. Run from the engine directory so relative ephemeris paths resolve. Record the version and resource files for every research dataset. The installed version and sample commands below were checked on <strong>20 September 2026</strong>.</p>
+<h3 id="f-astrolog-operating-standard-1">What transfers from the natal v2 runbook</h3>
+<p>Transfer explicit settings, documented inputs, raw-output retention, independent comparison, and honest verification limits. Use tropical, geocentric, apparent coordinates as the starting research profile. Whole-sign houses and the seven-planet traditional rulership map apply when the selected mundane-chart method requires them. A purely planetary event study needs no houses or invented geographic chart anchor. Include outer planets only when the predeclared hypothesis needs them; their inclusion does not create traditional domicile rulerships.</p>
+<p>A heliocentric study needs a separate named profile and its own comparison data. Do not mix geocentric and heliocentric events in one series without an explicit design. Keep true/mean nodes, nutation, apparent/true coordinates, and time scale consistent within each series.</p>
+<h3 id="f-astrolog-operating-standard-2">Calculation versus market evidence</h3>
+<div class="astro-table" role="region" aria-label="Astrolog research reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Responsibility</th>
+<th>Tool or record</th>
+<th>Completion evidence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Positions, ingresses, stations, and planetary aspect times</td>
+<td>Astrolog primary calculation</td>
+<td>Raw output, explicit settings, search range, resolution checks</td>
+</tr>
+<tr>
+<td>Independent astronomical comparison</td>
+<td>Separate calculator/backend</td>
+<td>Matched observer, time scale, coordinate frame, and discrepancy log</td>
+</tr>
+<tr>
+<td>Exchange sessions and adjusted returns</td>
+<td>Market-data workflow</td>
+<td>Versioned price files, calendar, timestamp-to-session rule</td>
+</tr>
+<tr>
+<td>Bradley, McWhirter, or CRD construction</td>
+<td>Documented custom method</td>
+<td>Versioned formulas, weights, reference examples, tested implementation</td>
+</tr>
+<tr>
+<td>Effect sizes, nulls, costs, and holdout results</td>
+<td>Statistical workflow</td>
+<td>Reproducible analysis separate from the event generator</td>
+</tr>
+</tbody></table></div>
+<p>Two front ends using Swiss Ephemeris check independent entry/settings but share an astronomical backend. Distinguish that check from the stronger two-backend gate in Stage 3. Same-engine resolution checks below are useful smoke tests, not independent ephemeris verification.</p>
+<p><strong>Source boundary:</strong> this revision updates tool operations. The inherited literature summaries, numerical market claims, and legal statements have not been freshly re-audited. Their current applicability is <span class="tag t-unv" data-tag="unv" title="Verification status: unverified">Unverified</span> here. Astrolog output cannot upgrade their evidence status. No backtest or live market recommendation is produced by this page.</p>
+</section>
+<section class="sec" id="sec-f-stage-1-question-framing-asset-scope-hypothesis-specificatio" data-tags="econ mod" data-title="stage 1: question framing, asset scope, hypothesis specification"><h2 id="f-stage-1-question-framing-asset-scope-hypothesis-specificatio">Stage 1: Question framing, asset scope, hypothesis specification<a class="anchor" href="#f-stage-1-question-framing-asset-scope-hypothesis-specificatio" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-1-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Before running Astrolog, freeze the astronomical event definition: body or pair, coordinate frame, aspect angle, exact contact versus time inside an orb, and treatment of retrograde repeats. Record the search dates, outcome window, asset, and null in the claim specification. Settings selected after inspecting returns create a new hypothesis and must be logged as such.</p>
+</div>
 <p><strong>Purpose.</strong> Convert a vague geocosmic assertion into one falsifiable claim before touching data.</p>
 <p><strong>Inputs.</strong> The raw claim; asset universe; the four claim archetypes.</p>
 <p><strong>Operations.</strong> Classify the claim as one of:</p>
@@ -852,17 +1121,23 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Gate.</strong> Reject any claim that cannot state its null.</p>
 <p><strong>Sources.</strong> Bry and Boschan, Cyclical Analysis of Time Series: Selected Procedures and Computer Programs (NBER Studies in Business Cycles No. 20, 1971, ch. 2, pp. 7 to 63); Harding and Pagan, "Dissecting the Cycle: A Methodological Investigation," Journal of Monetary Economics 49(2), 2002, 365 to 381. <span class="tag t-econ" data-tag="econ" title="Provenance: economic cycle research">Economic / statistical cycle research</span></p>
 </section>
-<section class="sec" id="sec-f-stage-2-data-provenance-market-and-ephemeris" data-tags="astro" data-title="stage 2: data provenance (market and ephemeris)"><h2 id="f-stage-2-data-provenance-market-and-ephemeris">Stage 2: Data provenance (market and ephemeris)<a class="anchor" href="#f-stage-2-data-provenance-market-and-ephemeris" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-2-data-provenance-market-and-ephemeris" data-tags="astro mod" data-title="stage 2: data provenance (market and ephemeris)"><h2 id="f-stage-2-data-provenance-market-and-ephemeris">Stage 2: Data provenance (market and ephemeris)<a class="anchor" href="#f-stage-2-data-provenance-market-and-ephemeris" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-2-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Create a calculation manifest: executable/version, command arguments, settings and input-file hashes, ephemeris resource names/hashes, requested and actual backend if known, date coverage, timezone, node convention, and selected objects/aspects. A request for ephemeris files (<code>=b</code>) is not proof of the backend used for every date. Preserve warnings and investigate missing-file or fallback messages.</p>
+<p>Astrolog event times use the chart&#39;s configured zone. Run the research extraction at UTC with explicit zero DST, then map UTC to exchange sessions in the market-data workflow. Keep raw event time and assigned trading session as separate fields; weekend or overnight assignment must follow the frozen rule.</p>
+</div>
 <p><strong>Purpose.</strong> Ensure price and sky data can support a significance claim.</p>
 <p><strong>Market operations.</strong> Control for survivorship bias, index reconstitution, dividend adjustment, splits, and back-adjusted futures roll distortions. Back-adjustment shifts historical price levels and can flip the sign of long-horizon returns; never compute long-run percentage returns off a back-adjusted continuous contract. Respect exchange holiday calendars; reconcile 24/7 crypto against session equities.</p>
 <p>Free sources (Yahoo, Stooq, FRED) are fine for exploration; a significance claim wants CRSP (dividend-adjusted, survivorship-free), Norgate, or Refinitiv.</p>
 <p><strong>Long history.</strong> Dow Jones back to the 1880s, Shiller's monthly S&amp;P reconstruction, Global Financial Data, Cowles Commission reconstructions. All carry pre-1926 caveats: interpolation, monthly-only, reconstructed composition.</p>
-<p><strong>Ephemeris operations.</strong> Swiss Ephemeris is built on JPL DE431, DE440, and DE441 and is sub-arcsecond for the modern era; Astrolog 7.80 can use Swiss Ephemeris or the Moshier approximation. Decide geocentric vs heliocentric explicitly (Bradley used both). Verify a sample of events against JPL Horizons. <span class="tag t-astro" data-tag="astro" title="Provenance: astronomical fact">Astronomical</span></p>
+<p><strong>Ephemeris operations.</strong> Use Astrolog 8.00 with explicitly recorded ephemeris resources and backend status. Its manual documents Swiss Ephemeris and alternative calculation modes; do not infer the actual backend or accuracy from the application name. Decide geocentric versus heliocentric explicitly. Compare sample events with a separate astronomical source using matched coordinates and time conventions. <span class="tag t-astro" data-tag="astro" title="Provenance: astronomical fact">Astronomical</span></p>
 <p><strong>The timezone and market-hours trap.</strong> An aspect perfects in UTC; map it to the exchange session. When perfection is overnight or on a weekend, define in advance whether the event attaches to the prior close or the next open. This choice materially changes event-study results and is a documented researcher degree of freedom.</p>
 <p><strong>Failure modes and QC.</strong> Roll artifacts; survivorship; ephemeris and market timezone mismatch; weekend-aspect assignment decided post hoc.</p>
 <p><strong>Gate.</strong> Freeze the timestamp-to-session mapping rule in <code>claims.yaml</code>.</p>
 </section>
-<section class="sec" id="sec-f-stage-3-astronomical-event-calculation-and-verification" data-tags="astro" data-title="stage 3: astronomical event calculation and verification"><h2 id="f-stage-3-astronomical-event-calculation-and-verification">Stage 3: Astronomical event calculation and verification<a class="anchor" href="#f-stage-3-astronomical-event-calculation-and-verification" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-3-astronomical-event-calculation-and-verification" data-tags="astro mod" data-title="stage 3: astronomical event calculation and verification"><h2 id="f-stage-3-astronomical-event-calculation-and-verification">Stage 3: Astronomical event calculation and verification<a class="anchor" href="#f-stage-3-astronomical-event-calculation-and-verification" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-3-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Use <code>-d</code> for moving-chart events on one day and <code>-dm</code> for a month. These cover planetary aspects, sign changes, and direction changes subject to the active restrictions. Use <code>-t &lt;month&gt; &lt;year&gt;</code> only for transits to a fixed reference chart; <code>-T</code> is an influence-ordered date snapshot, not an event-time search.</p>
+<p>Restrict bodies with <code>-R0</code> and, for transit-to-chart work, transiting bodies separately with <code>-RT0</code>. Record event-type restrictions too. Search manageable monthly blocks with boundary overlap, deduplicate on a declared event identity, and rerun sensitive intervals at finer resolution. The manual states that yearly moving-chart searches divide the search-division setting by ten; identical numeric settings do not imply identical monthly/yearly resolution.</p>
+<p>Verify a contact with positions before/at/after it, a station with a longitude-velocity sign change, and an ingress with a sign-boundary crossing. Preserve separate occurrences during retrograde loops. Do not infer exact extrema or threshold-crossing times from a daily ephemeris.</p>
+<p>Declination work must explicitly request declinations (<code>=sr0</code> for the position listing), not use the default ecliptic-latitude column. Define the obliquity/threshold convention for out-of-bounds studies. Eclipse maximum, visibility, and local circumstances require their own documented search and external comparison; a lunar-phase event or incidental eclipse annotation does not establish all of them.</p>
+</div>
 <p><strong>Purpose.</strong> Produce a clean, independently verified event table. <span class="tag t-astro" data-tag="astro" title="Provenance: astronomical fact">Astronomical</span></p>
 <p><strong>Operations.</strong> Compute synodic conjunctions, stations, eclipses, declination extremes and out-of-bounds Moon, and ingresses.</p>
 <p><strong>Mean synodic periods, key pairs.</strong></p>
@@ -920,7 +1195,8 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Decision rules.</strong> Geocentric events include retrograde stations and triple passages; heliocentric events are single and cleaner for cycle counting. Pick one convention per claim.</p>
 <p><strong>Gate.</strong> Every event row reproducible from two ephemeris backends.</p>
 </section>
-<section class="sec" id="sec-f-stage-4-non-astrological-cycle-inventory" data-tags="econ mix unv" data-title="stage 4: non-astrological cycle inventory"><h2 id="f-stage-4-non-astrological-cycle-inventory">Stage 4: Non-astrological cycle inventory<a class="anchor" href="#f-stage-4-non-astrological-cycle-inventory" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-4-non-astrological-cycle-inventory" data-tags="econ mix mod unv" data-title="stage 4: non-astrological cycle inventory"><h2 id="f-stage-4-non-astrological-cycle-inventory">Stage 4: Non-astrological cycle inventory<a class="anchor" href="#f-stage-4-non-astrological-cycle-inventory" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-4-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Keep economic/calendar benchmark series outside Astrolog. Join them to the same frozen trading-session index used for the astronomical event series. Use the identical return definition and evaluation window when comparing an astronomical hypothesis with a non-astronomical benchmark. Astrolog cannot establish the economic cycle&#39;s dates or the validity of the benchmark.</p>
+</div>
 <p>The biggest gap in most financial-astrology work. <span class="tag t-econ" data-tag="econ" title="Provenance: economic cycle research">Economic / statistical cycle research</span></p>
 <p><strong>Business cycles.</strong> Kitchin (about 40 months, inventory), Juglar (7 to 11 years, fixed investment), Kuznets (15 to 25 years, infrastructure and demographic), Kondratieff long waves (45 to 60 years).</p>
 <p>Kondratieff is seriously contested: only 4 to 5 observed cycles. Solomou (Phases of Economic Growth 1850-1973, Cambridge UP 1987; Kondratiev Cycles: An Evaluation, 1998) argues the statistical evidence does not support genuine 50-year periodicity, criticizing the deterministic-detrending assumption as unlikely to hold, since trends are best depicted as stochastic rather than deterministic processes. Rostow (Journal of Economic History, 1975) offered a competing trend-period account. Treat long waves as <span class="tag t-mix" data-tag="mix" title="Provenance: tested, mixed">Empirically tested: mixed</span> at best.</p>
@@ -932,7 +1208,9 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Spectral methods.</strong> Fourier and periodogram, wavelet, singular spectrum analysis. Fundamental hazard: any finite noisy series yields spurious spectral peaks, and moving-average smoothing manufactures apparent cycles from noise (the Slutsky-Yule effect). State this whenever a cycle is claimed from a periodogram.</p>
 <p><strong>Gate.</strong> Every geocosmic claim must be tested against the non-astrological cycle nearest its period.</p>
 </section>
-<section class="sec" id="sec-f-stage-5-astrological-and-geocosmic-cycle-inventory" data-tags="fa20 prac trad unv" data-title="stage 5: astrological and geocosmic cycle inventory"><h2 id="f-stage-5-astrological-and-geocosmic-cycle-inventory">Stage 5: Astrological and geocosmic cycle inventory<a class="anchor" href="#f-stage-5-astrological-and-geocosmic-cycle-inventory" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-5-astrological-and-geocosmic-cycle-inventory" data-tags="fa20 mod prac trad unv" data-title="stage 5: astrological and geocosmic cycle inventory"><h2 id="f-stage-5-astrological-and-geocosmic-cycle-inventory">Stage 5: Astrological and geocosmic cycle inventory<a class="anchor" href="#f-stage-5-astrological-and-geocosmic-cycle-inventory" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-5-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Translate each technique into reproducible astronomical inputs before comparing it with prices. Separate exact conjunctions, sign ingresses, stations, lunations, and node positions. Do not generate event dates by repeatedly adding the mean period printed in the reference table.</p>
+<p>A Merriman-style cluster, a Bradley curve, or a McWhirter rule needs a named formula and a separately verified implementation. Astrolog&#39;s influence scores and aspect lists are not drop-in implementations of those published techniques. Label the market interpretation <span class="tag t-unv" data-tag="unv" title="Verification status: unverified">Unverified</span> until the independent market test is complete.</p>
+</div>
 <p><strong>Great conjunction theory.</strong> <span class="tag t-trad" data-tag="trad" title="Provenance: traditional mundane">Traditional-mundane</span> Jupiter-Saturn 20 years, about 200-year triplicity or element shift (the great mutation), about 960-year grand cycle. Primary source: Abu Ma'shar, On the Great Conjunctions (Kitab al-qiranat), ed. and trans. Keiji Yamamoto and Charles Burnett, Abu Ma'shar on Historical Astrology: The Book of Religions and Dynasties, 2 vols, Brill 2000; scholarship by Kennedy and Pingree (The Thousands of Abu Ma'shar, 1968). Abu Ma'shar assigned greatest importance to Jupiter-Saturn conjunctions, spaced about 120 degrees, moving into a new triplicity every 240 to 260 years, restarting every 960 years. As a market timer: <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span>.</p>
 <p><strong>Merriman geocosmic critical reversal dates (CRDs).</strong> <span class="tag t-prac" data-tag="prac" title="Provenance: contemporary practitioner">Contemporary practitioner</span> Documented in The Ultimate Book on Stock Market Timing Vol. 3: Geocosmic Correlations to Trading Cycles (2001) and The Gold Book (1982). Defines Level 1, 2, and 3 signatures and 1, 2, and 3-star CRDs at cluster midpoints (no more than 6 calendar days between consecutive signatures in a cluster), with the instruction to look for cycle turns in many markets within three trading days of the forthcoming critical reversal dates.</p>
 <p>This is the most systematically documented body of contemporary claims. Merriman reports his own historical hit rates; no independent peer-reviewed verification exists. Status: <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span> (self-reported only).</p>
@@ -943,7 +1221,9 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Sector and commodity signification.</strong> Jupiter to banking and finance, Saturn to real estate, mining, and agriculture, Uranus to technology and utilities, Neptune to oil, pharma, and shipping, Pluto to nuclear and debt, Moon to consumer staples and silver, Sun to gold, Mercury to transport, media, and telecom, Venus to luxury, copper, and sugar, Mars to steel, defense, and energy. These are practitioner convention with essentially no controlled testing. Mark <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span>.</p>
 <p><strong>Crypto.</strong> The Bitcoin genesis block (3 January 2009) is the common anchor; competing conventions (first exchange trade, 2010) exist. No credible tested results. <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span></p>
 </section>
-<section class="sec" id="sec-f-stage-6-mundane-chart-architecture" data-tags="recon trad" data-title="stage 6: mundane chart architecture"><h2 id="f-stage-6-mundane-chart-architecture">Stage 6: Mundane chart architecture<a class="anchor" href="#f-stage-6-mundane-chart-architecture" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-6-mundane-chart-architecture" data-tags="mod recon trad" data-title="stage 6: mundane chart architecture"><h2 id="f-stage-6-mundane-chart-architecture">Stage 6: Mundane chart architecture<a class="anchor" href="#f-stage-6-mundane-chart-architecture" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-6-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Save a distinct <code>.as</code> input for each approved first-trade, national, ingress, or lunation chart. Record the documentary event identity, calendar, UTC conversion, coordinates, and uncertainty. For a whole-sign traditional study, explicitly force <code>_s -c 14</code>; retain actual Ascendant/MC degrees separately from whole-sign cusps.</p>
+<p>For an ingress or lunation, find the event instant first, then cast the local mundane chart at that instant and the chosen location. Freeze competing chart candidates before examining performance. If the timestamp is uncertain, test the predefined interval and report which angles or targets change.</p>
+</div>
 <p><strong>First-trade NYSE charts in circulation.</strong> 17 May 1792 (Buttonwood Agreement), the 1817 constitution date, and the 1865 opening. Disagreement unresolved.</p>
 <p><strong>National charts.</strong> USA Sibly 5:10pm LMT 4 July 1776 (Gemini rising) vs competing Scorpio-rising and other candidates. Unresolved.</p>
 <p><strong>Ingress charts.</strong> Aries ingress and quarterly ingresses are the traditional mundane instrument (Ptolemy, Tetrabiblos Books I to II; medieval tradition). <span class="tag t-trad" data-tag="trad" title="Provenance: traditional mundane">Traditional-mundane</span></p>
@@ -951,18 +1231,24 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Decision rule.</strong> Pre-commit to ONE chart per claim and document it. Chart-shopping inflates false positives.</p>
 <p><strong>Gate.</strong> Chart identity frozen in <code>claims.yaml</code>. Chart selection itself is <span class="tag t-recon" data-tag="recon" title="Provenance: contemporary reconstruction">Contemporary reconstruction</span>.</p>
 </section>
-<section class="sec" id="sec-f-stage-7-signification-mapping" data-tags="unv" data-title="stage 7: signification mapping"><h2 id="f-stage-7-signification-mapping">Stage 7: Signification mapping<a class="anchor" href="#f-stage-7-signification-mapping" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-7-signification-mapping" data-tags="mod unv" data-title="stage 7: signification mapping"><h2 id="f-stage-7-signification-mapping">Stage 7: Signification mapping<a class="anchor" href="#f-stage-7-signification-mapping" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-7-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Keep the planet-to-sector mapping in the claim specification, not in Astrolog&#39;s automatic interpretation. Export a neutral event ID and astronomical description; attach the predeclared sector/asset mapping downstream. A computed Jupiter event is not a measured banking-sector effect.</p>
+</div>
 <p>Use the Stage 5 table but treat each mapping as a separate hypothesis with a pre-registered sector index. <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span></p>
 </section>
-<section class="sec" id="sec-f-stage-8-composite-and-aggregate-indices" data-tags="astro unv" data-title="stage 8: composite and aggregate indices"><h2 id="f-stage-8-composite-and-aggregate-indices">Stage 8: Composite and aggregate indices<a class="anchor" href="#f-stage-8-composite-and-aggregate-indices" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-8-composite-and-aggregate-indices" data-tags="astro mod unv" data-title="stage 8: composite and aggregate indices"><h2 id="f-stage-8-composite-and-aggregate-indices">Stage 8: Composite and aggregate indices<a class="anchor" href="#f-stage-8-composite-and-aggregate-indices" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-8-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Export the longitudes, declinations, or contact times needed by the selected composite. Store raw coordinates separately from transformed terms, weights, smoothing, and cluster rules. Test the custom calculation against worked reference examples before using it as a predictor.</p>
+<p>Treat Astrolog&#39;s built-in influence rankings as a different algorithm unless exact equivalence has been demonstrated. Record rounding and numerical tolerances for reproduction; do not call a visual resemblance a bit-for-bit match. No Bradley/CRD/McWhirter implementation is supplied or validated by this update.</p>
+</div>
 <p>Reconstruct the Bradley siderograph, McWhirter business curve, and Merriman CRD calendar deterministically from the ephemeris; version the weightings.</p>
 <p>Construction is <span class="tag t-astro" data-tag="astro" title="Provenance: astronomical fact">Astronomical</span> (fully computable); the market claim is <span class="tag t-unv" data-tag="unv" title="Provenance: unverified">Unverified</span>.</p>
 <p><strong>Gate.</strong> Composite reproducible bit-for-bit from ephemeris plus published weights.</p>
 </section>
-<section class="sec" id="sec-f-stage-9-falsifiable-claim-specification" data-tags="econ" data-title="stage 9: falsifiable claim specification"><h2 id="f-stage-9-falsifiable-claim-specification">Stage 9: Falsifiable claim specification<a class="anchor" href="#f-stage-9-falsifiable-claim-specification" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-9-falsifiable-claim-specification" data-tags="econ mod" data-title="stage 9: falsifiable claim specification"><h2 id="f-stage-9-falsifiable-claim-specification">Stage 9: Falsifiable claim specification<a class="anchor" href="#f-stage-9-falsifiable-claim-specification" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-9-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Link each claim to an immutable event-table version and manifest hash. Record event definition, selection rules, raw timestamp convention, session mapping, repeated-contact policy, boundary policy, and permitted parameter variants. The event-record fields in the appendix are a proposed data contract, not confirmed keys in an existing <code>claims.yaml</code> parser. Check the actual schema before integrating them.</p>
+</div>
 <p>Specify event, window, outcome, direction, null, base rate, sample size, and correction method per claim, with a Tier grade (A, B, or C). <span class="tag t-econ" data-tag="econ" title="Provenance: economic cycle research">Economic / statistical cycle research</span></p>
 </section>
-<section class="sec" id="sec-f-stage-10-backtest-design-and-statistical-validation" data-tags="econ" data-title="stage 10: backtest design and statistical validation"><h2 id="f-stage-10-backtest-design-and-statistical-validation">Stage 10: Backtest design and statistical validation<a class="anchor" href="#f-stage-10-backtest-design-and-statistical-validation" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-10-backtest-design-and-statistical-validation" data-tags="econ mod" data-title="stage 10: backtest design and statistical validation"><h2 id="f-stage-10-backtest-design-and-statistical-validation">Stage 10: Backtest design and statistical validation<a class="anchor" href="#f-stage-10-backtest-design-and-statistical-validation" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-10-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Provide the statistical workflow with the frozen Astrolog event table and a separate market-data snapshot. Keep extraction failures, duplicate handling, overlapping windows, missing prices, and rejected rows visible. Do not alter bodies, aspects, node convention, or search filters in response to a weak result without recording a new variant.</p>
+<p>Astrolog performs the astronomical calculation, not the multiplicity correction, cost model, or statistical validation. No significance result is implied by the software smoke tests in this appendix.</p>
+</div>
 <p>The core stage. <span class="tag t-econ" data-tag="econ" title="Provenance: economic cycle research">Economic / statistical cycle research</span></p>
 <p><strong>Multiple comparisons.</strong> With about 45 pairs times 5 to 8 aspects times several orbs times several assets times several windows, the implicit hypothesis count is in the thousands. Apply Bonferroni or Holm for familywise control and Benjamini-Hochberg FDR for discovery. For strategy selection use:</p>
 <ul>
@@ -979,20 +1265,25 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p><strong>Costs.</strong> Any claimed edge must survive realistic transaction costs and slippage.</p>
 <p><strong>Gate.</strong> No claim graduates without multiplicity correction, t above 3, a cost model, and purged-CV survival.</p>
 </section>
-<section class="sec" id="sec-f-stage-11-out-of-sample-and-forward-testing" data-tags="econ" data-title="stage 11: out-of-sample and forward testing"><h2 id="f-stage-11-out-of-sample-and-forward-testing">Stage 11: Out-of-sample and forward testing<a class="anchor" href="#f-stage-11-out-of-sample-and-forward-testing" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-11-out-of-sample-and-forward-testing" data-tags="econ mod" data-title="stage 11: out-of-sample and forward testing"><h2 id="f-stage-11-out-of-sample-and-forward-testing">Stage 11: Out-of-sample and forward testing<a class="anchor" href="#f-stage-11-out-of-sample-and-forward-testing" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-11-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Freeze the engine/settings/resources and event-generation code before each holdout or forward window. Archive the forecast timestamp and event list before outcomes are known. If an engine or ephemeris update changes event times, compare the old and new datasets and version the revision; never silently replace the historical record.</p>
+</div>
 <p>Holdout, walk-forward, and genuine forward (paper) testing with forecasts logged before each event.</p>
 <p><strong>Sample-size reality.</strong> A 20-year Jupiter-Saturn cycle affords only 6 to 9 clean observations across the reliable data record; a 45 to 60 year cycle affords 2 to 3. State plainly that for long cycles adequate statistical power does not exist and certain conclusions are unreachable. <span class="tag t-econ" data-tag="econ" title="Provenance: economic cycle research">Economic / statistical cycle research</span></p>
 </section>
-<section class="sec" id="sec-f-stage-12-integration-with-technical-and-fundamental-analysis" data-tags="prac" data-title="stage 12: integration with technical and fundamental analysis"><h2 id="f-stage-12-integration-with-technical-and-fundamental-analysis">Stage 12: Integration with technical and fundamental analysis<a class="anchor" href="#f-stage-12-integration-with-technical-and-fundamental-analysis" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-12-integration-with-technical-and-fundamental-analysis" data-tags="mod prac" data-title="stage 12: integration with technical and fundamental analysis"><h2 id="f-stage-12-integration-with-technical-and-fundamental-analysis">Stage 12: Integration with technical and fundamental analysis<a class="anchor" href="#f-stage-12-integration-with-technical-and-fundamental-analysis" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-12-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Expose the Astrolog-derived feature as a distinct input alongside technical and fundamental features. Preserve identical market rules when comparing a model with and without it. A second display or another Astrolog report of the same event is not an independent confirmation.</p>
+</div>
 <p>Practitioners (Merriman) use CRDs as timing bands confirmed by price and pattern. <span class="tag t-prac" data-tag="prac" title="Provenance: contemporary practitioner">Contemporary practitioner</span></p>
 <p>Note plainly: the confirmation step makes the astrological component's marginal contribution nearly untestable unless it is isolated (signal-on vs signal-off with technicals held fixed).</p>
 <p><strong>Gate.</strong> Isolate the geocosmic marginal contribution or label the result confounded.</p>
 </section>
-<section class="sec" id="sec-f-stage-13-position-sizing-risk-drawdown" data-tags="econ" data-title="stage 13: position sizing, risk, drawdown"><h2 id="f-stage-13-position-sizing-risk-drawdown">Stage 13: Position sizing, risk, drawdown<a class="anchor" href="#f-stage-13-position-sizing-risk-drawdown" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-13-position-sizing-risk-drawdown" data-tags="econ mod" data-title="stage 13: position sizing, risk, drawdown"><h2 id="f-stage-13-position-sizing-risk-drawdown">Stage 13: Position sizing, risk, drawdown<a class="anchor" href="#f-stage-13-position-sizing-risk-drawdown" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-13-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Carry event and validation status into the research report. Astrolog supplies neither position sizing nor a calibrated return probability. Apply risk rules in the separate strategy/research system; do not derive exposure from an aspect&#39;s displayed influence rank.</p>
+</div>
 <p>Fractional Kelly (full Kelly is dangerous under parameter uncertainty and fat tails), fixed-fractional risk, hard drawdown limits.</p>
 <p>An unvalidated timing signal should carry minimal or zero position weight: a tie-breaker at most until it clears Stage 10. <span class="tag t-econ" data-tag="econ" title="Provenance: economic cycle research">Economic / statistical cycle research</span></p>
 </section>
-<section class="sec" id="sec-f-stage-14-forecast-delivery-uncertainty-ethics-regulation" data-tags="" data-title="stage 14: forecast delivery, uncertainty, ethics, regulation"><h2 id="f-stage-14-forecast-delivery-uncertainty-ethics-regulation">Stage 14: Forecast delivery, uncertainty, ethics, regulation<a class="anchor" href="#f-stage-14-forecast-delivery-uncertainty-ethics-regulation" aria-label="Link to this section">#</a></h2>
+<section class="sec" id="sec-f-stage-14-forecast-delivery-uncertainty-ethics-regulation" data-tags="mod" data-title="stage 14: forecast delivery, uncertainty, ethics, regulation"><h2 id="f-stage-14-forecast-delivery-uncertainty-ethics-regulation">Stage 14: Forecast delivery, uncertainty, ethics, regulation<a class="anchor" href="#f-stage-14-forecast-delivery-uncertainty-ethics-regulation" aria-label="Link to this section">#</a></h2><div class="astro-operation"><h3 id="f-stage-14-astrolog-operation">Astrolog operation and evidence</h3><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span></p><p>Attach a calculation note: Astrolog version, extraction range, UTC and session mapping, bodies/aspects, coordinates, backend status, independent-check status, and raw-output references. Separate the astronomical event, the hypothesized market association, and the observed test result in the wording.</p>
+<p>Keep the evidence packet private where it contains personal or proprietary chart inputs. Mark omitted checks as pending. The existing legal section still requires current jurisdiction-specific verification before external use; this tool update does not perform that review.</p>
+</div>
 <p>Communicate probabilistically, not deterministically; log every forecast; score with Brier scores, calibration curves, and proper scoring rules.</p>
 <p><strong>United States.</strong> The Investment Advisers Act of 1940 defines "investment adviser"; the publisher's exclusion covers the publisher of any bona fide newspaper, news magazine, or business or financial publication of general and regular circulation. Lowe v. SEC, 472 U.S. 181 (1985) held that a non-personalized newsletter falls within that exclusion and cannot be enjoined: the Act was designed to apply to those persons engaged in the investment-advisory profession, those who provide personalized advice attuned to a client's concerns. Personalized advice is the trigger. CFTC and NFA commodity trading advisor registration applies to futures advice, with an analogous publication exemption.</p>
 <p><strong>Canada and British Columbia.</strong> Under the Securities Act (BC), a person acting as an adviser must be registered or exempt. BCSC guidance distinguishes generic from specific advice: the provision of factual, publicly available information concerning an issuer would not, on its own, constitute advising, but if that factual information is accompanied by opinions concerning the merits of the issuer's securities or recommendations to purchase or sell, adviser registration or an applicable exemption would be required. Specific (tailored, security-specific) advice triggers registration under NI 31-103; generic market commentary generally does not.</p>
@@ -1219,14 +1510,129 @@ html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
 <p>Practitioner hit rates (Merriman, Benner enthusiast sites) are self-reported and uncorroborated.</p>
 <p>The Jupiter-Saturn observation counts assume the 1900 to 2020 reliable modern record; extending to pre-1900 reconstructed data adds observations of much lower quality and does not rescue statistical power for the longest cycles.</p>
 <p>Regulatory notes are informational, not legal advice, and securities rules change. Verify against current NI 31-103, BCSC, SEC, and CFTC/NFA sources before relying on them.</p></section>
-  </div>
+<section class="sec astro-v2" id="sec-f-astrolog-event-reference" data-tags="mod unv" data-title="astrolog event extraction and verification"><h2 id="f-astrolog-event-reference">Astrolog event extraction and verification<a class="anchor" href="#f-astrolog-event-reference" aria-label="Link to this section">#</a></h2><p><span class="tag t-mod" data-tag="mod" title="Provenance: modern calculation tool">Modern tool</span> <span class="astro-date">V2 · 20 September 2026</span></p><h3 id="f-astrolog-event-reference-1">Runnable monthly event search</h3>
+<p>This <strong>software smoke test</strong> uses January 2000, UTC, and the Sun/Moon only. Zero longitude/latitude is a neutral input for these geocentric planetary-longitude events, not a claimed market birth chart. Execute in PowerShell on the Windows host; the website&#39;s WSL location does not turn this into Bash syntax.</p>
+<pre><code class="language-powershell">Set-Location &#39;C:\Astrolog_8\engine&#39;
+&amp; &#39;.\astrolog.exe&#39; -qb 1 1 2000 0:00 0 0 0E 0N _s -h 0 _YV _YT _Yn0 =b _Yn -R0 Sun Moon -A 5 -YR0 0 0 _k =b0 =Yt :d 48 -dm
+&amp; &#39;.\astrolog.exe&#39; -qb 1 1 2000 0:00 0 0 0E 0N _s -h 0 _YV _YT _Yn0 =b _Yn -R0 Sun Moon -A 5 -YR0 0 0 _k =b0 =Yt :d 96 -dm
+</code></pre>
+<p><code>-qb</code> supplies month, day, year, time, DST, zone, longitude, latitude. <code>-h 0</code> selects Earth; <code>_YV</code> and <code>_YT</code> disable topocentric and true-position modes; <code>_Yn0</code> retains nutation. <code>-A 5</code> selects the five major aspects. <code>-YR0 0 0</code> leaves sign and direction changes unrestricted. <code>=Yt</code> selects 24-hour output; <code>=b0</code> requests seconds. <code>:d</code> sets the search divisions without toggling the daily-search display. Save stdout, stderr, command arguments, and exit status with the manifest.</p>
+<h3 id="f-astrolog-event-reference-2">Observed smoke-test result</h3>
+<p>Both commands exited successfully and emitted 23 event rows. Both reported the January new-moon conjunction at <strong>2000-01-06 18:13:38 UTC</strong> and full-moon opposition at <strong>2000-01-21 04:40:26 UTC</strong>. These are observed outputs of the installed engine, not independently confirmed astronomical timestamps. Agreement at two resolutions does not certify the complete series or other dates/backends.</p>
+<p>The output also contains <strong>v/c</strong> annotations. The manual defines these using the last permitted lunar aspect before sign ingress, and the active body/aspect restrictions affect them. In this two-body smoke test, those labels are not an all-planets void-of-course study and are not the ancient next-30-degrees rule from the natal runbook. Do not silently import incidental annotations as features. The same caution applies to eclipse annotations when their event type, location, and magnitude convention have not been specified.</p>
+<h3 id="f-astrolog-event-reference-3">Which calculation to use</h3>
+<div class="astro-table" role="region" aria-label="Astrolog research reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Research input</th>
+<th>Astrolog operation</th>
+<th>Validation boundary</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Moving-planet aspects, ingresses, stations</td>
+<td><code>-d</code> / <code>-dm</code> with explicit restrictions</td>
+<td>Check coverage, before/after behavior, and a second calculator/backend</td>
+</tr>
+<tr>
+<td>Transit to a frozen chart</td>
+<td><code>-i</code> input then <code>-t &lt;month&gt; &lt;year&gt;</code></td>
+<td>Separate fixed targets from transiting objects and preserve chart identity</td>
+</tr>
+<tr>
+<td>Date-only influence overview</td>
+<td><code>-T &lt;month&gt; &lt;day&gt; &lt;year&gt;</code></td>
+<td>Not a replacement for event-time extraction</td>
+</tr>
+<tr>
+<td>Position samples</td>
+<td><code>-v</code> or <code>-E</code></td>
+<td>A sample series does not by itself locate exact threshold crossings</td>
+</tr>
+<tr>
+<td>Declination samples</td>
+<td><code>-v =sr0</code></td>
+<td>Verify coordinate column; custom extrema/crossing routine requires testing</td>
+</tr>
+<tr>
+<td>Return contacts</td>
+<td><code>-tr &lt;month&gt; &lt;year&gt;</code></td>
+<td>Select body, then cast event chart separately at declared location</td>
+</tr>
+<tr>
+<td>Composite indicator or CRD cluster</td>
+<td>Export verified input series</td>
+<td>Implement and test the published formula outside the raw event search</td>
+</tr>
+<tr>
+<td>Economic/calendar/geomagnetic series</td>
+<td>Separate domain data source</td>
+<td>Not supplied by a planetary ephemeris</td>
+</tr>
+</tbody></table></div>
+<p>Only the two complete monthly Sun/Moon commands above were executed for this update. The other operations are documented capabilities, not completed case-specific validations.</p>
+<h3 id="f-astrolog-event-reference-4">Proposed event-table contract</h3>
+<p>Use these as field requirements for a future adapter, not as an assertion that the existing backtest engine accepts these exact keys.</p>
+<div class="astro-table" role="region" aria-label="Astrolog research reference table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Field group</th>
+<th>Required record</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Identity</td>
+<td>Unique event ID; claim ID; raw file and row reference</td>
+</tr>
+<tr>
+<td>Event</td>
+<td>Exact event type; body/pair; fixed-target identity if any; angle or boundary; occurrence number</td>
+</tr>
+<tr>
+<td>Time</td>
+<td>Original displayed time and zone; normalized UTC; time-scale conversion provenance; precision</td>
+</tr>
+<tr>
+<td>Market alignment</td>
+<td>Exchange/session label; prior-close/next-open rule; calendar version</td>
+</tr>
+<tr>
+<td>Calculation</td>
+<td>Engine version; command/settings/input hash; ephemeris resources/backend status; coordinate frame; node convention</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Start/end and inclusivity; restrictions; divisions; boundary overlap; deduplication rule</td>
+</tr>
+<tr>
+<td>Verification</td>
+<td>Before/after evidence; independent comparator/backend; tolerance and discrepancy; pass/pending status</td>
+</tr>
+</tbody></table></div>
+<p>Do not mark a row verified merely because its timestamp parses. Reject ambiguous dates, missing timezone metadata, contradictory event labels, and unresolved backend/settings discrepancies. Emit a rejection record; do not silently discard failures. Separate repeated retrograde hits from duplicate rows created by overlapping extraction blocks.</p>
+<h3 id="f-astrolog-event-reference-5">Extraction acceptance gate</h3>
+<ol>
+<li>The claim and event definition were fixed before market outcomes were inspected.</li>
+<li>The command&#39;s date, UTC convention, objects, aspect set, and coordinate profile match the manifest.</li>
+<li>Raw outputs and diagnostics are retained; warnings and backend uncertainty are resolved or marked pending.</li>
+<li>Boundary overlap and a finer-resolution rerun preserve the intended event identities within declared tolerances.</li>
+<li>Independent calculator checks and any required independent-backend checks meet Stage 3&#39;s gate.</li>
+<li>UTC events map reproducibly to sessions without a later return influencing the assignment.</li>
+<li>The adapter passes known-event, duplicate-boundary, malformed-row, and weekend-mapping tests before use.</li>
+<li>The market test reports its own evidence status; software success alone never upgrades a market claim.</li>
+</ol>
+<h3 id="f-astrolog-event-reference-6">Technical sources and limits</h3>
+<p>Primary technical sources checked: the installed Astrolog 8.00 help (<code>-H</code>, <code>-Y</code>) and <code>C:\Astrolog_8\engine\astrolog.htm</code>, especially daily/monthly searches, local event time, search divisions, restrictions, void-of-course annotations, transit searches, and coordinate displays. The natal v2 operating discipline supplies the input/settings and evidence-retention pattern.</p>
+<p>Verification date: <strong>20 September 2026</strong>. The smoke tests exercised the installed engine only. No JPL/second-backend comparison, price-data ingestion, composite implementation, adapter build, backtest, live strategy, or updated legal review was performed.</p>
+</section>
+</div>
 </article>
     <p class="foot">Every technique carries a provenance label so documentation, assertion, and tested evidence stay separate. Labels marked unverified have no controlled support. Press <code>/</code> to search, <code>Esc</code> to clear.</p>
   </main>
 </div>
 
 <script>
-const TOC = {"natal": [{"id": "n-scope-and-standing-conventions", "text": "Scope and standing conventions", "subs": [], "tags": ["unv"]}, {"id": "n-stage-1-birth-data-and-provenance", "text": "Stage 1: Birth data and provenance", "subs": [], "tags": ["hell", "mod"]}, {"id": "n-stage-2-calculation-and-verification", "text": "Stage 2: Calculation and verification", "subs": [], "tags": ["hell", "med", "mod", "recon", "ren", "unv"]}, {"id": "n-stage-3-natal-architecture", "text": "Stage 3: Natal architecture", "subs": [], "tags": ["hell"]}, {"id": "n-stage-4-planetary-condition-and-rulership", "text": "Stage 4: Planetary condition and rulership", "subs": [], "tags": ["hell", "med", "ren"]}, {"id": "n-stage-5-whole-chart-synthesis-universal-analysis", "text": "Stage 5: Whole-chart synthesis (universal analysis)", "subs": [], "tags": ["hell", "med"]}, {"id": "n-stage-6-topical-natal-promise", "text": "Stage 6: Topical natal promise", "subs": [], "tags": ["hell", "med", "unv"]}, {"id": "n-stage-7-time-lord-activation-the-predictive-core", "text": "Stage 7: Time-lord activation (the predictive core)", "subs": [], "tags": ["hell", "med"]}, {"id": "n-stage-8-progressions-and-directions-honest-historical-status", "text": "Stage 8: Progressions and directions (honest historical status)", "subs": [], "tags": ["hell", "mod", "ren"]}, {"id": "n-stage-9-solar-and-lunar-returns", "text": "Stage 9: Solar and lunar returns", "subs": [], "tags": ["med", "mod", "unv"]}, {"id": "n-stage-10-transits-as-triggers", "text": "Stage 10: Transits as triggers", "subs": [], "tags": ["hell", "med", "mod", "ren"]}, {"id": "n-stage-11-convergent-timing-window", "text": "Stage 11: Convergent timing window", "subs": [], "tags": ["recon"]}, {"id": "n-stage-12-client-interpretation-decisions-uncertainty", "text": "Stage 12: Client interpretation, decisions, uncertainty", "subs": [], "tags": ["mod", "unv"]}, {"id": "n-revised-running-order", "text": "Revised running order", "subs": [], "tags": ["mod"]}, {"id": "n-technique-by-provenance", "text": "Technique by provenance", "subs": [{"id": "n-hellenistic", "text": "Hellenistic"}, {"id": "n-medieval-persian", "text": "Medieval-Persian"}, {"id": "n-renaissance", "text": "Renaissance"}, {"id": "n-modern", "text": "Modern"}, {"id": "n-contemporary-reconstruction", "text": "Contemporary reconstruction"}, {"id": "n-unverified-or-contested", "text": "Unverified or contested"}], "tags": []}, {"id": "n-genuine-scholarly-disputes", "text": "Genuine scholarly disputes", "subs": [], "tags": []}, {"id": "n-gaps-in-the-original-draft", "text": "Gaps in the original draft", "subs": [], "tags": []}, {"id": "n-source-anchors-and-how-they-were-used", "text": "Source anchors and how they were used", "subs": [], "tags": []}], "finance": [{"id": "f-bottom-line-up-front", "text": "Bottom line up front", "subs": [], "tags": ["unv"]}, {"id": "f-key-findings", "text": "Key findings", "subs": [], "tags": ["mix", "sup"]}, {"id": "f-scope-and-standing-conventions", "text": "Scope and standing conventions", "subs": [], "tags": ["astro", "econ", "fa20", "mix", "nosup", "prac", "recon", "sup", "trad", "unv"]}, {"id": "f-stage-1-question-framing-asset-scope-hypothesis-specificatio", "text": "Stage 1: Question framing, asset scope, hypothesis specification", "subs": [], "tags": ["econ"]}, {"id": "f-stage-2-data-provenance-market-and-ephemeris", "text": "Stage 2: Data provenance (market and ephemeris)", "subs": [], "tags": ["astro"]}, {"id": "f-stage-3-astronomical-event-calculation-and-verification", "text": "Stage 3: Astronomical event calculation and verification", "subs": [], "tags": ["astro"]}, {"id": "f-stage-4-non-astrological-cycle-inventory", "text": "Stage 4: Non-astrological cycle inventory", "subs": [], "tags": ["econ", "mix", "unv"]}, {"id": "f-stage-5-astrological-and-geocosmic-cycle-inventory", "text": "Stage 5: Astrological and geocosmic cycle inventory", "subs": [], "tags": ["fa20", "prac", "trad", "unv"]}, {"id": "f-stage-6-mundane-chart-architecture", "text": "Stage 6: Mundane chart architecture", "subs": [], "tags": ["recon", "trad"]}, {"id": "f-stage-7-signification-mapping", "text": "Stage 7: Signification mapping", "subs": [], "tags": ["unv"]}, {"id": "f-stage-8-composite-and-aggregate-indices", "text": "Stage 8: Composite and aggregate indices", "subs": [], "tags": ["astro", "unv"]}, {"id": "f-stage-9-falsifiable-claim-specification", "text": "Stage 9: Falsifiable claim specification", "subs": [], "tags": ["econ"]}, {"id": "f-stage-10-backtest-design-and-statistical-validation", "text": "Stage 10: Backtest design and statistical validation", "subs": [], "tags": ["econ"]}, {"id": "f-stage-11-out-of-sample-and-forward-testing", "text": "Stage 11: Out-of-sample and forward testing", "subs": [], "tags": ["econ"]}, {"id": "f-stage-12-integration-with-technical-and-fundamental-analysis", "text": "Stage 12: Integration with technical and fundamental analysis", "subs": [], "tags": ["prac"]}, {"id": "f-stage-13-position-sizing-risk-drawdown", "text": "Stage 13: Position sizing, risk, drawdown", "subs": [], "tags": ["econ"]}, {"id": "f-stage-14-forecast-delivery-uncertainty-ethics-regulation", "text": "Stage 14: Forecast delivery, uncertainty, ethics, regulation", "subs": [], "tags": []}, {"id": "f-revised-running-order", "text": "Revised running order", "subs": [], "tags": []}, {"id": "f-technique-by-provenance", "text": "Technique by provenance", "subs": [], "tags": ["astro", "econ", "fa20", "mix", "nosup", "prac", "sup", "trad", "unv"]}, {"id": "f-genuine-disputes", "text": "Genuine disputes", "subs": [], "tags": []}, {"id": "f-gaps-in-the-draft-chain-now-filled", "text": "Gaps in the draft chain (now filled)", "subs": [], "tags": []}, {"id": "f-worked-claims-yaml-examples-with-tier-grading", "text": "Worked claims.yaml examples with Tier grading", "subs": [], "tags": ["mix"]}, {"id": "f-what-the-evidence-actually-supports", "text": "What the evidence actually supports", "subs": [], "tags": []}, {"id": "f-statistical-power-table", "text": "Statistical power table", "subs": [], "tags": []}, {"id": "f-recommendations", "text": "Recommendations", "subs": [], "tags": ["unv"]}, {"id": "f-caveats", "text": "Caveats", "subs": [], "tags": []}]};
+const TOC = {"natal":[{"id":"n-scope-and-standing-conventions","text":"Scope and standing conventions","subs":[],"tags":["unv"]},{"id":"n-astrolog-operating-standard","text":"V2 operating standard: Astrolog first","subs":[{"id":"n-astrolog-operating-standard-1","text":"Tool responsibilities"}],"tags":["mod","unv"]},{"id":"n-stage-1-birth-data-and-provenance","text":"Stage 1: Birth data and provenance","subs":[{"id":"n-stage-1-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","mod"]},{"id":"n-stage-2-calculation-and-verification","text":"Stage 2: Calculation and verification","subs":[{"id":"n-stage-2-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","med","mod","recon","ren","unv"]},{"id":"n-stage-3-natal-architecture","text":"Stage 3: Natal architecture","subs":[{"id":"n-stage-3-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","mod"]},{"id":"n-stage-4-planetary-condition-and-rulership","text":"Stage 4: Planetary condition and rulership","subs":[{"id":"n-stage-4-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","med","mod","ren"]},{"id":"n-stage-5-whole-chart-synthesis-universal-analysis","text":"Stage 5: Whole-chart synthesis (universal analysis)","subs":[{"id":"n-stage-5-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","med","mod"]},{"id":"n-stage-6-topical-natal-promise","text":"Stage 6: Topical natal promise","subs":[{"id":"n-stage-6-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","med","mod","unv"]},{"id":"n-stage-7-time-lord-activation-the-predictive-core","text":"Stage 7: Time-lord activation (the predictive core)","subs":[{"id":"n-stage-7-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","med","mod","unv"]},{"id":"n-stage-8-progressions-and-directions-honest-historical-status","text":"Stage 8: Progressions and directions (honest historical status)","subs":[{"id":"n-stage-8-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","mod","ren","unv"]},{"id":"n-stage-9-solar-and-lunar-returns","text":"Stage 9: Solar and lunar returns","subs":[{"id":"n-stage-9-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["med","mod","unv"]},{"id":"n-stage-10-transits-as-triggers","text":"Stage 10: Transits as triggers","subs":[{"id":"n-stage-10-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["hell","med","mod","ren"]},{"id":"n-stage-11-convergent-timing-window","text":"Stage 11: Convergent timing window","subs":[{"id":"n-stage-11-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["mod","recon"]},{"id":"n-stage-12-client-interpretation-decisions-uncertainty","text":"Stage 12: Client interpretation, decisions, uncertainty","subs":[{"id":"n-stage-12-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["mod","unv"]},{"id":"n-revised-running-order","text":"Revised running order","subs":[],"tags":["mod"]},{"id":"n-technique-by-provenance","text":"Technique by provenance","subs":[{"id":"n-hellenistic","text":"Hellenistic"},{"id":"n-medieval-persian","text":"Medieval-Persian"},{"id":"n-renaissance","text":"Renaissance"},{"id":"n-modern","text":"Modern"},{"id":"n-contemporary-reconstruction","text":"Contemporary reconstruction"},{"id":"n-unverified-or-contested","text":"Unverified or contested"}],"tags":[]},{"id":"n-genuine-scholarly-disputes","text":"Genuine scholarly disputes","subs":[],"tags":[]},{"id":"n-gaps-in-the-original-draft","text":"Gaps in the original draft","subs":[],"tags":[]},{"id":"n-source-anchors-and-how-they-were-used","text":"Source anchors and how they were used","subs":[],"tags":[]},{"id":"n-astrolog-quick-start","text":"Astrolog quick start and reproducibility record","subs":[{"id":"n-astrolog-quick-start-1","text":"Verified example, synthetic data only"},{"id":"n-astrolog-quick-start-2","text":"Documented operation reference"},{"id":"n-astrolog-quick-start-3","text":"Minimum completion checklist"},{"id":"n-astrolog-quick-start-4","text":"V2 technical sources and verification limits"}],"tags":["mod","unv"]}],"finance":[{"id":"f-bottom-line-up-front","text":"Bottom line up front","subs":[],"tags":["unv"]},{"id":"f-key-findings","text":"Key findings","subs":[],"tags":["mix","sup"]},{"id":"f-scope-and-standing-conventions","text":"Scope and standing conventions","subs":[],"tags":["astro","econ","fa20","mix","nosup","prac","recon","sup","trad","unv"]},{"id":"f-astrolog-operating-standard","text":"V2 operating standard: Astrolog for event research","subs":[{"id":"f-astrolog-operating-standard-1","text":"What transfers from the natal v2 runbook"},{"id":"f-astrolog-operating-standard-2","text":"Calculation versus market evidence"}],"tags":["mod","unv"]},{"id":"f-stage-1-question-framing-asset-scope-hypothesis-specificatio","text":"Stage 1: Question framing, asset scope, hypothesis specification","subs":[{"id":"f-stage-1-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["econ","mod"]},{"id":"f-stage-2-data-provenance-market-and-ephemeris","text":"Stage 2: Data provenance (market and ephemeris)","subs":[{"id":"f-stage-2-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["astro","mod"]},{"id":"f-stage-3-astronomical-event-calculation-and-verification","text":"Stage 3: Astronomical event calculation and verification","subs":[{"id":"f-stage-3-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["astro","mod"]},{"id":"f-stage-4-non-astrological-cycle-inventory","text":"Stage 4: Non-astrological cycle inventory","subs":[{"id":"f-stage-4-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["econ","mix","mod","unv"]},{"id":"f-stage-5-astrological-and-geocosmic-cycle-inventory","text":"Stage 5: Astrological and geocosmic cycle inventory","subs":[{"id":"f-stage-5-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["fa20","mod","prac","trad","unv"]},{"id":"f-stage-6-mundane-chart-architecture","text":"Stage 6: Mundane chart architecture","subs":[{"id":"f-stage-6-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["mod","recon","trad"]},{"id":"f-stage-7-signification-mapping","text":"Stage 7: Signification mapping","subs":[{"id":"f-stage-7-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["mod","unv"]},{"id":"f-stage-8-composite-and-aggregate-indices","text":"Stage 8: Composite and aggregate indices","subs":[{"id":"f-stage-8-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["astro","mod","unv"]},{"id":"f-stage-9-falsifiable-claim-specification","text":"Stage 9: Falsifiable claim specification","subs":[{"id":"f-stage-9-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["econ","mod"]},{"id":"f-stage-10-backtest-design-and-statistical-validation","text":"Stage 10: Backtest design and statistical validation","subs":[{"id":"f-stage-10-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["econ","mod"]},{"id":"f-stage-11-out-of-sample-and-forward-testing","text":"Stage 11: Out-of-sample and forward testing","subs":[{"id":"f-stage-11-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["econ","mod"]},{"id":"f-stage-12-integration-with-technical-and-fundamental-analysis","text":"Stage 12: Integration with technical and fundamental analysis","subs":[{"id":"f-stage-12-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["mod","prac"]},{"id":"f-stage-13-position-sizing-risk-drawdown","text":"Stage 13: Position sizing, risk, drawdown","subs":[{"id":"f-stage-13-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["econ","mod"]},{"id":"f-stage-14-forecast-delivery-uncertainty-ethics-regulation","text":"Stage 14: Forecast delivery, uncertainty, ethics, regulation","subs":[{"id":"f-stage-14-astrolog-operation","text":"Astrolog operation and evidence"}],"tags":["mod"]},{"id":"f-revised-running-order","text":"Revised running order","subs":[],"tags":[]},{"id":"f-technique-by-provenance","text":"Technique by provenance","subs":[],"tags":["astro","econ","fa20","mix","nosup","prac","sup","trad","unv"]},{"id":"f-genuine-disputes","text":"Genuine disputes","subs":[],"tags":[]},{"id":"f-gaps-in-the-draft-chain-now-filled","text":"Gaps in the draft chain (now filled)","subs":[],"tags":[]},{"id":"f-worked-claims-yaml-examples-with-tier-grading","text":"Worked claims.yaml examples with Tier grading","subs":[],"tags":["mix"]},{"id":"f-what-the-evidence-actually-supports","text":"What the evidence actually supports","subs":[],"tags":[]},{"id":"f-statistical-power-table","text":"Statistical power table","subs":[],"tags":[]},{"id":"f-recommendations","text":"Recommendations","subs":[],"tags":["unv"]},{"id":"f-caveats","text":"Caveats","subs":[],"tags":[]},{"id":"f-astrolog-event-reference","text":"Astrolog event extraction and verification","subs":[{"id":"f-astrolog-event-reference-1","text":"Runnable monthly event search"},{"id":"f-astrolog-event-reference-2","text":"Observed smoke-test result"},{"id":"f-astrolog-event-reference-3","text":"Which calculation to use"},{"id":"f-astrolog-event-reference-4","text":"Proposed event-table contract"},{"id":"f-astrolog-event-reference-5","text":"Extraction acceptance gate"},{"id":"f-astrolog-event-reference-6","text":"Technical sources and limits"}],"tags":["mod","unv"]}]};
 const body = document.body;
 const rail = document.getElementById('rail');
 const q = document.getElementById('q');
