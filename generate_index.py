@@ -67,6 +67,7 @@ CATEGORY_DOTS = {
     "claude": "#d98a5b",
     "codex": "#a78bfa",
     "sharepoint": "#dfae5c",
+    "health": "#f87171",
 }
 DOT_FALLBACK = "#6c737f"
 DOT_ALL = "#6c737f"
@@ -83,6 +84,7 @@ CATEGORY_BLURBS = {
     "claude": "Claude Code references and control workflows.",
     "codex": "OpenAI Codex mastery guides and vault circuits.",
     "sharepoint": "SharePoint / Microsoft 365 builds: hubs, flows, briefings.",
+    "health": "Personal health protocols and device routines.",
 }
 
 FRONT_MATTER_RE = re.compile(r"<!--\s*index:\s*(.*?)-->", re.DOTALL | re.IGNORECASE)

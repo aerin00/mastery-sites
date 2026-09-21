@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<!-- index:
+description: Hellenistic natal chart analysis for Steven: planetary condition, houses, and timing.
+tags: astrology, hellenistic, natal
+ingested: 2026-09-21T11:05:00-07:00
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natal Chart Analysis: Steven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles & Palette - Palette: 'Professional Vibrant' */
+        :root {
+            --color-primary: #4F46E5; /* Indigo 600 */
+            --color-secondary: #06B6D4; /* Cyan 500 */
+            --color-accent: #F59E0B; /* Amber 500 */
+            --color-danger: #EF4444; /* Red 500 */
+            --color-success: #10B981; /* Emerald 500 */
+            --bg-page: #F8FAFC; /* Slate 50 */
+            --bg-card: #FFFFFF;
+            --text-main: #1E293B; /* Slate 800 */
+            --text-muted: #64748B; /* Slate 500 */
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+        }
+
+        h1, h2, h3, h4, .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Tailwind max-w-2xl equiv approx */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Unicode Astrology Symbols Font adjustment */
+        .astro-icon {
+            font-family: 'Segoe UI Symbol', 'Code2000', serif; 
+            line-height: 1;
+        }
+
+        /* Card Hover Effects */
+        .info-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Flowchart connector lines using CSS borders */
+        .flow-line-vertical {
+            width: 2px;
+            background-color: #CBD5E1;
+            margin: 0 auto;
+        }
+        .flow-arrow-down {
+            width: 0; 
+            height: 0; 
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #CBD5E1;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-indigo-100 selection:text-indigo-900"><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+    <!-- Header Section -->
+    <header class="bg-slate-900 text-white pt-16 pb-12 px-4 shadow-lg relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-8 opacity-10 astro-icon text-9xl">♃</div>
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <h2 class="text-indigo-400 font-bold tracking-widest uppercase text-sm mb-2">Hellenistic Astrology Report</h2>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">Celestial Blueprint: Steven</h1>
+            <p class="text-xl text-slate-300 font-light mb-8">September 15, 1986 | 10:29 PM | Phanat Nikhom, Thailand</p>
+            
+            <div class="flex flex-wrap justify-center gap-4 text-sm font-semibold">
+                <span class="bg-indigo-600 px-4 py-1 rounded-full">Whole Sign Houses</span>
+                <span class="bg-indigo-600 px-4 py-1 rounded-full">Night Chart Sect</span>
+                <span class="bg-indigo-600 px-4 py-1 rounded-full">Gemini Rising</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-16">
+
+        <!-- SECTION 1: The Core Constitution (Big Three) -->
+        <section>
+            <div class="mb-8 border-l-4 border-indigo-600 pl-4">
+                <h2 class="text-3xl font-bold text-slate-800">The Core Constitution</h2>
+                <p class="text-slate-600 mt-2 max-w-2xl">
+                    The fundamental pillars of the personality. The Ascendant defines the life path and body, the Sun illuminates the spirit and vitality, and the Moon governs the physical body and emotional needs.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Ascendant Card -->
+                <div class="info-card bg-white p-8 rounded-xl shadow-md border-t-4 border-emerald-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide">Ascendant (The Helm)</h3>
+                            <div class="text-4xl font-bold text-slate-800 mt-1">Gemini</div>
+                        </div>
+                        <div class="astro-icon text-5xl text-emerald-100">♊</div>
+                    </div>
+                    <p class="text-slate-600 text-sm mb-4">
+                        <strong>Ruler:</strong> Mercury (in Libra)<br>
+                        <strong>Theme:</strong> Communication, Duality, Intellect.
+                    </p>
+                    <p class="text-slate-700 text-sm italic border-l-2 border-emerald-200 pl-3">
+                        "The life is steered by curiosity and the need to connect ideas."
+                    </p>
+                </div>
+
+                <!-- Sun Card -->
+                <div class="info-card bg-white p-8 rounded-xl shadow-md border-t-4 border-amber-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide">Sun (Vitality)</h3>
+                            <div class="text-4xl font-bold text-slate-800 mt-1">Virgo</div>
+                        </div>
+                        <div class="astro-icon text-5xl text-amber-100">♍</div>
+                    </div>
+                    <p class="text-slate-600 text-sm mb-4">
+                        <strong>House:</strong> 4th (Home & Roots)<br>
+                        <strong>Theme:</strong> Service, Analysis, Perfection.
+                    </p>
+                    <p class="text-slate-700 text-sm italic border-l-2 border-amber-200 pl-3">
+                        "Illumination comes from within the private sphere and family foundations."
+                    </p>
+                </div>
+
+                <!-- Moon Card -->
+                <div class="info-card bg-white p-8 rounded-xl shadow-md border-t-4 border-indigo-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide">Moon (Sect Light)</h3>
+                            <div class="text-4xl font-bold text-slate-800 mt-1">Aquarius</div>
+                        </div>
+                        <div class="astro-icon text-5xl text-indigo-100">♒</div>
+                    </div>
+                    <p class="text-slate-600 text-sm mb-4">
+                        <strong>House:</strong> 9th (Wisdom & Travel)<br>
+                        <strong>Theme:</strong> Innovation, Detachment, Ideals.
+                    </p>
+                    <p class="text-slate-700 text-sm italic border-l-2 border-indigo-200 pl-3">
+                        "Emotional fulfillment is found in higher knowledge, foreign lands, and philosophy."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Elemental Balance & Temperament -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1">
+                <div class="chart-container bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                    <canvas id="elementChart"></canvas>
+                </div>
+            </div>
+            <div class="order-1 md:order-2">
+                <div class="mb-4">
+                    <span class="text-indigo-600 font-bold tracking-wider uppercase text-xs">Temperament Analysis</span>
+                    <h2 class="text-3xl font-bold text-slate-800 mt-1">Perfect Equilibrium</h2>
+                </div>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    This chart displays a remarkably rare distribution: <strong class="text-indigo-600">Perfect Balance</strong> across all four elements. With exactly 3 planets in Fire, Earth, Air, and Water, the temperament is versatile and adaptive.
+                </p>
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-red-500 mr-3"></span>
+                        <span class="text-sm font-semibold w-20">Fire (3)</span>
+                        <span class="text-sm text-slate-500">Drive, Spirit, Action</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 mr-3"></span>
+                        <span class="text-sm font-semibold w-20">Earth (3)</span>
+                        <span class="text-sm text-slate-500">Materiality, Stability, Practicality</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-sky-400 mr-3"></span>
+                        <span class="text-sm font-semibold w-20">Air (3)</span>
+                        <span class="text-sm text-slate-500">Intellect, Communication, Social</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full bg-indigo-600 mr-3"></span>
+                        <span class="text-sm font-semibold w-20">Water (3)</span>
+                        <span class="text-sm text-slate-500">Emotion, Intuition, Memory</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Essential Dignity (Power Analysis) -->
+        <section>
+            <div class="mb-8 border-l-4 border-indigo-600 pl-4">
+                <h2 class="text-3xl font-bold text-slate-800">Planetary Power Score</h2>
+                <p class="text-slate-600 mt-2 max-w-2xl">
+                    In Hellenistic astrology, a planet's ability to act depends on its "Dignity." Planets in their own home (Domicile) or Exaltation are high-functioning. Those in Detriment or Fall face resource scarcity.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="chart-container w-full h-80">
+                    <canvas id="dignityChart"></canvas>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 border-t border-slate-100 pt-6">
+                    <div>
+                        <h4 class="font-bold text-emerald-600 mb-2">The Powerhouse: Jupiter</h4>
+                        <p class="text-sm text-slate-600">Located in the <strong>10th House</strong> (Career/Reputation) and in <strong>Domicile</strong> (Pisces). This is the strongest planet, promising great success in public life.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-emerald-600 mb-2">The Strategist: Mars</h4>
+                        <p class="text-sm text-slate-600"><strong>Exalted</strong> in Capricorn in the 8th House. In a night chart, Mars is constructive. Great capacity for handling crises and shared resources.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-red-500 mb-2">The Challenge: Venus</h4>
+                        <p class="text-sm text-slate-600">In <strong>Detriment</strong> in Scorpio (6th House). Relationships or health matters may require extra effort, unconventional solutions, or may be a source of labor.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: The 12 Houses (Life Landscape) -->
+        <section>
+            <div class="text-center mb-10">
+                <span class="text-indigo-600 font-bold tracking-wider uppercase text-xs">Life Topics</span>
+                <h2 class="text-3xl font-bold text-slate-800 mt-2">The Landscape of Life</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto mt-2">The 12 Houses represent specific areas of life. Highlighted cards indicate active areas with planetary presence.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- House 1 -->
+                <div class="p-4 bg-slate-50 rounded border border-slate-200 relative group">
+                    <div class="text-xs font-bold text-slate-400 absolute top-2 right-2">1st HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Self</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Gemini</div>
+                    <div class="text-xs text-slate-500">Ruler: Mercury (5th)</div>
+                </div>
+                <!-- House 2 -->
+                <div class="p-4 bg-slate-50 rounded border border-slate-200 relative group">
+                    <div class="text-xs font-bold text-slate-400 absolute top-2 right-2">2nd HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Assets</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Cancer</div>
+                    <div class="text-xs text-slate-500">Ruler: Moon (9th)</div>
+                </div>
+                <!-- House 3 -->
+                <div class="p-4 bg-slate-50 rounded border border-slate-200 relative group">
+                    <div class="text-xs font-bold text-slate-400 absolute top-2 right-2">3rd HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Siblings</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Leo</div>
+                    <div class="text-xs text-slate-500">Ruler: Sun (4th)</div>
+                </div>
+                <!-- House 4 (Sun) -->
+                <div class="p-4 bg-amber-50 rounded border-l-4 border-amber-400 shadow-sm relative group">
+                    <div class="text-xs font-bold text-amber-700 absolute top-2 right-2">4th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Home/Roots</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Virgo</div>
+                    <div class="flex items-center gap-1 text-amber-600 font-bold"><span class="astro-icon">☉</span> Sun</div>
+                </div>
+                <!-- House 5 (Mercury) -->
+                <div class="p-4 bg-sky-50 rounded border-l-4 border-sky-400 shadow-sm relative group">
+                    <div class="text-xs font-bold text-sky-700 absolute top-2 right-2">5th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Creativity</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Libra</div>
+                    <div class="flex items-center gap-1 text-sky-600 font-bold"><span class="astro-icon">☿</span> Mercury</div>
+                </div>
+                <!-- House 6 (Venus/Pluto) -->
+                <div class="p-4 bg-pink-50 rounded border-l-4 border-pink-400 shadow-sm relative group">
+                    <div class="text-xs font-bold text-pink-700 absolute top-2 right-2">6th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Work/Illness</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Scorpio</div>
+                    <div class="flex items-center gap-1 text-pink-600 font-bold"><span class="astro-icon">♀</span> Venus</div>
+                    <div class="flex items-center gap-1 text-slate-600 text-xs"><span class="astro-icon">♇</span> Pluto</div>
+                </div>
+                <!-- House 7 (Saturn/Uranus) -->
+                <div class="p-4 bg-slate-100 rounded border-l-4 border-slate-500 shadow-sm relative group">
+                    <div class="text-xs font-bold text-slate-600 absolute top-2 right-2">7th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Marriage</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Sagittarius</div>
+                    <div class="flex items-center gap-1 text-slate-700 font-bold"><span class="astro-icon">♄</span> Saturn</div>
+                    <div class="flex items-center gap-1 text-slate-500 text-xs"><span class="astro-icon">♅</span> Uranus</div>
+                </div>
+                <!-- House 8 (Mars/Neptune) -->
+                <div class="p-4 bg-red-50 rounded border-l-4 border-red-500 shadow-sm relative group">
+                    <div class="text-xs font-bold text-red-700 absolute top-2 right-2">8th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Debt/Death</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Capricorn</div>
+                    <div class="flex items-center gap-1 text-red-600 font-bold"><span class="astro-icon">♂</span> Mars (Exalted)</div>
+                    <div class="flex items-center gap-1 text-slate-500 text-xs"><span class="astro-icon">♆</span> Neptune</div>
+                </div>
+                <!-- House 9 (Moon) -->
+                <div class="p-4 bg-indigo-50 rounded border-l-4 border-indigo-400 shadow-sm relative group">
+                    <div class="text-xs font-bold text-indigo-700 absolute top-2 right-2">9th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Travel/Phil</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Aquarius</div>
+                    <div class="flex items-center gap-1 text-indigo-600 font-bold"><span class="astro-icon">☾</span> Moon</div>
+                </div>
+                <!-- House 10 (Jupiter) -->
+                <div class="p-4 bg-emerald-50 rounded border-l-4 border-emerald-500 shadow-md transform md:scale-105 relative z-10">
+                    <div class="text-xs font-bold text-emerald-700 absolute top-2 right-2">10th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Career</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Pisces</div>
+                    <div class="flex items-center gap-1 text-emerald-600 font-bold"><span class="astro-icon">♃</span> Jupiter (Dom)</div>
+                </div>
+                <!-- House 11 (NN) -->
+                <div class="p-4 bg-slate-50 rounded border border-slate-200 relative group">
+                    <div class="text-xs font-bold text-slate-400 absolute top-2 right-2">11th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Friends</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Aries</div>
+                    <div class="flex items-center gap-1 text-slate-500 text-xs"><span class="astro-icon">☊</span> N. Node</div>
+                </div>
+                <!-- House 12 -->
+                <div class="p-4 bg-slate-50 rounded border border-slate-200 relative group">
+                    <div class="text-xs font-bold text-slate-400 absolute top-2 right-2">12th HOUSE</div>
+                    <div class="text-lg font-bold text-slate-800">Isolation</div>
+                    <div class="text-sm text-indigo-600 font-semibold mb-2">Taurus</div>
+                    <div class="text-xs text-slate-500">Ruler: Venus (6th)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: The Command Chain (Dispositor Tree) -->
+        <section class="bg-indigo-900 rounded-3xl p-8 md:p-12 text-white">
+            <div class="text-center mb-10">
+                <span class="text-indigo-300 font-bold tracking-wider uppercase text-xs">Planetary Hierarchy</span>
+                <h2 class="text-3xl font-bold mt-2">The Chain of Command</h2>
+                <p class="text-indigo-200 max-w-2xl mx-auto mt-2">
+                    How planets delegate responsibility. Arrows indicate which planet "rules" another. All paths ultimately lead to the Final Dispositor, the chart's "CEO".
+                </p>
+            </div>
+
+            <div class="flex flex-col items-center justify-center space-y-4">
+                
+                <!-- Level 1: The Dependents -->
+                <div class="flex gap-4 md:gap-16">
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full bg-amber-400 text-amber-900 flex items-center justify-center text-2xl font-bold shadow-lg z-10 relative astro-icon">☉</div>
+                        <div class="text-sm font-bold mt-2 text-indigo-200">Sun</div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full bg-sky-400 text-sky-900 flex items-center justify-center text-2xl font-bold shadow-lg z-10 relative astro-icon">☾</div>
+                        <div class="text-sm font-bold mt-2 text-indigo-200">Moon</div>
+                    </div>
+                </div>
+
+                <!-- Connectors L1 to L2 -->
+                <div class="flex gap-4 md:gap-16 w-full justify-center h-8 relative">
+                    <!-- Sun to Merc -->
+                    <div class="absolute left-[calc(50%-4rem)] md:left-[calc(50%-6rem)] w-[50%] h-full border-r-2 border-indigo-400 rounded-br-xl transform -translate-x-full"></div> 
+                     <!-- Moon to Saturn -->
+                     <div class="absolute right-[calc(50%-4rem)] md:right-[calc(50%-6rem)] w-[50%] h-full border-l-2 border-indigo-400 rounded-bl-xl transform translate-x-full"></div>
+                </div>
+
+                <!-- Level 2 -->
+                <div class="flex gap-8 md:gap-24">
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full bg-white text-slate-900 flex items-center justify-center text-2xl font-bold shadow-lg z-10 relative astro-icon">☿</div>
+                        <div class="text-sm font-bold mt-2 text-indigo-200">Mercury</div>
+                        <div class="flow-arrow-down mt-1"></div>
+                        <div class="flow-line-vertical h-4"></div>
+                        
+                        <!-- Venus Nested -->
+                        <div class="w-14 h-14 rounded-full bg-pink-400 text-pink-900 flex items-center justify-center text-xl font-bold shadow-lg z-10 relative astro-icon mt-1">♀</div>
+                        <div class="text-xs mt-1 text-indigo-300">Venus</div>
+                        <div class="flow-arrow-down mt-1"></div>
+                        <div class="flow-line-vertical h-4"></div>
+
+                        <!-- Mars Nested -->
+                        <div class="w-14 h-14 rounded-full bg-red-500 text-white flex items-center justify-center text-xl font-bold shadow-lg z-10 relative astro-icon mt-1">♂</div>
+                        <div class="text-xs mt-1 text-indigo-300">Mars</div>
+                        <!-- Connector from Mars to Saturn -->
+                         <div class="flow-arrow-down mt-1"></div>
+                         <!-- This path merges with Saturn below -->
+                    </div>
+
+                    <div class="flex flex-col items-center justify-end">
+                         <!-- Saturn is here -->
+                    </div>
+                </div>
+
+                <!-- Level 3: The Gatekeeper -->
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 rounded-full bg-slate-600 text-white flex items-center justify-center text-3xl font-bold shadow-lg z-10 relative astro-icon border-4 border-indigo-500">♄</div>
+                    <div class="text-base font-bold mt-2 text-indigo-200">Saturn</div>
+                    <div class="text-xs text-indigo-400">7th House</div>
+                </div>
+
+                <!-- Connector L3 to Final -->
+                <div class="flow-arrow-down"></div>
+                <div class="flow-line-vertical h-6"></div>
+
+                <!-- Final Dispositor -->
+                <div class="bg-indigo-800 p-6 rounded-2xl border-2 border-emerald-400 text-center shadow-2xl transform scale-110">
+                    <div class="uppercase text-xs font-bold tracking-widest text-emerald-400 mb-2">Final Dispositor</div>
+                    <div class="w-24 h-24 rounded-full bg-emerald-500 text-white flex items-center justify-center text-5xl font-bold shadow-lg mx-auto mb-3 astro-icon">♃</div>
+                    <h3 class="text-2xl font-bold text-white">Jupiter</h3>
+                    <p class="text-indigo-200 text-sm">Pisces (10th House)</p>
+                    <p class="text-white text-xs mt-2 italic">"Career, Reputation & Wisdom govern all."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer / Conclusion -->
+        <footer class="border-t border-slate-200 pt-8 pb-12 text-center">
+            <h3 class="text-2xl font-serif font-bold text-slate-800 mb-4">Summary</h3>
+            <p class="max-w-2xl mx-auto text-slate-600 mb-8 leading-relaxed">
+                Steven's chart is defined by a <strong>Night Sect</strong> and a <strong>Gemini Ascendant</strong>. While relationships (Saturn in 7th) and health (Venus in 6th) present specific challenges, the chart possesses immense constructive power through <strong>Mars (Exalted)</strong> handling crises and <strong>Jupiter (Domicile)</strong> elevating the career and public standing to the highest priority. The balanced elemental temperament suggests a versatile and capable individual.
+            </p>
+            <div class="text-xs text-slate-400">
+                Generated via Canvas • Source: Hellenistic Analysis Data • 2024
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- JavaScript for Charts & Interaction -->
+    <script>
+        // --- Helper Function: Wrap Labels ---
+        function splitLabel(str, maxLen = 16) {
+            if (str.length <= maxLen) return str;
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if ((currentLine + " " + words[i]).length <= maxLen) {
+                    currentLine += " " + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // --- Chart 1: Elemental Balance (Radar) ---
+        const ctxElements = document.getElementById('elementChart').getContext('2d');
+        const elementChart = new Chart(ctxElements, {
+            type: 'radar',
+            data: {
+                labels: ['Fire (Spirit)', 'Earth (Matter)', 'Air (Intellect)', 'Water (Emotion)'],
+                datasets: [{
+                    label: 'Elemental Distribution',
+                    data: [3, 3, 3, 3], // Perfectly balanced data
+                    backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo 600
+                    borderColor: '#4F46E5',
+                    pointBackgroundColor: '#4F46E5',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#4F46E5',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: '#E2E8F0' // Slate 200
+                        },
+                        grid: {
+                            color: '#E2E8F0'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 14,
+                                family: "'Lato', sans-serif",
+                                weight: 'bold'
+                            },
+                            color: '#475569' // Slate 600
+                        },
+                        ticks: {
+                            display: false,
+                            maxTicksLimit: 5
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 4
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) return label.join(' ');
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Chart 2: Essential Dignity (Bar) ---
+        // Scoring: Domicile +5, Exalted +4, Peregrine 0, Detriment -5
+        const ctxDignity = document.getElementById('dignityChart').getContext('2d');
+        const labelsDignity = ['Jupiter', 'Mars', 'Sun', 'Moon', 'Mercury', 'Saturn', 'Venus'];
+        // Pre-process labels
+        const processedLabelsDignity = labelsDignity.map(l => splitLabel(l));
+
+        const dignityChart = new Chart(ctxDignity, {
+            type: 'bar',
+            data: {
+                labels: processedLabelsDignity,
+                datasets: [{
+                    label: 'Essential Dignity Score',
+                    data: [5, 4, 0, 0, 0, 0, -5],
+                    backgroundColor: [
+                        '#10B981', // Emerald (Jup)
+                        '#10B981', // Emerald (Mars - High)
+                        '#F59E0B', // Amber (Sun)
+                        '#4F46E5', // Indigo (Moon)
+                        '#94A3B8', // Slate (Merc)
+                        '#94A3B8', // Slate (Sat)
+                        '#EF4444'  // Red (Ven)
+                    ],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                indexAxis: 'y', // Horizontal Bar
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#F1F5F9'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        },
+                        min: -6,
+                        max: 6,
+                        title: {
+                            display: true,
+                            text: 'Relative Strength (Hellenistic)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) return label.join(' ');
+                                return label;
+                            },
+                            label: function(context) {
+                                const score = context.raw;
+                                let desc = "";
+                                if (score === 5) desc = "Domicile (Very Strong)";
+                                else if (score === 4) desc = "Exalted (Strong)";
+                                else if (score === -5) desc = "Detriment (Challenged)";
+                                else desc = "Peregrine (Neutral)";
+                                return `${desc}: ${score}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- 
+      Chosen Palette: "Professional Vibrant"
+      Background: Slate 50 (#F8FAFC)
+      Primary: Indigo 600 (#4F46E5)
+      Secondary: Cyan 500 (#06B6D4)
+      Accent: Amber 500 (#F59E0B)
+      Success: Emerald 500 (#10B981)
+      Error: Red 500 (#EF4444)
+    -->
+
+    <!-- 
+      Narrative & Structure Plan:
+      1. Header: Establish context (Who/When/Where) with cosmic imagery.
+      2. Core Constitution: The "Big Three" determines the basic character structure. Used Cards for clarity (Goal: Inform).
+      3. Temperament: Quantitative breakdown of Elements. Used Radar Chart to show the unique "Perfect Balance" (Goal: Compare/Shape).
+      4. Power Analysis: Essential Dignities determine which planets have resources. Used Bar Chart to contrast Jupiter's strength vs Venus's weakness (Goal: Rank).
+      5. Life Landscape: The 12 Houses grid. Shows where the planets "live" and what topics they affect (Goal: Organize).
+      6. Chain of Command: Dispositor Tree. Shows the flow of power/delegation ending at Jupiter (Goal: Process/Flow).
+      7. Conclusion: Synthesis of findings.
+    -->
+
+    <!-- 
+      Visualization Choices:
+      - Radar Chart: Chosen for Elemental distribution because it visually represents "balance" or "skew" better than a pie chart for multi-axial personality data.
+      - Horizontal Bar Chart: Chosen for Dignity scores to clearly show positive vs negative values relative to a zero axis (neutral).
+      - HTML Grid Cards: Chosen for 12 Houses to allow rich text content (Planets, Signs, Rulers) that wouldn't fit in a wheel chart on mobile.
+      - CSS Flowchart: Chosen for Dispositor Tree to map relationships without SVG/Mermaid, using standard box model layout.
+      - Confirming NO SVG used. NO Mermaid JS used.
+    -->
+
+</body>
+</html>

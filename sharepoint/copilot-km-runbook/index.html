@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<!-- index:
+description: Knowledge management guide and runbook for Copilot in SharePoint and OneDrive: grounding, permissions, and operating steps.
+tags: runbook, copilot, sharepoint
+ingested: 2026-09-21T11:05:00-07:00
+-->
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Copilot in SharePoint and OneDrive: Knowledge Management Guide and Runbook</title>
+<style>:root{
+  --paper:#f4f6f4; --sheet:#ffffff; --ink:#18222c; --muted:#56636f; --rule:#d3d9d5;
+  --line:#1e6b52; --line-soft:#e3efe9; --flag:#9a6414; --flag-soft:#fbf1dc; --no:#8f3b2c;
+  --code-bg:#eef1ef;
+  --serif: Charter, "Bitstream Charter", "Iowan Old Style", "Sitka Text", Cambria, Georgia, serif;
+  --sans: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#11171c; --sheet:#161e24; --ink:#e3e8ec; --muted:#9aa7b1; --rule:#2c3740;
+    --line:#5fb892; --line-soft:#1b2d26; --flag:#e0ad5a; --flag-soft:#2e2515; --no:#e08a78; --code-bg:#1f2a31;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11171c; --sheet:#161e24; --ink:#e3e8ec; --muted:#9aa7b1; --rule:#2c3740;
+  --line:#5fb892; --line-soft:#1b2d26; --flag:#e0ad5a; --flag-soft:#2e2515; --no:#e08a78; --code-bg:#1f2a31;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 1rem);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--sans)}
+a{color:var(--line);text-underline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--line);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:0;background:var(--sheet);padding:.5rem 1rem}
+.skip:focus{left:1rem;top:1rem;z-index:9}
+
+.shell{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:84rem;margin:0 auto}
+.side{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:2rem 1.25rem 2rem 1.5rem;border-right:1px solid var(--rule)}
+.side-org{font-size:.8rem;color:var(--muted);margin:0 0 1.25rem}
+.toc{list-style:none;margin:0;padding:0}
+.toc a{display:flex;gap:.6rem;padding:.3rem .5rem;margin-left:-.5rem;border-radius:4px;color:var(--ink);text-decoration:none;font-size:.9rem;line-height:1.35}
+.toc a:hover{background:var(--line-soft)}
+.toc a.active{background:var(--line-soft);color:var(--line);font-weight:600}
+.toc-n{flex:0 0 1.3rem;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.progress{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--rule)}
+.progress-label,.progress-count{font-size:.8rem;color:var(--muted);margin:.2rem 0}
+.meter{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}
+.meter-fill{display:block;height:100%;background:var(--line);transition:width .25s ease}
+.reset{margin-top:.5rem;font:inherit;font-size:.8rem;background:none;border:1px solid var(--rule);color:var(--muted);border-radius:4px;padding:.2rem .6rem;cursor:pointer}
+
+main{padding:2.5rem clamp(1rem,4vw,3.5rem) 4rem;min-width:0}
+.masthead{max-width:46rem;padding-bottom:1.5rem;margin-bottom:1rem;border-bottom:3px solid var(--ink)}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(2rem,4.5vw,3rem);line-height:1.08;letter-spacing:-.01em;margin:0}
+.subtitle{font-family:var(--serif);font-size:1.3rem;color:var(--muted);margin:.35rem 0 1.25rem}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem 2rem;margin:0;font-size:.9rem}
+.meta div{display:flex;gap:.5rem}
+.meta dt{color:var(--muted)}
+.meta dd{margin:0}
+
+.sec{padding-top:1.5rem}
+.sec > *:not(.table-wrap):not(.setup):not(.lifecycle){max-width:46rem}
+h2{font-family:var(--serif);font-size:1.65rem;line-height:1.2;margin:1.5rem 0 .75rem;display:flex;align-items:baseline;gap:.75rem}
+.h-n{font-family:var(--sans);font-size:.95rem;font-weight:600;color:var(--sheet);background:var(--ink);border-radius:3px;min-width:1.7rem;text-align:center;padding:.05rem .35rem;position:relative;top:-.15rem}
+h3{font-family:var(--serif);font-size:1.15rem;margin:0}
+p{margin:.6rem 0}
+ul,ol{padding-left:1.3rem}
+li{margin:.25rem 0}
+code{font-family:var(--mono);font-size:.84em;background:var(--code-bg);padding:.08em .35em;border-radius:3px;overflow-wrap:anywhere}
+
+.rule{border-left:4px solid var(--line);background:var(--line-soft);padding:.75rem 1rem;border-radius:0 4px 4px 0}
+.flag{display:inline-block;font-size:.78rem;font-weight:600;color:var(--flag);background:var(--flag-soft);border:1px solid currentColor;border-radius:3px;padding:0 .4rem;line-height:1.5;vertical-align:.08em}
+.yes{color:var(--line);font-weight:600}
+.no{color:var(--no);font-weight:600}
+
+.table-wrap{overflow-x:auto;max-width:68rem;margin:1rem 0;background:var(--sheet);border:1px solid var(--rule);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.45}
+th,td{text-align:left;vertical-align:top;padding:.6rem .8rem;border-bottom:1px solid var(--rule)}
+thead th{font-weight:600;background:var(--code-bg);white-space:nowrap}
+tbody tr:last-child > *{border-bottom:0}
+tbody th{font-weight:600}
+
+/* lifecycle */
+.lifecycle{margin:1rem 0 1.5rem;max-width:56rem}
+.states{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch;gap:.4rem;padding:0;margin:0}
+.state{flex:1 1 9rem;margin:0;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:.6rem .75rem;display:flex;flex-direction:column;gap:.15rem}
+.state-name{font-weight:600}
+.state-where{font-size:.82rem;color:var(--muted)}
+.state-live{border:2px solid var(--line);background:var(--line-soft)}
+.state-live .state-name{color:var(--line)}
+.arrow{align-self:center;color:var(--muted);margin:0}
+.loops{font-size:.9rem;color:var(--muted);margin:.75rem 0 .25rem}
+.lifecycle figcaption{font-size:.9rem}
+
+/* setup: the signature element, a single line running through eight gated steps */
+.setup{list-style:none;padding:0;margin:1.25rem 0;max-width:50rem;counter-reset:none}
+.step{position:relative;padding:0 0 1.75rem 3.25rem;margin:0}
+.step::before{content:"";position:absolute;left:1rem;top:2.1rem;bottom:0;width:3px;background:var(--rule)}
+.step:last-child::before{display:none}
+.step.done::before{background:var(--line)}
+.step-head{display:flex;align-items:center;gap:1rem;margin-left:-3.25rem}
+.step-num{flex:0 0 2.1rem;height:2.1rem;border-radius:50%;display:grid;place-items:center;font-weight:700;border:3px solid var(--rule);background:var(--sheet);font-variant-numeric:tabular-nums}
+.step.done .step-num{border-color:var(--line);background:var(--line);color:var(--sheet)}
+.step-actions{margin:.5rem 0 .6rem;padding-left:1.1rem}
+.gate{display:flex;gap:.6rem;align-items:flex-start;background:var(--sheet);border:1px dashed var(--line);border-radius:6px;padding:.55rem .75rem;cursor:pointer}
+.gate input,.questions input{margin-top:.3rem;accent-color:var(--line);width:1rem;height:1rem;flex:0 0 auto}
+.step.done .gate{border-style:solid;background:var(--line-soft)}
+
+/* prompts */
+.prompts td:last-child{min-width:18rem}
+.prompt{all:unset;box-sizing:border-box;display:flex;gap:.75rem;align-items:flex-start;width:100%;cursor:pointer;border-radius:4px;padding:.2rem .3rem}
+.prompt:hover{background:var(--line-soft)}
+.prompt:focus-visible{outline:2px solid var(--line);outline-offset:2px}
+.prompt-text{flex:1;font-family:var(--serif);font-style:italic}
+.prompt-copy{flex:0 0 auto;font-size:.75rem;font-weight:600;color:var(--line);border:1px solid currentColor;border-radius:3px;padding:0 .4rem}
+
+/* questions */
+.questions{list-style:none;padding:0}
+.questions label{display:flex;gap:.6rem;cursor:pointer}
+.questions input:checked + span{color:var(--muted);text-decoration:line-through}
+.who{font-size:.78rem;font-weight:600;color:var(--muted);border:1px solid var(--rule);border-radius:3px;padding:0 .35rem;margin-left:.25rem;white-space:nowrap;text-decoration:none;display:inline-block}
+
+.foot{max-width:46rem;margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:.85rem;color:var(--muted)}
+
+@media (max-width:900px){
+  .shell{display:block}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--rule);padding:1.25rem 1rem}
+  .toc{columns:2;column-gap:1rem}
+  .progress{display:none}
+  .table-wrap table{min-width:40rem}
+}
+@media (max-width:520px){ .toc{columns:1} .arrow{transform:rotate(90deg);flex-basis:100%;text-align:center} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+@media print{
+  .side,.skip,.reset,.prompt-copy{display:none}
+  .shell{display:block}
+  body{background:#fff}
+  .table-wrap{overflow:visible;border:1px solid #bbb}
+  a{color:inherit}
+  .sec{break-inside:auto}
+  .step,.state,tr{break-inside:avoid}
+}
+</style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+<aside class="side" aria-label="Contents">
+  <p class="side-org">BC Hydro, Partner Interconnections Coordination</p>
+  <nav><ol class="toc"><li><a href="#scope"><span class="toc-n">1</span>Purpose and scope</a></li>
+<li><a href="#constraints"><span class="toc-n">2</span>BC Hydro constraints</a></li>
+<li><a href="#capabilities"><span class="toc-n">3</span>Capability map</a></li>
+<li><a href="#principles"><span class="toc-n">4</span>Knowledge management principles</a></li>
+<li><a href="#standards"><span class="toc-n">5</span>Content and library standards</a></li>
+<li><a href="#roles"><span class="toc-n">6</span>Roles and responsibilities</a></li>
+<li><a href="#setup"><span class="toc-n">7</span>Runbook: setup</a></li>
+<li><a href="#operations"><span class="toc-n">8</span>Runbook: recurring operations</a></li>
+<li><a href="#troubleshooting"><span class="toc-n">9</span>Runbook: troubleshooting</a></li>
+<li><a href="#prompts"><span class="toc-n">10</span>Approved prompt patterns</a></li>
+<li><a href="#risks"><span class="toc-n">11</span>Open questions and risks</a></li>
+<li><a href="#sources"><span class="toc-n">12</span>Sources</a></li></ol></nav>
+  <div class="progress" aria-live="polite">
+    <p class="progress-label">Setup gates passed</p>
+    <div class="meter"><span class="meter-fill" style="width:0%"></span></div>
+    <p class="progress-count"><span id="gate-count">0</span> of 8</p>
+    <button type="button" class="reset" id="reset">Clear ticks</button>
+  </div>
+</aside>
+<main id="main">
+<header class="masthead">
+  <h1>Copilot in SharePoint and OneDrive</h1>
+  <p class="subtitle">Knowledge management guide and runbook</p>
+  <dl class="meta">
+    <div><dt>As of</dt><dd>21 September 2026</dd></div>
+    <div><dt>Owner</dt><dd>Steven, Financial Systems Analyst</dd></div>
+  </dl>
+</header>
+<section class="sec" aria-labelledby="scope"><h2 id="scope"><span class="h-n">1</span>Purpose and scope</h2>
+<p>Copilot in SharePoint and OneDrive answers only as well as the content, permissions and structure it can reach. This guide sets the PIC standards that make that content trustworthy, and the runbook that keeps it that way.</p>
+<p><strong>Audience:</strong> PIC site owners, the knowledge owner, content authors (coordinators, analysts) and anyone building a SharePoint agent on PIC content.</p>
+<p><strong>In scope</strong></p>
+<ul>
+<li>The single PIC SharePoint Online site and its libraries (Knowledge Base, Governance, Reports, Operations areas)</li>
+<li>PIC members' OneDrive, where working drafts live before publication</li>
+<li>SharePoint agents and Copilot chat grounded on PIC libraries (including the JUAS Knowledge Base agent)</li>
+<li>Migration of legacy content from the shared network drive (roughly 10 to 100 GB)</li>
+</ul>
+<p><strong>Out of scope</strong></p>
+<ul>
+<li>Power Apps or flows beyond the SharePoint-native exception (see next section)</li>
+<li>Content on the on-premises host <code>hydroshare.bchydro.bc.ca</code> until Graph indexing is confirmed</li>
+<li>SAP, which stays manual</li>
+</ul>
+<p class="rule"><strong>Operating rule:</strong> if a person should not act on a document, Copilot must not be able to find it. Every standard below serves that rule.</p>
+
+</section><section class="sec" aria-labelledby="constraints"><h2 id="constraints"><span class="h-n">2</span>BC Hydro constraints</h2>
+<p>Citizen development on Power Platform is not permitted at BC Hydro, with one exception: apps and flows created from a SharePoint Online list or library that interact only with SharePoint. Everything in this runbook stays inside that boundary. (Source: BC Hydro Power Platform governance page, summarized 2026-08-17 in project file <code>2026-08-17-00-copilot-bch-restrictions.md</code>.)</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Allowed</th>
+<th>Not allowed without IT Advisor review</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flows</td>
+<td>Created via SharePoint <code>Integrate</code> or <code>Workflows</code> menu; SharePoint triggers and actions only</td>
+<td>Standalone flows from the Power Automate portal; external connectors</td>
+</tr>
+<tr>
+<td>Apps</td>
+<td>Power Apps customizing a SharePoint list form</td>
+<td>Standalone canvas or model-driven apps</td>
+</tr>
+<tr>
+<td>Data sources</td>
+<td>SharePoint lists and libraries</td>
+<td>Dataverse, SQL, APIs, on-prem systems</td>
+</tr>
+<tr>
+<td>Environment</td>
+<td>The governed default path from SharePoint</td>
+<td>Personal or unmanaged environments</td>
+</tr>
+<tr>
+<td>Reach</td>
+<td>PIC site</td>
+<td>Cross-department or enterprise-wide processes</td>
+</tr>
+<tr>
+<td>Copilot agents</td>
+<td>SharePoint agents grounded on PIC libraries; read-only knowledge agents</td>
+<td>Agents with write actions, connectors or API plugins</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Implications for knowledge management</strong></p>
+<ul>
+<li>Governance automation (review reminders, expiry flags) must be SharePoint-triggered flows or built-in library features, not portal flows.</li>
+<li>The Outlook notification connector is an open question with the IT Advisor; until answered, use SharePoint alerts or list rules for notifications.</li>
+<li>Anything needing more than SharePoint goes to the IT Advisor as a written use case before build starts.</li>
+</ul>
+</section><section class="sec" aria-labelledby="capabilities"><h2 id="capabilities"><span class="h-n">3</span>Capability map</h2>
+<p>Copilot never grants access: every surface below answers from content the signed-in user can already open, so permissions are the control and content quality is the lever. All surfaces require a Microsoft 365 Copilot licence. Whether BC Hydro's tenant has Copilot in SharePoint enabled for the PIC site is <span class="flag">unverified</span>; confirm before rollout (Setup step 1).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>What it does</th>
+<th>Grounding scope</th>
+<th>Who can configure</th>
+<th>Knowledge management risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sharepoint/copilot-in-sharepoint-get-started">Copilot in SharePoint</a> (preview, formerly Knowledge Agent)</td>
+<td>Q&amp;A, summaries, and creating pages, lists, libraries and reports by natural language</td>
+<td>Open site, page or library, plus anything else the user can see in M365</td>
+<td>Tenant admin (scope), site owner (Site AI settings)</td>
+<td>Answers mix site content with anything else the user can see</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/sharepoint/copilot-in-sharepoint/get-started-with-agents-in-sharepoint">Ready-made site agent</a></td>
+<td>Chat about the whole site</td>
+<td>Entire site, automatically</td>
+<td>None to build; admin can remove via Restricted Content Discovery</td>
+<td>Grounds on drafts and archives unless they are excluded or moved</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/sharepoint/copilot-in-sharepoint/create-an-agent-in-sharepoint">Custom SharePoint agent</a> (<code>.agent</code> file)</td>
+<td>Scoped Q&amp;A with custom instructions</td>
+<td>Chosen sites, libraries, folders or files</td>
+<td>Any member with edit rights</td>
+<td>Members can create, edit or replace agents unless the folder is locked</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/onedrive/get-started-with-copilot-in-onedrive">Copilot in OneDrive</a></td>
+<td>Summarize, compare, FAQ, ask, audio overview</td>
+<td>Selected files (up to 5) the user can access</td>
+<td>Always on for licensed users</td>
+<td>Useful for drafts; not a source of truth</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/agent-builder-add-knowledge">Agent Builder declarative agent</a></td>
+<td>Instruction-driven agent in Copilot Chat</td>
+<td>Up to 100 SharePoint files, folders or sites; up to 50 OneDrive files</td>
+<td>The maker</td>
+<td>Knowledge list drifts from the library if not reviewed</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Admin and owner controls that matter</strong></p>
+<ul>
+<li><code>Set-SPOTenant -KnowledgeAgentScope</code> (<code>AllSites</code>, <code>IncludeSelectedSites</code>, <code>ExcludeSelectedSites</code>, <code>NoSites</code>) controls where Copilot in SharePoint appears; the site list caps at 100 URLs.</li>
+<li>Restricted Content Discovery removes Copilot in SharePoint, AI actions and the Agent icon from a site, and keeps its content out of Copilot and org-wide search, without changing access.</li>
+<li>Site AI settings let the owner pick the main agent and hide the Copilot button from visitors.</li>
+<li>Agents live as <code>.agent</code> files under <code>Site Assets &gt; Copilots</code> (approved ones under <code>Site Assets &gt; Copilots &gt; Approved</code>); they carry version history.</li>
+<li>Preview usage limits apply per user per day and week; Microsoft can change them and the underlying model without notice.</li>
+</ul>
+</section><section class="sec" aria-labelledby="principles"><h2 id="principles"><span class="h-n">4</span>Knowledge management principles</h2>
+<p>Seven rules govern every PIC document Copilot can reach. When a rule conflicts with convenience, the rule wins.</p>
+<ol>
+<li><strong>One source of truth per topic.</strong> Each process, rate, rule or reference has exactly one Published document in the Knowledge Base. Copies elsewhere are deleted or linked, never duplicated.</li>
+<li><strong>Draft in OneDrive, publish in SharePoint.</strong> Working drafts live in the author's OneDrive or a draft folder excluded from agents. Only Published documents live where agents ground.</li>
+<li><strong>Status is metadata, not a filename.</strong> <code>Status</code>, <code>Owner</code>, <code>Review Date</code> and <code>Content Type</code> are library columns. Words like <code>FINAL</code> or <code>v3</code> in filenames are prohibited.</li>
+<li><strong>Permissions are the only access control.</strong> Copilot surfaces whatever a user can open. Fix oversharing at the permission level before enabling any agent; never rely on an agent's scope to hide content.</li>
+<li><strong>Business rules as data.</strong> Rates, GL mappings, approval limits and order reasons live in SharePoint lists, not in prose or flow logic, so agents and flows read the same values.</li>
+<li><strong>Superseded content leaves the grounding path.</strong> When a document is replaced, it moves to <code>99_Archive</code> (excluded from agents) the same day.</li>
+<li><strong>Every answer is cited and verified.</strong> Copilot output is a draft. Users open the cited source before acting on any figure, GL code, limit or deadline.</li>
+</ol>
+<p><strong>Content lifecycle</strong></p>
+
+<figure class="lifecycle" aria-label="Content lifecycle">
+  <ol class="states">
+    <li class="state"><span class="state-name">Draft</span><span class="state-where">Author's OneDrive</span></li>
+    <li class="arrow" aria-hidden="true">&rarr;</li>
+    <li class="state"><span class="state-name">In review</span><span class="state-where"><code>07_Review Required</code></span></li>
+    <li class="arrow" aria-hidden="true">&rarr;</li>
+    <li class="state state-live"><span class="state-name">Published</span><span class="state-where">Folders <code>00</code> to <code>05</code></span></li>
+    <li class="arrow" aria-hidden="true">&rarr;</li>
+    <li class="state"><span class="state-name">Archived</span><span class="state-where"><code>99_Archive</code></span></li>
+  </ol>
+  <ul class="loops">
+    <li>In review returns to Draft when changes are requested.</li>
+    <li>Published returns to In review when its <code>Review Date</code> is reached.</li>
+    <li>Published moves to Archived when superseded or retired, the same day.</li>
+  </ul>
+  <figcaption>Only <strong>Published</strong> content sits inside agent grounding. Draft, In review and Archived stay outside it.</figcaption>
+</figure>
+
+
+</section><section class="sec" aria-labelledby="standards"><h2 id="standards"><span class="h-n">5</span>Content and library standards</h2>
+<p>Copilot retrieves passages, not folders, so each document must stand on its own: a clear title, a one-paragraph summary, defined terms and a named owner.</p>
+<p><strong>Knowledge Base library taxonomy</strong> (adopted from the JUAS Knowledge Base design)</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>Holds</th>
+<th>In agent grounding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>00_Overview</code></td>
+<td>Scope, glossary, who-to-ask</td>
+<td><span class="yes">Yes</span></td>
+</tr>
+<tr>
+<td><code>01_Core Processes</code></td>
+<td>End-to-end process descriptions</td>
+<td><span class="yes">Yes</span></td>
+</tr>
+<tr>
+<td><code>02_Reference Data</code></td>
+<td>Rates, codes, mappings (prefer lists)</td>
+<td><span class="yes">Yes</span></td>
+</tr>
+<tr>
+<td><code>03_Systems and Interfaces</code></td>
+<td>JUAS, SAP touchpoints, SharePoint lists</td>
+<td><span class="yes">Yes</span></td>
+</tr>
+<tr>
+<td><code>04_Work Instructions</code></td>
+<td>Step-by-step procedures</td>
+<td><span class="yes">Yes</span></td>
+</tr>
+<tr>
+<td><code>05_Policies and Governance</code></td>
+<td>Agreements (JOUA), approval limits, controls</td>
+<td><span class="yes">Yes</span></td>
+</tr>
+<tr>
+<td><code>06_Future State - Draft</code></td>
+<td>Proposed designs</td>
+<td><span class="no">No</span></td>
+</tr>
+<tr>
+<td><code>07_Review Required</code></td>
+<td>Content awaiting validation</td>
+<td><span class="no">No</span></td>
+</tr>
+<tr>
+<td><code>99_Archive</code></td>
+<td>Superseded or retired content</td>
+<td><span class="no">No</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>Excluded folders stay out of every agent's source list. Where Copilot in SharePoint's site-wide scope would still reach them, place <code>06</code>, <code>07</code> and <code>99</code> in a separate library or site that is excluded (Setup step 4).</p>
+<p><strong>Required library columns</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Status</code></td>
+<td>Choice: Draft, In Review, Published, Archived</td>
+<td>Only Published sits in grounded folders</td>
+</tr>
+<tr>
+<td><code>Owner</code></td>
+<td>Person</td>
+<td>One named person, not a group</td>
+</tr>
+<tr>
+<td><code>Review Date</code></td>
+<td>Date</td>
+<td>12 months after publish by default; 6 months for rates and limits</td>
+</tr>
+<tr>
+<td><code>Content Type</code></td>
+<td>Choice: Process, Work Instruction, Reference, Policy, Overview</td>
+<td>Drives agent filtering and review cadence</td>
+</tr>
+<tr>
+<td><code>Applies To</code></td>
+<td>Choice: Invoicing, Forecasting, Joint Use, JUAS, General</td>
+<td>Separates similar documents across areas</td>
+</tr>
+<tr>
+<td><code>Source System</code></td>
+<td>Choice: JUAS, SAP, SharePoint, None</td>
+<td>Flags documents that can drift from a system</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Authoring standards</strong></p>
+<ul>
+<li>File name: <code>&lt;Area&gt;_&lt;Topic&gt;_&lt;Doc type&gt;.docx</code>, for example <code>Invoicing_FAAP-Approval-Limits_Policy.docx</code>. No dates, versions or <code>FINAL</code>; version history handles that.</li>
+<li>First paragraph states what the document answers, who it applies to and its effective date.</li>
+<li>Headings as questions users actually ask ("How is a Z04 order reason applied?").</li>
+<li>Define PIC terms (JOUA, JUAS, FAAP, CIA, CDP, SEDO, Z04) in <code>00_Overview</code> and link rather than redefine.</li>
+<li>Tables for rates and mappings; no scanned images of tables (Copilot in OneDrive does not read images reliably, and scanned text often fails retrieval).</li>
+<li>Prefer <code>.docx</code>, <code>.pptx</code>, <code>.xlsx</code>, text-based <code>.pdf</code> and SharePoint pages. Convert legacy scanned PDFs or mark them <code>07_Review Required</code>.</li>
+<li>No SQL, direct database instructions or unreviewed AI synthesis in grounded folders.</li>
+</ul>
+</section><section class="sec" aria-labelledby="roles"><h2 id="roles"><span class="h-n">6</span>Roles and responsibilities</h2>
+<p>The knowledge owner is accountable for what Copilot can say; authors are accountable for what their documents say. Names are proposed and need Dan's confirmation.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Proposed holder</th>
+<th>Responsibilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Executive sponsor</td>
+<td>Dan (Senior Manager)</td>
+<td>Approves this guide, resolves scope disputes, signs IT Advisor requests</td>
+</tr>
+<tr>
+<td>Knowledge owner and site owner</td>
+<td>Steven</td>
+<td>Library structure, permissions, agent approval, quarterly audit, this runbook</td>
+</tr>
+<tr>
+<td>Content owners</td>
+<td>Coordinators (Eva Lau, Rosalind Bai, Lisa Striker) and analysts by area</td>
+<td>Author, review by <code>Review Date</code>, archive superseded content</td>
+</tr>
+<tr>
+<td>Content consumers</td>
+<td>PIC members, Interconnections Managers</td>
+<td>Use Copilot, verify citations, report wrong answers</td>
+</tr>
+<tr>
+<td>Tenant admin</td>
+<td>BC Hydro IT</td>
+<td><code>KnowledgeAgentScope</code>, Restricted Content Discovery, licensing</td>
+</tr>
+<tr>
+<td>IT Advisor</td>
+<td>BC Hydro IT</td>
+<td>Rules on anything beyond the SharePoint-native exception</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>RACI for key activities</strong> (R = responsible, A = accountable, C = consulted, I = informed)</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Activity</th>
+<th>Knowledge owner</th>
+<th>Content owner</th>
+<th>Sponsor</th>
+<th>IT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Publish a document</td>
+<td>A</td>
+<td>R</td>
+<td>I</td>
+<td></td>
+</tr>
+<tr>
+<td>Approve or retire an agent</td>
+<td>R/A</td>
+<td>C</td>
+<td>I</td>
+<td></td>
+</tr>
+<tr>
+<td>Change permissions</td>
+<td>R/A</td>
+<td>C</td>
+<td>I</td>
+<td>C</td>
+</tr>
+<tr>
+<td>Quarterly grounding audit</td>
+<td>R/A</td>
+<td>C</td>
+<td>I</td>
+<td></td>
+</tr>
+<tr>
+<td>Enable or exclude a site from Copilot</td>
+<td>C</td>
+<td></td>
+<td>A</td>
+<td>R</td>
+</tr>
+<tr>
+<td>Respond to a wrong-answer report</td>
+<td>A</td>
+<td>R</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+</section><section class="sec" aria-labelledby="setup"><h2 id="setup"><span class="h-n">7</span>Runbook: setup</h2>
+<p>Run these eight steps once, in order; each has a gate that must pass before the next step starts. Tick a gate when it passes; progress is saved in this browser.</p>
+<ol class="setup">
+<li class="step" id="step-1">
+  <div class="step-head"><span class="step-num">1</span><h3>Confirm tenant readiness</h3></div>
+  <ul class="step-actions"><li>Ask IT: is <code>KnowledgeAgentScope</code> set to include the PIC site, and do all PIC members hold a Microsoft 365 Copilot licence?</li><li>Ask IT whether <code>hydroshare.bchydro.bc.ca</code> is indexed by Microsoft Graph.</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-1"><span class="gate-text"><strong>Gate</strong> Written answers on file in <code>05_Policies and Governance</code>.</span></label>
+</li>
+<li class="step" id="step-2">
+  <div class="step-head"><span class="step-num">2</span><h3>Audit permissions before any content lands</h3></div>
+  <ul class="step-actions"><li>Site settings &gt; Site permissions: confirm only the PIC Owners, Members and Visitors groups; remove "Everyone except external users" and direct user grants.</li><li>Library settings: list every item with broken inheritance (the Sundry Billing mirror list is the known, intended exception).</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-2"><span class="gate-text"><strong>Gate</strong> A permission register listing each unique permission and its reason.</span></label>
+</li>
+<li class="step" id="step-3">
+  <div class="step-head"><span class="step-num">3</span><h3>Build the Knowledge Base library</h3></div>
+  <ul class="step-actions"><li>Create the folders in Content and library standards and add the six required columns.</li><li>Create views: <code>Published</code>, <code>Due for review</code> (<code>Review Date</code> within 30 days), <code>No owner</code>.</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-3"><span class="gate-text"><strong>Gate</strong> A test file cannot be saved without <code>Status</code>, <code>Owner</code> and <code>Review Date</code>.</span></label>
+</li>
+<li class="step" id="step-4">
+  <div class="step-head"><span class="step-num">4</span><h3>Separate non-authoritative content</h3></div>
+  <ul class="step-actions"><li>Move <code>06_Future State - Draft</code>, <code>07_Review Required</code> and <code>99_Archive</code> to a separate <code>KB-Staging</code> library with Members-only access.</li><li>If staging content must be invisible to Copilot entirely, request Restricted Content Discovery on a separate staging site from IT.</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-4"><span class="gate-text"><strong>Gate</strong> The site's ready-made agent cannot answer a question whose only answer sits in <code>KB-Staging</code> (test with a planted unique phrase).</span></label>
+</li>
+<li class="step" id="step-5">
+  <div class="step-head"><span class="step-num">5</span><h3>Migrate legacy content from the network drive</h3></div>
+  <ul class="step-actions"><li>Triage in batches of about 500 files: keep (Published), review (<code>07</code>), archive (<code>99</code>) or delete.</li><li>Deduplicate before upload: one file per topic; the rest go to archive or are deleted.</li><li>Load large record sets into lists with archive separation, never one list past 5,000 items in a view.</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-5"><span class="gate-text"><strong>Gate</strong> Each batch has a triage log with counts per disposition.</span></label>
+</li>
+<li class="step" id="step-6">
+  <div class="step-head"><span class="step-num">6</span><h3>Configure Site AI settings</h3></div>
+  <ul class="step-actions"><li>Set the main agent (ready-made agent until the custom KB agent is approved).</li><li>Hide the Copilot button from Visitors if Visitors include people outside PIC.</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-6"><span class="gate-text"><strong>Gate</strong> Screenshot of settings saved to <code>05_Policies and Governance</code>.</span></label>
+</li>
+<li class="step" id="step-7">
+  <div class="step-head"><span class="step-num">7</span><h3>Build and lock the Knowledge Base agent</h3></div>
+  <ul class="step-actions"><li>From the KB library, select <code>Create an agent</code>; sources = Published folders <code>00</code> to <code>05</code> only.</li><li>Instructions: answer only from sources, cite every claim, say "not found in the PIC Knowledge Base" otherwise, never give SQL or database steps.</li><li>Approve it, then break inheritance on <code>Site Assets &gt; Copilots &gt; Approved</code> and give Members read-only access so approved agents cannot be edited or replaced.</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-7"><span class="gate-text"><strong>Gate</strong> It passes the 20-question test set (step 8).</span></label>
+</li>
+<li class="step" id="step-8">
+  <div class="step-head"><span class="step-num">8</span><h3>Run the acceptance test</h3></div>
+  <ul class="step-actions"><li>Write 20 questions with known answers across areas, including 5 whose answer is only in staging or archive (expected: not found) and 3 that a Visitor should not see.</li><li>Pass mark: 18 of 20 correct with correct citations, and zero leaks from staging, archive or restricted content.</li></ul>
+  <label class="gate"><input type="checkbox" data-key="gate-8"><span class="gate-text"><strong>Gate</strong> Results table saved; failures fixed at the content or permission level, not by rewording the agent.</span></label>
+</li>
+</ol>
+
+</section><section class="sec" aria-labelledby="operations"><h2 id="operations"><span class="h-n">8</span>Runbook: recurring operations</h2>
+<p>An estimated two hours a month keeps grounding clean; skipping the quarterly audit is the most common way knowledge bases decay.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Cadence</th>
+<th>Task</th>
+<th>Owner</th>
+<th>Method</th>
+<th>Done when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>On publish</td>
+<td>Set <code>Status</code> = Published, <code>Owner</code>, <code>Review Date</code>; move superseded file to <code>99_Archive</code></td>
+<td>Content owner</td>
+<td>Library columns; move same day</td>
+<td>No two Published files cover the same topic</td>
+</tr>
+<tr>
+<td>On wrong-answer report</td>
+<td>Log it, find cause (content, permission, agent scope), fix at source</td>
+<td>Knowledge owner</td>
+<td>Wrong-answer log list</td>
+<td>Same question re-asked returns the correct cited answer</td>
+</tr>
+<tr>
+<td>Weekly</td>
+<td>Review <code>No owner</code> and <code>Due for review</code> views</td>
+<td>Knowledge owner</td>
+<td>Library views</td>
+<td>Both views empty or assigned</td>
+</tr>
+<tr>
+<td>Monthly</td>
+<td>Review items past <code>Review Date</code>; revalidate or archive</td>
+<td>Content owners</td>
+<td>SharePoint-triggered reminder flow or list rule</td>
+<td>Zero Published items past due</td>
+</tr>
+<tr>
+<td>Monthly</td>
+<td>Check <code>Site Assets &gt; Copilots</code> for new or edited <code>.agent</code> files</td>
+<td>Knowledge owner</td>
+<td>File list sorted by Modified</td>
+<td>Every agent approved, retired or explained</td>
+</tr>
+<tr>
+<td>Quarterly</td>
+<td>Grounding audit: rerun the 20-question test set</td>
+<td>Knowledge owner</td>
+<td>Test set in <code>05_Policies and Governance</code></td>
+<td>18 of 20 pass, zero leaks</td>
+</tr>
+<tr>
+<td>Quarterly</td>
+<td>Permission review against the permission register</td>
+<td>Knowledge owner</td>
+<td>Site permissions, advanced settings</td>
+<td>Register matches reality</td>
+</tr>
+<tr>
+<td>Quarterly</td>
+<td>Check Microsoft changes (feature names, limits, admin controls)</td>
+<td>Knowledge owner</td>
+<td>Microsoft Learn pages in Sources</td>
+<td>This guide updated if anything changed</td>
+</tr>
+<tr>
+<td>Annually</td>
+<td>Review this guide with the sponsor</td>
+<td>Knowledge owner, sponsor</td>
+<td>Meeting</td>
+<td>Guide re-approved</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Review reminder flow (SharePoint-native, compliant)</strong></p>
+<p>Create from the KB library via <code>Integrate &gt; Power Automate</code>. Trigger: scheduled recurrence limited to SharePoint actions. Action: get items where <code>Status</code> = Published and <code>Review Date</code> is on or before today plus 14 days; notify each <code>Owner</code>. Notification channel depends on the IT Advisor answer about the Outlook connector; until then, use a list rule or SharePoint alert on the <code>Due for review</code> view.</p>
+<p><span class="flag">unverified</span> Whether a scheduled-recurrence trigger qualifies as "SharePoint-triggered" under BC Hydro's exception. Confirm with the IT Advisor; the list-rule fallback is compliant either way.</p>
+</section><section class="sec" aria-labelledby="troubleshooting"><h2 id="troubleshooting"><span class="h-n">9</span>Runbook: troubleshooting</h2>
+<p>Most wrong answers trace to content or permissions, not to Copilot; fix the source, then retest the same question.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Check</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copilot button or Agent icon missing on the site</td>
+<td>Site outside <code>KnowledgeAgentScope</code>, Restricted Content Discovery on, or no licence</td>
+<td>Ask IT for tenant scope and site flags; confirm licence</td>
+<td>IT adds site to scope or removes the flag</td>
+</tr>
+<tr>
+<td>Answer cites an outdated document</td>
+<td>Superseded file still in a grounded folder</td>
+<td>Search library for the topic; count Published files</td>
+<td>Archive the old file; set one source of truth</td>
+</tr>
+<tr>
+<td>Answer cites a draft</td>
+<td>Draft stored in a grounded folder or reachable by site-wide Copilot</td>
+<td>Check <code>Status</code> and folder</td>
+<td>Move to <code>KB-Staging</code>; recheck Setup step 4</td>
+</tr>
+<tr>
+<td>Two users get different answers</td>
+<td>Security trimming: different permissions</td>
+<td>Compare each user's access to the cited files</td>
+<td>Expected behaviour; fix permissions if one user should see more</td>
+</tr>
+<tr>
+<td>User sees content they should not</td>
+<td>Oversharing (broken inheritance, org-wide link, direct grant)</td>
+<td>Manage access on the cited file</td>
+<td>Remove the grant; add to permission register; retest leak questions</td>
+</tr>
+<tr>
+<td>Agent answers "not found" for a known topic</td>
+<td>Topic not in agent sources, scanned PDF, or file indexed recently</td>
+<td>Confirm folder is a source; open file and check text is selectable</td>
+<td>Add source, convert scan, wait and retest (<span class="flag">unverified</span> indexing delay length)</td>
+</tr>
+<tr>
+<td>Approved agent behaves differently than tested</td>
+<td><code>.agent</code> file edited or replaced by a member</td>
+<td>Version history on the <code>.agent</code> file</td>
+<td>Restore prior version; lock <code>Approved</code> folder permissions</td>
+</tr>
+<tr>
+<td>Copilot features unavailable mid-day</td>
+<td>Preview per-user usage limit reached</td>
+<td>SharePoint shows a limit notice</td>
+<td>Wait for reset; report heavy-use patterns to IT</td>
+</tr>
+<tr>
+<td>Agent Builder agent misses new documents</td>
+<td>Knowledge list points at specific files, not the folder</td>
+<td>Review the agent's Knowledge section</td>
+<td>Point at the folder or library, not individual files</td>
+</tr>
+<tr>
+<td>Content from <code>hydroshare.bchydro.bc.ca</code> never appears</td>
+<td>On-prem host not indexed by Graph</td>
+<td>IT confirmation (Setup step 1)</td>
+<td>Migrate needed content to SharePoint Online or exclude from scope</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Wrong-answer log fields:</strong> date, reporter, question asked, answer given, cited file, correct answer, cause category (content, permission, scope, product), fix applied, retest result.</p>
+</section><section class="sec" aria-labelledby="prompts"><h2 id="prompts"><span class="h-n">10</span>Approved prompt patterns</h2>
+<p>Good prompts name the source, the task and the output format, and ask for citations. Paste these as written and replace the angle-bracket parts. Select a prompt to copy it.</p>
+<div class="table-wrap"><table class="prompts"><thead><tr><th>Use</th><th>Where</th><th>Prompt</th></tr></thead><tbody><tr><th scope="row">Find the rule</th><td>KB agent</td>
+<td><button type="button" class="prompt" data-prompt="From the PIC Knowledge Base only, what is the approval limit for &lt;approver or role&gt;? Cite the document and its Review Date."><span class="prompt-text">From the PIC Knowledge Base only, what is the approval limit for &lt;approver or role&gt;? Cite the document and its Review Date.</span><span class="prompt-copy" aria-live="polite">Copy</span></button></td></tr><tr><th scope="row">Explain a process</th><td>KB agent</td>
+<td><button type="button" class="prompt" data-prompt="Walk me through &lt;process&gt; step by step, citing the work instruction for each step. Say which steps are manual in SAP."><span class="prompt-text">Walk me through &lt;process&gt; step by step, citing the work instruction for each step. Say which steps are manual in SAP.</span><span class="prompt-copy" aria-live="polite">Copy</span></button></td></tr><tr><th scope="row">Check freshness</th><td>KB agent</td>
+<td><button type="button" class="prompt" data-prompt="List the documents you used and their Review Date. Flag any past due."><span class="prompt-text">List the documents you used and their Review Date. Flag any past due.</span><span class="prompt-copy" aria-live="polite">Copy</span></button></td></tr><tr><th scope="row">Compare versions</th><td>OneDrive or library, select 2 to 5 files</td>
+<td><button type="button" class="prompt" data-prompt="Compare these files. Table the differences in rates, GL accounts, dates and approvers only."><span class="prompt-text">Compare these files. Table the differences in rates, GL accounts, dates and approvers only.</span><span class="prompt-copy" aria-live="polite">Copy</span></button></td></tr><tr><th scope="row">Summarize before publishing</th><td>OneDrive, one draft</td>
+<td><button type="button" class="prompt" data-prompt="Summarize this draft in 5 bullets, then list any undefined acronyms and any figures without a stated source."><span class="prompt-text">Summarize this draft in 5 bullets, then list any undefined acronyms and any figures without a stated source.</span><span class="prompt-copy" aria-live="polite">Copy</span></button></td></tr><tr><th scope="row">Find duplicates during migration</th><td>Copilot in SharePoint on the library</td>
+<td><button type="button" class="prompt" data-prompt="Which documents in this library cover &lt;topic&gt;? List title, modified date and owner, newest first."><span class="prompt-text">Which documents in this library cover &lt;topic&gt;? List title, modified date and owner, newest first.</span><span class="prompt-copy" aria-live="polite">Copy</span></button></td></tr><tr><th scope="row">Draft a work instruction</th><td>OneDrive, from notes</td>
+<td><button type="button" class="prompt" data-prompt="Turn these notes into a work instruction with Purpose, Applies to, Steps, and Exceptions. Mark anything uncertain as TBC."><span class="prompt-text">Turn these notes into a work instruction with Purpose, Applies to, Steps, and Exceptions. Mark anything uncertain as TBC.</span><span class="prompt-copy" aria-live="polite">Copy</span></button></td></tr></tbody></table></div>
+
+<p><strong>Rules for users</strong></p>
+<ul>
+<li>Open the cited file before acting on any figure, GL code, limit or date.</li>
+<li>If the answer has no citation, treat it as unverified.</li>
+<li>Do not paste customer, partner or personal data into prompts beyond what the task needs.</li>
+<li>Report wrong answers through the wrong-answer log, not by editing the agent.</li>
+</ul>
+</section><section class="sec" aria-labelledby="risks"><h2 id="risks"><span class="h-n">11</span>Open questions and risks</h2>
+<p>Three answers from IT gate rollout: tenant scope for the PIC site, Graph indexing of <code>hydroshare.bchydro.bc.ca</code>, and the Outlook connector ruling.</p>
+<p><strong>Open questions</strong></p>
+<ul class="questions">
+<li><label><input type="checkbox" data-key="q-1"><span>Is the PIC site inside <code>KnowledgeAgentScope</code>, and is any PIC site flagged for Restricted Content Discovery? <span class="who">IT</span></span></label></li>
+<li><label><input type="checkbox" data-key="q-2"><span>Do all PIC members and Interconnections Managers hold Microsoft 365 Copilot licences? <span class="who">IT</span></span></label></li>
+<li><label><input type="checkbox" data-key="q-3"><span>Is <code>hydroshare.bchydro.bc.ca</code> indexed by Microsoft Graph? <span class="who">IT</span></span></label></li>
+<li><label><input type="checkbox" data-key="q-4"><span>Is the Outlook notification connector permitted in a SharePoint-created flow? <span class="who">IT Advisor</span></span></label></li>
+<li><label><input type="checkbox" data-key="q-5"><span>Does a scheduled-recurrence flow created from a library fall inside the SharePoint-native exception? <span class="who">IT Advisor</span></span></label></li>
+<li><label><input type="checkbox" data-key="q-6"><span>Are the proposed role holders confirmed? <span class="who">Dan</span></span></label></li>
+<li><label><input type="checkbox" data-key="q-7"><span>Should Interconnections Managers be Visitors on the Knowledge Base, or see only published agent answers? <span class="who">Dan</span></span></label></li>
+</ul>
+
+<p><strong>Risks</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oversharing surfaces restricted financial content</td>
+<td>Medium</td>
+<td>High</td>
+<td>Permission audit before enablement; leak questions in every audit</td>
+</tr>
+<tr>
+<td>Stale rates or limits cited as current</td>
+<td>High without reviews</td>
+<td>High</td>
+<td><code>Review Date</code> column, monthly reminder, one source of truth</td>
+</tr>
+<tr>
+<td>Members edit or replace approved agents</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Lock <code>Approved</code> folder; monthly <code>.agent</code> file check</td>
+</tr>
+<tr>
+<td>Preview features, names or limits change</td>
+<td>High</td>
+<td>Low to medium</td>
+<td>Quarterly Microsoft change check; guide avoids UI-path detail where possible</td>
+</tr>
+<tr>
+<td>Migration imports duplicates and drafts</td>
+<td>High</td>
+<td>Medium</td>
+<td>Batch triage log; dedupe before upload</td>
+</tr>
+<tr>
+<td>Users trust uncited answers</td>
+<td>Medium</td>
+<td>High</td>
+<td>Citation rule in agent instructions and user rules</td>
+</tr>
+</tbody>
+</table></div>
+</section><section class="sec" aria-labelledby="sources"><h2 id="sources"><span class="h-n">12</span>Sources</h2>
+<ul>
+<li>BC Hydro Power Platform governance summary: project file <code>2026-08-17-00-copilot-bch-restrictions.md</code></li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sharepoint/copilot-in-sharepoint-get-started">Get started with Copilot in SharePoint (preview)</a>, Microsoft Learn, updated 2026-08-18</li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/sharepoint/manage-access-agents-in-sharepoint">Manage access to agents in SharePoint</a>, Microsoft Learn</li>
+<li><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/sharepoint/copilot-in-sharepoint/manage-agents-in-sharepoint">Manage agents in SharePoint</a>, Microsoft Support</li>
+<li><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/sharepoint/copilot-in-sharepoint/create-an-agent-in-sharepoint">Create an agent in SharePoint</a>, Microsoft Support</li>
+<li><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/sharepoint/copilot-in-sharepoint/get-started-with-agents-in-sharepoint">Get started with agents in SharePoint</a>, Microsoft Support</li>
+<li><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/onedrive/get-started-with-copilot-in-onedrive">Get started with Copilot in OneDrive</a>, Microsoft Support</li>
+<li><a target="_blank" rel="noopener" href="https://support.microsoft.com/en-us/office/compare-your-files-with-copilot-in-onedrive-794ab09c-c64a-45f3-bcbe-110a182a1806">Compare your files with Copilot in OneDrive</a>, Microsoft Support</li>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/agent-builder-add-knowledge">Add knowledge sources to your declarative agent</a>, Microsoft Learn</li>
+<li>Write effective instructions for declarative agents: project file <code>Instructions_for_declarative_agents.docx</code></li>
+</ul></section>
+<footer class="foot">Microsoft features described here are in preview and change often. Recheck the Sources quarterly.</footer>
+</main>
+</div>
+<script>(function(){
+  var KEY = "pic-copilot-km-runbook-v1";
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) { state = {}; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
+
+  var boxes = document.querySelectorAll("input[data-key]");
+  function refresh(){
+    var done = 0;
+    document.querySelectorAll(".step").forEach(function(step){
+      var cb = step.querySelector("input[data-key]");
+      var on = cb && cb.checked;
+      step.classList.toggle("done", !!on);
+      if (on) done++;
+    });
+    var c = document.getElementById("gate-count");
+    if (c) c.textContent = done;
+    var f = document.querySelector(".meter-fill");
+    if (f) f.style.width = (done / 8 * 100) + "%";
+  }
+  boxes.forEach(function(cb){
+    cb.checked = !!state[cb.dataset.key];
+    cb.addEventListener("change", function(){ state[cb.dataset.key] = cb.checked; save(); refresh(); });
+  });
+  var reset = document.getElementById("reset");
+  if (reset) reset.addEventListener("click", function(){
+    state = {}; save(); boxes.forEach(function(cb){ cb.checked = false; }); refresh();
+  });
+  refresh();
+
+  document.querySelectorAll(".prompt").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var label = btn.querySelector(".prompt-copy");
+      var text = btn.dataset.prompt;
+      function ok(){ label.textContent = "Copied"; setTimeout(function(){ label.textContent = "Copy"; }, 1600); }
+      function fallback(){
+        var t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+        try { document.execCommand("copy"); ok(); } catch(e) { label.textContent = "Select and copy"; }
+        document.body.removeChild(t);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback);
+      else fallback();
+    });
+  });
+
+  var links = document.querySelectorAll(".toc a");
+  if ("IntersectionObserver" in window) {
+    var map = {}; links.forEach(function(a){ map[a.getAttribute("href").slice(1)] = a; });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { links.forEach(function(a){ a.classList.remove("active"); }); var a = map[e.target.id]; if (a) a.classList.add("active"); }
+      });
+    }, { rootMargin: "0px 0px -70% 0px" });
+    document.querySelectorAll("h2[id]").forEach(function(h){ io.observe(h); });
+  }
+})();
+</script>
+</body>
+</html>

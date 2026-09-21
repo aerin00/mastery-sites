@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!-- index:
+description: CurrentBody LED red-light protocol: 3-phase session workflow, weekly frequency matrix, results timeline, and do/don't table.
+tags: protocol, health
+ingested: 2026-09-21T11:05:00-07:00
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol: CurrentBody LED Optimization</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #0f172a; /* Slate-900 */
+        }
+
+        /* Technical Grid Lines for "Blueprint" feel */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px),
+                              linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            height: 300px;
+        }
+
+        /* Custom Checkbox */
+        .cb-checkbox:checked + div {
+            background-color: #000;
+            border-color: #000;
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="bg-grid min-h-screen"><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+    <!-- Application Structure Plan:
+         1. Header: Device specs context (633nm/830nm).
+         2. Protocol Steps: 3-Phase technical workflow (Prep, Session, Post).
+         3. Frequency Matrix: Interactive selector to plan 3-5 sessions/week.
+         4. Results Timeline: Line chart showing collagen synthesis latency vs. visible results.
+         5. Do/Don't Table: Comparative table for contraindications and enhancers.
+    -->
+
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- Header -->
+        <header class="border-b-4 border-black pb-6 mb-10">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold uppercase tracking-tighter">Usage Protocol</h1>
+                    <p class="text-lg font-mono text-slate-500 mt-2">DEVICE: CURRENTBODY SKIN LED MASK</p>
+                </div>
+                <div class="hidden md:block text-right">
+                    <div class="text-sm font-bold bg-black text-white px-3 py-1 inline-block">WAVELENGTHS</div>
+                    <div class="font-mono text-sm mt-1">633nm (Red) + 830nm (NIR)</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- The Golden Rules (Key Metrics) -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-slate-50 border border-slate-200 p-6">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Duration</div>
+                <div class="text-4xl font-black">10 MIN</div>
+                <div class="text-sm text-slate-600 mt-2">Auto-shutoff. Do not exceed 20 min/day (diminishing returns).</div>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 p-6">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Frequency</div>
+                <div class="text-4xl font-black">3-5x</div>
+                <div class="text-sm text-slate-600 mt-2">Sessions per week. Cells require rest periods for ATP synthesis.</div>
+            </div>
+            <div class="bg-slate-50 border border-slate-200 p-6">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Proximity</div>
+                <div class="text-4xl font-black">0 mm</div>
+                <div class="text-sm text-slate-600 mt-2">Direct skin contact ensures maximum irradiance (~30mW/cm²).</div>
+            </div>
+        </section>
+
+        <!-- Core Protocol: Step-by-Step -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold uppercase border-l-4 border-red-500 pl-4 mb-8">Operational Workflow</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Step 1: Prep -->
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-slate-200 to-slate-100 rounded-lg blur opacity-25"></div>
+                    <div class="relative bg-white border border-slate-200 p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg">01. Preparation</h3>
+                            <span class="bg-slate-100 text-slate-600 font-mono text-xs px-2 py-1">CRITICAL</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Cleanse:</strong> Remove all sunscreen (SPF) and makeup. Mineral pigments block light transmission.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Exfoliate (Optional):</strong> Mild enzyme exfoliation improves light penetration.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Dry Skin:</strong> Use on dry skin. Water droplets can reflect photons.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 2: Activation -->
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-red-100 to-red-50 rounded-lg blur opacity-50"></div>
+                    <div class="relative bg-white border-2 border-red-500 p-6 h-full shadow-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg text-red-600">02. Activation</h3>
+                            <span class="bg-red-100 text-red-700 font-mono text-xs px-2 py-1">ACTIVE PHASE</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Fit:</strong> Secure strap high on the head. Mask should sit flush against the face.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Hydrogel (Optional):</strong> Apply CurrentBody Hydrogel mask <em>underneath</em> to increase hydration/conductivity.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Eyes:</strong> Use provided goggles if sensitive to brightness. Keep eyes closed.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 3: Post-Care -->
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-slate-200 to-slate-100 rounded-lg blur opacity-25"></div>
+                    <div class="relative bg-white border border-slate-200 p-6 h-full">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg">03. Post-Care</h3>
+                            <span class="bg-slate-100 text-slate-600 font-mono text-xs px-2 py-1">ABSORPTION</span>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Immediate:</strong> Apply Hyaluronic Acid or Peptides while skin is perfused (increased blood flow).</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Actives:</strong> Retinol/Tretinoin or Vitamin C can now be applied safely.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2 mt-1 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span><strong>Moisturize:</strong> Seal with a heavy moisturizer to prevent transepidermal water loss.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Timeline Chart -->
+        <!-- Visualization & Content Choices:
+             Goal: Manage expectations regarding the "lag time" of collagen production.
+             Viz: Line Chart showing Collagen Synthesis vs. Visible Results over 12 weeks.
+             Justification: Users often quit at week 3 because they don't see results. Data shows week 4-6 is the inflection point.
+        -->
+        <section class="mb-16 bg-white border border-slate-200 p-8 rounded-lg shadow-sm">
+            <h2 class="text-xl font-bold mb-2">The Biological Timeline</h2>
+            <p class="text-sm text-slate-500 mb-6">Visible results lag behind cellular synthesis. Consistency is required to cross the "Frustration Gap" at Week 4.</p>
+            
+            <div class="chart-container">
+                <canvas id="resultsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Consistency Planner -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            <div>
+                <h2 class="text-xl font-bold mb-4 uppercase border-l-4 border-black pl-4">Weekly Scheduler</h2>
+                <p class="text-sm text-slate-600 mb-6">Select your treatment days. Aim for <span class="font-bold text-black">3 to 5</span> days.</p>
+                
+                <div class="flex flex-wrap gap-2 mb-4" id="scheduler">
+                    <!-- JS generated checkboxes -->
+                </div>
+                
+                <div id="schedule-feedback" class="p-4 bg-slate-100 text-sm font-mono border-l-4 border-slate-300">
+                    Select days to check protocol adherence.
+                </div>
+            </div>
+
+            <!-- Contraindications Table -->
+            <div>
+                <h2 class="text-xl font-bold mb-4 uppercase border-l-4 border-black pl-4">Protocol Matrix</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-black">
+                                <th class="py-2 pr-4 font-black">CATEGORY</th>
+                                <th class="py-2 px-2 font-black text-green-700">OPTIMAL</th>
+                                <th class="py-2 pl-4 font-black text-red-600">AVOID</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr>
+                                <td class="py-3 font-medium">Pre-Treatment</td>
+                                <td class="py-3 text-slate-600">Double Cleanse, Enzyme Peel</td>
+                                <td class="py-3 text-slate-600">SPF, Retinol, Acids (AHA/BHA)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium">During</td>
+                                <td class="py-3 text-slate-600">Hydrogel Mask, Neck Attachment</td>
+                                <td class="py-3 text-slate-600">Serums with Vitamin C (Oxidation risk)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 font-medium">Timing</td>
+                                <td class="py-3 text-slate-600">Morning (Circadian rhythm)</td>
+                                <td class="py-3 text-slate-600">Post-heat exposure (Sauna)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- 1. RESULTS TIMELINE CHART ---
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Week 0', 'Week 2', 'Week 4', 'Week 6', 'Week 8', 'Week 10', 'Week 12'],
+                datasets: [
+                    {
+                        label: 'Cellular ATP Activity',
+                        data: [10, 85, 90, 92, 95, 95, 95], // Spikes early
+                        borderColor: '#ef4444', // Red-500
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        borderDash: [5, 5]
+                    },
+                    {
+                        label: 'Visible Wrinkle Reduction',
+                        data: [0, 5, 20, 45, 70, 85, 95], // Lags, then climbs
+                        borderColor: '#0f172a', // Slate-900
+                        backgroundColor: 'rgba(15, 23, 42, 0.05)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}% Potential`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: { display: true, text: 'Improvement Index (%)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // --- 2. INTERACTIVE SCHEDULER ---
+        const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+        const container = document.getElementById('scheduler');
+        const feedback = document.getElementById('schedule-feedback');
+
+        // Generate checkboxes
+        days.forEach(day => {
+            const wrapper = document.createElement('label');
+            wrapper.className = 'cursor-pointer relative';
+            wrapper.innerHTML = `
+                <input type="checkbox" class="cb-checkbox hidden" value="${day}">
+                <div class="w-12 h-12 flex items-center justify-center border border-slate-300 rounded text-xs font-bold text-slate-400 hover:border-black transition-all select-none">
+                    ${day}
+                </div>
+            `;
+            container.appendChild(wrapper);
+            
+            // Add click listener
+            wrapper.querySelector('input').addEventListener('change', updateSchedule);
+        });
+
+        function updateSchedule() {
+            const checked = document.querySelectorAll('.cb-checkbox:checked');
+            const count = checked.length;
+            
+            let statusClass = 'border-slate-300 bg-slate-100 text-slate-600';
+            let message = '';
+
+            if (count === 0) {
+                message = "Select days to begin planning.";
+            } else if (count < 3) {
+                message = `FREQUENCY TOO LOW (${count}/7). Minimum 3 sessions required for efficacy.`;
+                statusClass = 'border-yellow-400 bg-yellow-50 text-yellow-800';
+            } else if (count >= 3 && count <= 5) {
+                message = `OPTIMAL FREQUENCY (${count}/7). Allows sufficient cellular rest periods.`;
+                statusClass = 'border-green-500 bg-green-50 text-green-900';
+            } else {
+                message = `FREQUENCY TOO HIGH (${count}/7). Diminishing returns. Risk of overstimulation.`;
+                statusClass = 'border-red-400 bg-red-50 text-red-900';
+            }
+
+            feedback.className = `p-4 text-sm font-mono border-l-4 transition-colors ${statusClass}`;
+            feedback.innerText = message;
+        }
+    </script>
+</body>
+</html>
