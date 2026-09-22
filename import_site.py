@@ -46,7 +46,8 @@ SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 def fingerprint(text: str) -> str:
     body = BAR_RE.sub("", FM_RE.sub("", text))
-    body = re.sub(r"\s+", " ", body).strip()
+    body = re.sub(r"\s+", " ", body)
+    body = re.sub(r">\s+<", "><", body).strip()
     return hashlib.sha256(body.encode("utf-8")).hexdigest()
 
 
