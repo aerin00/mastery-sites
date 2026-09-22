@@ -51,3 +51,51 @@ class IngestionMetadataTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class LintTests(unittest.TestCase):
+    def _site(self, root, cat, slug, text):
+        p = root / cat / slug / 'index.html'
+        p.parent.mkdir(parents=True)
+        p.write_text(text, encoding='utf-8')
+
+    def test_complete_site_passes(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self._site(root, 'shared', 'ok',
+                       '<!-- index:\ndescription: fine\ningested: 2026-09-21\n-->'
+                       '<title>T</title><body><nav id="ms-homebar"></nav></body>')
+            self.assertEqual(g.lint(root, g.collect(root)), [])
+
+    def test_reports_each_missing_field(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self._site(root, 'mystery', 'bare', '<title>T</title><body></body>')
+            problems = '\n'.join(g.lint(root, g.collect(root)))
+            for needle in ['no description', 'no ingested', 'All-sites bar', 'CATEGORY_DOTS']:
+                self.assertIn(needle, problems)
+
+
+class ImportSiteTests(unittest.TestCase):
+    def setUp(self):
+        import import_site
+        self.m = import_site
+        self.src = ('<!DOCTYPE html>\n<html><head><title>Page</title></head>'
+                    '<body class="x"><p>hello</p></body></html>')
+
+    def test_build_page_inserts_front_matter_and_bar(self):
+        out = self.m.build_page(self.src, 'desc', 'a, b', True, '2026-09-21T10:00:00-07:00')
+        self.assertTrue(out.startswith('<!DOCTYPE html>\n<!-- index:\ndescription: desc\ntags: a, b\npinned: true\ningested: 2026-09-21T10:00:00-07:00\n-->\n<html>'))
+        self.assertIn('<body class="x"><nav id="ms-homebar"', out)
+        self.assertEqual(g.parse_front_matter(out)['tags'], ['a', 'b'])
+
+    def test_fingerprint_ignores_injected_metadata(self):
+        out = self.m.build_page(self.src, 'desc', '', False, '2026-09-21')
+        self.assertEqual(self.m.fingerprint(out), self.m.fingerprint(self.src))
+        self.assertNotEqual(self.m.fingerprint(out), self.m.fingerprint(self.src + '<!-- x -->'))
+
+    def test_rejects_source_without_title_or_body(self):
+        with self.assertRaises(SystemExit):
+            self.m.build_page('<html><body></body></html>', 'd', '', False, '2026-09-21')
+        with self.assertRaises(SystemExit):
+            self.m.build_page('<title>t</title><div></div>', 'd', '', False, '2026-09-21')

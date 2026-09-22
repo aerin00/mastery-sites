@@ -67,6 +67,11 @@ CATEGORY_DOTS = {
     "claude": "#d98a5b",
     "codex": "#a78bfa",
     "sharepoint": "#dfae5c",
+    "astrology": "#c084fc",
+    "trading": "#4ade80",
+    "oracle": "#f472b6",
+    "grok": "#94a3b8",
+    "watchlist": "#fb923c",
     "health": "#f87171",
 }
 DOT_FALLBACK = "#6c737f"
@@ -84,6 +89,11 @@ CATEGORY_BLURBS = {
     "claude": "Claude Code references and control workflows.",
     "codex": "OpenAI Codex mastery guides and vault circuits.",
     "sharepoint": "SharePoint / Microsoft 365 builds: hubs, flows, briefings.",
+    "astrology": "Natal and financial astrology: runbooks, drills, frameworks.",
+    "trading": "Trading indicators and TradingView field guides.",
+    "oracle": "Oracle practice and field school.",
+    "grok": "Grok bot structure and coordination guides.",
+    "watchlist": "Live watchlists refreshed by scheduled jobs.",
     "health": "Personal health protocols and device routines.",
 }
 
@@ -172,6 +182,30 @@ def ingestion_date(value: str) -> tuple[str, str]:
     if timestamp.tzinfo is None:
         timestamp = timestamp.replace(tzinfo=timezone.utc)
     return timestamp.date().isoformat(), timestamp.astimezone(timezone.utc).isoformat()
+
+
+HOMEBAR_ID = "ms-homebar"
+
+
+def lint(root: Path, entries: list) -> list[str]:
+    """Return human-readable warnings for sites missing required metadata.
+
+    Checks: front-matter description, ingested date, the All-sites bar, and
+    a known category (one with a dot colour). Never raises; main() decides
+    whether warnings are fatal (--strict)."""
+    problems = []
+    for e in entries:
+        text = (root / e["href"]).read_text(encoding="utf-8", errors="ignore")
+        where = e["path"]
+        if not e["description"]:
+            problems.append(f"{where}: no description in <!-- index: --> block")
+        if not e["ingested_date"]:
+            problems.append(f"{where}: no ingested date")
+        if HOMEBAR_ID not in text:
+            problems.append(f"{where}: missing All-sites bar (#{HOMEBAR_ID})")
+        if e["category"] != "Sites" and e["category"] not in CATEGORY_DOTS:
+            problems.append(f"{where}: category '{e['category']}' has no CATEGORY_DOTS entry")
+    return problems
 
 
 def collect(root: Path) -> list:
@@ -697,6 +731,9 @@ def main():
     ap.add_argument("--titles", action="store_true",
                     help="Deprecated no-op: page <title>s are always read.")
     ap.add_argument("--dry-run", action="store_true", help="Print HTML instead of writing.")
+    ap.add_argument("--strict", action="store_true",
+                    help="Exit non-zero if any site fails the metadata lint.")
+    ap.add_argument("--no-lint", action="store_true", help="Skip the metadata lint warnings.")
     args = ap.parse_args()
 
     root = Path(args.root).resolve()
@@ -704,6 +741,12 @@ def main():
         sys.exit(f"Not a directory: {root}")
 
     entries = collect(root)
+    if not args.no_lint:
+        problems = lint(root, entries)
+        for p in problems:
+            print(f"lint: {p}", file=sys.stderr)
+        if problems and args.strict:
+            sys.exit(f"{len(problems)} lint problem(s); fix them or drop --strict.")
     html = build_html(entries)
 
     if args.dry_run:

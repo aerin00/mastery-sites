@@ -68,6 +68,15 @@ When in doubt, start a new category folder. A sparse category is better than a w
 
 6. Verify the pages and index locally, then commit and push to `origin/main` with approval. Cloudflare Workers Builds deploys automatically.
 
+For inbox imports, `import_site.py` does steps 1 through 5 in one shot:
+
+```bash
+python import_site.py "/path/to/inbox/page.html" category/slug \
+  --description "One line for the index row." --tags "runbook, copilot"
+```
+
+It refuses an existing target, refuses content that matches an already deployed site (so a re-dropped file does not become a second copy), inserts the front-matter and All-sites bar without touching anything else, and regenerates the index. Re-run with `--archive` after the live path is verified, or move the file by hand.
+
 For inbox imports, preserve source HTML and add metadata only to the deployed copy. After the live deployment is verified, move only successfully imported sources into the sibling `00_Mastery_Sites_Inbox/archive/` folder. Leave unprocessed files in the inbox and never overwrite an existing archive file.
 
 ## Site front-matter (optional)
@@ -98,6 +107,8 @@ python generate_index.py              # write index.html into --root
 python generate_index.py --root DIR   # scan a different directory
 python generate_index.py --dry-run    # print HTML instead of writing
 ```
+
+The generator also lints every site and prints `lint:` warnings to stderr for a missing description, missing ingested date, missing All-sites bar, or a category without a `CATEGORY_DOTS` entry. Warnings do not stop generation; `--strict` makes them fatal and `--no-lint` silences them.
 
 `--titles` is still accepted for backward compatibility but is a no-op: titles are always read.
 
