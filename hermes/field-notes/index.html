@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Sep 24, 2026, 1:30 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Sep 25, 2026, 1:31 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Sep 24, 2026, 1:34 PM · Last published: Sep 24, 2026, 1:34 PM · published</p>
+<p>Last checked: Sep 25, 2026, 1:32 PM · Last published: Sep 25, 2026, 1:32 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 24 daily evidence found a new release: v0.21.5 (v2026.9.24), published 10:09 UTC, is now the latest tag and rolls up ~460 merged PRs since v0.21.4. The September 23 gateway --replace corrections previously tracked as merged-unreleased were confirmed contained in this tag by repository comparison, so that entry moves to released. The cron guide gained a consequential rule that pinned jobs never use the global fallback-provider chain, plus a sparse-schedule quota recovery retry; the memory guide gained staged replace/remove target pinning and fingerprinted journey memory ids. The skills guide was unchanged. Two superseded v0.21.4 window entries were retired to stay within the contract&#x27;s change limit; their still-supported material is folded into the surviving entries and tips. Ranks, scores, stable IDs, and use-case research dates are unchanged, and main-branch commits are distinguished from the tagged release. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 25 daily evidence found no new release: v0.21.5 (v2026.9.24) remains the latest tag, with only reaction counts changing on the releases page. The skills guide corrected its blank-slate instructions: the installer has no --no-skills flag, Blank Slate setup asks whether to seed the bundled catalog, and non-interactive installs seed it, so hermes skills opt-out is the documented follow-up. The cron guide changed only example shebangs and the memory guide was byte-identical. Main-branch commits on September 25 (api_server run SSE fan-out and replay, Slack native-stream re-post fixes, MCP OAuth reload, curator interval bounds, Windows Desktop crash-loop recovery) are recorded as untagged activity. The oldest change entry, the September 21 unpinned-cron resolution note, was retired to stay within the contract&#x27;s change limit; its still-supported resolution order remains in the pin-recurring-inference tip. Ranks, scores, stable IDs, and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
 </div>
 </section>
 
@@ -178,7 +178,7 @@ ingested: 2026-09-11T16:11:25Z
 <h3>Cron guide: a pinned job never walks the global fallback-provider chain</h3>
 <p><strong>documented-unverified</strong> · A newly documented rule makes pinning and outage resilience an explicit trade-off. A job with its own provider, model or base_url (set with --provider/--model, --pin, the dashboard, or jobs.json) never falls back to fallback_providers or the legacy fallback_model: when the pinned route fails the run fails and the failure alert says so, the same rule subagent delegation applies to a pinned child. Credential-pool rotation within the same provider still applies to every job, pinned or not. The guide states that before this rule a pinned job could silently run on the first working fallback entry, and tells anyone who relied on that to unpin (hermes cron edit &lt;job_id&gt; --unpin) and set the model through cron.model. The same retrieval added a sparse-schedule quota recovery: if a provider reopens at least half a schedule period before a sparse job&#x27;s next natural occurrence, one blocked occurrence retries at that boundary, while dense schedules, manual runs and interval jobs keep their natural next run. Documentation evidence only; not tested against an installed build.</p>
 <blockquote>A job with its own provider, model or base_url ... never falls back to the global chain.</blockquote>
-<p>Inventory which recurring jobs are pinned before assuming a configured fallback chain protects them, and decide per job whether route certainty or outage survival matters more. Verify installed-version behavior read-only and keep pin/unpin changes user-approved.</p>
+<p>Inventory which recurring jobs are pinned before assuming a configured fallback chain protects them, and decide per job whether route certainty or outage survival matters more. Verify installed-version behavior read-only and keep pin/unpin changes user-approved. Resolution order (per-job pin, then cron.model/cron.model_provider, then the main model at fire time) is summarized in the pin-recurring-inference tip.</p>
 <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article><article>
 <h3>Memory guide: a staged replace or remove is pinned to the exact entry it targeted</h3>
@@ -187,11 +187,11 @@ ingested: 2026-09-11T16:11:25Z
 <p>Clear out any long-pending memory writes rather than approving them blindly, and expect pre-existing staged replacements to be refused. Read back the exact profile-local file after an approved write instead of trusting the approval message alone.</p>
 <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article><article>
-<h3>Cron guide now says unpinned jobs follow the main model at fire time</h3>
-<p><strong>documented-unverified</strong> · The retrieved guide replaces the earlier creation-time snapshot and resnap guidance. Resolution is documented as per-job pin, then cron.model/cron.model_provider, then the current main default. It adds --pin/--unpin and user-requested pinned=true/false on cronjob_manage, while prohibiting the agent from selecting a different model. This is a consequential correction to a prior edition, not a claim that an installed or tagged build has these semantics. The messaging guide separately says a chat /model override is session-scoped unless made global. The September 24 retrieval left this resolution order intact while adding the separate pinned-job fallback rule tracked below.</p>
-<blockquote>Change your main model and every unpinned job follows on its next run.</blockquote>
-<p>Before changing the main default, inspect installed-version behavior and effective job pins or cron defaults read-only. Read the pinned-fallback entry with this one: pinning and fallback resilience are now documented as a trade-off. Keep routing changes user-approved; do not apply the superseded resnap advice blindly.</p>
-<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+<h3>Skills guide: the installer has no --no-skills flag; opt out at setup or afterwards</h3>
+<p><strong>documented-unverified</strong> · The previous skills guide told readers to pass --no-skills to install.sh for an empty default profile. The September 25 retrieval corrects that: the installer has no --no-skills flag. Its setup stage asks whether to seed the bundled catalog when Blank Slate setup is chosen, and answering no writes the .no-bundled-skills opt-out marker; non-interactive installs seed the catalog, so hermes skills opt-out must be run afterwards to keep the profile empty. Named profiles still accept hermes profile create &lt;name&gt; --no-skills. On any installed profile, hermes skills opt-out only stops future seeding, --remove deletes bundled skills only when byte-identical to the installed version (edited, hub-installed and self-written skills are kept), and hermes skills opt-in --sync re-seeds. Anyone scripting unattended installs from the old instruction would have silently received the full catalog. Documentation correction, not tested against an installed build.</p>
+<blockquote>the installer has no --no-skills flag. Its setup stage asks whether to seed the bundled catalog when you pick the Blank Slate setup</blockquote>
+<p>If a profile was meant to start empty from an unattended install, check read-only for the .no-bundled-skills marker in that profile directory before assuming the catalog was skipped. Prefer plain hermes skills opt-out over --remove, and keep any profile skill changes user-approved.</p>
+<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article>
 <div class="sectionhead">
 <div>
@@ -202,7 +202,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">
 <time>Sep 24, 2026, 10:09 AM</time>
-<div><b>Released v0.21.5 (tag v2026.9.24) at 10:09 UTC: a patch roll-up measured at f97608f as 1,610 non-merge commits, 460 merged PRs and 475 closed issues since v0.21.4. The notes name, among undocumented window items, a Desktop plugin SDK wave, a Simple/Advanced interface mode, the Connectors page replacing the MCP tab, French/German/Spanish Desktop catalogs with an RTL/LTR setting, per-profile stop/start/restart under the host multiplexer plus gateway.standalone, the live dock for /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna and Claude Opus 5.5 catalog entries. Curated notes stay deferred to v0.22.0. Latest tag as of the September 24 check.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
+<div><b>Released v0.21.5 (tag v2026.9.24) at 10:09 UTC: a patch roll-up measured at f97608f as 1,610 non-merge commits, 460 merged PRs and 475 closed issues since v0.21.4. The notes name, among undocumented window items, a Desktop plugin SDK wave, a Simple/Advanced interface mode, the Connectors page replacing the MCP tab, French/German/Spanish Desktop catalogs with an RTL/LTR setting, per-profile stop/start/restart under the host multiplexer plus gateway.standalone, the live dock for /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna and Claude Opus 5.5 catalog entries. Curated notes stay deferred to v0.22.0. Still the latest tag at the September 25 check.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
 <strong>↗</strong>
 </a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.21" target="_blank" rel="noopener noreferrer">
 <time>Sep 21, 2026, 6:10 PM</time>
@@ -213,8 +213,8 @@ ingested: 2026-09-11T16:11:25Z
 <div><b>The September 23 main-branch run of gateway startup fixes following the v0.21.4 host lock is contained in the v0.21.5 tag: ae16316 restoring the host-lock refusal for --replace, 516687d letting --replace start beside another profile&#x27;s standalone owner, 6c51f86/41f0bd9/1a4da74 retiring the Hermes-authored systemd 20-replace.conf drop-in with docs, and 3532a60/0df9c8e/d292055 stopping scoped liveness from borrowing another home&#x27;s record. Containment verified by repository comparison against the tag, not by a local upgrade.</b><span>github.com/NousResearch/hermes-agent/commit/ae163160…</span></div>
 <strong>↗</strong>
 </a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Sep 24, 2026, 1:30 PM</time>
-<div><b>Main-branch after the v0.21.5 tag: September 24 work is Desktop-focused, including 30565b2 shipping a Windows voice chord that is not the sidebar toggle (off macOS ctrl folds to mod, so a Ctrl+B default collided), 482349c taking keyboard focus when the terminal pane is revealed, e755211 refocusing the find bar on repeated Cmd-F, and a run of packaged-boot, Bot-Mode topology and compaction-lineage test specs. Commit-page evidence, not a local Desktop test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<time>Sep 25, 2026, 1:31 PM</time>
+<div><b>Main-branch after the v0.21.5 tag, September 25: an api_server streaming run including 52a2835 fanning out and replaying run SSE events (then bounding and sweeping overflowed transports), eea4419 honouring platforms.api_server.tool_progress_events for Chat Completions SSE (#12020) and e42b61b emitting final_response when no deltas streamed (#31449); Slack fixes so a successfully streamed answer is never re-posted (72893ca) and a sealed native draft stream reopens mid-turn; b2483b8 reloading the MCP OAuth provider on first sight when no tokens are in memory (#39551); e62a47a flooring curator interval_hours at 1; and Windows Desktop fixes including 2e36513 recovering 0xC0000409 renderer crash loops by disabling GPU and e4a2c10 hiding Electron git spawns with CREATE_NO_WINDOW. The September 24 Desktop voice-chord and focus fixes remain untagged too. Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
@@ -223,9 +223,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Sep 24, 2026, 1:34 PM
+Last attempt: Sep 25, 2026, 1:32 PM
 <br>
-Last success: Sep 24, 2026, 1:34 PM
+Last success: Sep 25, 2026, 1:32 PM
 
 </p>
 </div>
@@ -243,7 +243,7 @@ Last success: Sep 24, 2026, 1:34 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260924t133406160z","title":"Make Repeat Work Remember","researched_at":"2026-09-24T13:30:16.535Z","generated_at":"2026-09-24T13:34:06.160Z","last_checked_at":"2026-09-24T13:34:06.160Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-24T13:34:06.160Z","last_success_at":"2026-09-24T13:34:06.160Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260925t133242124z","title":"Make Repeat Work Remember","researched_at":"2026-09-25T13:31:00.078Z","generated_at":"2026-09-25T13:32:42.124Z","last_checked_at":"2026-09-25T13:32:42.124Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-25T13:32:42.124Z","last_success_at":"2026-09-25T13:32:42.124Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
