@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Sep 25, 2026, 1:31 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Sep 26, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Sep 25, 2026, 1:32 PM · Last published: Sep 25, 2026, 1:32 PM · published</p>
+<p>Last checked: Sep 26, 2026, 1:32 PM · Last published: Sep 26, 2026, 1:32 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 25 daily evidence found no new release: v0.21.5 (v2026.9.24) remains the latest tag, with only reaction counts changing on the releases page. The skills guide corrected its blank-slate instructions: the installer has no --no-skills flag, Blank Slate setup asks whether to seed the bundled catalog, and non-interactive installs seed it, so hermes skills opt-out is the documented follow-up. The cron guide changed only example shebangs and the memory guide was byte-identical. Main-branch commits on September 25 (api_server run SSE fan-out and replay, Slack native-stream re-post fixes, MCP OAuth reload, curator interval bounds, Windows Desktop crash-loop recovery) are recorded as untagged activity. The oldest change entry, the September 21 unpinned-cron resolution note, was retired to stay within the contract&#x27;s change limit; its still-supported resolution order remains in the pin-recurring-inference tip. Ranks, scores, stable IDs, and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 26 daily evidence found no new release: v0.21.5 (v2026.9.24) remains the latest tag, with only reaction counts changing on the releases page. The skills guide added a &#x27;Browse and install in Desktop&#x27; section: a native Browse tab reading the same published skills.json snapshot as the public Skills Hub, and Install in Hermes buttons that open Desktop via hermes://skill/install with confirmation and the existing security-scanned install pipeline. The cron and memory guides were byte-identical to the previous check. Main-branch commits on September 26 (gateway silence-marker fallback fixes, secondary-bot callback profile scoping, Claude Opus 5.5 picker entries, local-runtime model migration, Desktop skin customCSS) are recorded as untagged activity. The gateway --replace arbitration change entry was retired to stay within the contract&#x27;s change limit; its commits remain summarized in recent activity and are contained in v0.21.5. Ranks, scores, stable IDs, and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
 </div>
 </section>
 
@@ -163,16 +163,16 @@ ingested: 2026-09-11T16:11:25Z
 
 <section id="pulse" class="section pulse">
 <article>
+<h3>Skills guide: Desktop Browse tab and hermes:// install links from the Skills Hub</h3>
+<p><strong>documented-unverified</strong> · The September 26 retrieval adds a &#x27;Browse and install in Desktop&#x27; section. Capabilities -&gt; Skills in Desktop now switches between Installed, which reads the selected profile&#x27;s actual skills and enabled state, and Browse, a native catalog UI. Desktop and the public Skills Hub read the same published CDN snapshot (/docs/api/skills.json), generated at docs build time from bundled skills, optional-skills and the centralized index; browsing does not crawl GitHub or query marketplaces live. Each installable Skills Hub card gains an Install in Hermes button that opens Desktop with a source-qualified target such as hermes://skill/install?identifier=official%2Fsecurity%2F1password. Desktop shows a confirmation with separate Source and Install to rows; Cancel changes nothing, and installation goes through the existing Skills Hub pipeline including security scanning and action logs. A link cannot bypass scanning or select a different profile, changes apply to new sessions, and the route requires an updated Desktop build (otherwise copy the card&#x27;s CLI command). Bundled skills without an explicit target in an older snapshot get no install link rather than an ambiguous bare-name resolution. Documentation evidence only; not tested against an installed build.</p>
+<blockquote>Installation uses the existing Skills Hub pipeline, including security scanning, action logs, and installed-list refresh.</blockquote>
+<p>With several profiles, check the Install to row before confirming: a web link installs into whichever profile Desktop currently has selected. If the link is not recognized, check the installed Desktop version rather than forcing the CLI path, and keep skill installs on production profiles user-approved.</p>
+<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
 <h3>v0.21.5 (v2026.9.24) becomes the latest tagged release, closing the post-v0.21.4 window</h3>
 <p><strong>released</strong> · The September 24 10:09 UTC patch release rolls the window since v0.21.4 into a stable tag for downstream consumers: measured at f97608f, 1,610 non-merge commits across 4,828 changed files, 460 merged PRs and 475 closed issues. Its notes explicitly name, though &#x27;undocumented here on purpose&#x27;, a Desktop plugin SDK wave (composer draft API, session-list and row-decoration slots, typed settings/skills/toolsets/profiles bridges, a sandboxed embed primitive, a public event bridge for plugin backends), a Simple/Advanced Desktop interface mode, the Connectors page replacing the MCP tab with installed plugins&#x27; tools and skills going live in open chats, French/German/Spanish Desktop catalogs with an RTL/LTR setting, custom model entry from the composer, per-profile stop/start/restart under the host multiplexer with gateway.standalone to opt a profile out, the live dock showing the standing /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna plus Claude Opus 5.5 in the Nous and OpenRouter catalogs. Curated notes remain deferred to v0.22.0. This is release-note evidence, not a local runtime test.</p>
 <blockquote>Patch release. This tag rolls up the ~460 PRs merged since v0.21.4 into a stable tagged release for downstream consumers</blockquote>
 <p>Check the installed version before expecting these window behaviors locally, and wait for the v0.22.0 curated notes instead of treating a patch tag as documentation. If you run multiple gateway profiles, read the per-profile multiplexer controls and gateway.standalone before changing any topology. Do not update production hosts merely to verify this entry.</p>
-<a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
-</article><article>
-<h3>Released in v0.21.5: the gateway --replace fixes that stop units from defeating the host lock</h3>
-<p><strong>released</strong> · Every unit generated by hermes gateway install runs gateway run --replace, and after the v0.21.4 host-wide lock that flag was skipping the very arbitration the lock exists for. ae16316 restricts the PID-claim bypass to --force, because a --replace unit that saw no owner could start a second gateway beside the multiplexer and fight it over the same bot tokens. 516687d makes --replace target the host owner only when that owner serves this profile or its served set is unknown, after a live macOS launchd fleet on 0.21.4 respawn-stormed on &#x27;Refusing --replace&#x27;. 6c51f86 with follow-ups 41f0bd9 and 1a4da74 retires the Hermes-authored systemd 20-replace.conf drop-in on unit refresh while keeping an operator-written file of the same name. The September 24 check confirmed by repository comparison that all of these commits are contained in the v2026.9.24 tag, so availability moves from merged-unreleased to released. The tagged build was not exercised locally.</p>
-<blockquote>Only --force skips it now. A --replace that took the owner over already freed the lock with that process, so real takeovers are unchanged.</blockquote>
-<p>If several profiles run their own gateway units, an installed build older than 0.21.5 still has the lock without these corrections: watch for restart loops or token contention there. Read unit files and gateway status read-only; do not edit units, force-replace a running owner, or upgrade production hosts merely to pick up this entry.</p>
 <a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article><article>
 <h3>Cron guide: a pinned job never walks the global fallback-provider chain</h3>
@@ -200,7 +200,11 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
-<div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">
+<div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Sep 26, 2026, 1:30 PM</time>
+<div><b>Main-branch on September 26, after the v0.21.5 tag: gateway silence-marker fixes so a turn answering an addressed message, a steered message, or a Slack thread follow-up/reaction trigger keeps the silence fallback while a bare marker on an unaddressed turn stays silent (6c566fc, 2ed91ca, b17e037, 9fc7f17, b08bb5a); secondary bots&#x27; callbacks authorized and bound under their own profile scope per callback (b483f0f, 3e8fe26, e13b5e7); Claude Opus 5.5 added to the native Anthropic picker and the Bedrock static fallback with Sonnet 5 kept as the Bedrock default (42ba854, 87a9b48, 98054af); local-runtime migration of pre-package-manager llama.cpp engines and per-profile model dirs into the machine store (9c1ef17, 3582c17); Desktop skin customCSS support with a documented 32 KiB cap; and a profile terminal.cwd taking precedence over Desktop&#x27;s inherited workspace cwd (02b282a). Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">
 <time>Sep 24, 2026, 10:09 AM</time>
 <div><b>Released v0.21.5 (tag v2026.9.24) at 10:09 UTC: a patch roll-up measured at f97608f as 1,610 non-merge commits, 460 merged PRs and 475 closed issues since v0.21.4. The notes name, among undocumented window items, a Desktop plugin SDK wave, a Simple/Advanced interface mode, the Connectors page replacing the MCP tab, French/German/Spanish Desktop catalogs with an RTL/LTR setting, per-profile stop/start/restart under the host multiplexer plus gateway.standalone, the live dock for /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna and Claude Opus 5.5 catalog entries. Curated notes stay deferred to v0.22.0. Still the latest tag at the September 25 check.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
 <strong>↗</strong>
@@ -223,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Sep 25, 2026, 1:32 PM
+Last attempt: Sep 26, 2026, 1:32 PM
 <br>
-Last success: Sep 25, 2026, 1:32 PM
+Last success: Sep 26, 2026, 1:32 PM
 
 </p>
 </div>
@@ -243,7 +247,7 @@ Last success: Sep 25, 2026, 1:32 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260925t133242124z","title":"Make Repeat Work Remember","researched_at":"2026-09-25T13:31:00.078Z","generated_at":"2026-09-25T13:32:42.124Z","last_checked_at":"2026-09-25T13:32:42.124Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-25T13:32:42.124Z","last_success_at":"2026-09-25T13:32:42.124Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260926t133223824z","title":"Make Repeat Work Remember","researched_at":"2026-09-26T13:30:59.335Z","generated_at":"2026-09-26T13:32:23.824Z","last_checked_at":"2026-09-26T13:32:23.824Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-26T13:32:23.824Z","last_success_at":"2026-09-26T13:32:23.824Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
