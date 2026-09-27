@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Sep 26, 2026, 1:30 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Sep 27, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Sep 26, 2026, 1:32 PM · Last published: Sep 26, 2026, 1:32 PM · published</p>
+<p>Last checked: Sep 27, 2026, 1:31 PM · Last published: Sep 27, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 26 daily evidence found no new release: v0.21.5 (v2026.9.24) remains the latest tag, with only reaction counts changing on the releases page. The skills guide added a &#x27;Browse and install in Desktop&#x27; section: a native Browse tab reading the same published skills.json snapshot as the public Skills Hub, and Install in Hermes buttons that open Desktop via hermes://skill/install with confirmation and the existing security-scanned install pipeline. The cron and memory guides were byte-identical to the previous check. Main-branch commits on September 26 (gateway silence-marker fallback fixes, secondary-bot callback profile scoping, Claude Opus 5.5 picker entries, local-runtime model migration, Desktop skin customCSS) are recorded as untagged activity. The gateway --replace arbitration change entry was retired to stay within the contract&#x27;s change limit; its commits remain summarized in recent activity and are contained in v0.21.5. Ranks, scores, stable IDs, and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 27 daily evidence found no new release: v0.21.5 (v2026.9.24) remains the latest tag, with only reaction counts changing on the releases page. The cron guide added a paragraph describing load-time repair of a malformed jobs.json (non-object entries dropped, invalid repeat.completed reset, warnings logged without contents). The skills and memory guides were byte-identical to the previous check. Main-branch commits on September 27 (lossless context compaction and tool-argument redaction, cron job-store save guards, Nous auth refresh-pool handling across profiles, todo history pairing, gateway scope resolution off the event loop, kanban gc safety) are recorded as untagged activity. The memory staged-write target pinning entry and the September 23 gateway containment activity note were retired to stay within the contract&#x27;s limits; both remain in earlier editions. Ranks, scores, stable IDs, and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
 </div>
 </section>
 
@@ -163,6 +163,12 @@ ingested: 2026-09-11T16:11:25Z
 
 <section id="pulse" class="section pulse">
 <article>
+<h3>Cron guide: a malformed jobs.json is repaired on load instead of stopping the scheduler</h3>
+<p><strong>documented-unverified</strong> · The September 27 retrieval of the cron guide adds a paragraph after the existing tip to manage jobs through cronjob_manage, hermes cron edit or /cron rather than patching jobs.json. If a hand edit leaves jobs.json malformed, the scheduler now repairs it on the next load instead of stopping: entries in the jobs list that are not JSON objects are dropped, and a repeat.completed value that is not a non-negative integer is reset to a valid count (0 when it cannot be read). Each repair is logged as a warning that records value types only, never contents. Same-day main-branch commits add the matching guard on save: c642f42 refuses to overwrite a corrupt jobs store, 758ad51 fails closed inside the merge peek while keeping merges for mergeable repairs, and 553388b re-checks disk before an unmergeable repair replaces the store. Those save-side guards are untagged main-branch changes. Practical reading: a bad hand edit should no longer halt every scheduled job, but a dropped malformed entry is a silently missing job unless someone reads the warning. Documentation and commit-title evidence only; not tested against an installed build.</p>
+<blockquote>Each repair is logged as a warning (value types only, never contents).</blockquote>
+<p>Keep editing jobs through the cron tool or CLI. After any manual jobs.json edit, list jobs and compare the count with what you expect, and check the scheduler log for repair warnings, because a dropped entry will not announce itself on the messaging side.</p>
+<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
 <h3>Skills guide: Desktop Browse tab and hermes:// install links from the Skills Hub</h3>
 <p><strong>documented-unverified</strong> · The September 26 retrieval adds a &#x27;Browse and install in Desktop&#x27; section. Capabilities -&gt; Skills in Desktop now switches between Installed, which reads the selected profile&#x27;s actual skills and enabled state, and Browse, a native catalog UI. Desktop and the public Skills Hub read the same published CDN snapshot (/docs/api/skills.json), generated at docs build time from bundled skills, optional-skills and the centralized index; browsing does not crawl GitHub or query marketplaces live. Each installable Skills Hub card gains an Install in Hermes button that opens Desktop with a source-qualified target such as hermes://skill/install?identifier=official%2Fsecurity%2F1password. Desktop shows a confirmation with separate Source and Install to rows; Cancel changes nothing, and installation goes through the existing Skills Hub pipeline including security scanning and action logs. A link cannot bypass scanning or select a different profile, changes apply to new sessions, and the route requires an updated Desktop build (otherwise copy the card&#x27;s CLI command). Bundled skills without an explicit target in an older snapshot get no install link rather than an ambiguous bare-name resolution. Documentation evidence only; not tested against an installed build.</p>
 <blockquote>Installation uses the existing Skills Hub pipeline, including security scanning, action logs, and installed-list refresh.</blockquote>
@@ -181,12 +187,6 @@ ingested: 2026-09-11T16:11:25Z
 <p>Inventory which recurring jobs are pinned before assuming a configured fallback chain protects them, and decide per job whether route certainty or outage survival matters more. Verify installed-version behavior read-only and keep pin/unpin changes user-approved. Resolution order (per-job pin, then cron.model/cron.model_provider, then the main model at fire time) is summarized in the pin-recurring-inference tip.</p>
 <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article><article>
-<h3>Memory guide: a staged replace or remove is pinned to the exact entry it targeted</h3>
-<p><strong>documented-unverified</strong> · The approval gate gained a correctness guarantee worth knowing before trusting queued memory edits. A staged replace or remove, which the background review stages even with the gate off, now records the full entry it targets and shows it in /memory pending. Approval applies to exactly that entry: if the entry changed after the write was staged, the write is refused and stays pending for rejection, and a replace/remove staged before this pinning existed has no verifiable target and is refused too, so it must be rejected and recreated. /memory approve lists the full text of every entry it overwrote or removed. This sits on top of the existing rule that old_text locates the whole entry and content replaces it, so a partial replacement can still discard facts meant to survive. The same retrieval changed journey memory chunk ids to memory:&lt;source&gt;:&lt;index&gt;:&lt;fingerprint&gt;, to be passed back exactly as printed. Documentation clarifications, not runtime-tested findings.</p>
-<blockquote>Approval applies to exactly that entry: if it changed after the write was staged, the write is refused and stays pending for you to reject.</blockquote>
-<p>Clear out any long-pending memory writes rather than approving them blindly, and expect pre-existing staged replacements to be refused. Read back the exact profile-local file after an approved write instead of trusting the approval message alone.</p>
-<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
-</article><article>
 <h3>Skills guide: the installer has no --no-skills flag; opt out at setup or afterwards</h3>
 <p><strong>documented-unverified</strong> · The previous skills guide told readers to pass --no-skills to install.sh for an empty default profile. The September 25 retrieval corrects that: the installer has no --no-skills flag. Its setup stage asks whether to seed the bundled catalog when Blank Slate setup is chosen, and answering no writes the .no-bundled-skills opt-out marker; non-interactive installs seed the catalog, so hermes skills opt-out must be run afterwards to keep the profile empty. Named profiles still accept hermes profile create &lt;name&gt; --no-skills. On any installed profile, hermes skills opt-out only stops future seeding, --remove deletes bundled skills only when byte-identical to the installed version (edited, hub-installed and self-written skills are kept), and hermes skills opt-in --sync re-seeds. Anyone scripting unattended installs from the old instruction would have silently received the full catalog. Documentation correction, not tested against an installed build.</p>
 <blockquote>the installer has no --no-skills flag. Its setup stage asks whether to seed the bundled catalog when you pick the Blank Slate setup</blockquote>
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Sep 27, 2026, 1:30 PM</time>
+<div><b>Main-branch on September 27, after the v0.21.5 tag: context-compaction fixes keeping compaction history lossless (a7baa5f), assembling the head/tail from the pruned copy (f6ce8bb, #61932) and redacting full tool-call arguments before the summarizer cut with bounded redaction (fb86bc7, be83468); cron job-store guards refusing to overwrite a corrupt store on save and failing closed during merge (c642f42, 758ad51, 553388b); Nous auth treated as a single-use refresh pool provider, with cloned profiles&#x27; refresh grants stripped and healed and root grants no longer reseeded into a profile that owns its own Nous rows (6a3db7c, ec262e1, e7bab8e); canonical todo_list history pairing across bridged tool calls and TUI resume (031e329, 3d3c1c1); gateway handoff/loop-watch scope resolution moved off the event loop (bf66814, 9a0c0e1); and kanban gc never deleting the scratch workspaces root itself (37e89a7). Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Sep 26, 2026, 1:30 PM</time>
 <div><b>Main-branch on September 26, after the v0.21.5 tag: gateway silence-marker fixes so a turn answering an addressed message, a steered message, or a Slack thread follow-up/reaction trigger keeps the silence fallback while a bare marker on an unaddressed turn stays silent (6c566fc, 2ed91ca, b17e037, 9fc7f17, b08bb5a); secondary bots&#x27; callbacks authorized and bound under their own profile scope per callback (b483f0f, 3e8fe26, e13b5e7); Claude Opus 5.5 added to the native Anthropic picker and the Bedrock static fallback with Sonnet 5 kept as the Bedrock default (42ba854, 87a9b48, 98054af); local-runtime migration of pre-package-manager llama.cpp engines and per-profile model dirs into the machine store (9c1ef17, 3582c17); Desktop skin customCSS support with a documented 32 KiB cap; and a profile terminal.cwd taking precedence over Desktop&#x27;s inherited workspace cwd (02b282a). Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -211,10 +215,6 @@ ingested: 2026-09-11T16:11:25Z
 </a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.21" target="_blank" rel="noopener noreferrer">
 <time>Sep 21, 2026, 6:10 PM</time>
 <div><b>Released v0.21.4 (tag v2026.9.21): a patch roll-up measured at 4b8a813 as 5,071 non-merge commits, 1,812 merged PRs and 2,116 closed issues since v0.21.3. The notes explicitly name, among undocumented window items, a host-wide gateway singleton lock with a rendezvous record, Desktop attaching to the running host backend instead of spawning a second one, a backend-owned connector setup card, --format stream-json CLI output, skills.auto_load, session_search after/before bounds, and a dozen new community plugins. It was superseded as the latest tag by v0.21.5 on September 24.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
-<strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commit/ae163160fee7b60ec5ed70dd531ae67e40641a9c" target="_blank" rel="noopener noreferrer">
-<time>Sep 23, 2026, 4:22 AM</time>
-<div><b>The September 23 main-branch run of gateway startup fixes following the v0.21.4 host lock is contained in the v0.21.5 tag: ae16316 restoring the host-lock refusal for --replace, 516687d letting --replace start beside another profile&#x27;s standalone owner, 6c51f86/41f0bd9/1a4da74 retiring the Hermes-authored systemd 20-replace.conf drop-in with docs, and 3532a60/0df9c8e/d292055 stopping scoped liveness from borrowing another home&#x27;s record. Containment verified by repository comparison against the tag, not by a local upgrade.</b><span>github.com/NousResearch/hermes-agent/commit/ae163160…</span></div>
 <strong>↗</strong>
 </a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Sep 25, 2026, 1:31 PM</time>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Sep 26, 2026, 1:32 PM
+Last attempt: Sep 27, 2026, 1:31 PM
 <br>
-Last success: Sep 26, 2026, 1:32 PM
+Last success: Sep 27, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Sep 26, 2026, 1:32 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260926t133223824z","title":"Make Repeat Work Remember","researched_at":"2026-09-26T13:30:59.335Z","generated_at":"2026-09-26T13:32:23.824Z","last_checked_at":"2026-09-26T13:32:23.824Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-26T13:32:23.824Z","last_success_at":"2026-09-26T13:32:23.824Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260927t133142976z","title":"Make Repeat Work Remember","researched_at":"2026-09-27T13:30:20.532Z","generated_at":"2026-09-27T13:31:42.976Z","last_checked_at":"2026-09-27T13:31:42.976Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-27T13:31:42.976Z","last_success_at":"2026-09-27T13:31:42.976Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
