@@ -136,6 +136,8 @@ The production site is deployed by **Cloudflare Workers Builds** from `origin/ma
 
 Regenerate and commit the root index before pushing. Check the GitHub commit's `Workers Builds: mastery-sites` result and verify the live homepage and changed site paths before considering deployment complete. Build settings are managed outside this repository; this workflow does not change them.
 
+The build publishes the whole repository root, so `.assetsignore` (gitignore syntax) keeps `.git`, the Python tooling, `tests/`, and this README off the public site. Add any new repo-only file at the root to it.
+
 ## Rules
 
 1. Every site is a folder with an `index.html`. No exceptions.

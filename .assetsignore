@@ -1,0 +1,8 @@
+# Workers Builds publishes the repo root as static assets (assets.directory = ".").
+# Only site pages belong on the public site; keep repo metadata and tooling off it.
+.git
+.gitignore
+*.py
+/tests/
+/README.md
+/wrangler.jsonc
