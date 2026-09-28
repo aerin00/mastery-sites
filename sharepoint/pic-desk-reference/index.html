@@ -1,0 +1,840 @@
+<!doctype html>
+<!-- index:
+description: Screen-by-screen reference for the PIC Desk app: scorecard, close, intake, requests, JUAS, forecast, and governance.
+tags: reference, pic-desk
+ingested: 2026-09-27T23:31:25-07:00
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:">
+<title>PIC Desk Reference</title>
+<link rel="icon" href="data:,">
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --ink: #1b1f24; --muted: #5c6670; --line: #d8dde3; --accent: #0b5cad; --accent-soft: #e6f0fa;
+  --short: #eef6ee; --short-line: #2f7d3b; --why: #fff7e6; --why-line: #b7791f; --eff: #f1ecfa; --eff-line: #6b46c1;
+  --mark: #ffe066; --mark-cur: #ff9f1c; --code: #eef1f4; --side: #eef1f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171b; --panel: #1c2026; --ink: #e6e9ed; --muted: #9aa4ae; --line: #323841; --accent: #6cb0ff; --accent-soft: #1d2a3a;
+    --short: #16261a; --short-line: #5cc26d; --why: #2a2213; --why-line: #e0a84a; --eff: #211b30; --eff-line: #a68bff;
+    --mark: #7a6300; --mark-cur: #b05a00; --code: #262b33; --side: #181b20;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171b; --panel: #1c2026; --ink: #e6e9ed; --muted: #9aa4ae; --line: #323841; --accent: #6cb0ff; --accent-soft: #1d2a3a;
+  --short: #16261a; --short-line: #5cc26d; --why: #2a2213; --why-line: #e0a84a; --eff: #211b30; --eff-line: #a68bff;
+  --mark: #7a6300; --mark-cur: #b05a00; --code: #262b33; --side: #181b20;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 "Segoe UI", system-ui, Arial, sans-serif; }
+a { color: var(--accent); }
+code, kbd { background: var(--code); border-radius: 3px; padding: 0 4px; font: 13px Consolas, "Cascadia Mono", monospace; }
+.layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+aside { position: sticky; top: 0; height: 100vh; overflow: auto; background: var(--side); border-right: 1px solid var(--line); padding: 16px 14px 40px; }
+aside h1 { font-size: 17px; margin: 0 0 2px; }
+aside .sub { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
+.search { position: sticky; top: -16px; background: var(--side); padding: 6px 0 8px; z-index: 2; }
+.search input { width: 100%; padding: 7px 9px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--ink); font: inherit; }
+.search .bar { display: flex; gap: 6px; align-items: center; margin-top: 6px; font-size: 12px; color: var(--muted); min-height: 24px; }
+.search button { font: 12px inherit; padding: 2px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--ink); cursor: pointer; }
+.search button:disabled { opacity: .45; cursor: default; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc > ol > li { margin: 1px 0; }
+nav.toc a { display: block; text-decoration: none; color: var(--ink); padding: 3px 8px; border-left: 3px solid transparent; border-radius: 0 4px 4px 0; font-size: 14px; }
+nav.toc a:hover { background: var(--accent-soft); }
+nav.toc a.active { border-left-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+nav.toc ol ol { display: none; padding-left: 10px; }
+nav.toc li.open > ol, body.searching nav.toc ol ol { display: block; }
+nav.toc ol ol a { font-size: 13px; color: var(--muted); padding: 2px 8px; }
+nav.toc ol ol a.active { color: var(--ink); font-weight: 600; }
+nav.toc li.hidden { display: none; }
+.theme { margin-top: 14px; font-size: 12px; color: var(--muted); }
+.theme button { font: 12px inherit; padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--ink); cursor: pointer; }
+main { padding: 28px 40px 80px; max-width: 980px; }
+header.top h1 { font-size: 28px; margin: 0 0 4px; }
+header.top p { color: var(--muted); margin: 0 0 6px; }
+section.sec { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px 24px 22px; margin: 22px 0; }
+section.sec.hidden { display: none; }
+section.sec > h2 { font-size: 22px; margin: 0 0 10px; }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+h4 { font-size: 15px; margin: 14px 0 4px; }
+.short { background: var(--short); border-left: 4px solid var(--short-line); padding: 8px 12px; border-radius: 0 6px 6px 0; margin: 0 0 12px; font-size: 16px; }
+.short b { color: var(--short-line); }
+.covers { border: 1px dashed var(--line); border-radius: 6px; padding: 8px 12px; margin: 0 0 8px; font-size: 14px; }
+.covers b { display: block; margin-bottom: 4px; }
+.covers ul { margin: 0; padding-left: 18px; columns: 2; column-gap: 28px; }
+.covers li { break-inside: avoid; }
+.why { background: var(--why); border-left: 4px solid var(--why-line); padding: 4px 14px 8px; border-radius: 0 6px 6px 0; margin-top: 18px; }
+.eff { background: var(--eff); border-left: 4px solid var(--eff-line); padding: 4px 14px 8px; border-radius: 0 6px 6px 0; margin-top: 12px; }
+.why h3, .eff h3 { margin-top: 10px; }
+.eff dl { margin: 4px 0; }
+.eff dt { font-weight: 600; margin-top: 6px; }
+.eff dd { margin: 0 0 4px 0; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0 12px; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 5px 8px; text-align: left; vertical-align: top; }
+th { background: var(--code); }
+.tablewrap { overflow-x: auto; }
+ol.steps li, ul li { margin: 3px 0; }
+.try { border: 1px solid var(--accent); border-radius: 6px; padding: 6px 12px; margin: 10px 0; background: var(--accent-soft); }
+.try b:first-child { color: var(--accent); }
+.flow { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin: 8px 0; font-size: 13px; }
+.flow span { border: 1px solid var(--line); background: var(--code); border-radius: 12px; padding: 1px 9px; }
+.flow i { color: var(--muted); font-style: normal; }
+.note { color: var(--muted); font-size: 13px; }
+mark { background: var(--mark); color: inherit; border-radius: 2px; }
+mark.current { background: var(--mark-cur); }
+.totop { position: fixed; right: 18px; bottom: 18px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 18px; padding: 6px 12px; text-decoration: none; font-size: 13px; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  aside, main { min-width: 0; }
+  aside { position: static; height: auto; max-height: 55vh; border-right: 0; border-bottom: 1px solid var(--line); }
+  main { padding: 16px; }
+  section.sec { padding: 14px 16px; }
+  .covers ul { columns: 1; }
+}
+@media print {
+  aside, .totop { display: none; }
+  .layout { display: block; }
+  section.sec { break-inside: avoid-page; border: 0; }
+}
+</style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+<div class="layout">
+<aside>
+  <h1>PIC Desk Reference</h1>
+  <p class="sub">Based on the dummy-data preview, 27-Sep-2026</p>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search the guide (Enter = next match)" aria-label="Search the guide" autocomplete="off">
+    <div class="bar"><span id="count"></span><button id="prev" type="button" disabled aria-label="Previous match">&uarr;</button><button id="next" type="button" disabled aria-label="Next match">&darr;</button></div>
+  </div>
+  <nav class="toc" id="toc" aria-label="Contents"></nav>
+  <div class="theme">Theme: <button type="button" data-t="">Auto</button> <button type="button" data-t="light">Light</button> <button type="button" data-t="dark">Dark</button></div>
+</aside>
+
+<main id="main">
+<header class="top">
+  <h1>PIC Desk: reference guide</h1>
+  <p>How each screen works, what to click, and why it matters. Every section starts with <b>In short</b> (the answer), then <b>In this section</b> (what it covers), the detail, <b>Why your manager should care</b>, and <b>Efficiency and provenance</b>.</p>
+  <p class="note">Provenance here means being able to show where every number, status and decision came from: which file, which cell, which email, which person, at what time.</p>
+</header>
+
+<!-- ============================================================ -->
+<section class="sec" id="start">
+<h2>1. Start here: the preview</h2>
+<p class="short"><b>In short:</b> unzip <code>2026-09-27-pic-desk-preview.zip</code>, double-click <code>Open PIC Desk Preview.html</code>, and you are in the real app with dummy data; nothing you do touches a real file, and reloading starts over.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#start-open">Opening the preview</a></li>
+<li><a href="#start-bar">The purple demo bar</a></li>
+<li><a href="#start-data">What the dummy data contains</a></li>
+<li><a href="#start-files">Downloading and adding files</a></li>
+<li><a href="#start-real">Preview versus the real app</a></li>
+</ul></div>
+
+<h3 id="start-open">Opening the preview</h3>
+<ol class="steps">
+<li>Unzip the preview anywhere on Windows (for example your Desktop).</li>
+<li>Double-click <code>Open PIC Desk Preview.html</code>. It opens <code>app/preview.html</code> in Edge.</li>
+<li>You start as <b>Sam (S)</b>, the admin operator, on the <b>Today</b> screen.</li>
+</ol>
+<p>No install, no server, no internet. The page makes zero network requests.</p>
+
+<h3 id="start-bar">The purple demo bar</h3>
+<p>Across the top: <b>PREVIEW WITH DUMMY DATA</b>, the pretend date (<b>2026-10-06</b>, day BD4 of the September scorecard cycle), and a <b>Demo files</b> button. The pretend date is fixed so due dates, ages and business-day steps line up with the sample files.</p>
+
+<h3 id="start-data">What the dummy data contains</h3>
+<p>Invented values in the real file layouts (the real sheet names, cell addresses, report headers), plus a sample session already recorded, so every screen has something in it:</p>
+<div class="tablewrap"><table>
+<tr><th>Area</th><th>Already in place</th></tr>
+<tr><td>Reference</td><td>15 projects, 10 DOA approvers, 5 order reasons imported; program owners (Marco, Anika, Cora)</td></tr>
+<tr><td>Scorecard</td><td>August 2026 cycle open (Fire Mesh and Pole Maintenance ticked Loaded), 3 inputs registered; September cycle open with 3 provider request drafts</td></tr>
+<tr><td>Close</td><td>September 2026 period open; WIP Accrual JE In Progress</td></tr>
+<tr><td>Requests</td><td>REQ-26-S001 Lakeside Solar (Pending IM Approval), S002 Ridge Wind (overdue follow-up), S003 Coastal Hydrogen (blocked), S004 WBS setup (Under Review)</td></tr>
+<tr><td>Intake</td><td>8 saved emails still unlogged; the safety newsletter dismissed</td></tr>
+<tr><td>JUAS</td><td>EXC-26-S001 (HJ vs JJ, retest due) and EXC-26-S002 (a formal dispute)</td></tr>
+<tr><td>Forecast</td><td>Cycle F27Q3 open, templates generated for 3 managers (8 projects)</td></tr>
+<tr><td>Governance</td><td>Decisions D1 to D12 and DL1 to DL6; 6 Open Items (2 by hand, 4 raised automatically for projects without an IM)</td></tr>
+</table></div>
+
+<h3 id="start-files">Downloading and adding files</h3>
+<p>Click <b>Demo files</b> in the purple bar.</p>
+<ul>
+<li><b>Download:</b> pick a folder (<code>exports/</code>, <code>data/</code>, <code>sources/</code> ...) and click <b>download</b> beside a file. Drafts open in Outlook as editable emails (<code>.eml</code>); packages and templates open in Excel; reports open in the browser.</li>
+<li><b>Add a file:</b> type a folder (for example <code>sources/mail/2026-10</code>), choose a file, then click <b>Refresh</b> in the app. This is exactly what "saving an email into the folder" does in real use.</li>
+</ul>
+
+<h3 id="start-real">Preview versus the real app</h3>
+<p>Same code. The only difference is where the folder lives: the preview holds it in the browser's memory; the real app asks you once to pick the shared <code>PIC_Desk</code> folder and remembers it. In the real app, <b>Open PIC Desk.html</b> is the launcher and the status bar shows the real folder name.</p>
+
+<div class="why"><h3 id="start-why">Why your manager should care</h3>
+<p>Anyone can see and try the whole tool in five minutes, on any machine, with no risk to real data and no IT request. It turns "trust me, it will work" into a demo people can click.</p></div>
+<div class="eff"><h3 id="start-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Training and review happen before go-live, without booking the Contoso Energy laptop or touching the shared drive.</dd>
+<dt>Provenance</dt><dd>The dummy files use the real layouts, so what you see in the preview (cell addresses, report headers, file paths) is what the real app will cite.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="basics">
+<h2>2. How the app works (the basics)</h2>
+<p class="short"><b>In short:</b> you put files in the right folder, the app reads and checks them, and every change you make is recorded with your name and the time; the app never edits your source files.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#basics-folder">The folder is the contract</a></li>
+<li><a href="#basics-shell">Screen layout and status bar</a></li>
+<li><a href="#basics-lists">Lists: filter, sort, export</a></li>
+<li><a href="#basics-refusal">Refusals: the red bar</a></li>
+<li><a href="#basics-records">How records are stored</a></li>
+<li><a href="#basics-drafts">Email drafts</a></li>
+</ul></div>
+
+<h3 id="basics-folder">The folder is the contract</h3>
+<p>If a file is in the right folder, the app finds it, classifies it and checks it; if not, it does not exist to the app.</p>
+<div class="tablewrap"><table>
+<tr><th>Folder</th><th>What goes there</th><th>App access</th></tr>
+<tr><td><code>sources\&lt;area&gt;\&lt;YYYY-MM&gt;\</code></td><td>Evidence you place: emails, workbooks, report exports. The period folder is the month the data is "as at" (the Aug-26 PCM file goes in <code>scorecard\2026-08\</code>).</td><td>Read only (may create a request folder)</td></tr>
+<tr><td><code>config\</code></td><td>Rules, cell maps, calendar, email templates</td><td>Read and validate</td></tr>
+<tr><td><code>kb\published\ staging\ archive\</code></td><td>Knowledge files</td><td>Read</td></tr>
+<tr><td><code>data\</code></td><td>Records (one change log per operator)</td><td>Write</td></tr>
+<tr><td><code>exports\</code></td><td>Reports, packages, drafts</td><td>Write</td></tr>
+<tr><td><code>backups\</code></td><td>Daily copies of your log</td><td>Write</td></tr>
+</table></div>
+<p>The app warns when a file name names a different month from its folder (for example <code>Sep-26</code> in the <code>2026-10</code> folder).</p>
+
+<h3 id="basics-shell">Screen layout and status bar</h3>
+<ul>
+<li><b>Status bar</b> (dark blue): folder name, operator (click <b>change</b> to switch), mode (<b>read-write</b> or <b>read-only</b>), and <b>Refresh</b> (re-reads config, records and folders after you save new files).</li>
+<li><b>Tabs</b>: Today, Scorecard, Close, Intake, Requests, JUAS, Forecast, Knowledge, Governance, Settings. One screen at a time.</li>
+<li><b>Read-only banner</b> (orange) appears when the folder cannot be written; the referee, search and reports still work.</li>
+<li><b>Green bar</b>: confirmation of what just happened, with the file path it wrote.</li>
+</ul>
+
+<h3 id="basics-lists">Lists: filter, sort, export</h3>
+<p>Every table has a <b>Filter</b> box (matches any column), clickable column headers (sort, click again to reverse), a row count, and <b>Export CSV</b> (writes <code>exports\lists\&lt;list&gt;.csv</code>). Clickable rows highlight on hover and open a detail form.</p>
+
+<h3 id="basics-refusal">Refusals: the red bar</h3>
+<p>When a gate blocks an action, a red bar names what is missing in plain words, for example <i>"Needs an IM reply in sources/requests/REQ-26-S001"</i>. Nothing is changed by a refused action.</p>
+<div class="try"><b>Try it:</b> Governance &gt; Open Items &gt; click a row &gt; set Status to Closed &gt; Save. Refused: <i>"Needs closure evidence..."</i></div>
+
+<h3 id="basics-records">How records are stored</h3>
+<ul>
+<li>Each operator writes only their own log, <code>data\events\&lt;letter&gt;\&lt;YYYY-MM&gt;.jsonl</code>, one line per change with who, when, old value and new value. Two or three people can share one folder without overwriting each other.</li>
+<li>On open, the app replays every log to rebuild the registers.</li>
+<li>Nothing is deleted: a record is "voided" with a reason and stays in the audit.</li>
+<li>Before your first change each day, the app copies your log to <code>backups\&lt;date&gt;\&lt;letter&gt;\</code> (30 days kept).</li>
+<li>If two people change the same field of the same record within 15 minutes, Today asks one of them to confirm.</li>
+<li>An older copy of the app refuses to write once a newer one has written (version guard).</li>
+</ul>
+
+<h3 id="basics-drafts">Email drafts</h3>
+<p>The app never sends mail. It writes <code>.eml</code> drafts to <code>exports\drafts\</code> from the templates in <code>config\templates\</code>. You open the draft in Outlook, check it, attach any file it names, send it, then click <b>Mark sent</b> on Today. Replies you save back into the right folder become evidence.</p>
+
+<div class="why"><h3 id="basics-why">Why your manager should care</h3>
+<p>The design removes whole classes of failure: no server to maintain, no licence, no data leaving the device, no "which version is current" debates, and no silent edits to source workbooks. Control comes from folder access, which Contoso Energy already manages.</p></div>
+<div class="eff"><h3 id="basics-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>One place to look instead of inboxes and scattered workbooks; refusals catch errors at the moment of entry instead of at month-end.</dd>
+<dt>Provenance</dt><dd>Every change carries operator, timestamp, old and new value. Files are identified by a content fingerprint (SHA-256), so a renamed file keeps its history and an edited "received" file is flagged.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="today">
+<h2>3. Today</h2>
+<p class="short"><b>In short:</b> the first screen answers "what needs me now": each tile is a count from its module, and the drafts panel lists emails still to send.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#today-tiles">The count tiles</a></li>
+<li><a href="#today-step">Scorecard step and last backup</a></li>
+<li><a href="#today-lists">Detail lists on Today</a></li>
+<li><a href="#today-drafts">Drafts panel</a></li>
+<li><a href="#today-weekly">Weekly status</a></li>
+</ul></div>
+
+<h3 id="today-tiles">The count tiles</h3>
+<p>Highlighted tiles have something waiting. Click a tile's name to jump to its screen, where the list shows exactly the same items.</p>
+<div class="tablewrap"><table>
+<tr><th>Tile</th><th>Counts</th><th>In the preview</th></tr>
+<tr><td>Close tasks due or overdue</td><td>Open close tasks due on or before today</td><td>4</td></tr>
+<tr><td>Close inputs missing (radar)</td><td>Expected inputs for last month's close not yet in its folder (from WD1)</td><td>3</td></tr>
+<tr><td>Inputs received, not applied</td><td>Scorecard inputs received more than 3 business days ago and not applied</td><td>varies</td></tr>
+<tr><td>Unlogged mail</td><td>Saved emails neither logged nor dismissed</td><td>8</td></tr>
+<tr><td>Requests needing my action</td><td>My open requests outside the waiting stages</td><td>varies</td></tr>
+<tr><td>FPL9 checks due / Overdue follow-ups / Waiting on Sundry Billing / Blocked</td><td>The four request queues</td><td>0 / 1 / 0 / 1</td></tr>
+<tr><td>JUAS retests due</td><td>Exceptions at Retest Required with a retest date on or before today</td><td>1</td></tr>
+<tr><td>KB reviews due</td><td>Knowledge files whose review date has passed</td><td>3</td></tr>
+<tr><td>Conflicting edits / Evidence changed / Config errors</td><td>Things to fix or confirm</td><td>0</td></tr>
+<tr><td>Drafts not yet sent</td><td>Emails drafted and not marked sent</td><td>7</td></tr>
+</table></div>
+
+<h3 id="today-step">Scorecard step and last backup</h3>
+<p>The top line says which business day of the scorecard cycle today is and what is due, for example <i>"BD4 of the Sep-26 cycle: register inputs; chase missing actuals and forecast answers"</i>. <b>Last backup</b> shows your most recent daily copy.</p>
+
+<h3 id="today-lists">Detail lists on Today</h3>
+<p>Below the tiles: close tasks due, missing close inputs, conflicting edits (with a <b>Keep</b> button to confirm the value that stands), and evidence changed after receipt.</p>
+
+<h3 id="today-drafts">Drafts panel</h3>
+<p>Every unsent draft with module, recipient, subject and file. Download it (Demo files in the preview; <code>exports\drafts\</code> for real), send it from Outlook, then click <b>Mark sent</b>.</p>
+
+<h3 id="today-weekly">Weekly status</h3>
+<p><b>Write weekly status</b> produces a short summary (under 200 words) built only from the counts above, and copies it to the clipboard. It never invents numbers, percentages or amounts.</p>
+
+<div class="why"><h3 id="today-why">Why your manager should care</h3>
+<p>It replaces the reminders SharePoint Rules and Copilot prompts used to provide, with a list computed from the actual state. The weekly status is reproducible: the same data gives the same report, and every number in it can be traced to a screen.</p></div>
+<div class="eff"><h3 id="today-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>One screen replaces a morning sweep of the mailbox, the close checklist, the scorecard tracker and the request log. The weekly status takes one click.</dd>
+<dt>Provenance</dt><dd>Each tile equals its module list (this is tested), so a count on Today is never a separate, drifting number.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="cycle">
+<h2>4. Scorecard: Cycle</h2>
+<p class="short"><b>In short:</b> open a period to get 15 program rows, each Green only when five gates hold (actuals received, forecast changed or confirmed, loaded, tied out, reviewed), with the six questions answered on the same screen.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#cycle-open">Opening or showing a cycle</a></li>
+<li><a href="#cycle-gates">The five gates</a></li>
+<li><a href="#cycle-six">The six questions</a></li>
+<li><a href="#cycle-bd">BD strip and drafts</a></li>
+<li><a href="#cycle-explain">Explaining a line, marking reviewed</a></li>
+</ul></div>
+
+<h3 id="cycle-open">Opening or showing a cycle</h3>
+<p>Scorecard &gt; <b>Cycle</b>. Type the period (<code>2026-08</code>) and click <b>Open cycle</b> (creates the 15 rows once; safe to click again) or <b>Show</b>.</p>
+
+<h3 id="cycle-gates">The five gates</h3>
+<div class="tablewrap"><table>
+<tr><th>Gate</th><th>How it is set</th></tr>
+<tr><td>Actuals received</td><td>Computed: an Actuals input for the program and period, Received or Applied</td></tr>
+<tr><td>Forecast changed?</td><td>Computed: a Forecast input gives <b>Changed</b>; a forecast-confirmation email gives <b>No change confirmed</b>; otherwise <b>Not asked</b> (not green)</td></tr>
+<tr><td>Loaded</td><td>You tick the Loaded box</td></tr>
+<tr><td>Tied out</td><td>Computed: every referee line for the program Ties, or has an explanation</td></tr>
+<tr><td>Reviewed</td><td>Chloe's reply registered as a Review input, or <b>Mark reviewed</b> with a note</td></tr>
+</table></div>
+<p>The <b>Missing</b> column names the gates still open.</p>
+<div class="try"><b>Try it:</b> show 2026-08. Fire Mesh needs only Reviewed; S1 shows Forecast changed? = Not asked. Tick Loaded on Vegetation and watch its Missing column shrink.</div>
+
+<h3 id="cycle-six">The six questions</h3>
+<ol>
+<li>Latest forecast and who sent it</li>
+<li>Programs missing actuals</li>
+<li>Inputs received but not applied (over 3 business days)</li>
+<li>Tie-out: how many lines tie, differ, lack a source, or are unverified</li>
+<li>Forecast changed and confirmed, per program (and who was never asked)</li>
+<li>Reviewed and ready: which programs are green</li>
+</ol>
+
+<h3 id="cycle-bd">BD strip and drafts</h3>
+<ul>
+<li><b>BD2: draft provider requests</b>: one email per provider (from Program Owners) asking for actuals and an explicit "no change to forecast".</li>
+<li><b>Export cycle-status.html</b>: a static page with the 15 programs and their gates, safe to email.</li>
+<li><b>BD6: draft to Chloe</b> (with cycle-status.html to attach) and <b>BD7: draft to Ben</b>.</li>
+</ul>
+
+<h3 id="cycle-explain">Explaining a line, marking reviewed</h3>
+<p>Pick a referee line, type why it does not tie (for example "Mapping pending Marco"), click <b>Explain line</b>; the program can then be Tied out. <b>Mark reviewed</b> needs a note saying who reviewed and how.</p>
+
+<div class="why"><h3 id="cycle-why">Why your manager should care</h3>
+<p>"Forecast changed?" defaults to <b>Not asked</b> and blocks green. That single rule closes the loop that left Marco's March forecast off the scorecard for 202 days. A program cannot look finished just because nobody asked.</p></div>
+<div class="eff"><h3 id="cycle-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>The six questions are answered on one screen without opening Outlook; provider requests are drafted in one click from the owners table.</dd>
+<dt>Provenance</dt><dd>Each gate points to a registered file or a recorded tick with operator and time; explanations are stored and printed on cycle-status.html.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="inputs">
+<h2>5. Scorecard: Inputs</h2>
+<p class="short"><b>In short:</b> every provider file or reply is registered once, by content, with a status (Received, Applied, Superseded, Rejected); a newer file for the same thing supersedes the older one, and you can undo it.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#inputs-register">Registering files</a></li>
+<li><a href="#inputs-classify">Classifying emails and odd files</a></li>
+<li><a href="#inputs-status">Apply, reject, supersede, undo</a></li>
+<li><a href="#inputs-views">Views</a></li>
+</ul></div>
+<h3 id="inputs-register">Registering files</h3>
+<p>Scorecard &gt; <b>Inputs</b>, type the period, click <b>Register new files</b>. Files whose names match a rule in <code>sources.json</code> (for example the PCM summary) are registered with provider, type and received date (the email Date header, or the file date). Registering again adds nothing.</p>
+<h3 id="inputs-classify">Classifying emails and odd files</h3>
+<p>Emails and unmatched files appear under <b>Unclassified files</b>. Choose the file, its type (Actuals, Plan, Forecast, Forecast confirmation, Correction, Variance explanation, Review), programs and forecast change, then <b>Classify and register</b>. It is remembered by content, even if the file is renamed later.</p>
+<div class="try"><b>Try it:</b> 2026-08: classify <code>RE Scorecard Aug-26 review (Chloe).eml</code> as Review, then check the Cycle tab: Reviewed turns Yes for every program.</div>
+<h3 id="inputs-status">Apply, reject, supersede, undo</h3>
+<ul>
+<li><b>Apply</b> once you have loaded it into the workbook (sets the applied date).</li>
+<li><b>Reject</b> needs a reason.</li>
+<li>A newer file with the same rule, programs, type and period marks the older one <b>Superseded</b>. <b>Undo supersede</b> restores it.</li>
+</ul>
+<h3 id="inputs-views">Views</h3>
+<p>All, Current authoritative, Waiting to apply, Superseded: the same table, filtered.</p>
+<div class="why"><h3 id="inputs-why">Why your manager should care</h3>
+<p>It ends "which file did we use?". The referee reads the current authoritative input, so a corrected PCM file changes the tie-out automatically, and the old one is still there for audit.</p></div>
+<div class="eff"><h3 id="inputs-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>No renaming or moving files; the register does the bookkeeping. Stale inputs surface on Today after 3 business days.</dd>
+<dt>Provenance</dt><dd>Each input records path, content hash, provider, received date and status history; if a received file is edited later, Today flags "evidence changed after receipt".</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="referee">
+<h2>6. Scorecard: Referee</h2>
+<p class="short"><b>In short:</b> a read-only check of the working scorecard workbook: each mapped line is tied to its source cell (Ties, Differs, Source missing, Mapping unverified) and 11 health checks (HC1 to HC11) look for known silent errors.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#referee-run">Running it</a></li>
+<li><a href="#referee-tie">Tie-out statuses</a></li>
+<li><a href="#referee-hc">The health checks</a></li>
+<li><a href="#referee-export">Exporting the result</a></li>
+</ul></div>
+<h3 id="referee-run">Running it</h3>
+<p>Scorecard &gt; <b>Referee</b>, period <code>2026-08</code>, <b>Run referee</b>. It uses the newest working workbook in <code>sources\scorecard\2026-08\</code> and the current registered inputs. It never edits a workbook and works on a read-only folder.</p>
+<h3 id="referee-tie">Tie-out statuses</h3>
+<div class="tablewrap"><table>
+<tr><th>Status</th><th>Meaning</th><th>Preview example</th></tr>
+<tr><td>Ties</td><td>Target within tolerance of source x factor</td><td>Other Pole Mtce: -43,229 vs -43,234 (<code>Financials!I87</code> vs <code>DMtce!I12</code> x 0.345)</td></tr>
+<tr><td>Differs</td><td>Outside tolerance</td><td>Test &amp; Treat: 1,500 apart</td></tr>
+<tr><td>Source missing</td><td>File, sheet or number absent: never guessed</td><td>(remove the PCM file to see it)</td></tr>
+<tr><td>Mapping unverified</td><td>The map in config is not confirmed</td><td>Vegetation brushing</td></tr>
+</table></div>
+<h3 id="referee-hc">The health checks</h3>
+<div class="tablewrap"><table>
+<tr><th>Check</th><th>Fails when</th><th>August result</th></tr>
+<tr><td>HC1 Forecast = Plan</td><td>Forecast cell equals plan cell</td><td>13 of 13 lines</td></tr>
+<tr><td>HC2 Future months</td><td>Non-zero values after the reporting month</td><td>Loadings J to M, rows 83 and 95</td></tr>
+<tr><td>HC3 External links</td><td>Links to other workbooks</td><td>3 links</td></tr>
+<tr><td>HC4 Hard-coded summary</td><td>Summary numbers with no formula</td><td>75 cells in <code>Financials!B2:F16</code></td></tr>
+<tr><td>HC5 Required comments</td><td>Required note missing</td><td><code>Scorecard!I13</code>, <code>I14</code></td></tr>
+<tr><td>HC6 Light vs ratio</td><td>Traffic light disagrees with actual / plan</td><td>Fire Mesh Green at 40%</td></tr>
+<tr><td>HC7 Checklist false pass</td><td>A tick beside "EMPTY"</td><td>Checks 15 to 22</td></tr>
+<tr><td>HC8 Loading basis</td><td>Summary differs from detail</td><td>Gap $1,344,903</td></tr>
+<tr><td>HC9 Zero actuals</td><td>Actuals zero all year against a plan</td><td>Fire Mesh $ row 106</td></tr>
+<tr><td>HC10 Plan is a forecast</td><td>A plan row equals a forecast file's series</td><td>Row 109 = Anika's forecast</td></tr>
+<tr><td>HC11 Missing saved values</td><td>Formulas saved without values</td><td>Pass (recalculate and save in Excel if it fails)</td></tr>
+</table></div>
+<h3 id="referee-export">Exporting the result</h3>
+<p><b>Export HTML and CSV</b> writes <code>exports\scorecard\&lt;period&gt;\referee.html</code> (static, printable, no scripts) and <code>referee.csv</code>.</p>
+<div class="why"><h3 id="referee-why">Why your manager should care</h3>
+<p>It reproduces the 25-Sep drift findings on every run, automatically. The checks target "checks that cannot fail" and "silent defaults", which are exactly the errors a reviewer does not see by eye.</p></div>
+<div class="eff"><h3 id="referee-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Seconds instead of a manual tie-out; rerun on every saved version of the workbook.</dd>
+<dt>Provenance</dt><dd>Every result names its target cell, source cell and source file; the exported report is a dated record of what was checked.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="close">
+<h2>7. Close</h2>
+<p class="short"><b>In short:</b> opening a period generates the close checklist with due dates from the business-day calendar; a JE cannot be Submitted without the approver's real reply, Posted without a doc number, or Done without being Posted.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#close-open">Opening a period</a></li>
+<li><a href="#close-status">Statuses and gates</a></li>
+<li><a href="#close-reply">The reply check</a></li>
+<li><a href="#close-radar">Radar</a></li>
+<li><a href="#close-trend">Trend and materiality</a></li>
+<li><a href="#close-bss">BSS draft</a></li>
+</ul></div>
+<h3 id="close-open">Opening a period</h3>
+<p>Close &gt; <b>Period</b>, type <code>2026-10</code>, <b>Open period</b>. Both JEs are due WD2 at 14:00 (3-Nov-2026). Quarterly tasks appear only in March, June, September and December; triggered tasks (such as <code>rra</code>) only when you list them in Triggers. Opening twice creates nothing new.</p>
+<h3 id="close-status">Statuses and gates</h3>
+<div class="flow"><span>Not Started</span><i>&rarr;</i><span>Waiting Input</span><i>&rarr;</i><span>In Progress</span><i>&rarr;</i><span>Submitted</span><i>&rarr;</i><span>Posted</span><i>&rarr;</i><span>Done</span></div>
+<ul>
+<li><b>Submitted</b>: needs the approval reply email that passes the reply check (or an override with a recorded reason).</li>
+<li><b>Posted</b>: needs the Posted Doc Number in the configured format.</li>
+<li><b>Done</b>: JE tasks need Posted; evidence tasks need a linked file; placeholder tasks (B3/JU, Fabrikam Telecom) have no gates yet.</li>
+<li><b>Exception</b>: from any open status, needs a note; returns only to the status it came from.</li>
+</ul>
+<p>Click a task row, choose <b>Move to</b>, pick the evidence file, fill the doc number or note, then <b>Apply</b>.</p>
+<h3 id="close-reply">The reply check</h3>
+<p>The evidence must start with RE:, come from the task's approver (not from an operator), and be dated after the request. Otherwise: <i>"This looks like the request, not the reply."</i></p>
+<div class="try"><b>Try it:</b> open 2026-10, click <code>wip-je</code>, move to In Progress, then Submitted with each evidence file and <b>Check reply</b>: the request, the copy forwarded by Sam, and the early reply are refused; <code>RE WIP Accrual JE Oct-26 approval.eml</code> passes.</div>
+<h3 id="close-radar">Radar</h3>
+<p>The <b>Radar</b> tab lists each expected input (TQ's Unbilled Sets file, Yara's DVeg email, Colette's input) as Present or MISSING in <code>sources\close\&lt;period&gt;\</code>. <b>Draft requests for missing inputs</b> writes chaser emails.</p>
+<h3 id="close-trend">Trend and materiality</h3>
+<p>The <b>Trend</b> tab reads the package total from the configured cell (<code>JE!F20</code>) for 13 months and flags a change above both 20% and $50,000. With period 2026-10, October is flagged (+80%); March shows missing.</p>
+<h3 id="close-bss">BSS draft</h3>
+<p>On a JE task, <b>Draft BSS submission</b> writes the email naming the approval reply file to attach. It is refused if the evidence fails the reply check.</p>
+<div class="why"><h3 id="close-why">Why your manager should care</h3>
+<p>It targets the BSS rejection pattern (the request mistaken for the approval) and "submitted mistaken for posted". A covering colleague can run WD1 to WD5 from the checklist alone.</p></div>
+<div class="eff"><h3 id="close-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Checklist, due times and chasers are generated; missing inputs show on Today from WD1 instead of being discovered on WD2.</dd>
+<dt>Provenance</dt><dd>Each task stores the approval email, submission date, posted doc number and any override reason, with who and when.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="intake">
+<h2>8. Intake</h2>
+<p class="short"><b>In short:</b> saved request emails appear under Unlogged mail; open one, the app proposes each field and shows the exact line it came from, you confirm, and a request is created with its evidence folder.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#intake-list">Unlogged mail</a></li>
+<li><a href="#intake-propose">Proposed fields and source lines</a></li>
+<li><a href="#intake-confirm">Confirm or dismiss</a></li>
+<li><a href="#intake-safety">Email text is only ever text</a></li>
+</ul></div>
+<h3 id="intake-list">Unlogged mail</h3>
+<p>Emails saved in <code>sources\mail\&lt;month&gt;\</code> (current and previous month) that are neither logged nor dismissed.</p>
+<h3 id="intake-propose">Proposed fields and source lines</h3>
+<p>Click an email. Request type, project code, WBS, customer, amount, PO, billing reason, requester and received date are proposed from rules in <code>intake-rules.json</code>. Each shows its status (Proposed, Unverified when not found, Unmapped when a project code cannot be normalized) and its source line. Edit any value; it changes to Edited. The app never proposes a value that is not in the email.</p>
+<div class="try"><b>Try it:</b> open <code>FW Invoice request IC 10470.eml</code>: "IC 10470" becomes IC-10470; the amount shows 9,850.00. Open <code>Invoice request IC-1047.eml</code>: the code is Unmapped, not guessed.</div>
+<h3 id="intake-confirm">Confirm or dismiss</h3>
+<p><b>Confirm and log</b> creates <code>REQ-26-S0nn</code> at stage New and creates <code>sources\requests\REQ-26-S0nn\</code> for its evidence. <b>Dismiss (not a request)</b> needs a reason. Both are shared: other operators see the email disappear too.</p>
+<h3 id="intake-safety">Email text is only ever text</h3>
+<p>Open <code>Invoice request - script test.eml</code>: the markup and script in it display as plain text and never run. Formula-like text (<code>=HYPERLINK(...)</code>) is neutralised in CSV exports.</p>
+<div class="why"><h3 id="intake-why">Why your manager should care</h3>
+<p>Every request email becomes one tracked record, typically within the day, with the original email linked. Nothing lives only in someone's inbox.</p></div>
+<div class="eff"><h3 id="intake-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Fields are pre-filled; missing information is listed at intake, not discovered at requisition.</dd>
+<dt>Provenance</dt><dd>Each value shows the email line it came from; the request stores the email path and fingerprint.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="requests">
+<h2>9. Requests</h2>
+<p class="short"><b>In short:</b> one record carries an invoice request from intake to closeout; each stage change is checked, and the approvals come from reply emails saved in the request's folder.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#requests-board">Board and queues</a></li>
+<li><a href="#requests-stages">Stages</a></li>
+<li><a href="#requests-gates">Gates</a></li>
+<li><a href="#requests-detail">The detail form</a></li>
+<li><a href="#requests-metrics">Age and cycle-time metrics</a></li>
+</ul></div>
+<h3 id="requests-board">Board and queues</h3>
+<p>Four queues on one screen: <b>Sundry Billing</b> (awaiting invoice number), <b>FPL9 check due</b> (invoiced, not paid, not checked for 14 days), <b>Overdue follow-up</b>, <b>Blocked</b>. Then the full board with stage, customer, amount and age.</p>
+<h3 id="requests-stages">Stages</h3>
+<p>Invoice requests:</p>
+<div class="flow"><span>New</span><i>&rarr;</i><span>Under Review</span><i>&rarr;</i><span>Ready for Requisition</span><i>&rarr;</i><span>Pending IM Approval</span><i>&rarr;</i><span>Approved by IM</span><i>&rarr;</i><span>With Sundry Billing</span><i>&rarr;</i><span>Invoiced</span><i>&rarr;</i><span>Payment Monitoring</span><i>&rarr;</i><span>Reconciliation</span><i>&rarr;</i><span>Closeout Review</span><i>&rarr;</i><span>Closed</span></div>
+<p>Loops: Missing Information, Changes Requested, Returned by Finance; ends: Rejected, Cancelled (reason required). Other types: New, Under Review, In Progress, Completed.</p>
+<h3 id="requests-gates">Gates</h3>
+<div class="tablewrap"><table>
+<tr><th>Moving to</th><th>Needs</th></tr>
+<tr><td>Pending IM Approval</td><td>IM (taken from Projects) and the requisition fields; drafts the approval email to the IM</td></tr>
+<tr><td>Approved by IM / Changes Requested / Rejected</td><td>An email from the IM in the request folder, dated after Pending IM Approval; its date becomes the decision date</td></tr>
+<tr><td>With Sundry Billing</td><td>Generated Sundry package and the sent date</td></tr>
+<tr><td>Invoiced and later</td><td>Invoice number and date</td></tr>
+<tr><td>Closeout Review, Closed</td><td>All five reconciliation checks</td></tr>
+<tr><td>Closed</td><td>A Finance approval email in the folder and FPL9 Cleared</td></tr>
+<tr><td>Completed</td><td>Completed date</td></tr>
+</table></div>
+<div class="try"><b>Try it:</b> open REQ-26-S001 (Pending IM Approval), move to Approved by IM: refused, "Needs an IM reply in sources/requests/REQ-26-S001". Use Demo files to add a saved reply from <code>pat.im@example.test</code> into that folder to see it pass.</div>
+<h3 id="requests-detail">The detail form</h3>
+<p>Click any row: edit fields, tick reconciliation checks and FPL9 cleared, <b>Save fields</b>, <b>Move</b> to an allowed stage, <b>Generate Sundry package</b> (an .xlsx plus a draft to Sundry Billing), <b>Draft Finance approval request</b>. The panel lists the evidence folder and the change history.</p>
+<h3 id="requests-metrics">Age and cycle-time metrics</h3>
+<p>Open requests by age (0-7, 8-14, 15-30, 31+ days), median and P90 days to complete, and how many need my action. <b>Export the requests register (CSV)</b> writes the whole register.</p>
+<div class="why"><h3 id="requests-why">Why your manager should care</h3>
+<p>Approvals are the approver's own reply email (who and when come from the email), which meets the approval requirement without giving anyone else access to the tool. Three status models become one stage with enforced transitions.</p></div>
+<div class="eff"><h3 id="requests-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Queues replace chasing by memory; drafts to IMs, Sundry Billing and Finance are generated from the record.</dd>
+<dt>Provenance</dt><dd>Every gate cites its evidence file; the change history shows each stage move with operator and time.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="juas">
+<h2>10. JUAS</h2>
+<p class="short"><b>In short:</b> one exceptions register with a duplicate warning and a formal-dispute guardrail, a checklist that confirms each JUAS report export by its header, and a workbook compare tool.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#juas-exc">Exceptions and retests</a></li>
+<li><a href="#juas-dispute">Formal disputes</a></li>
+<li><a href="#juas-reports">Report checklist and JPB pre-run</a></li>
+<li><a href="#juas-compare">Compare workbooks</a></li>
+</ul></div>
+<h3 id="juas-exc">Exceptions and retests</h3>
+<div class="flow"><span>New</span><i>&rarr;</i><span>Under Validation</span><i>&rarr;</i><span>With System Support</span><i>&rarr;</i><span>Correction Pending</span><i>&rarr;</i><span>Retest Required</span><i>&rarr;</i><span>Closed</span></div>
+<p>System Support needs a ticket; Retest Required needs a retest date; Closed needs a closure date. <b>New exception</b> warns when an open item already has the same pole, activity and kind (<b>Create even if duplicate</b> overrides). Retests due sit at the top of the default view.</p>
+<h3 id="juas-dispute">Formal disputes</h3>
+<p>An exception of kind "Formal dispute" (JOUA 19.10) carries <i>"flag and escalate, do not answer"</i> and no correction draft is offered.</p>
+<h3 id="juas-reports">Report checklist and JPB pre-run</h3>
+<p><b>Reports</b> tab, period <code>2026-10</code>, <b>Check reports</b>: each of the 11 expected reports shows present, missing, or wrong header. In the preview, Report 48 has the wrong header and Report 52 is missing. The line above gives the JPB pre-run date (last working day, before 21:00).</p>
+<h3 id="juas-compare">Compare workbooks</h3>
+<p>Give two workbook paths, the sheet, key columns and value columns, and a tolerance (default 0.01): you get OK and DIFF counts and each differing cell. Read-only. The preview has no pair of rebuild files; add two with Demo files to try it.</p>
+<div class="why"><h3 id="juas-why">Why your manager should care</h3>
+<p>One item per issue (HJ vs JJ is one record, not three trackers), and a hard stop on answering formal disputes. The compare tool gives an objective "146 OK / 0 DIFF" before a rebuilt workbook replaces the old one.</p></div>
+<div class="eff"><h3 id="juas-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Duplicate warnings and a retest list stop repeated work; the report checklist replaces opening 11 files by hand.</dd>
+<dt>Provenance</dt><dd>Exceptions carry evidence, ticket and dates; a report counts only when its header row matches, so a wrong export cannot pass as the right one.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="forecast">
+<h2>11. Forecast</h2>
+<p class="short"><b>In short:</b> the app writes one template per manager, validates the returns they email back, applies only clean ones, tracks who has not submitted, and consolidates.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#fc-open">Open a cycle and generate templates</a></li>
+<li><a href="#fc-ingest">Ingest returns</a></li>
+<li><a href="#fc-track">Tracking, reminders, lock</a></li>
+<li><a href="#fc-consolidate">Consolidate</a></li>
+</ul></div>
+<h3 id="fc-open">Open a cycle and generate templates</h3>
+<p>Enter the cycle (<code>F27Q3</code>), due date and horizon periods, <b>Open cycle</b>, then <b>Generate templates</b>. Each manager of the pilot cost centre gets <code>exports\forecast\&lt;cycle&gt;\templates\&lt;manager&gt;.xlsx</code> listing their active projects once, with a hidden sheet identifying cycle, manager and template version, plus a request draft.</p>
+<h3 id="fc-ingest">Ingest returns</h3>
+<p>Returns go in <code>sources\forecast\&lt;cycle&gt;\returns\</code>. <b>Ingest returns</b> checks template version, cycle, missing project, duplicate, unknown project, non-numeric values and lateness. A return with any issue is not applied; a return is applied once.</p>
+<div class="try"><b>Try it:</b> Demo files &gt; exports &gt; download a template, fill numbers in Excel, save, then add it to <code>sources/forecast/F27Q3/returns</code>, click Refresh, then Ingest returns. Type "TBD" in a cell to see "non-numeric".</div>
+<h3 id="fc-track">Tracking, reminders, lock</h3>
+<p>The Not submitted list groups projects by manager; <b>Draft reminders</b> writes a chaser to each. <b>Lock cycle</b> makes later returns Late; <b>Accept late returns (reason)</b> applies them with the reason recorded.</p>
+<h3 id="fc-consolidate">Consolidate</h3>
+<p><b>Consolidate</b> writes <code>exports\forecast\&lt;cycle&gt;\consolidation.csv</code> with totals by period, the grand total, and variance to the prior cycle when one exists.</p>
+<div class="why"><h3 id="forecast-why">Why your manager should care</h3>
+<p>Managers never need to open the app, and bad returns are rejected with a reason instead of silently corrupting the consolidation.</p></div>
+<div class="eff"><h3 id="forecast-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>No copy-pasting returns into a master workbook; reminders go only to those missing.</dd>
+<dt>Provenance</dt><dd>Each project's values point to the return file, its fingerprint and its date; late acceptance records who allowed it and why.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="knowledge">
+<h2>12. Knowledge</h2>
+<p class="short"><b>In short:</b> keyword search over published knowledge files, with drafts kept out unless you tick Include drafts (then labelled DRAFT); plus lists of pages due for review, without an owner, or superseded.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#kb-search">Searching</a></li>
+<li><a href="#kb-preview">Preview</a></li>
+<li><a href="#kb-lists">Review lists</a></li>
+</ul></div>
+<h3 id="kb-search">Searching</h3>
+<ul>
+<li>Type keywords or a question; titles and headings rank above body text.</li>
+<li>"Quoted phrases" must match exactly: <code>"notice of dispute"</code> finds the JOUA page; <code>"dispute notice"</code> finds nothing.</li>
+<li>Filter by process area or knowledge type (from each file's metadata).</li>
+<li>Tick <b>Include drafts</b> to add staging and archive; each such hit shows DRAFT.</li>
+</ul>
+<div class="try"><b>Try it:</b> search "S2 Net New rows": no result. Tick Include drafts and search again: the staging draft appears, labelled DRAFT.</div>
+<h3 id="kb-preview">Preview</h3>
+<p>Click a hit to see the file's text below the results. HTML and Word pages are shown as plain text; scripts in a file never run.</p>
+<h3 id="kb-lists">Review lists</h3>
+<p>Due for review (review date passed), No owner, and Superseded but still in published. Moving a file from <code>published</code> to <code>staging</code> takes it out of default results on the next <b>Rebuild index</b>.</p>
+<div class="why"><h3 id="kb-why">Why your manager should care</h3>
+<p>Draft or stale procedures stop answering questions by accident: the folder decides what counts as published, and ageing pages surface for review.</p></div>
+<div class="eff"><h3 id="kb-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Answers come with the file and heading, so people stop asking the same question twice.</dd>
+<dt>Provenance</dt><dd>Every hit names its file, heading and folder status; owners and review dates come from the page metadata.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="governance">
+<h2>13. Governance</h2>
+<p class="short"><b>In short:</b> Open Items (one list for issues and fixes; closing needs evidence), the Decision Log (D1 to D12 and DL1 to DL6), and an audit view of every change.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#gov-items">Open Items</a></li>
+<li><a href="#gov-decisions">Decision Log</a></li>
+<li><a href="#gov-audit">Audit</a></li>
+</ul></div>
+<h3 id="gov-items">Open Items</h3>
+<p><b>New Open Item</b>: title, owner, next action, dependency, due, status. Click a row to edit. Closing needs closure evidence (a file path). Projects imported without an IM raise an Open Item automatically, once.</p>
+<h3 id="gov-decisions">Decision Log</h3>
+<p>The v2 decisions marked Carried, Changed or Superseded, and the new DL1 to DL6 marked Proposed with who must confirm them.</p>
+<h3 id="gov-audit">Audit</h3>
+<p>Every change, newest first: time, operator, register, record, and old to new values. Filter by register, record, operator, and date range.</p>
+<div class="try"><b>Try it:</b> Audit tab, Record = <code>REQ-26-S001</code>, Filter: its whole life from intake to Pending IM Approval.</div>
+<div class="why"><h3 id="gov-why">Why your manager should care</h3>
+<p>Decisions and open issues live next to the work they govern, and the audit answers "who changed this and when" without anyone reconstructing it from email.</p></div>
+<div class="eff"><h3 id="gov-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>One list replaces Open Items, change requests, flags and Planner.</dd>
+<dt>Provenance</dt><dd>The audit is built from the append-only logs themselves, so it cannot drift from what happened.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="settings">
+<h2>14. Settings</h2>
+<p class="short"><b>In short:</b> check that each config file is valid, import reference lists, set program owners, preview or load the legacy migration, and see backups and snapshots.</p>
+<div class="covers"><b>In this section</b><ul>
+<li><a href="#set-config">Config status</a></li>
+<li><a href="#set-ref">Reference imports</a></li>
+<li><a href="#set-owners">Program owners</a></li>
+<li><a href="#set-migration">Legacy migration</a></li>
+<li><a href="#set-backups">Backups and snapshots</a></li>
+</ul></div>
+<h3 id="set-config">Config status</h3>
+<p>Each of the nine config files shows valid or its errors, naming the file and key. A broken file disables only the modules that use it; the app still opens.</p>
+<h3 id="set-ref">Reference imports</h3>
+<p>Import Projects, DOA approvers and Order Reasons from <code>sources\reference\</code>. The result lists duplicate codes, codes that cannot be normalized, active projects without an IM, and active approvers with a zero limit.</p>
+<h3 id="set-owners">Program owners</h3>
+<p>Forecast owner, actuals owner and backup per program with an effective-from date. History is kept: "Marco until 23-Jun, Anika from 24-Jun" is one answer.</p>
+<h3 id="set-migration">Legacy migration</h3>
+<p><b>Preview migration</b> counts what the old list exports would create (preview: 40 project setups, 15 WBS setups, 5 invoice files, 3 reports) and lists unmapped codes and statuses. <b>Load migration (admin)</b> refuses while a status is unmapped (the preview has "Pending"), and writes one file that can be removed to undo the load.</p>
+<h3 id="set-backups">Backups and snapshots</h3>
+<p>Last backup date for you. <b>Compact snapshots (admin)</b> saves the current state to speed up opening; deleting snapshots rebuilds the identical state from the logs.</p>
+<div class="why"><h3 id="set-why">Why your manager should care</h3>
+<p>Rules live in plain files that can be read, reviewed and versioned; a mistake in one file cannot take the whole tool down. The migration is checkable and reversible.</p></div>
+<div class="eff"><h3 id="set-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>Data-quality gaps (missing IMs, zero limits, odd codes) are listed at import instead of found mid-process.</dd>
+<dt>Provenance</dt><dd>Migrated records keep their legacy ID and original project code; the migration is one identifiable file.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="glossary">
+<h2>15. Glossary</h2>
+<p class="short"><b>In short:</b> the terms and abbreviations used on the screens, in one place.</p>
+<div class="covers"><b>In this section</b><ul><li><a href="#glossary-terms">Terms A to Z</a></li></ul></div>
+<h3 id="glossary-terms">Terms A to Z</h3>
+<div class="tablewrap"><table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Admin operator</td><td>Sam: may compact snapshots and load the migration</td></tr>
+<tr><td>BD / WD</td><td>Business (working) day n after month-end, skipping weekends and statutory holidays; BD and WD are the same count</td></tr>
+<tr><td>Current authoritative</td><td>The input that counts now (Received or Applied, not superseded)</td></tr>
+<tr><td>Draft (.eml)</td><td>An email file Outlook opens for editing; the app never sends</td></tr>
+<tr><td>Evidence</td><td>A file saved in the record's folder that proves a step (a reply, a confirmation)</td></tr>
+<tr><td>FPL9</td><td>SAP payment check, recorded by date in the request</td></tr>
+<tr><td>Gate</td><td>A condition a record must meet before it can move on</td></tr>
+<tr><td>HC1 to HC11</td><td>The referee's health checks on the scorecard workbook</td></tr>
+<tr><td>IM</td><td>Invoice Manager, the approver for invoice requests</td></tr>
+<tr><td>JPB</td><td>The JUAS billing run on the last working day</td></tr>
+<tr><td>Operator letter</td><td>S, E, B...: part of each ID the operator creates (REQ-26-S001), so two people never mint the same ID</td></tr>
+<tr><td>Provenance</td><td>Where a number or decision came from: file, cell, email, person, time</td></tr>
+<tr><td>Radar</td><td>Expected close inputs, present or missing, checked from WD1</td></tr>
+<tr><td>Refusal</td><td>The red bar naming what is missing; nothing changes</td></tr>
+<tr><td>Supersede</td><td>A newer file for the same input replaces the older one, which is kept</td></tr>
+<tr><td>Void</td><td>The app's "delete": the record is hidden, with a reason, and stays in the audit</td></tr>
+</table></div>
+<div class="why"><h3 id="glossary-why">Why your manager should care</h3><p>Shared words mean fewer misunderstandings between operators, reviewers and approvers.</p></div>
+<div class="eff"><h3 id="glossary-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>New staff and the backup operator learn the vocabulary once.</dd>
+<dt>Provenance</dt><dd>Terms like evidence, supersede and void describe exactly how the history is kept.</dd>
+</dl></div>
+</section>
+
+<!-- ============================================================ -->
+<section class="sec" id="limits">
+<h2>16. What the preview cannot show</h2>
+<p class="short"><b>In short:</b> the preview proves the logic on dummy files in the browser; the real folder, Edge policy, real Outlook files and real volumes are checked on the Contoso Energy laptop.</p>
+<div class="covers"><b>In this section</b><ul><li><a href="#limits-list">Checks that need the laptop</a></li></ul></div>
+<h3 id="limits-list">Checks that need the laptop</h3>
+<ul>
+<li>Picking the shared folder in Edge, writing to it, and reconnecting after Edge restarts (the spike, <code>spike.html</code>).</li>
+<li>Real sheet names and cells in the scorecard map (every line ships as "unverified" until checked).</li>
+<li>Whether Contoso Energy Outlook saves <code>.msg</code> or <code>.eml</code>, and whether internal senders keep an SMTP address.</li>
+<li>Whether the drafts open as editable in new Outlook.</li>
+<li>Speed on the J: drive with real volumes (target: under 3 seconds).</li>
+</ul>
+<p>The full list is in <code>LAPTOP_ACCEPTANCE.md</code> in the build folder.</p>
+<div class="why"><h3 id="limits-why">Why your manager should care</h3><p>It states plainly what is proven and what is not, so the go-live decision rests on the laptop results rather than on the demo.</p></div>
+<div class="eff"><h3 id="limits-eff">Efficiency and provenance</h3><dl>
+<dt>Efficiency</dt><dd>A short, fixed checklist instead of open-ended testing.</dd>
+<dt>Provenance</dt><dd>Each laptop result is recorded in the Decision Log or as an Open Item.</dd>
+</dl></div>
+</section>
+</main>
+</div>
+<a class="totop" href="#main">Top &uarr;</a>
+
+<script>
+(function () {
+  'use strict';
+  var main = document.getElementById('main');
+  var toc = document.getElementById('toc');
+  var sections = Array.prototype.slice.call(document.querySelectorAll('section.sec'));
+
+  // ---- contents list built from the headings
+  var ol = document.createElement('ol'), links = {};
+  sections.forEach(function (s) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = '#' + s.id; a.textContent = s.querySelector('h2').textContent;
+    links[s.id] = a; li.appendChild(a); li.dataset.sec = s.id;
+    var sub = document.createElement('ol');
+    Array.prototype.forEach.call(s.querySelectorAll('h3[id]'), function (h) {
+      var sl = document.createElement('li'), sa = document.createElement('a');
+      sa.href = '#' + h.id; sa.textContent = h.textContent; links[h.id] = sa;
+      sl.appendChild(sa); sub.appendChild(sl);
+    });
+    li.appendChild(sub); ol.appendChild(li);
+  });
+  toc.appendChild(ol);
+
+  // ---- follow the scroll position
+  var heads = Array.prototype.slice.call(main.querySelectorAll('section.sec, h3[id]'));
+  function spy() {
+    var cur = null, curSec = null, y = 80;
+    heads.forEach(function (h) {
+      if (h.offsetParent === null) return;
+      if (h.getBoundingClientRect().top <= y) { if (h.tagName === 'SECTION') { curSec = h.id; cur = null; } else cur = h.id; }
+    });
+    if (!curSec && sections[0]) curSec = sections[0].id;
+    Array.prototype.forEach.call(toc.querySelectorAll('a.active'), function (a) { a.classList.remove('active'); });
+    Array.prototype.forEach.call(toc.querySelectorAll('li.open'), function (l) { l.classList.remove('open'); });
+    if (curSec && links[curSec]) {
+      links[curSec].classList.add('active');
+      links[curSec].parentNode.classList.add('open');
+      if (cur && links[cur] && links[cur].closest('li[data-sec]').dataset.sec === curSec) links[cur].classList.add('active');
+      var act = links[cur] && cur ? links[cur] : links[curSec];
+      var r = act.getBoundingClientRect(), side = toc.parentNode.getBoundingClientRect();
+      if (r.top < side.top + 90 || r.bottom > side.bottom - 20) act.scrollIntoView({ block: 'nearest' });
+    }
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(function () { ticking = false; spy(); }); } });
+  spy();
+
+  // ---- search: highlight matches, hide sections without one, Enter / arrows step through
+  var q = document.getElementById('q'), count = document.getElementById('count');
+  var prev = document.getElementById('prev'), next = document.getElementById('next');
+  var marks = [], idx = -1, secCount = 0;
+  function clear() {
+    Array.prototype.forEach.call(main.querySelectorAll('mark'), function (m) {
+      var t = document.createTextNode(m.textContent); m.parentNode.replaceChild(t, m);
+    });
+    main.normalize();
+    sections.forEach(function (s) { s.classList.remove('hidden'); });
+    Array.prototype.forEach.call(toc.querySelectorAll('li[data-sec]'), function (l) { l.classList.remove('hidden'); });
+    document.body.classList.remove('searching');
+    marks = []; idx = -1;
+  }
+  function run() {
+    clear();
+    var term = q.value.trim();
+    if (term.length < 2) { count.textContent = ''; prev.disabled = next.disabled = true; return; }
+    var lower = term.toLowerCase(), hitSecs = {};
+    var walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      return n.nodeValue.toLowerCase().indexOf(lower) >= 0 && !n.parentNode.closest('script,style') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    } });
+    var nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (n) {
+      var text = n.nodeValue, low = text.toLowerCase(), frag = document.createDocumentFragment(), pos = 0, at;
+      while ((at = low.indexOf(lower, pos)) >= 0) {
+        frag.appendChild(document.createTextNode(text.slice(pos, at)));
+        var m = document.createElement('mark'); m.textContent = text.slice(at, at + term.length);
+        frag.appendChild(m); marks.push(m); pos = at + term.length;
+      }
+      frag.appendChild(document.createTextNode(text.slice(pos)));
+      var sec = n.parentNode.closest('section.sec'); if (sec) hitSecs[sec.id] = true;
+      n.parentNode.replaceChild(frag, n);
+    });
+    document.body.classList.add('searching');
+    sections.forEach(function (s) { if (!hitSecs[s.id]) s.classList.add('hidden'); });
+    Array.prototype.forEach.call(toc.querySelectorAll('li[data-sec]'), function (l) { if (!hitSecs[l.dataset.sec]) l.classList.add('hidden'); });
+    var nSec = secCount = Object.keys(hitSecs).length;
+    count.textContent = marks.length ? marks.length + ' match' + (marks.length === 1 ? '' : 'es') + ' in ' + nSec + ' section' + (nSec === 1 ? '' : 's') : 'No matches';
+    prev.disabled = next.disabled = !marks.length;
+    if (marks.length) go(0);
+  }
+  function go(i) {
+    if (!marks.length) return;
+    if (idx >= 0 && marks[idx]) marks[idx].classList.remove('current');
+    idx = (i + marks.length) % marks.length;
+    marks[idx].classList.add('current');
+    marks[idx].scrollIntoView({ block: 'center' });
+    count.textContent = (idx + 1) + ' of ' + marks.length + ' (' + secCount + ' section' + (secCount === 1 ? '' : 's') + ')';
+  }
+  var timer;
+  q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(run, 200); });
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); go(e.shiftKey ? idx - 1 : idx + 1); }
+    if (e.key === 'Escape') { q.value = ''; run(); }
+  });
+  prev.addEventListener('click', function () { go(idx - 1); });
+  next.addEventListener('click', function () { go(idx + 1); });
+  document.addEventListener('keydown', function (e) { if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); } });
+
+  // ---- theme
+  function setTheme(t) { if (t) document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme'); try { localStorage.setItem('picdesk-guide-theme', t); } catch (e) { /* private window */ } }
+  try { var saved = localStorage.getItem('picdesk-guide-theme'); if (saved) setTheme(saved); } catch (e) { /* ignore */ }
+  Array.prototype.forEach.call(document.querySelectorAll('.theme button'), function (b) { b.addEventListener('click', function () { setTheme(b.dataset.t); }); });
+})();
+</script>
+</body>
+</html>
