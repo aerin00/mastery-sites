@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Sep 28, 2026, 1:30 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Sep 29, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Sep 28, 2026, 1:31 PM · Last published: Sep 28, 2026, 1:31 PM · published</p>
+<p>Last checked: Sep 29, 2026, 1:31 PM · Last published: Sep 29, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 28 daily evidence found no new release: v0.21.5 (v2026.9.24) remains the latest tag, with only star and reaction counts changing on the releases page. The cron guide added user-managed venv pinning for Python script and monitor_script jobs via --interpreter at create/edit time. The skills and memory guides were byte-identical to the previous check. Main-branch commits on September 28 (gateway restart and lock-safety fixes, profile-scope containment for dashboard routes, background reviews and catalog caches, delegation durable-completion restore on first consume, Desktop connection-scoped tab and tile salvage fixes) are recorded as untagged activity. The skills blank-slate installer correction entry and the September 25 main-branch activity note were retired to stay within the contract&#x27;s limits; both remain in earlier editions. Ranks, scores, stable IDs, and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. September 29 daily evidence found no new release: v0.21.5 (v2026.9.24) remains the latest tag, with only reaction counts changing on the releases page. The cron guide was byte-identical to the previous check; the skills and memory guides changed only by a &#x27;Language Packs&#x27; item added to the site navigation, not page content. Main-branch commits on September 29 (desktop tool-card/bridge lookup-table refactor and HUD note fixes, a unified clarify question/result shape, gateway first-contact note limited to DMs with the offer flag saved in the routed profile, debug-share redaction covering URL tokens, passwords and fallback fields, gateway lock-identity work, update-tail handling for supervised launches, and sticky-profile recovery fixes) are recorded as untagged activity, and the September 26 activity note was retired to stay within the contract&#x27;s limits; it remains in earlier editions. Ranks, scores, stable IDs, and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
 </div>
 </section>
 
@@ -201,16 +201,16 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Sep 29, 2026, 1:30 PM</time>
+<div><b>Main-branch on September 29, after the v0.21.5 tag: desktop refactors routing tool cards and bridge events through lookup tables (fc042f1) and gating the HUD bridge sentence on tool availability with the note firing again when tool search defers the desktop tools (09581ca, 312f6bc); a unified clarify contract distinguishing skip, cancel, timeout and undelivered on every surface (5eea878, #127760); gateway first-contact note now DM-only with the offer flag saved in the routed profile (bc7f58f); debug-share redaction hardening (URL tokens and passwords masked in debug share uploads b8a8be1, fallback api_key masked per field whatever its YAML shape f907520, every secret fallback field per agent.redact policy 536802c, GCS and Azure SAS signatures counted as URL credentials cf94e3e, strict URL-credential redaction for the system dump 205d5d7 with a replay test 139876e); gateway lock work (a live gateway identified from its lock when gateway.pid is gone 5d1ab29, tests bounding and reaping live strict-identity lock holders e4e16a5, 5ed979b); update-tail handling (supervised launches kept off the pending completion tail 8d22a82, 69f8b70, the owed-tail notice printed once in the process that boots d9f6a84, a supervised start saying when it leaves the update tail owed a91a24c); sticky-profile recovery (recovery allowed from a missing active profile a4748e9, stale-profile recovery refusing uninstall --full and abbreviated --data 167d3bb, the missing sticky-profile error naming the recovery command fbb0eb3, and profiles docs on what still runs when the sticky profile was deleted 192e574, bca2e3c); and a test-suite preservation pass. Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Sep 28, 2026, 1:30 PM</time>
 <div><b>Main-branch on September 28, after the v0.21.5 tag: gateway restart and lock-safety work (restart refuses before it stops anything e824425/a0e7174 with best-effort orphan reaping on every restarting path, a held gateway.lock never unlinked on an identity mismatch 7350426, a live cross-home gateway.pid unlinked on refusal while the held lock stays 105568c, a held lock without gateway.pid no longer aborting the Windows pause gate 5468432, and the persisted gateway record naming its entry point under an inline launcher 390e6d5); profile-scope containment (dashboard plugin API routes in the requesting profile&#x27;s scope 5c6ff92, deferred background reviews under the enqueuing profile&#x27;s context a940858, the curator caller&#x27;s contextvars carried into the review thread b8cf1a3, catalog SWR refresh writing the requesting profile&#x27;s cache 5f73e52, kanban Specify/Decompose resolving the profile&#x27;s aux-LLM key 11598ae); delegation durable completions restored on first consume instead of import (34c2dc5, b7e24be, d6c9191); Desktop connection-scoped tab/tile restore and salvage fixes; gateway auto-resume freshness surviving a DST change (39a30e1); and a hermes-session-reset-policy plugin-catalog entry (476a8c3). Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
 </a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Sep 27, 2026, 1:30 PM</time>
 <div><b>Main-branch on September 27, after the v0.21.5 tag: context-compaction fixes keeping compaction history lossless (a7baa5f), assembling the head/tail from the pruned copy (f6ce8bb, #61932) and redacting full tool-call arguments before the summarizer cut with bounded redaction (fb86bc7, be83468); cron job-store guards refusing to overwrite a corrupt store on save and failing closed during merge (c642f42, 758ad51, 553388b); Nous auth treated as a single-use refresh pool provider, with cloned profiles&#x27; refresh grants stripped and healed and root grants no longer reseeded into a profile that owns its own Nous rows (6a3db7c, ec262e1, e7bab8e); canonical todo_list history pairing across bridged tool calls and TUI resume (031e329, 3d3c1c1); gateway handoff/loop-watch scope resolution moved off the event loop (bf66814, 9a0c0e1); and kanban gc never deleting the scratch workspaces root itself (37e89a7). Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Sep 26, 2026, 1:30 PM</time>
-<div><b>Main-branch on September 26, after the v0.21.5 tag: gateway silence-marker fixes so a turn answering an addressed message, a steered message, or a Slack thread follow-up/reaction trigger keeps the silence fallback while a bare marker on an unaddressed turn stays silent (6c566fc, 2ed91ca, b17e037, 9fc7f17, b08bb5a); secondary bots&#x27; callbacks authorized and bound under their own profile scope per callback (b483f0f, 3e8fe26, e13b5e7); Claude Opus 5.5 added to the native Anthropic picker and the Bedrock static fallback with Sonnet 5 kept as the Bedrock default (42ba854, 87a9b48, 98054af); local-runtime migration of pre-package-manager llama.cpp engines and per-profile model dirs into the machine store (9c1ef17, 3582c17); Desktop skin customCSS support with a documented 32 KiB cap; and a profile terminal.cwd taking precedence over Desktop&#x27;s inherited workspace cwd (02b282a). Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
 </a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">
 <time>Sep 24, 2026, 10:09 AM</time>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Sep 28, 2026, 1:31 PM
+Last attempt: Sep 29, 2026, 1:31 PM
 <br>
-Last success: Sep 28, 2026, 1:31 PM
+Last success: Sep 29, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Sep 28, 2026, 1:31 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260928t133153979z","title":"Make Repeat Work Remember","researched_at":"2026-09-28T13:30:13.822Z","generated_at":"2026-09-28T13:31:53.979Z","last_checked_at":"2026-09-28T13:31:53.979Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-28T13:31:53.979Z","last_success_at":"2026-09-28T13:31:53.979Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260929t133153994z","title":"Make Repeat Work Remember","researched_at":"2026-09-29T13:30:14.650Z","generated_at":"2026-09-29T13:31:53.994Z","last_checked_at":"2026-09-29T13:31:53.994Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-29T13:31:53.994Z","last_success_at":"2026-09-29T13:31:53.994Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
