@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- index:
+description: Beeftext mastery path: combos, the seven variable families, the PowerShell bridge, and running a snippet library as an agent-stack interface.
+tags: beeftext, text-expansion, windows, agents
+ingested: 2026-09-29T16:33:42-07:00
+-->
+<title>Expansion Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⌨️</text></svg>">
+<!-- Three type roles from the typewriter world: Bitter (slab display),
+     IBM Plex Sans (IBM built typewriters), IBM Plex Mono (code).
+     Google Fonts is the only external request; every face has a fallback stack. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;700&display=swap">
+<style>
+/* =====================================================================
+   TOKENS: light palette lives on the bare :root.
+   Palette: typewriter paper, ink blue, ribbon red.
+   Derived from the subject's own world; neutrals biased toward the ink hue.
+   Everything else in this file is structural and carries over unchanged.
+   ===================================================================== */
+:root{
+  /* grounds: typing-paper greys */
+  --bg:#EDEEF0; --paper:#F9FAFB; --raise:#FFFFFF;
+  --ink:#16191F; --body:#242932; --muted:#585F6B; --faint:#878E9A;
+  --line:#D5D8DE; --line-2:#BFC4CC;
+  /* structural accent: typewriter ink blue */
+  --accent:#274A8D; --accent-soft:#DEE6F4; --accent-ink:#1C3768;
+  /* signal: ribbon red */
+  --signal:#C24A10; --signal-soft:#F8E5D9;
+  --ok:#3F7A2E; --ok-soft:#E2EFDB;
+  --warn:#9A6B04; --warn-soft:#F6EAD1;
+  --stop:#A32C24; --stop-soft:#F6DFDC;
+  --code-bg:#10141C; --code-ink:#D9DFE8; --code-line:#232B39;
+  --shadow:0 1px 2px rgba(18,26,25,.05), 0 8px 24px -12px rgba(18,26,25,.14);
+  --rail:264px;
+  /* type: display / body / mono */
+  --f-disp:'Bitter','Rockwell',Georgia,serif;
+  --f-body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono','Consolas','Courier New',monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1117; --paper:#141A24; --raise:#1A2230;
+    --ink:#E7EBF2; --body:#C6CEDB; --muted:#8B94A3; --faint:#667080;
+    --line:#232C3B; --line-2:#313C4E;
+    --accent:#7FA3EC; --accent-soft:#182A48; --accent-ink:#A9C2F4;
+    --signal:#E98A4F; --signal-soft:#3A2415;
+    --ok:#7CC463; --ok-soft:#1B2E17;
+    --warn:#E0AE4B; --warn-soft:#332714;
+    --stop:#E8776B; --stop-soft:#371916;
+    --code-bg:#0A0E15; --code-ink:#CFD7E3; --code-line:#1C2534;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1117; --paper:#141A24; --raise:#1A2230;
+  --ink:#E7EBF2; --body:#C6CEDB; --muted:#8B94A3; --faint:#667080;
+  --line:#232C3B; --line-2:#313C4E;
+  --accent:#7FA3EC; --accent-soft:#182A48; --accent-ink:#A9C2F4;
+  --signal:#E98A4F; --signal-soft:#3A2415;
+  --ok:#7CC463; --ok-soft:#1B2E17;
+  --warn:#E0AE4B; --warn-soft:#332714;
+  --stop:#E8776B; --stop-soft:#371916;
+  --code-bg:#0A0E15; --code-ink:#CFD7E3; --code-line:#1C2534;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--body);
+  font-family:var(--f-body); font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--f-disp); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.015em}
+a{color:var(--accent-ink); text-underline-offset:3px}
+code,kbd{font-family:var(--f-mono); font-size:.855em}
+:focus-visible{outline:2px solid var(--signal); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:14px; padding:9px 18px; flex-wrap:wrap;
+}
+.brand{display:flex; align-items:baseline; gap:9px; font-family:var(--f-disp); font-weight:700;
+  font-size:15px; color:var(--ink); letter-spacing:-.02em; white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:2px;background:var(--signal);display:inline-block;transform:translateY(-1px)}
+.brand small{font-family:var(--f-mono);font-weight:400;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.modes{display:flex; gap:2px; background:var(--bg); border:1px solid var(--line); border-radius:7px; padding:2px}
+.modes button{
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+  border:0; background:transparent; color:var(--muted); padding:5px 11px; border-radius:5px; cursor:pointer;
+}
+.modes button[aria-pressed="true"]{background:var(--raise); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.09)}
+.spacer{flex:1}
+#q{
+  font-family:var(--f-mono); font-size:12.5px; padding:6px 10px; width:min(300px,42vw);
+  border:1px solid var(--line-2); border-radius:7px; background:var(--raise); color:var(--ink);
+}
+#q::placeholder{color:var(--faint)}
+.iconbtn{border:1px solid var(--line-2); background:var(--raise); color:var(--muted); border-radius:7px;
+  padding:5px 9px; cursor:pointer; font-family:var(--f-mono); font-size:12px}
+.iconbtn:hover{color:var(--ink); border-color:var(--accent)}
+
+.shell{display:grid; grid-template-columns:var(--rail) minmax(0,1fr); gap:0; align-items:start}
+@media (max-width:900px){ .shell{grid-template-columns:1fr} }
+
+/* ---------- rail ---------- */
+.rail{
+  position:sticky; top:53px; height:calc(100vh - 53px); overflow-y:auto;
+  border-right:1px solid var(--line); background:var(--paper); padding:16px 12px 40px;
+}
+@media (max-width:900px){
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px; scrollbar-width:thin}
+  .railhead,.legend{display:none}
+}
+.railhead{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); padding:0 8px 8px}
+.pnav{display:flex; flex-direction:column; gap:2px}
+@media (max-width:900px){ .pnav{flex-direction:row; gap:6px} }
+.pnav a{
+  display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:7px;
+  text-decoration:none; color:var(--body); font-family:var(--f-disp); font-size:13.5px;
+  font-weight:500; line-height:1.25; border:1px solid transparent; white-space:nowrap;
+}
+.pnav a:hover{background:var(--bg)}
+.pnav a.on{background:var(--accent-soft); color:var(--accent-ink); border-color:var(--accent); font-weight:600}
+.pnav .n{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); width:16px; flex:none}
+.pnav a.on .n{color:var(--accent)}
+.pnav .tick{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--line-2);flex:none;margin-left:auto;
+  display:grid;place-items:center;font-size:8px;color:transparent}
+.pnav .tick.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.pnav .tick.part{border-color:var(--signal);background:linear-gradient(90deg,var(--signal) 50%,transparent 50%)}
+
+.legend{margin-top:22px; padding:11px 10px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+.legend h4{font-family:var(--f-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; margin-bottom:8px}
+.legend .row{display:flex; align-items:center; gap:8px; font-size:12px; font-family:var(--f-disp); padding:2.5px 0; color:var(--muted)}
+.swatch{width:16px;height:4px;border-radius:2px;flex:none}
+
+/* ---------- main ---------- */
+main{padding:28px 30px 96px; max-width:1080px; min-width:0}
+@media (max-width:640px){ main{padding:22px 16px 72px} }
+.eyebrow{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--signal)}
+.ptitle{font-size:clamp(28px,4.4vw,40px); font-weight:700; line-height:1.06; margin:7px 0 0}
+.meta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:13px}
+.chip{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.05em; padding:3px 8px; border-radius:20px;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper); text-transform:uppercase}
+.chip.l2{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.chip.l3{background:var(--stop-soft);border-color:var(--stop);color:var(--stop)}
+.chip.l1{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.l4{background:var(--signal-soft);border-color:var(--signal);color:var(--signal)}
+
+.objective{
+  margin:24px 0 0; padding:16px 18px; border-left:3px solid var(--signal);
+  background:var(--paper); border-radius:0 9px 9px 0; font-size:17.5px; line-height:1.5; color:var(--ink);
+}
+.objective b{font-weight:600}
+
+h2.sec{
+  font-size:12px; font-family:var(--f-mono); font-weight:500; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--faint); margin:42px 0 0; padding-bottom:7px; border-bottom:1px solid var(--line);
+  display:flex; align-items:baseline; gap:9px;
+}
+h2.sec .cnt{color:var(--line-2); font-size:11px}
+
+.concept{padding:19px 0; border-bottom:1px solid var(--line)}
+.concept:last-child{border-bottom:0}
+.concept h3{font-size:18.5px; font-weight:600; margin-bottom:6px; letter-spacing:-.01em}
+.concept p{margin:0 0 9px; max-width:66ch}
+.concept p:last-child{margin-bottom:0}
+.concept ul{margin:9px 0; padding-left:19px; max-width:66ch}
+.concept li{margin:4px 0}
+.concept .k{font-family:var(--f-mono); font-size:.85em; background:var(--accent-soft); color:var(--accent-ink);
+  padding:1px 5px; border-radius:4px; border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+
+pre{
+  margin:12px 0; background:var(--code-bg); color:var(--code-ink); border:1px solid var(--code-line);
+  border-radius:9px; padding:13px 15px; overflow-x:auto; font-family:var(--f-mono);
+  font-size:12.6px; line-height:1.65; position:relative;
+}
+pre code{font-size:inherit; color:inherit; background:none}
+.codewrap{position:relative}
+.copy{position:absolute; top:8px; right:8px; z-index:2; font-family:var(--f-mono); font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; padding:4px 8px; border-radius:5px; cursor:pointer;
+  background:rgba(255,255,255,.07); color:#9FB5B0; border:1px solid rgba(255,255,255,.13)}
+.copy:hover{background:rgba(255,255,255,.15); color:#fff}
+.copy.done{background:var(--ok); color:#fff; border-color:var(--ok)}
+.cap{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.04em; margin:-4px 0 0}
+
+.tablewrap{overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:9px; background:var(--paper)}
+table{border-collapse:collapse; width:100%; font-family:var(--f-disp); font-size:13.4px; min-width:480px}
+th{text-align:left; font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--faint); font-weight:400; padding:9px 13px; border-bottom:1px solid var(--line-2); white-space:nowrap}
+td{padding:9px 13px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45}
+tr:last-child td{border-bottom:0}
+td code{background:var(--bg); padding:1px 5px; border-radius:4px; border:1px solid var(--line)}
+td.num{font-variant-numeric:tabular-nums}
+
+.gotcha{display:grid; grid-template-columns:auto minmax(0,1fr); gap:11px; padding:13px 0; border-bottom:1px solid var(--line)}
+.gotcha:last-child{border-bottom:0}
+.sev{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:3px 7px;
+  border-radius:4px; height:fit-content; white-space:nowrap; margin-top:2px}
+.sev.trap{background:var(--stop-soft); color:var(--stop)}
+.sev.cost{background:var(--warn-soft); color:var(--warn)}
+.sev.stale{background:var(--signal-soft); color:var(--signal)}
+.sev.ok{background:var(--ok-soft); color:var(--ok)}
+.gotcha b{font-family:var(--f-disp); font-weight:600; color:var(--ink); display:block; font-size:14.5px; margin-bottom:2px}
+.gotcha span{font-size:15px}
+
+.lab{margin:14px 0 0; padding:18px 20px; border:1px solid var(--accent); border-radius:11px;
+  background:var(--accent-soft)}
+.lab h3{font-size:17px; margin-bottom:4px; color:var(--accent-ink)}
+.lab ol{margin:11px 0 0; padding-left:20px}
+.lab li{margin:6px 0}
+.lab .pre-in-lab pre{background:var(--code-bg)}
+.done-line{display:flex; align-items:center; gap:9px; margin-top:16px; padding-top:14px; border-top:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.done-line label{font-family:var(--f-disp); font-size:14px; font-weight:600; color:var(--accent-ink); cursor:pointer;
+  display:flex; align-items:center; gap:8px}
+.done-line input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+
+details.qa{border:1px solid var(--line); border-radius:9px; margin:8px 0; background:var(--paper); overflow:hidden}
+details.qa summary{padding:11px 15px; cursor:pointer; font-family:var(--f-disp); font-weight:600; font-size:14.5px;
+  color:var(--ink); list-style:none; display:flex; gap:9px; align-items:baseline}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:'?'; font-family:var(--f-mono); color:var(--signal); font-size:12px; flex:none}
+details.qa[open] summary::before{content:'!'}
+details.qa .ans{padding:0 15px 13px 33px; font-size:15px; color:var(--body); border-top:1px solid var(--line); padding-top:11px}
+
+.tree{margin:14px 0; display:flex; flex-direction:column; gap:0}
+.branch{display:grid; grid-template-columns:minmax(140px,.9fr) auto minmax(0,1.4fr); gap:12px; align-items:center;
+  padding:11px 14px; border:1px solid var(--line); border-top:0; background:var(--paper)}
+.branch:first-child{border-top:1px solid var(--line); border-radius:9px 9px 0 0}
+.branch:last-child{border-radius:0 0 9px 9px}
+.branch .cond{font-family:var(--f-body); font-size:14.5px; color:var(--body)}
+.branch .arr{font-family:var(--f-mono); color:var(--line-2); font-size:13px}
+.branch .res{font-family:var(--f-disp); font-weight:600; font-size:14px; color:var(--ink)}
+.branch .res em{display:block; font-family:var(--f-body); font-weight:400; font-style:normal; font-size:13.5px; color:var(--muted)}
+@media (max-width:640px){ .branch{grid-template-columns:1fr; gap:5px} .branch .arr{display:none} }
+
+.docs{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px}
+.docs a{font-family:var(--f-mono); font-size:11.5px; padding:4px 10px; border-radius:20px; text-decoration:none;
+  border:1px solid var(--line-2); color:var(--muted); background:var(--paper)}
+.docs a:hover{border-color:var(--accent); color:var(--accent-ink); background:var(--accent-soft)}
+
+/* progress header */
+.prog{margin:0 0 26px; padding:15px 18px; border:1px solid var(--line); border-radius:11px; background:var(--paper)}
+.prog .top{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.prog .lbl{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
+.prog .pct{font-family:var(--f-disp); font-size:26px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.bar{display:flex; gap:3px; margin-top:11px}
+.bar i{height:7px; flex:1; border-radius:2px; background:var(--line); transition:background .25s}
+.bar i.done{background:var(--ok)}
+.bar i.part{background:var(--signal)}
+
+/* reference / drill / audit */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin:14px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:var(--paper)}
+.card h4{font-size:15px; font-weight:600; margin-bottom:5px}
+.card p{margin:0; font-size:14.5px; color:var(--muted)}
+
+#drill .flash{
+  border:1px solid var(--line-2); border-radius:14px; background:var(--paper); padding:34px 30px;
+  min-height:220px; display:flex; flex-direction:column; justify-content:center; gap:16px; box-shadow:var(--shadow);
+}
+#drill .fq{font-family:var(--f-disp); font-size:clamp(19px,2.6vw,25px); font-weight:600; color:var(--ink); line-height:1.3}
+#drill .fa{font-size:16.5px; color:var(--body); border-top:1px solid var(--line); padding-top:15px}
+#drill .fa.hide{display:none}
+#drill .fsrc{font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint)}
+#drill .fbtns{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.btn{font-family:var(--f-disp); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--raise); color:var(--ink)}
+.btn.prime{background:var(--accent); border-color:var(--accent); color:#fff}
+.btn.prime:hover{filter:brightness(1.08)}
+.btn:hover{border-color:var(--accent)}
+.counter{font-family:var(--f-mono); font-size:11.5px; color:var(--muted); align-self:center; margin-left:auto}
+
+.verdict{display:grid; grid-template-columns:auto minmax(0,1fr); gap:13px; padding:15px 0; border-bottom:1px solid var(--line)}
+.verdict:last-child{border-bottom:0}
+.vtag{font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase; padding:4px 8px;
+  border-radius:5px; height:fit-content; white-space:nowrap; margin-top:2px; font-weight:700}
+.vtag.holds{background:var(--ok-soft); color:var(--ok)}
+.vtag.stale{background:var(--warn-soft); color:var(--warn)}
+.vtag.wrong{background:var(--stop-soft); color:var(--stop)}
+.vtag.gap{background:var(--signal-soft); color:var(--signal)}
+.vtag.unver{background:var(--bg); color:var(--muted); border:1px solid var(--line-2)}
+.verdict .claim{font-family:var(--f-disp); font-weight:600; font-size:15px; color:var(--ink); margin-bottom:4px}
+.verdict .fix{font-size:15px}
+
+.hits{margin-top:6px}
+.hit{display:block; padding:11px 14px; border:1px solid var(--line); border-radius:9px; margin-bottom:7px;
+  background:var(--paper); text-decoration:none; color:var(--body)}
+.hit:hover{border-color:var(--accent); background:var(--accent-soft)}
+.hit b{display:block; font-family:var(--f-disp); color:var(--ink); font-size:14.5px}
+.hit small{font-family:var(--f-mono); font-size:10.5px; color:var(--faint); letter-spacing:.05em; text-transform:uppercase}
+.empty{color:var(--muted); font-style:italic; padding:20px 0}
+.lede{font-size:17.5px; max-width:66ch; color:var(--body); margin:14px 0 0}
+.hr{height:1px;background:var(--line);margin:38px 0 0;border:0}
+.unv{font-family:var(--f-mono);font-size:.86em;color:var(--muted);background:var(--bg);
+  border:1px dashed var(--line-2);padding:1px 6px;border-radius:4px;white-space:normal}
+kbd{background:var(--bg);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;
+  padding:1px 5px;font-size:.82em;color:var(--muted)}
+.lede a{color:var(--accent-ink)}
+.verdict .claim{display:block}
+#view > h3{margin-top:28px; font-size:19px}
+
+
+</style>
+</head>
+<body>
+<nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}.topbar{top:33px}.rail{top:86px;height:calc(100vh - 86px)}</style>
+
+<!-- ============================ SHELL ============================
+     Structural. Carries over unchanged between sites; SITE fills it in.
+     ============================================================== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span id="brandname"></span><small id="brandtag"></small></div>
+  <div class="modes" role="group" aria-label="View">
+    <button data-mode="learn" aria-pressed="true">Path</button>
+    <button data-mode="ref" aria-pressed="false">Reference</button>
+    <button data-mode="drill" aria-pressed="false">Drill</button>
+    <button data-mode="audit" aria-pressed="false">Audit</button>
+  </div>
+  <div class="spacer"></div>
+  <input id="q" type="search" placeholder="search &middot; / to focus" autocomplete="off">
+  <button class="iconbtn" id="theme" title="Toggle theme">&#9686;</button>
+  <button class="iconbtn" id="reset" title="Reset progress">reset</button>
+</div>
+
+<div class="shell">
+  <nav class="rail">
+    <div class="railhead">Phases</div>
+    <div class="pnav" id="pnav"></div>
+    <div class="legend" id="legend"></div>
+  </nav>
+  <main id="view"></main>
+</div>
+
+
+<script>
+/* =====================================================================
+   EXPANSION ENGINE: content block.
+   Spine: the capability ladder. Each rung adds what a snippet can do:
+   static text, self-filling slots, composition, live computation.
+   Verified against the Beeftext GitHub wiki, September 2026.
+   ===================================================================== */
+
+const SITE = {
+  key:   'mastery-beeftext',
+  title: 'Expansion Engine',
+  tag:   'BEEFTEXT',
+  spine: 'Ladder rung',
+  layers: [
+    { id:'l1', label:'Static (text you could type)',   token:'accent' },
+    { id:'l2', label:'Slotted (self-filling values)',  token:'warn'   },
+    { id:'l3', label:'Composed (snippets of snippets)',token:'signal' },
+    { id:'l4', label:'Programmable (scripts, agents)', token:'stop'   }
+  ],
+  refLede: 'The variable index you will keep coming back to, plus the branching questions: which slot, why did it not expand, which format moves a library.',
+  auditTitle: 'The chat explanation, checked',
+  verifiedAgainst: 'Checked against the Beeftext GitHub wiki (Variables, Getting started, Import and export, Portable Edition) and the releases changelog, September 2026.'
+};
+
+const C = (...l) => l.join('\n');
+const K = s => '<code class="k">' + s + '</code>';
+
+const PHASES = [
+{
+  id:'p0', n:'00', title:'Read the instrument', layer:'l1', layerLabel:'Static',
+  time:'~30 min', pre:'None',
+  objective:'Prove the loop end to end: <b>type a short keyword in an app that is not Beeftext and watch longer text appear</b>, on your real machine.',
+  concepts:[
+    {h:'A combo is a keyword plus a snippet',
+     p:'<p>Beeftext watches your keystrokes and replaces a keyword with its snippet, in any application whose text areas support copy and paste, which the wiki puts at 99.9 percent of them. If you do not know this, you reach for heavyweight macro automation for what is a typing problem.</p>'},
+    {h:'The five fields of a combo',
+     p:'<p>Every combo carries five things. The New Combo dialog collects them; the main window lists them.</p>',
+     table:{head:['Field','Meaning','Notes'],rows:[
+       ['<code>Keyword</code>','What you type','Short, and unnatural in normal typing'],
+       ['<code>Snippet</code>','What appears','Plain text, Unicode, any language'],
+       ['<code>Name</code>','Human description','Optional, but the combo picker searches it'],
+       ['<code>Group</code>','Classification folder','Mandatory. Default Group is auto-created'],
+       ['<code>Matching</code>','Trigger behavior','The wiki advice: leave it on Strict']]}},
+    {h:'How the replacement reaches the app',
+     p:'<p>The wiki ties the requirement to copy and paste support, which tells you the substitution rides the clipboard pathway rather than injecting text some other way. That is why it works everywhere and why an app without paste support will never expand. <span class="unv">inferred from the documented requirement</span></p>'},
+    {h:'Feedback: the beep, and the picker',
+     p:'<p>A successful substitution beeps unless you disabled that in Preferences, and the combo picker opens with '+K('Win+Shift+Enter')+' anywhere, searching names when you have forgotten keywords. The beep is your expansion telemetry: it tells you a trigger fired when you were not looking.</p>'},
+    {h:'The privacy model, stated precisely',
+     p:'<p>Beeftext is notified of every keyboard and mouse interaction while running, but stores no typing data and sends nothing to any server. The only network activity is a daily download of a version-check text file, which can be disabled in Preferences. If you do not know this, the tool looks exactly like a keylogger and gets banned by reflex, by you or by an employer.</p>'}
+  ],
+  lab:{title:'First combo, real machine',
+    steps:[
+      'Install Beeftext from beeftext.org (installer edition for a normal machine; it starts with Windows).',
+      'Create a signature combo: menu '+K('Combo')+', then '+K('New')+', or '+K('Ctrl+N')+'. Use a keyword like <code>btsig</code> and your real signature as the snippet. Fill the Name field.',
+      'Open a real app you use daily (an editor, a browser text box) and type the keyword. Hear the beep, see the signature.',
+      'Open the combo picker with '+K('Win+Shift+Enter')+' and search for your combo by its Name.',
+      '<b>Break it deliberately:</b> type your keyword embedded inside a longer word, for example <code>xbtsigx</code>, and watch nothing happen. That non-trigger is Strict matching working as designed. Felt failure modes stick.'],
+    verify:'You produced a multi-line signature from a few characters in an app that is not Beeftext, and you can name why the embedded-in-a-word attempt stayed silent.'},
+  gotchas:[
+    {s:'trap',t:'An app without paste support never expands',d:'99.9 percent do, but a locked-down kiosk app or an odd custom control can silently swallow the combo. The beep tells you Beeftext fired; the missing text tells you where it went.'},
+    {s:'trap',t:'Keyword embedded in a longer word does not trigger',d:'Under Strict matching, <code>btsig</code> inside <code>btsignature</code> stays untouched. Looks broken, is correct.'},
+    {s:'trap',t:'The window hides to the tray',d:'The main window closes to the notification area. Users conclude the app died and reinstall it. Double-click the tray icon.'},
+    {s:'cost',t:'Global keystroke hook',d:'The same mechanism that makes it work everywhere makes sensitive windows a real concern. Keep password managers in the exclusion list, covered in phase 01.'},
+    {s:'ok',t:'The beep is telemetry, not decoration',d:'It confirms triggers you did not see. Silence it only after your keyword scheme is stable.'}
+  ],
+  quiz:[
+    {q:'Name the five fields of a combo and which one is mandatory in an indirect way.',a:'Keyword, Snippet, Name, Group, Matching. Group is effectively mandatory: every combo belongs to exactly one group, and Beeftext auto-creates a Default Group if none exists.'},
+    {q:'How do you open the combo picker, and what does it search?',a:'Win+Shift+Enter, in any application. It searches combo names, which is why the optional Name field matters at scale.'},
+    {q:'What is the only network activity Beeftext performs, and can you turn it off?',a:'A daily download of a version-check text file from beeftext.org. It can be disabled in Preferences.'}
+  ],
+  docs:[['Getting started (wiki)','https://github.com/xmichelo/Beeftext/wiki/Getting-started'],['beeftext.org','https://beeftext.org/']]
+},
+
+{
+  id:'p1', n:'01', title:'Keyword discipline', layer:'l1', layerLabel:'Static',
+  time:'~45 min', pre:'Phase 00',
+  objective:'Design a keyword scheme that <b>never misfires mid-sentence and is still memorable a year later</b>.',
+  concepts:[
+    {h:'The misfire spectrum',
+     p:'<p>A keyword that is a real word fires when you least want it; a keyword too obscure to type naturally is one you will forget. If you do not settle this deliberately, you lose trust in the tool within a week and quietly stop using it. That silent abandonment, not any technical limit, is how text expanders die.</p>'},
+    {h:'Pick one prefix namespace and never leave it',
+     p:'<p>The fix is a prefix you would never type in ordinary life. Everything becomes an abbreviation of its content inside that namespace.</p>',
+     table:{head:['Prefix','Feel','Example keywords'],rows:[
+       ['<code>xx</code>','Double letter, zero collision risk','<code>xxsig</code>, <code>xxmd</code>, <code>xxfix</code>'],
+       ['<code>;</code>','Punctuation, fast on the homerow','<code>;sig</code>, <code>;md</code>'],
+       ['<code>\\\\</code>','Escape-flavored, programmer friendly','<code>\\\\sig</code>']]}},
+    {h:'Strict matching, and what the other modes are for',
+     p:'<p>The wiki advice is explicit: set Matching to '+K('Strict')+' unless you really know what you are doing. Other matching modes exist as an advanced feature with their own wiki page; the documented default advice is enough for a keyword scheme built on a safe prefix. <span class="unv">unverified: the matching-modes wiki page was not retrievable; read it before switching modes</span></p>'},
+    {h:'The exclusion list',
+     p:'<p>Since v11, Beeftext supports a list of excluded applications where no substitution is performed, and it ships a default list of sensitive applications. Password managers and banking windows belong there. The exclusion list is the correct answer to "I typed my keyword inside 1Password and nothing happened", which should be nothing.</p>'},
+    {h:'Groups and names are retrieval infrastructure',
+     p:'<p>Groups are folders for combos; one group per domain (signatures, prompts, shell, travel) keeps the picker fast, because the picker searches names and every keyword should not need to be remembered. The Name field is optional in the data model and mandatory in practice.</p>'}
+  ],
+  lab:{title:'Scheme on paper, then five combos',
+    steps:[
+      'Write down your prefix and your domains before touching the app. Two groups minimum.',
+      'Create five combos across those groups, all inside the prefix namespace, all with filled Name fields.',
+      'Fire each one in two different real applications.',
+      'Add one application (a password manager if you have one) to the excluded list, then type a keyword there and watch it stay inert by design.',
+      '<b>Break it deliberately:</b> create one combo whose keyword is a bare real word, for example <code>note</code>, and use that word in a real sentence. Observe how quickly it distracts or misfires, then delete or rename it.'],
+    verify:'Five keywords fired first try in two apps each, one app now ignores all of them by design, and the bare-word experiment is written off as evidence.'},
+  gotchas:[
+    {s:'trap',t:'Bare-word keywords collide with real typing',d:'A keyword that is a real word will eventually fire mid-sentence or make you hesitate every time you legitimately type it. The prefix namespace removes the whole failure class.'},
+    {s:'trap',t:'Scheme drift fragments the library',d:'Once half your keywords use one prefix and half use another, the namespace stops protecting anything and retrieval degrades to scrolling.'},
+    {s:'stale',t:'Old write-ups say app exclusions are impossible',d:'The excluded-applications list landed in v11 (release notes, issue 429) and a default sensitive list was restored later (issue 494). Pre-v11 advice is stale.'},
+    {s:'cost',t:'No groups means the picker is your only retrieval',d:'Past a few dozen combos, group discipline is what keeps keyword recall from being a search exercise every time.'},
+    {s:'ok',t:'Configuration is a response to evidence',d:'Add an exclusion when a specific app misbehaves, not speculatively. Same principle as any other tool.'}
+  ],
+  quiz:[
+    {q:'State three properties of a good keyword.',a:'Short, unnatural in ordinary typing (a dedicated prefix namespace), and an abbreviation of its content so it can be reconstructed from memory.'},
+    {q:'What matching mode does the wiki recommend by default, and why?',a:'Strict: the Getting started page says to use it unless you really know what you are doing. It prevents triggers embedded inside longer words.'},
+    {q:'Since which version can you exclude applications, and where does that matter most?',a:'v11 added the excluded-applications list. It matters most in password managers and other sensitive windows.'}
+  ],
+  docs:[['Getting started (wiki)','https://github.com/xmichelo/Beeftext/wiki/Getting-started'],['Releases changelog','https://github.com/xmichelo/Beeftext/releases']]
+},
+
+{
+  id:'p2', n:'02', title:'Static variables', layer:'l2', layerLabel:'Slotted',
+  time:'~1 h', pre:'Phase 01',
+  objective:'Put <b>slots that fill themselves at expansion time</b> into a snippet, and predict the exact output before it appears.',
+  concepts:[
+    {h:'The evaluation model',
+     p:'<p>A variable is text enclosed between '+K('#{')+' and '+K('}')+' placed in a snippet. Every time the combo fires, each variable is evaluated and replaced by the result. The saved snippet is a template, not a value: the same combo produces different text on Tuesday than it did on Monday. If you do not internalize this, you debug the snippet editor instead of the expansion moment.</p>'},
+    {h:'The three syntax rules',
+     p:'<p>Variables are case sensitive, tolerate no extra spaces, and an unrecognized variable is left in the output as literal text. That last rule is the debugging tell for the whole curriculum.</p>',
+     table:{head:['Written','Outcome'],rows:[
+       ['<code>#{dateTime}</code>','Valid: current date and time'],
+       ['<code>#{datetime}</code>','Invalid: stays as literal text'],
+       ['<code>#{ dateTime }</code>','Invalid: spaces are not allowed'],
+       ['<code>#{datTime}</code>','Typo: stays as literal text, which is your clue']]}},
+    {h:'#{clipboard}: the slot that holds what you copied',
+     p:'<p>'+K('#{clipboard}')+' is replaced by the text currently on the system clipboard. Rich text loses its formatting, and if the clipboard is empty or holds an image or other binary data, the variable is simply ignored. Ignored means the text around it appears and the slot contributes nothing, silently.</p>'},
+    {h:'#{date}, #{time}, #{dateTime}',
+     p:'<p>In their bare forms these insert the current date, time, or both, formatted according to your system region and language settings. Zero configuration, and locked to locale: if you need a specific format, that is the next phase, not this one.</p>'},
+    {h:'Escaping inside parameters',
+     p:'<p>To use the characters '+K('}')+' and '+K('\\')+' inside a variable parameter you must escape them as '+K('\\{')+' and '+K('\\\\')+'. Any other use of a backslash leads to undetermined results, which is the wiki way of saying silently unpredictable.</p>'}
+  ],
+  lab:{title:'Context-sensitive snippets',
+    steps:[
+      'Build a wrap-the-clipboard combo: snippet <code>Here is the error:\\n#{clipboard}\\nPlease advise.</code> Copy a real error message from a real log, then fire the combo in a real chat or editor.',
+      'Build a daily-log combo using '+K('#{date}')+' in your system locale, and fire it twice in different apps.',
+      'Fire the clipboard combo with nothing copied, and record what appears.',
+      '<b>Break it deliberately:</b> copy an image (a screenshot), then fire the clipboard combo and watch the slot vanish silently while the surrounding text renders.',
+      'Deliberately typo a variable name in one snippet, fire it, and read the literal text left behind.'],
+    verify:'Two combos produced output that changed with context without editing the snippet, and you can explain the two silent vanishings you caused.'},
+  gotchas:[
+    {s:'trap',t:'A typo stays as literal text in your output',d:'An unrecognized variable is not an error, it is text. You will send a message containing #{datTime} before you notice. The tell: any literal #{...} in output means a name is wrong.'},
+    {s:'trap',t:'Case sensitivity',d:'#{dateTime} is valid; #{datetime} and #{DateTime} are not. This fails silently because invalid names are passed through.'},
+    {s:'trap',t:'An image on the clipboard silently kills the slot',d:'The variable is ignored for non-text clipboard content. The snippet renders around the hole.'},
+    {s:'trap',t:'Rich text formatting is silently dropped',d:'#{clipboard} inserts plain text. If you expected bold or colors to survive the trip, they will not.'},
+    {s:'ok',t:'Variables evaluate fresh on every expansion',d:'The template is fixed; the values are live. This is the entire mental shift from snippets to slots.'}
+  ],
+  quiz:[
+    {q:'State the three rules a variable must satisfy to be recognized.',a:'Correct case, no extra spaces inside the braces, and a known variable name. Fail any of the three and the text passes through literally instead of erroring.'},
+    {q:'What does an unrecognized variable do, and why is that the single most useful debugging fact in Beeftext?',a:'It stays in the output as literal text. Any literal #{...} you see in expanded output points at a typo, a case error, or a stray space, rather than a broken app.'},
+    {q:'What does #{clipboard} do when the clipboard holds a screenshot?',a:'Nothing: the variable is silently ignored for non-text content, and the rest of the snippet expands around the gap.'}
+  ],
+  docs:[['Variables (wiki)','https://github.com/xmichelo/Beeftext/wiki/Variables']]
+},
+
+{
+  id:'p3', n:'03', title:'Formatted time and environment', layer:'l2', layerLabel:'Slotted',
+  time:'~1 h', pre:'Phase 02',
+  objective:'Emit <b>any date or time format, including computed offsets, and read system environment values</b> into text.',
+  concepts:[
+    {h:'#{dateTime:format}',
+     p:'<p>The first colon parameter formats the timestamp using Qt conventions. '+K('#{dateTime:yyyy-MM-dd, HH:mm:ss.zzz}')+' yields <code>2018-01-29 20:35:12.120</code>, per the wiki example. The full token reference lives in the Qt date-time documentation; the tokens you will actually use are few.</p>',
+     table:{head:['Token','Means'],rows:[
+       ['<code>yyyy</code>','Four-digit year'],
+       ['<code>MM</code>','Month, two digits'],
+       ['<code>dd</code>','Day, two digits'],
+       ['<code>HH</code>','Hour, 24-hour clock'],
+       ['<code>mm</code> / <code>ss</code>','Minutes / seconds'],
+       ['<code>zzz</code>','Milliseconds'],
+       ['<code>w</code> / <code>ww</code>','Week number without / with leading zero (since v9)']]}},
+    {h:'#{dateTime::} arithmetic',
+     p:'<p>The third form computes: '+K('#{dateTime:+1d-1y+2h:yyyy-MM-dd hh:mm:ss')+' adds one day, subtracts a year, adds two hours, then formats. Specifiers: '+K('y')+' year, '+K('M')+' month, '+K('w')+' week, '+K('d')+' day, '+K('h')+' hour, '+K('m')+' minute, '+K('s')+' second, '+K('z')+' millisecond. The sign is mandatory even for positive offsets, and the final colon is mandatory even when you skip the format.</p>'},
+    {h:'#{envVar:NAME}',
+     p:'<p>Replaced by the content of a Windows environment variable, for example '+K('#{envVar:USERNAME}')+' inserts the login name of the current user. If you need a system fact that never changes mid-session, this beats asking for it or scripting for it.</p>'},
+    {h:'Where this pays immediately',
+     p:'<p>Dated file headers, daily log lines, standup entries, and, in this workspace, markdown deliverable frontmatter: a snippet can stamp <code>created:</code> with the ISO date on its own, so the convention stops depending on your memory.</p>'}
+  ],
+  lab:{title:'The self-stamping header',
+    steps:[
+      'Build a frontmatter combo: snippet lines <code>---</code>, <code>created: #{dateTime:yyyy-MM-dd}</code>, <code>source: Hermes-Desktop</code>, <code>type: capture</code>, <code>---</code>. Fire it in a real editor and check the date against the clock.',
+      'Build a tomorrow combo with arithmetic: '+K('#{dateTime:+1d:yyyy-MM-dd}')+'. Verify it against a calendar.',
+      'Build an environment combo with '+K('#{envVar:USERNAME}')+' and fire it in two apps.',
+      '<b>Break it deliberately:</b> write the arithmetic without the trailing colon, <code>#{dateTime:+1d}</code>, fire it, and read what stays literal.'],
+    verify:'One snippet stamps the correct ISO date in two different apps without you typing it, and you can say from evidence what the missing trailing colon did.'},
+  gotchas:[
+    {s:'trap',t:'Arithmetic without the final colon is invalid',d:'#{dateTime:+1d} stays as literal text. The wiki makes the trailing colon mandatory even when the format is omitted: #{dateTime:+1d:} is the valid short form.'},
+    {s:'trap',t:'Omitting the sign breaks the arithmetic',d:'#{dateTime:1d:} is invalid; #{dateTime:+1d:} is valid. Positive needs its plus.'},
+    {s:'trap',t:'Format tokens are Qt, not strftime',d:'If you write strftime habits like %Y, they pass through as garbage. The Qt token table above is the working set.'},
+    {s:'stale',t:'Week numbers were once impossible',d:'The w and ww tokens arrived in v9 (release notes, issue 368). Older references say week numbers cannot be emitted.'},
+    {s:'ok',t:'Locale is a feature until it is a bug',d:'The bare #{date} follows system locale. When a consumer parses the output (scripts, frontmatter), force the format; when a human reads it, locale is fine.'}
+  ],
+  quiz:[
+    {q:'Write the variable that emits tomorrow as an ISO date.',a:'#{dateTime:+1d:yyyy-MM-dd}. Sign mandatory, final colon mandatory, Qt tokens.'},
+    {q:'What are the two mandatory parts of the arithmetic form even when you omit the format?',a:'The sign on every offset, including +, and the trailing colon before the (empty) format slot.'},
+    {q:'Which token emits the week number, and since which version?',a:'w (no leading zero) and ww (leading zero), both since v9.'}
+  ],
+  docs:[['Variables (wiki)','https://github.com/xmichelo/Beeftext/wiki/Variables'],['Qt date-time format tokens','https://doc.qt.io/qt-6/qdatetime.html#toString']]
+},
+
+{
+  id:'p4', n:'04', title:'Composition', layer:'l3', layerLabel:'Composed',
+  time:'1-2 h', pre:'Phase 03',
+  objective:'Build snippets that <b>embed other snippets</b>, so shared text lives in exactly one place and edits propagate.',
+  concepts:[
+    {h:'#{combo:keyword}',
+     p:'<p>Replaced by the snippet of the combo whose keyword you name. The wiki example: combos <code>xxfn</code> (John Fitzgerald) and <code>xxln</code> (Kennedy) make a third combo '+K('#{combo:xxfn} #{combo:xxln}')+' that evaluates to <code>John Fitzgerald Kennedy</code>. Variables inside the sub-combo are also evaluated.</p>'},
+    {h:'Case-converted embedding',
+     p:'<p>'+K('#{lower:xxfn}')+' and '+K('#{upper:xxln}')+' behave like '+K('#{combo:}')+' with the result converted, yielding <code>john fitzgerald KENNEDY</code>. Useful when an atom was authored for one register but another snippet needs another.</p>'},
+    {h:'Loop protection is silent suppression',
+     p:'<p>If sub-combos reference each other in a cycle, Beeftext detects the endless loop and the variable creating it is not evaluated. There is no error dialog: the non-looping parts render and the cyclic slot contributes nothing. A design that accidentally cycles renders partially, which is worse than an error if nobody is looking.</p>'},
+    {h:'Atoms and parents',
+     p:'<p>The design pattern that makes composition worth having: atoms are small units with their own keywords (address block, greeting, sign-off), parents embed atoms. You edit the atom once and every parent inherits.</p>',
+     table:{head:['Role','Example','Edited'],rows:[
+       ['Atom','<code>xxaddr</code>: three-line address','Once per year, propagates everywhere'],
+       ['Parent','<code>xxemail</code>: greeting + body scaffold + #{combo:xxaddr}','Never touches the address text'],
+       ['Atom','<code>xxgreet</code>: time-aware greeting','Improves all parents at once']]}},
+    {h:'What happens when the referenced combo disappears',
+     p:'<p>Delete or rename a keyword that a parent references and '+K('#{combo:oldkeyword}')+' stops being recognized. It then follows the phase 02 rule: it passes through as literal text inside otherwise working output. Composition converts deletions into silent partial failures one level up.</p>'}
+  ],
+  lab:{title:'Single-source the address',
+    steps:[
+      'Create an address atom with its own keyword and a name you will recognize in the picker.',
+      'Create two parent combos that embed it, for example an email signature and an invoice footer.',
+      'Fire both parents in a real app and confirm the atom text appears in both.',
+      'Edit the atom once (change one character of the address), re-fire both parents, and confirm the edit propagated to both.',
+      '<b>Break it deliberately:</b> create two combos whose snippets reference each other by keyword, fire one, and read the partial output where the loop slot should be. Then delete the address atom keyword and fire a parent again to see the literal-text degradation.'],
+    verify:'A one-line edit to the atom changed the output of two parents, and you have witnessed both silent failure modes: the suppressed loop and the literal orphan.'},
+  gotchas:[
+    {s:'trap',t:'Orphaned references pass through as literal text',d:'Renaming or deleting a referenced keyword does not warn you. Parents keep working with #{combo:deadkeyword} embedded in their output until someone reads it closely.'},
+    {s:'trap',t:'Cycles render partially, not loudly',d:'The loop-protection suppression means a mis-designed pair of combos produces text with a hole, not an error. Test composed chains after every structural edit.'},
+    {s:'cost',t:'Deep chains are opaque to debug',d:'Three levels of embedding means the failure could be at any level. Expand level by level when debugging, or keep chains two deep.'},
+    {s:'ok',t:'Composition is the difference between a pile and a library',d:'Without it, every duplication is future drift. With it, shared text has one owner.'},
+    {s:'ok',t:'Sub-variables evaluate too',d:'A sub-combo containing #{date} or any other variable still evaluates its own slots inside the parent expansion, unless it creates a loop.'}
+  ],
+  quiz:[
+    {q:'What does #{combo:xxsig} expand to, and what else gets evaluated?',a:'The snippet of the combo whose keyword is xxsig. Any variables inside that sub-snippet are also evaluated, provided they do not create an endless loop.'},
+    {q:'What happens when two combos reference each other cyclically?',a:'Beeftext detects the endless loop and the variable creating it is not evaluated. The rest renders, so the failure is partial and silent.'},
+    {q:'Name the two case-converting relatives of #{combo:} and what they do.',a:'#{lower:keyword} and #{upper:keyword}: identical embedding with the result converted to lower or upper case.'}
+  ],
+  docs:[['Variables (wiki)','https://github.com/xmichelo/Beeftext/wiki/Variables']]
+},
+
+{
+  id:'p5', n:'05', title:'Interactivity', layer:'l3', layerLabel:'Composed',
+  time:'~45 min', pre:'Phase 04',
+  objective:'Collect <b>per-expansion input</b> so one combo covers a family of messages instead of one frozen message.',
+  concepts:[
+    {h:'#{input:Question}',
+     p:'<p>The snippet containing '+K('#{input:First name}')+' pauses expansion and shows a standard message box with that prompt; the text you type is inserted where the variable sat. One combo becomes a form with one field per input variable.</p>'},
+    {h:'The form pattern',
+     p:'<p>Inputs compose with everything from the earlier rungs: a code-review-request snippet can open with a fixed greeting, embed '+K('#{clipboard}')+' holding the artifact under review, ask for the project and the urgency through two inputs, and place the caret with '+K('#{cursor}')+'. The snippet stops being text and becomes a small workflow.</p>'},
+    {h:'A budget for interruptions',
+     p:'<p>Every input is a context switch: expansion halts, a box appears, you type, you return. If the value is predictable (a system fact), '+K('#{envVar:}')+' fills it with zero interruptions. If it is computed, the PowerShell bridge next rungs up. Reserve input for genuinely per-use values.</p>'},
+    {h:'The undocumented edge you must test yourself',
+     p:'<p>The wiki page documents the happy path. The cancel path of the input dialog is not specified on the page checked for this site. Before any input combo goes into daily use, run the lab and record what a cancelled box actually inserts. <span class="unv">unverified</span></p>'}
+  ],
+  lab:{title:'The three-slot form',
+    steps:[
+      'Build a review-request combo with two inputs (project, urgency) and one #{clipboard} slot, plus a #{cursor} at the end.',
+      'Fire it three times with three different projects and urgencies against real material.',
+      'Fire it once and cancel the input dialog; write down exactly what appeared so the behavior is known to you by evidence.',
+      '<b>Break it deliberately:</b> add a third and fourth input to the same snippet and fire it; feel the interruption cost quadruple, then cut back to two.'],
+    verify:'One combo produced three different correct outputs across three expansions, and you have written evidence of what the cancel path does on your machine.'},
+  gotchas:[
+    {s:'trap',t:'The cancel path is undocumented',d:'The wiki Variables page does not state what a dismissed input box inserts. Do not ship a mission-critical input combo before testing the cancel path yourself, once, on your machine.'},
+    {s:'cost',t:'Every input is an interruption',d:'Expansion halts until the box is answered. Four inputs is a slower experience than typing the whole message by hand.'},
+    {s:'cost',t:'Focus theft mid-sentence',d:'The box takes focus when it appears. If your snippet fires while you are mid-thought, the interruption has a real cost beyond the keystrokes.'},
+    {s:'ok',t:'Predictable values do not belong in inputs',d:'System facts belong to envVar, computed values to the PowerShell bridge. Inputs are for what only the human knows at expansion time.'}
+  ],
+  quiz:[
+    {q:'Write the variable that asks for a first name at expansion time.',a:'#{input:First name}. The text after the colon is the prompt shown in the message box; the typed answer replaces the variable.'},
+    {q:'When should you prefer #{envVar:} over #{input:}?',a:'When the value is a predictable system fact. Environment variables cost zero interruptions; inputs cost a dialog and a context switch.'},
+    {q:'What is the rule of thumb for how many inputs a snippet should carry?',a:'The fewest that make the message variable: two or three. Each input is a halt; past that, typing the message directly is faster.'}
+  ],
+  docs:[['Variables (wiki)','https://github.com/xmichelo/Beeftext/wiki/Variables']]
+},
+
+{
+  id:'p6', n:'06', title:'Control flow', layer:'l3', layerLabel:'Composed',
+  time:'~1 h', pre:'Phase 05',
+  objective:'Control <b>where the caret lands, which non-printing keys fire, and how the expansion is timed</b>.',
+  concepts:[
+    {h:'#{cursor}: the caret directive',
+     p:'<p>'+K('#{cursor}')+' is not evaluated to text: it is removed, and it determines where the text cursor ends up after substitution. Only the first occurrence counts if you write several.</p>'},
+    {h:'#{key:name} and repeats',
+     p:'<p>Introduced in v11, the key variable emulates one non-printing key: '+K('1#{key:tab}2')+' produces 1, a tab, 2. A repeat count follows a second colon: '+K('#{key:up:10}')+' presses Up ten times. The named set runs from space, tab, enter through the arrows, page keys, f1 to f24, volume and media keys. It cannot generate shortcuts: for Ctrl-something use the shortcut variable.</p>'},
+    {h:'#{shortcut:Ctrl+Shift+J}',
+     p:'<p>Introduced in v12, this fires a real application shortcut mid-expansion: the wiki example pastes <code>Before</code>, invokes the shortcut, then pastes <code> After</code>. The wiki itself warns to be careful: shortcuts can interfere with Beeftext behavior, notably around the clipboard, and they are application dependent. The combo editor records shortcuts through a capture window so you do not typo the description.</p>'},
+    {h:'#{delay:500}',
+     p:'<p>Pauses the expansion for the given milliseconds: '+K('abc#{delay:500}def')+' pastes abc, waits half a second, then pastes def. The pairing that matters: a delay before a shortcut gives the target application time to settle. <span class="unv">the settle-time rationale is a working principle, not wiki text</span></p>'},
+    {h:'The form-filler pattern',
+     p:'<p>The payoff composition: a snippet that fills a real form: text for field A, '+K('#{key:tab}')+' to hop, text for field B, and '+K('#{cursor}')+' so you land where typing continues. This is the rung where Beeftext stops being about long text and starts being about keystroke choreography.</p>'}
+  ],
+  lab:{title:'Fill a real two-field form',
+    steps:[
+      'Pick a real form you actually use (a timesheet, a time tracker, a browser form) with at least two fields.',
+      'Build a combo that types into field A, hops with '+K('#{key:tab}')+', types into field B, and ends with '+K('#{cursor}')+' positioned inside field B for continuation.',
+      'Fire it against the real form twice and adjust until the caret lands where you intended.',
+      '<b>Break it deliberately:</b> place two #{cursor} markers in the snippet and fire it; observe which one is honored. Then try '+K('#{key:Ctrl+A}')+' as a shortcut inside the key variable and confirm it does nothing, before using #{shortcut:} for it.'],
+    verify:'A combo filled two fields of a real form and left the caret in a chosen spot, and you can state from evidence which cursor marker wins and why the key variable refuses shortcuts.'},
+  gotchas:[
+    {s:'trap',t:'Only the first #{cursor} counts',d:'Additional markers are simply ignored. If you expected multiple caret stops, you get one; the rest vanish silently.'},
+    {s:'trap',t:'The key variable cannot fire shortcuts',d:'#{key:ctrl} is a key press emulation, not a combination. Writing #{key:Ctrl+A} does nothing useful; the documented route for combinations is #{shortcut:}.'},
+    {s:'trap',t:'Shortcuts can interfere with the clipboard',d:'The wiki warns shortcut usage may interfere with Beeftext behavior, notably clipboard manipulation, and is application dependent. Test each app before trusting a shortcut combo.'},
+    {s:'stale',t:'"Beeftext cannot type special keys"',d:'That was true before v11 (issue 393 added the key variable; delay came with issue 394). Older forum advice repeats it.'},
+    {s:'cost',t:'A too-short delay wastes the feature',d:'If the app is slow to focus and the shortcut fires early, keys land in the wrong window. Tune delays empirically per application.'}
+  ],
+  quiz:[
+    {q:'How do you place the caret mid-snippet, and what happens with multiple markers?',a:'#{cursor}: removed at expansion and the caret lands there. Only the first occurrence is used; the rest are ignored.'},
+    {q:'Write the variable that presses the Up arrow ten times.',a:'#{key:up:10}. The key name, then the repeat count after a second colon.'},
+    {q:'How do you fire a real application shortcut mid-expansion, and what caution does the wiki attach?',a:'#{shortcut:Ctrl+Shift+J}, since v12. The wiki warns shortcuts may interfere with Beeftext, notably around the clipboard, and behave differently per application.'}
+  ],
+  docs:[['Variables (wiki)','https://github.com/xmichelo/Beeftext/wiki/Variables'],['Releases changelog','https://github.com/xmichelo/Beeftext/releases']]
+},
+
+{
+  id:'p7', n:'07', title:'The PowerShell bridge', layer:'l4', layerLabel:'Programmable',
+  time:'1-2 h', pre:'Phase 06',
+  objective:'Make snippets whose text is <b>computed live by a script</b>, with timeouts under your control, and turn project state into pasteable text.',
+  concepts:[
+    {h:'#{powershell:path}',
+     p:'<p>Executes the PowerShell script at the path and inserts its output in the snippet. The wiki example: a script emitting '+K('Write-Host -NoNewLine ([System.Environment]::UserName)')+' makes '+K('Hello #{powershell:C:\\Temp\\script.ps1}!')+' expand to <code>Hello ComputerUser!</code>.</p>'},
+    {h:'The output contract',
+     p:'<p>Match the wiki pattern: print with '+K('Write-Host -NoNewLine')+' so no trailing newline lands mid-sentence. The examples print strings to the console; whatever the console emits is what the snippet receives. A script that computes but does not print contributes nothing.</p>'},
+    {h:'Timeouts, default and extended',
+     p:'<p>A script is terminated after 10 seconds by default. Since v11 the extended syntax '+K('#{powershell:C:\\path\\script.ps1:5000}')+' sets a custom timeout in milliseconds, and '+K(':0')+' waits indefinitely. The wiki demo uses exactly this to let a file-picker dialog stay open until the user closes it.</p>'},
+    {h:'What a bridge script can reach',
+     p:'<p>Anything PowerShell can: read files, call APIs, query git, inspect processes, open dialogs. The wiki second example fetches the latest Beeftext version number over HTTPS with a try/catch and prints the result or <code>unknown</code>. Which means snippets can contain state that was true seconds ago.</p>'},
+    {h:'The context-injection pattern',
+     p:'<p>This is the hinge to the next rung: a snippet that prints the current git branch, the dirty-file count, and the last commit turns a chat box into a grounded conversation. You stop describing your project state to a model and start pasting it, freshly computed, every time.</p>'}
+  ],
+  lab:{title:'Live state into a chat box',
+    steps:[
+      'Write a script <code>whoami.ps1</code> that prints the current username with Write-Host -NoNewLine. Build a snippet embedding it and fire it in a real editor.',
+      'Write a <code>gitctx.ps1</code> that prints branch, status count, and last commit message for a real project of yours (git commands, then a single Write-Host). Build the snippet and use it in a real chat or editor.',
+      'Fire the git snippet, change something in the repo, fire it again, and confirm the output moved.',
+      '<b>Break it deliberately:</b> add Start-Sleep -Seconds 12 to the script, fire with the default timeout, and read the output with the script contribution silently missing. Then set :20000 and watch it return.'],
+    verify:'One snippet printed live project state (branch plus a count) into a real app, the same snippet produced different output after a repo change, and you can explain what the 10 second default did to the sleeping script.'},
+  gotchas:[
+    {s:'trap',t:'The default timeout silently truncates',d:'A script that runs past 10 seconds is terminated and its output is simply absent from the expansion. No error surfaces in the text. The sleeping-script lab makes this permanent knowledge.'},
+    {s:'trap',t:'A missing newline you did not ask for',d:'Write-Host without -NoNewLine appends a line break inside your sentence. Invisible in the editor, embarrassing in a sent message.'},
+    {s:'trap',t:'A wrong path degrades to literal text',d:'#{powershell:C:\\wrong\\path.ps1} is not recognized as runnable, so it follows the pass-through rule and appears verbatim. Same tell as a typo: literal #{...} in output.'},
+    {s:'cost',t:':0 can hang the expansion forever',d:'The wait-indefinitely value is exactly right for dialogs and exactly wrong for a script with a bug that never returns.'},
+    {s:'ok',t:'This rung converts a typist tool into a systems tool',d:'Everything after this point is composition of the bridge: context injection, agent grounding, stateful templates.'}
+  ],
+  quiz:[
+    {q:'State the default script timeout and the extended syntax for 20 seconds and for wait-forever.',a:'Default 10 seconds. Extended: #{powershell:C:\\path\\script.ps1:20000} for 20 seconds, and :0 to wait indefinitely. Extended syntax since v11.'},
+    {q:'Why does the wiki example use Write-Host -NoNewLine?',a:'So the printed text lands inline in the snippet without a trailing newline breaking the sentence. The console output is inserted verbatim.'},
+    {q:'Name two things a bridge script can produce that static text cannot, per the wiki examples.',a:'A live environment value (the current username) and a fresh HTTPS fetch (the latest published Beeftext version number), each printed at expansion time.'}
+  ],
+  docs:[['Variables (wiki)','https://github.com/xmichelo/Beeftext/wiki/Variables'],['Releases changelog','https://github.com/xmichelo/Beeftext/releases']]
+},
+
+{
+  id:'p8', n:'08', title:'Library operations', layer:'l4', layerLabel:'Programmable',
+  time:'~1 h', pre:'Phase 07',
+  objective:'Move, merge, back up, and version <b>your whole library without losing groups</b>, including letting an agent curate it.',
+  concepts:[
+    {h:'Four channels, four different payloads',
+     p:'<p>The format you choose silently decides what survives the trip. This is the table to re-read before every migration.</p>',
+     table:{head:['Channel','Carries','Best for'],rows:[
+       ['JSON export','All combo info, <b>except groups</b>','Handing combos to an agent or another install'],
+       ['CSV export','Name, keyword, snippet only (3 columns)','Interchange with TextExpander-compatible tools'],
+       ['Backup (Advanced menu)','Entire library <b>including groups</b>','Whole-library moves and snapshots'],
+       ['Import (menu or drag-and-drop)','Either format, with a conflict dialog for duplicate keywords','Incremental merges; never destructive by itself']]}},
+    {h:'The CSV contract',
+     p:'<p>Beeftext expects UTF-8, comma-separated, exactly three columns in order: keyword, snippet, name. No header, no empty lines. Text containing spaces is double-quoted; the third column may be empty if you keep the trailing comma. Files from TextExpander import as-is, though TextExpander macros are not converted to Beeftext variables.</p>'},
+    {h:'Restore is the destructive one',
+     p:'<p>'+K('Restore')+' reads a Backup file and replaces your current combos with it, and the wiki states plainly that all existing combos are deleted in the operation. Import is the incremental tool; Restore is the whole-disk image. Confusing the two is how libraries die.</p>'},
+    {h:'Portable edition limits',
+     p:'<p>The portable build keeps settings, the combo list, and logs in a Data subfolder beside the executable, touches no registry, but cannot auto-start, cannot auto-update, and its combo list folder cannot be customized. The wiki lists that folder restriction as a portable-only limitation, which implies the installer edition can relocate its combo folder; verify in Preferences on your install before building a sync workflow around it. <span class="unv">unverified: implied by the portable limitations list, not confirmed on a Preferences page</span></p>'},
+    {h:'The agent-curation loop',
+     p:'<p>Because import accepts JSON and CSV with conflict handling, an agent can be your snippet librarian: it writes the file (valid JSON or the 3-column CSV), you import it into a chosen group, and the conflict dialog guards duplicate keywords. The workflow rule: the agent never touches a live library through Restore; additions flow through Import, and a Backup snapshot is taken first.</p>'}
+  ],
+  lab:{title:'Round trip, with evidence',
+    steps:[
+      'Export your current combos as JSON, and again as CSV. Open both files and write down exactly what each contains versus your in-app view (groups are the difference).',
+      'Run Backup from the Advanced menu and store the file somewhere deliberate.',
+      'Have a script or an agent generate one new combo as valid JSON (or the 3-column CSV) and import it through the Import dialog, choosing a target group and observing the conflict option.',
+      '<b>Break it deliberately, inside a safety net:</b> from the backup you just took, run Restore, and confirm with your own eyes that pre-existing combos outside the backup were deleted. Then Restore back your real backup.'],
+    verify:'You can state from file evidence which format preserves groups, you have a Backup on disk, and you restored your real library from it after witnessing the destructive path.'},
+  gotchas:[
+    {s:'trap',t:'JSON export silently drops groups',d:'The wiki says so explicitly: all combo information except groups. A JSON migration re-imports into a single chosen group and your structure is gone unless you rebuild it.'},
+    {s:'trap',t:'Restore deletes the current library',d:'Documented, not dialog-warned loudly enough for the stakes. Backup before Restore, every time, no exceptions.'},
+    {s:'trap',t:'A CSV with a header row or four columns fails the contract',d:'No header, no empty lines, exactly three columns, UTF-8. A generated file that drifts from that contract imports badly or not at all.'},
+    {s:'stale',t:'"Beeftext cannot sync across machines"',d:'The fixed-folder restriction belongs to the portable edition only. For the installer edition, verify the custom combo folder in Preferences before concluding anything. <span class="unv">unverified</span>'},
+    {s:'cost',t:'CSV is lossy by design',d:'Three fields survive: keyword, snippet, name. Matching mode and group membership do not. Use JSON or Backup when those matter.'}
+  ],
+  quiz:[
+    {q:'Which export format preserves groups, and through which operation is it consumed?',a:'Backup, from the Advanced menu, carries the entire library including groups. It is consumed by Restore, which replaces and deletes all existing combos.'},
+    {q:'State the 3-column CSV contract.',a:'UTF-8, comma separator, exactly three columns in order: keyword, snippet, name. No header row, no empty lines, spaces double-quoted, third column may be empty with the trailing comma kept.'},
+    {q:'Why does an agent curate the library through Import and never through Restore?',a:'Restore replaces the entire library and deletes existing combos; it is destructive. Import is incremental, targets a chosen group, and offers a conflict dialog for duplicate keywords.'}
+  ],
+  docs:[['Import and export (wiki)','https://github.com/xmichelo/Beeftext/wiki/Import-and-export'],['Portable Edition (wiki)','https://github.com/xmichelo/Beeftext/wiki/Portable-Edition']]
+},
+
+{
+  id:'p9', n:'09', title:'The agent interface', layer:'l4', layerLabel:'Capstone',
+  time:'Half a day', pre:'All phases',
+  objective:'Assemble the starter library that makes Beeftext <b>the human-side interface of an agent stack</b>, and state what this path deliberately does not cover.',
+  concepts:[
+    {h:'The three junctions',
+     p:'<p>Where a text expander and agentic coding actually meet: <b>templates in</b> (prompt combos turn two keystrokes into a fully structured brief), <b>state out</b> (the PowerShell bridge pastes live project context into any chat box), and <b>the library as data</b> (an agent writes JSON or CSV, you import with conflict handling, version it in git). Miss any junction and you have a nice snippet tool rather than an interface.</p>',
+     table:{head:['Junction','Mechanism','Workhorse variable'],rows:[
+       ['Templates in','Prompt combos','#{clipboard}, #{input:}, #{cursor}'],
+       ['State out','Live context snippets','#{powershell:}'],
+       ['Library as data','Agent-written imports','JSON or CSV through the Import dialog']]}},
+    {h:'A starter set that earns its keep',
+     p:'<p>Eight combos, one prefix, three groups. Each one is immediately useful and each exercises a different rung.</p>',
+     table:{head:['Keyword','Job','Rungs used'],rows:[
+       ['<code>xxsig</code>','Signature block','Static'],
+       ['<code>xxmd</code>','Markdown frontmatter, created date stamped','#{dateTime:format}'],
+       ['<code>xxcb</code>','Wrap whatever is on the clipboard in a quote block','#{clipboard}'],
+       ['<code>xxfix</code>','Debug-request template: error from clipboard, constraints, cursor at the ask','#{clipboard}, #{cursor}'],
+       ['<code>xxctx</code>','Live git context: branch, dirty count, last commit','#{powershell:}'],
+       ['<code>xxpwsh</code>','Shell conventions reminder (PowerShell-safe, no destructive ops)','Static'],
+       ['<code>xxscope</code>','Environment declaration line (which machine, which boundaries)','Static'],
+       ['<code>xxtrip</code>','Per-use travel brief with inputs for date and city','#{input:}']]}},
+    {h:'The ship checklist',
+     p:'<ol><li>Prefix scheme chosen and no combo outside it.</li><li>Groups: one per domain, names filled for picker search.</li><li>Exclusion list covers password managers and banking windows.</li><li>Beep on until the scheme is boring.</li><li>Backup taken and stored; library location decision made (default folder versus custom).</li><li>Every composed parent re-fired after any atom rename.</li></ol>'},
+    {h:'What is deliberately out of scope',
+     p:'<p>This path stops at the single-machine Windows power user of Beeftext. Not covered, each with its own home: the matching modes beyond Strict (dedicated wiki page; read before switching), compiling Beeftext from source (repo build docs), the Breevy import tooling (community issue), and other expanders as subjects: AutoHotkey as a scripting platform, or espanso when you want the same model cross-platform. The keyword-snippet mental model, cursor control, and composition discipline transfer; variable syntax and the PowerShell bridge specifics do not.</p>'},
+    {h:'Why this survives contact with agents',
+     p:'<p>Agents change weekly; the mechanism does not. A prompt combo is a versioned, human-editable artifact that outlives any single model, and it lives where your hands already are. That is the whole argument for the expansion engine as the durable layer of a vibe-coding stack.</p>'}
+  ],
+  lab:{title:'Build it, use it, break it',
+    steps:[
+      'Build the eight-combo starter set against your real conventions (your prefix, your groups, your real signature, your real shell rules).',
+      'Use xxfix and xxctx in one real agent session today: paste a real error through the template, paste live git state into the conversation.',
+      'Have your agent or a script generate one additional combo as JSON and import it through the dialog.',
+      'Run the ship checklist top to bottom and fix what fails.',
+      '<b>Break it deliberately:</b> rename the keyword behind one atom that a parent embeds, re-fire the parent, and read the literal-text degradation one level up. Fix it, then re-run the checklist line about re-firing parents.'],
+    verify:'One real agent session used two snippets you built, the library survived an export/backup round trip, and the ship checklist passes with every line traceable to a real combo.'},
+  gotchas:[
+    {s:'trap',t:'Prompt templates drift from the instructions they mirror',d:'When your standing conventions change, the snippet does not. Date the template inside the snippet text so staleness is visible at expansion time, not at incident time.'},
+    {s:'trap',t:'Agent-written imports that collide silently',d:'The import conflict dialog guards duplicate keywords, but only if you read it instead of clicking through. Review generated files before import.'},
+    {s:'cost',t:'Context snippets hit disk on every expansion',d:'Every xxctx fires a script: git queries are fast, but a heavyweight script turns a keystroke into a pause. Keep bridge scripts sub-second.'},
+    {s:'ok',t:'The library is versioned data',d:'Back it up and diff it like code. The JSON channel makes that literal, and git makes it free.'},
+    {s:'ok',t:'Ship, then refine',d:'Eight working combos used this week beat forty planned ones. Add rungs when a repeated friction proves the need.'}
+  ],
+  quiz:[
+    {q:'Name the three junctions and one starter combo serving each.',a:'Templates in: xxfix (structured debug brief from the clipboard). State out: xxctx (live git context via the PowerShell bridge). Library as data: agent-written JSON imported through the Import dialog with conflict handling.'},
+    {q:'What transfers unchanged to another text expander, and what does not?',a:'The keyword-snippet model, prefix discipline, composition (atoms and parents), and cursor control as a concept. Beeftext-specific variable syntax, the PowerShell bridge specifics, and the JSON/CSV/backup formats do not transfer.'},
+    {q:'State the scope boundary of this path in one sentence.',a:'It stops at the single-machine Windows power user of Beeftext; matching modes beyond Strict, building from source, Breevy import tooling, and other expanders as subjects are each out of scope with their own documentation.'}
+  ],
+  docs:[['Variables (wiki)','https://github.com/xmichelo/Beeftext/wiki/Variables'],['Import and export (wiki)','https://github.com/xmichelo/Beeftext/wiki/Import-and-export'],['beeftext.org','https://beeftext.org/']]
+}
+];
+
+/* ---------------- decision trees: which thing do I use for X ---------------- */
+const TREES = [
+{title:'Which variable do I reach for?', rows:[
+  ['Fixed boilerplate, never changes','No variable','Variables exist for things that change'],
+  ['Whatever is on the clipboard right now','#{clipboard}','Wraps copied text mid-snippet'],
+  ['Today, in system format','#{date}','Locale default, zero configuration'],
+  ['A custom or computed date/time','#{dateTime:format}','Qt tokens; arithmetic form for offsets'],
+  ['A system fact like the username','#{envVar:USERNAME}','Reads the environment'],
+  ['Text that already lives in another combo','#{combo:keyword}','Single-sources shared blocks'],
+  ['Something only I know at expansion time','#{input:Prompt}','Per-use value via a dialog'],
+  ['Anything computed or fetched live','#{powershell:path}','Script output becomes snippet text'],
+  ['Caret placement or key presses','#{cursor} or #{key:name}','Controls the typing itself']
+]},
+{title:'The combo did not expand, or expanded wrong', rows:[
+  ['Output contains literal #{...}','Fix the name: case, spaces, or a typo','Unrecognized variables pass through as text'],
+  ['Nothing happens at all','Check keyword and application','Embedded in a longer word stays silent under Strict; the app may be excluded'],
+  ['Expanded, but a piece is missing','Non-text clipboard, orphaned sub-combo, or timed-out script','Each of those fails silently by design'],
+  ['It fires when I am typing normally','Your keyword is a real word','Move it inside a prefix namespace'],
+  ['Nothing fires anywhere, even Notepad','Beeftext is paused or not running','Check the tray icon; pausing is a feature']
+]},
+{title:'Where should this text live?', rows:[
+  ['Used once, in one snippet','Inline in the snippet','Indirection you would never navigate'],
+  ['Used in two or more snippets','Its own combo, embedded with #{combo:}','Edit once, every parent inherits'],
+  ['Different each time it is used','A variable','Static text rots by design'],
+  ['Needs a computation or a fetch','A PowerShell script plus #{powershell:}','Text cannot query a system'],
+  ['Reusable across machines or agents','The library: JSON, CSV, or Backup','Portable, versionable, importable']
+]},
+{title:'How do I move or merge libraries?', rows:[
+  ['Whole copy, groups intact','Backup, then Restore','Restore replaces everything at the destination'],
+  ['Add combos to an existing library','Import JSON or CSV','Conflict dialog handles duplicate keywords'],
+  ['Hand a snippet to a TextExpander user','CSV export','Three-column compatible format; macros are not converted'],
+  ['Keep two machines in sync','Installer edition, custom combo folder','Portable edition cannot relocate its folder (verify in Preferences) <span class="unv">unverified</span>'],
+  ['Let an agent curate the library','Agent writes JSON or CSV, you import','Never use Restore for incremental changes']
+]},
+{title:'The PowerShell output did not appear', rows:[
+  ['Script works fine in a terminal','Check the 10 second default timeout','Long scripts are terminated silently; use :ms or :0'],
+  ['A stray newline landed mid-sentence','Add -NoNewLine to Write-Host','Console output is inserted verbatim'],
+  ['Literal #{powershell:...} in the output','Malformed variable or wrong path','Passes through as text like any unrecognized variable'],
+  ['Script opens a dialog','Use the :0 timeout','Dialogs outlive the 10 second default'],
+  ['Script computes but prints nothing','Print with Write-Host -NoNewLine','Only what the console emits is captured']
+]}
+];
+
+/* ---------------- reference tables: pure lookup ---------------- */
+const REF = [
+{id:'r1', title:'Variable index', note:'The one table to keep open. Case sensitive, no spaces inside the braces; unrecognized variables stay as literal text.',
+ head:['Variable','Parameter','What it inserts'],
+ rows:[['<code>#{clipboard}</code>','None','Current clipboard text; non-text silently ignored'],
+       ['<code>#{date}</code>','None','Current date, system locale format'],
+       ['<code>#{time}</code>','None','Current time, system locale format'],
+       ['<code>#{dateTime}</code>','None','Both, system locale format'],
+       ['<code>#{dateTime:}</code>','Qt format string','Timestamp in that format'],
+       ['<code>#{dateTime::}</code>','Offsets then format','Computed timestamp, e.g. +1d-1y+2h'],
+       ['<code>#{combo:}</code>','Keyword of another combo','That combo snippet, sub-variables evaluated'],
+       ['<code>#{lower:}</code> / <code>#{upper:}</code>','Keyword','Embedded snippet, case converted'],
+       ['<code>#{cursor}</code>','None','Removed; sets final caret position (first one wins)'],
+       ['<code>#{input:}</code>','Dialog prompt','Typed answer, asked at expansion time'],
+       ['<code>#{envVar:}</code>','Variable name','Environment variable value'],
+       ['<code>#{powershell:}</code>','Script path (:timeoutMs)','Script console output'],
+       ['<code>#{key:}</code>','Key name (:count)','One non-printing key press, repeated'],
+       ['<code>#{shortcut:}</code>','Key combination','Fires an application shortcut (v12)'],
+       ['<code>#{delay:}</code>','Milliseconds','Pauses expansion between segments']],
+ foot:'Escape } and \\ inside parameters as \\{ and \\\\. Version landmarks in the table below.'},
+{id:'r2', title:'dateTime tokens and arithmetic', note:'Qt conventions. Week numbers since v9; arithmetic with mandatory signs and a mandatory final colon.',
+ head:['Written','Yields'],
+ rows:[['<code>#{dateTime:yyyy-MM-dd}</code>','2026-09-29'],
+       ['<code>#{dateTime:yyyy-MM-dd, HH:mm:ss.zzz}</code>','Full timestamp with milliseconds'],
+       ['<code>#{dateTime:ww}</code>','Week number with leading zero'],
+       ['<code>#{dateTime:+1d:}</code>','Tomorrow, locale format'],
+       ['<code>#{dateTime:+1d-1y+2h:yyyy-MM-dd hh:mm:ss}</code>','Plus a day, minus a year, plus two hours, custom format'],
+       ['<code>#{dateTime:1d:}</code>','Invalid: sign missing, stays literal'],
+       ['<code>#{dateTime:+1d}</code>','Invalid: final colon missing, stays literal']],
+ foot:'Offsets: y year, M month, w week, d day, h hour, m minute, s second, z millisecond. Full token list: Qt date-time documentation.'},
+{id:'r3', title:'#{key:} names', note:'One key per variable; repeat with a second colon and a count, e.g. #{key:up:10}. No shortcuts here: use #{shortcut:} for combinations.',
+ head:['Key','Key','Key'],
+ rows:[['<code>space</code>','<code>tab</code>','<code>enter</code>'],
+       ['<code>insert</code>','<code>delete</code>','<code>home</code>'],
+       ['<code>end</code>','<code>pageUp</code>','<code>pageDown</code>'],
+       ['<code>up</code>','<code>down</code>','<code>left</code>'],
+       ['<code>right</code>','<code>escape</code>','<code>printScreen</code>'],
+       ['<code>pause</code>','<code>numLock</code>','<code>windows</code>'],
+       ['<code>control</code>','<code>alt</code>','<code>shift</code>'],
+       ['<code>volumeMute</code>','<code>volumeUp</code>','<code>volumeDown</code>'],
+       ['<code>mediaNextTrack</code>','<code>mediaPreviousTrack</code>','<code>mediaStop</code>'],
+       ['<code>mediaPlayPause</code>','<code>mediaSelect</code>','<code>f1 ... f24</code>']]},
+{id:'r4', title:'Version landmarks', note:'As of September 2026. The project is in maintenance mode: fixes for major issues only, no new features. Recheck the releases page before relying on a version claim.',
+ head:['Fact','Value'],
+ rows:[['Maintenance mode','Announced on the repository README'],
+       ['PowerShell default timeout','10 seconds'],
+       ['Extended PowerShell timeout','Since v11, :timeoutMs syntax; 0 waits indefinitely'],
+       ['#{key:} and #{delay:}','Added in v11'],
+       ['#{shortcut:}','Added in v12'],
+       ['Excluded applications list','Added in v11'],
+       ['Week number tokens','Since v9'],
+       ['Combo picker','Win+Shift+Enter, any application'],
+       ['Framework','Qt 6']]},
+{id:'r5', title:'Library formats', note:'What each channel carries, verified against the Import and export wiki page.',
+ head:['Channel','Carries','Destructive?'],
+ rows:[['JSON export','All combo information except groups','No'],
+       ['CSV export','Keyword, snippet, name (3 columns)','No'],
+       ['Backup','Entire library including groups','No (but its consumer is)'],
+       ['Restore','Replaces the library from a Backup','<b>Yes: deletes all existing combos</b>'],
+       ['Import','JSON or CSV into a chosen group, conflict dialog','No']]},
+{id:'r6', title:'A starter keyword map', note:'One prefix, one group per domain, Name fields filled for picker search. The capstone lab builds exactly this.',
+ head:['Keyword','Snippet job','Key variables'],
+ rows:[['<code>xxsig</code>','Signature block','None'],
+       ['<code>xxmd</code>','Markdown frontmatter, stamped date','#{dateTime:yyyy-MM-dd}'],
+       ['<code>xxcb</code>','Wrap the clipboard in a quote block','#{clipboard}'],
+       ['<code>xxfix</code>','Structured debug request','#{clipboard}, #{cursor}'],
+       ['<code>xxctx</code>','Live git context line','#{powershell:}'],
+       ['<code>xxpwsh</code>','Shell conventions reminder','None'],
+       ['<code>xxscope</code>','Environment declaration','None'],
+       ['<code>xxtrip</code>','Travel brief form','#{input:}']]}
+];
+
+/* ---------------- audit: the source, checked ---------------- */
+const AUDIT = {
+ intro:'The source is the chat explanation that prompted this site: a BeefText walkthrough plus a section on combining it with agentic coding. It was checked against the BeefText GitHub wiki (Variables, Getting started, Import and export, Portable Edition), the repository README, and the releases changelog in September 2026. Overall: the explanation holds up. Every variable syntax quoted is confirmed, and the gaps are a stale third-party count, one inference stated a bit too confidently, and several documented features the explanation never touched.',
+ groups:[
+ {label:'Holds up', tag:'holds', items:[
+   {c:'Variables are #{...} elements evaluated at expansion time; case sensitive; no spaces; unrecognized ones stay as literal text; escape } and \\ inside parameters.',f:'Confirmed verbatim on the wiki Variables page, including the escaping rule and the undetermined-results warning for stray backslashes.'},
+   {c:'The variable families: clipboard, date/time (three bare forms, formatted, arithmetic), composition (combo, lower, upper), input, envVar, powershell, control (cursor, key, shortcut, delay).',f:'Confirmed; the wiki documents the same list with parameter syntax for each, plus the v11 and v12 introduction notes for key, delay, shortcut, and the timeout syntax.'},
+   {c:'The PowerShell variable runs a script and inserts its output; 10 second default timeout; extended timeout syntax including wait-forever; the wiki file-dialog example.',f:'Confirmed on the Variables page, including the contributed file-picker script and the three timeout behaviors demonstrated with it.'},
+   {c:'Import offers duplicate-keyword conflict handling; Backup includes groups; Restore deletes existing combos; JSON export excludes groups; CSV is the 3-column TextExpander-compatible format.',f:'All confirmed on the Import and export page, including the drag-and-drop path and the CSV contract (UTF-8, comma, no header).'},
+   {c:'Portable edition: data in a Data subfolder, no autostart, no auto-update, fixed combo folder. Combo picker Win+Shift+Enter. Beep on substitution, toggleable in Preferences. Maintenance mode with no new features.',f:'Confirmed on the Portable Edition page, the Getting started page, and the repository README respectively.'},
+   {c:'Privacy model: no typing data stored, no data sent to any server; the only network activity is a daily version-check download that can be disabled.',f:'Confirmed in the beeftext.org privacy section.'}
+ ]},
+ {label:'Stale or incomplete', tag:'stale', items:[
+   {c:'The installer edition lets you relocate the combo-list folder so the library can live in a synced or git folder.',f:'This was an inference from the Portable page listing a fixed combo folder as a portable-only limitation. It implies the installer edition supports a custom folder, but the Preferences wiki page was not retrievable to confirm. Verify in Preferences on the actual install before building a sync workflow. <span class="unv">unverified</span>'},
+   {c:'Third-party write-ups describe Beeftext as having 10 variables.',f:'That count comes from 2019 coverage. The variable surface has grown since (input, envVar, powershell, key, shortcut, delay, lower, upper). Counting is the wrong model anyway: think in families.'},
+   {c:'The explanation left the input-dialog cancel path untested.',f:'Still undocumented on the wiki pages checked here. Phase 05 has you observe it on your own machine and write the answer down. <span class="unv">unverified</span>'}
+ ]},
+ {label:'Wrong', tag:'wrong', items:[
+   {c:'No outright contradiction was found between the source and the wiki.',f:'The nearest miss: the source said the PowerShell variable inserts script stdout, while the wiki examples print through Write-Host -NoNewLine. Treat the console-output contract as the operative rule and copy the wiki pattern rather than reasoning about streams.'}
+ ]},
+ {label:'Missing entirely', tag:'gap', items:[
+   {c:'Matching modes beyond Strict were never explained in the source.',f:'A dedicated wiki page exists and the Getting started page defaults you to Strict. Before switching modes, read that page; misfire behavior differs and the source explanation gives you no map. <span class="unv">unverified: page not retrieved</span>'},
+   {c:'The excluded-applications list and the default sensitive-applications list.',f:'Both are v11-era release features (excluded list in issue 429, default sensitive list restored in issue 494). The source mentioned exclusions as a caution; they are a first-class preferences surface.'},
+   {c:'Pausing Beeftext.',f:'The release notes confirm pause functionality exists and was fixed in issue 435. The source treated not-running as the only off state; a paused Beeftext is the more confusing one because the tray icon looks alive.'},
+   {c:'Breevy import, CSV encoding rules, and drag-and-drop import.',f:'Documented paths the source skipped. They matter the first time you migrate or let an agent write the import file: UTF-8, comma separator, exactly three columns, no header.'},
+   {c:'The beep as expansion feedback.',f:'Getting started documents the substitution beep and its Preferences toggle. It is your misfire telemetry; worth knowing before you silence it.'},
+   {c:'Every combo must belong to a group, and the Name field is what the picker searches.',f:'Group membership is structurally mandatory with an auto-created Default Group, and the optional Name field is the retrieval key at scale. The source mentioned groups in passing and never said why they matter.'}
+ ]}
+ ]
+};
+/* ============================================================
+   Expansion Engine: app
+   ============================================================ */
+const $  = s => document.querySelector(s);
+const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e; };
+const esc = s => String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* ---- storage: never load-bearing ---- */
+const store = {
+  get(){ try{ return JSON.parse(localStorage.getItem(SITE.key)||'{}'); }catch(e){ return mem; } },
+  set(v){ mem=v; try{ localStorage.setItem(SITE.key,JSON.stringify(v)); }catch(e){} }
+};
+let mem = {};
+try { mem = JSON.parse(localStorage.getItem(SITE.key)||'{}'); } catch(e){ mem = {}; }
+let state = mem;
+
+const doneLab  = id => !!state['lab:'+id];
+const doneQ    = (id,i) => !!state['q:'+id+':'+i];
+const phaseDone = p => doneLab(p.id) && p.quiz.every((_,i)=>doneQ(p.id,i));
+const phasePart = p => doneLab(p.id) || p.quiz.some((_,i)=>doneQ(p.id,i));
+
+/* ---- theme ---- */
+(function(){
+  let t=null; try{ t=localStorage.getItem(SITE.key+'-theme'); }catch(e){}
+  if(t) document.documentElement.setAttribute('data-theme',t);
+  $('#theme').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const isDark = cur ? cur==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem(SITE.key+'-theme',next); }catch(e){}
+  });
+})();
+
+/* ---- chrome built from SITE ---- */
+document.title = SITE.title;
+$('#brandname').textContent = SITE.title;
+$('#brandtag').textContent  = SITE.tag;
+if(typeof AUDIT === 'undefined') $('.modes button[data-mode="audit"]').remove();
+$('#legend').innerHTML = '<h4>'+SITE.spine+'</h4>' + SITE.layers.map(l =>
+  '<div class="row"><span class="swatch" style="background:var(--'+l.token+')"></span>'+l.label+'</div>').join('');
+
+/* ---- routing ---- */
+let mode='learn', current=PHASES[0].id;
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  render();
+}
+document.querySelectorAll('.modes button').forEach(b=>b.addEventListener('click',()=>{ $('#q').value=''; setMode(b.dataset.mode); }));
+$('#reset').addEventListener('click',()=>{
+  if(!confirm('Clear all phase progress?')) return;
+  state={}; store.set(state); render(); buildRail();
+});
+
+/* ---- rail ---- */
+function buildRail(){
+  const nav=$('#pnav'); nav.innerHTML='';
+  PHASES.forEach(p=>{
+    const a=el('a',p.id===current&&mode==='learn'?'on':'');
+    a.href='#'+p.id;
+    const cls = phaseDone(p)?'tick done':(phasePart(p)?'tick part':'tick');
+    a.innerHTML='<span class="n">'+p.n+'</span><span>'+p.title+'</span><span class="'+cls+'">✓</span>';
+    a.addEventListener('click',e=>{ e.preventDefault(); current=p.id; if(mode!=='learn') setMode('learn'); else render(); buildRail(); window.scrollTo({top:0,behavior:'smooth'}); });
+    nav.appendChild(a);
+  });
+}
+
+/* ---- render pieces ---- */
+function codeBlock(src){
+  const w=el('div','codewrap');
+  const pre=el('pre','',  '<code>'+esc(src)+'</code>');
+  const btn=el('button','copy','copy');
+  btn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(src).then(()=>{
+      btn.textContent='copied'; btn.classList.add('done');
+      setTimeout(()=>{ btn.textContent='copy'; btn.classList.remove('done'); },1400);
+    }).catch(()=>{ btn.textContent='select it'; });
+  });
+  w.appendChild(pre); w.appendChild(btn);
+  return w;
+}
+function tableBlock(t){
+  const w=el('div','tablewrap');
+  let h='<table><thead><tr>'+t.head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>';
+  h+=t.rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('');
+  h+='</tbody></table>';
+  w.innerHTML=h;
+  return w;
+}
+function sec(label,count){
+  const h=el('h2','sec',label+(count!=null?' <span class="cnt">'+count+'</span>':''));
+  return h;
+}
+
+/* ---- learn view ---- */
+function renderPhase(p){
+  const v=$('#view'); v.innerHTML='';
+
+  // progress strip
+  const totalUnits = PHASES.reduce((a,x)=>a+1+x.quiz.length,0);
+  const doneUnits  = PHASES.reduce((a,x)=>a+(doneLab(x.id)?1:0)+x.quiz.filter((_,i)=>doneQ(x.id,i)).length,0);
+  const pct = Math.round(doneUnits/totalUnits*100);
+  const pr=el('div','prog');
+  pr.innerHTML='<div class="top"><span class="lbl">Path progress</span><span class="pct">'+pct+'%</span></div>'+
+    '<div class="bar">'+PHASES.map(x=>'<i class="'+(phaseDone(x)?'done':(phasePart(x)?'part':''))+'"></i>').join('')+'</div>';
+  v.appendChild(pr);
+
+  const head=el('div');
+  head.innerHTML='<div class="eyebrow">Phase '+p.n+' · '+p.layerLabel+' layer</div><h1 class="ptitle">'+p.title+'</h1>'+
+    '<div class="meta"><span class="chip '+p.layer+'">'+p.layerLabel+'</span>'+
+    '<span class="chip">'+p.time+'</span><span class="chip">prereq: '+p.pre+'</span></div>';
+  v.appendChild(head);
+  v.appendChild(el('div','objective',p.objective));
+
+  v.appendChild(sec('Concepts',p.concepts.length));
+  p.concepts.forEach(c=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',c.h));
+    if(c.p) d.insertAdjacentHTML('beforeend',c.p);
+    if(c.table) d.appendChild(tableBlock(c.table));
+    if(c.code) d.appendChild(codeBlock(c.code));
+    if(c.p2) d.insertAdjacentHTML('beforeend',c.p2);
+    if(c.code2) d.appendChild(codeBlock(c.code2));
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Lab'));
+  const lab=el('div','lab');
+  lab.innerHTML='<h3>'+p.lab.title+'</h3><ol>'+p.lab.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol>'+
+    '<p style="margin:14px 0 0"><b>Done when:</b> '+p.lab.verify+'</p>';
+  const dl=el('div','done-line');
+  const cb=el('input'); cb.type='checkbox'; cb.id='lab-'+p.id; cb.checked=doneLab(p.id);
+  cb.addEventListener('change',()=>{ state['lab:'+p.id]=cb.checked; store.set(state); buildRail(); renderPhase(p); });
+  const lb=el('label'); lb.htmlFor=cb.id; lb.appendChild(cb); lb.appendChild(document.createTextNode('Lab complete'));
+  dl.appendChild(lb); lab.appendChild(dl);
+  v.appendChild(lab);
+
+  v.appendChild(sec('Gotchas',p.gotchas.length));
+  p.gotchas.forEach(g=>{
+    const d=el('div','gotcha');
+    d.innerHTML='<span class="sev '+g.s+'">'+g.s+'</span><span><b>'+g.t+'</b>'+g.d+'</span>';
+    v.appendChild(d);
+  });
+
+  v.appendChild(sec('Checkpoint',p.quiz.length));
+  p.quiz.forEach((q,i)=>{
+    const d=el('details','qa');
+    d.innerHTML='<summary>'+q.q+'</summary><div class="ans">'+q.a+
+      '<div class="done-line" style="border-top-color:var(--line)"><label style="color:var(--muted)">'+
+      '<input type="checkbox" '+(doneQ(p.id,i)?'checked':'')+'> I could answer this without looking</label></div></div>';
+    d.querySelector('input').addEventListener('change',e=>{
+      state['q:'+p.id+':'+i]=e.target.checked; store.set(state); buildRail();
+      const strip=$('.prog'); if(strip) renderPhase(p);
+    });
+    v.appendChild(d);
+  });
+
+  if(p.docs&&p.docs.length){
+    v.appendChild(sec('Source docs'));
+    const dd=el('div','docs');
+    dd.innerHTML=p.docs.map(d=>'<a href="'+d[1]+'" target="_blank" rel="noopener">'+d[0]+' ↗</a>').join('');
+    v.appendChild(dd);
+  }
+
+  const idx=PHASES.indexOf(p);
+  const navd=el('div','done-line'); navd.style.borderTop='1px solid var(--line)'; navd.style.marginTop='40px';
+  if(idx>0){ const b=el('button','btn','← '+PHASES[idx-1].title); b.onclick=()=>{current=PHASES[idx-1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  if(idx<PHASES.length-1){ const b=el('button','btn prime',PHASES[idx+1].title+' →'); b.onclick=()=>{current=PHASES[idx+1].id;render();buildRail();scrollTo({top:0})}; navd.appendChild(b); }
+  v.appendChild(navd);
+}
+
+/* ---- reference view ---- */
+function renderRef(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Reference</div><h1 class="ptitle">Lookup and decisions</h1>'+
+    '<p class="lede">'+SITE.refLede+'</p>';
+
+  v.appendChild(sec('Decision trees',TREES.length));
+  TREES.forEach(t=>{
+    v.appendChild(el('h3','',t.title));
+    const wrap=el('div','tree');
+    t.rows.forEach(r=>{
+      const b=el('div','branch');
+      b.innerHTML='<span class="cond">'+r[0]+'</span><span class="arr">→</span><span class="res">'+r[1]+'<em>'+r[2]+'</em></span>';
+      wrap.appendChild(b);
+    });
+    v.appendChild(wrap);
+  });
+
+  v.appendChild(sec('Tables',REF.length));
+  REF.forEach(r=>{
+    const d=el('div','concept');
+    d.appendChild(el('h3','',r.title));
+    if(r.note) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin:2px 0 0">'+r.note+'</p>');
+    d.appendChild(tableBlock(r));
+    if(r.foot) d.insertAdjacentHTML('beforeend','<p class="cap" style="margin-top:8px">'+r.foot+'</p>');
+    v.appendChild(d);
+  });
+}
+
+/* ---- drill view ---- */
+let deck=[], di=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  PHASES.forEach(p=>p.quiz.forEach(q=>deck.push({q:q.q,a:q.a,src:'Phase '+p.n+' · '+p.title,pid:p.id})));
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  di=0; revealed=false;
+}
+function renderDrill(){
+  const v=$('#view'); v.innerHTML='';
+  if(!deck.length) buildDeck();
+  v.innerHTML='<div class="eyebrow">Drill</div><h1 class="ptitle">Recall, not recognition</h1>'+
+    '<p class="lede">'+deck.length+' cards drawn from every phase checkpoint. Answer out loud before you flip; the gap between "that looks familiar" and "I can state it" is the entire point.</p>';
+  const c=deck[di];
+  const card=el('div','flash');
+  card.innerHTML='<div class="fsrc">'+c.src+'</div><div class="fq">'+c.q+'</div>'+
+    '<div class="fa'+(revealed?'':' hide')+'">'+c.a+'</div>';
+  v.appendChild(card);
+  const btns=el('div','fbtns');
+  const flip=el('button','btn prime',revealed?'Hide answer':'Reveal answer');
+  flip.onclick=()=>{ revealed=!revealed; renderDrill(); };
+  const next=el('button','btn','Next card →');
+  next.onclick=()=>{ di=(di+1)%deck.length; revealed=false; renderDrill(); };
+  const goto=el('button','btn','Go to phase');
+  goto.onclick=()=>{ current=c.pid; setMode('learn'); buildRail(); scrollTo({top:0}); };
+  const shuf=el('button','btn','Shuffle');
+  shuf.onclick=()=>{ buildDeck(); renderDrill(); };
+  btns.appendChild(flip); btns.appendChild(next); btns.appendChild(goto); btns.appendChild(shuf);
+  btns.appendChild(el('span','counter',(di+1)+' / '+deck.length));
+  v.appendChild(btns);
+  v.appendChild(el('p','cap','Keyboard: <kbd>space</kbd> flip · <kbd>→</kbd> next'));
+}
+
+/* ---- audit view ---- */
+function renderAudit(){
+  const v=$('#view'); v.innerHTML='';
+  v.innerHTML='<div class="eyebrow">Audit</div><h1 class="ptitle">'+SITE.auditTitle+'</h1>'+
+    '<p class="lede">'+AUDIT.intro+'</p>';
+  AUDIT.groups.forEach(g=>{
+    v.appendChild(sec(g.label,g.items.length));
+    g.items.forEach(it=>{
+      const d=el('div','verdict');
+      d.innerHTML='<span class="vtag '+g.tag+'">'+g.tag+'</span><span><span class="claim">'+it.c+'</span><span class="fix">'+it.f+'</span></span>';
+      v.appendChild(d);
+    });
+  });
+  v.insertAdjacentHTML('beforeend','<hr class="hr"><p class="cap" style="margin-top:18px">'+SITE.verifiedAgainst+' Claims I could not confirm are marked <span class="unv">unverified</span> rather than restated as fact.</p>');
+}
+
+/* ---- search ---- */
+function buildIndex(){
+  const ix=[];
+  PHASES.forEach(p=>{
+    ix.push({t:'Phase '+p.n+': '+p.title,k:'phase',body:p.objective+' '+p.concepts.map(c=>c.h).join(' '),go:()=>{current=p.id;setMode('learn');buildRail();}});
+    p.concepts.forEach(c=>ix.push({t:c.h,k:'Phase '+p.n,body:(c.p||'')+(c.p2||'')+(c.code||'')+(c.code2||''),go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.gotchas.forEach(g=>ix.push({t:g.t,k:'gotcha · Phase '+p.n,body:g.d,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+    p.quiz.forEach(q=>ix.push({t:q.q,k:'checkpoint · Phase '+p.n,body:q.a,go:()=>{current=p.id;setMode('learn');buildRail();}}));
+  });
+  REF.forEach(r=>ix.push({t:r.title,k:'reference table',body:(r.note||'')+' '+r.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  TREES.forEach(t=>ix.push({t:t.title,k:'decision tree',body:t.rows.map(x=>x.join(' ')).join(' '),go:()=>setMode('ref')}));
+  if(typeof AUDIT!=='undefined') AUDIT.groups.forEach(g=>g.items.forEach(i=>ix.push({t:i.c.replace(/<[^>]+>/g,''),k:'audit · '+g.label,body:i.f,go:()=>setMode('audit')})));
+  return ix;
+}
+let INDEX=[];
+function renderSearch(term){
+  const v=$('#view'); v.innerHTML='';
+  const t=term.toLowerCase();
+  const hits=INDEX.filter(x=>(x.t+' '+x.body).toLowerCase().replace(/<[^>]+>/g,'').includes(t)).slice(0,40);
+  v.innerHTML='<div class="eyebrow">Search</div><h1 class="ptitle">'+hits.length+' result'+(hits.length===1?'':'s')+' for “'+esc(term)+'”</h1>';
+  if(!hits.length){ v.appendChild(el('p','empty','Nothing matched. Try a config key, a command, or a frontmatter field.')); return; }
+  const w=el('div','hits');
+  hits.forEach(h=>{
+    const a=el('a','hit'); a.href='#';
+    a.innerHTML='<small>'+h.k+'</small><b>'+h.t+'</b>';
+    a.addEventListener('click',e=>{ e.preventDefault(); $('#q').value=''; h.go(); scrollTo({top:0}); });
+    w.appendChild(a);
+  });
+  v.appendChild(w);
+}
+
+/* ---- main render ---- */
+function render(){
+  const term=$('#q').value.trim();
+  if(term.length>1){ renderSearch(term); return; }
+  if(mode==='learn') renderPhase(PHASES.find(p=>p.id===current));
+  else if(mode==='ref') renderRef();
+  else if(mode==='drill') renderDrill();
+  else if(typeof AUDIT!=='undefined') renderAudit(); else renderRef();
+}
+
+$('#q').addEventListener('input',render);
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){ e.preventDefault(); $('#q').focus(); }
+  if(e.key==='Escape'&&document.activeElement===$('#q')){ $('#q').value=''; $('#q').blur(); render(); }
+  if(mode==='drill'&&document.activeElement!==$('#q')){
+    if(e.key===' '){ e.preventDefault(); revealed=!revealed; renderDrill(); }
+    if(e.key==='ArrowRight'){ di=(di+1)%deck.length; revealed=false; renderDrill(); }
+  }
+});
+
+INDEX=buildIndex();
+buildRail();
+render();
+
+</script>
+</body>
+</html>
