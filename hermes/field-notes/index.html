@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Sep 29, 2026, 1:30 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Oct 1, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Sep 29, 2026, 1:31 PM · Last published: Sep 29, 2026, 1:31 PM · published</p>
+<p>Last checked: Oct 1, 2026, 1:31 PM · Last published: Oct 1, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 1, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 1, after the v0.21.5 tag (first commits page, 30 most recent titles): a new in-process kanban schedule tool (8e00bfd) gated like the other kanban lifecycle tools (bd394e2); a gpt-6.1-sol-900k Codex OAuth picker variant (5bb6127) with pricing aliases generated from the tier loop (e2d311e) and gpt-6-terra-900k dropped from the -900k docs examples (40017f8); managed image generation work exposing Krea 2 sliders to the agent only when the active backend declares them (bf1bc78), passing a provider only the creative controls it declares (e054422), embedding and size-capping local Krea style references (f5928fe, 87f3fa8, de479f6), running the credential guard before probing a local reference (6865527), one managed_route() deciding the managed image gateway (9fb4074, 62c42e9), and documented supports_upscale/creative_controls capability keys (1c32b18) plus a single managed image picker in the tool-gateway docs (ff6b1c9); Desktop refusing steer into a session with no live turn (aea9696, closes #105176), idempotent branch creation keeping branch_stored hits off the wire (c579be9), a retry action on branch-failure notifications (cb3a465, 4d8c592), and no real-profile consent prompt on remote backends (a266cf5); and Discord auto-thread markers recovered from the routing entry with a session-row fallback (5843109, cc1e4e9). Commit-title evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Sep 29, 2026, 1:30 PM</time>
 <div><b>Main-branch on September 29, after the v0.21.5 tag: desktop refactors routing tool cards and bridge events through lookup tables (fc042f1) and gating the HUD bridge sentence on tool availability with the note firing again when tool search defers the desktop tools (09581ca, 312f6bc); a unified clarify contract distinguishing skip, cancel, timeout and undelivered on every surface (5eea878, #127760); gateway first-contact note now DM-only with the offer flag saved in the routed profile (bc7f58f); debug-share redaction hardening (URL tokens and passwords masked in debug share uploads b8a8be1, fallback api_key masked per field whatever its YAML shape f907520, every secret fallback field per agent.redact policy 536802c, GCS and Azure SAS signatures counted as URL credentials cf94e3e, strict URL-credential redaction for the system dump 205d5d7 with a replay test 139876e); gateway lock work (a live gateway identified from its lock when gateway.pid is gone 5d1ab29, tests bounding and reaping live strict-identity lock holders e4e16a5, 5ed979b); update-tail handling (supervised launches kept off the pending completion tail 8d22a82, 69f8b70, the owed-tail notice printed once in the process that boots d9f6a84, a supervised start saying when it leaves the update tail owed a91a24c); sticky-profile recovery (recovery allowed from a missing active profile a4748e9, stale-profile recovery refusing uninstall --full and abbreviated --data 167d3bb, the missing sticky-profile error naming the recovery command fbb0eb3, and profiles docs on what still runs when the sticky profile was deleted 192e574, bca2e3c); and a test-suite preservation pass. Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -214,11 +218,7 @@ ingested: 2026-09-11T16:11:25Z
 <strong>↗</strong>
 </a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">
 <time>Sep 24, 2026, 10:09 AM</time>
-<div><b>Released v0.21.5 (tag v2026.9.24) at 10:09 UTC: a patch roll-up measured at f97608f as 1,610 non-merge commits, 460 merged PRs and 475 closed issues since v0.21.4. The notes name, among undocumented window items, a Desktop plugin SDK wave, a Simple/Advanced interface mode, the Connectors page replacing the MCP tab, French/German/Spanish Desktop catalogs with an RTL/LTR setting, per-profile stop/start/restart under the host multiplexer plus gateway.standalone, the live dock for /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna and Claude Opus 5.5 catalog entries. Curated notes stay deferred to v0.22.0. Still the latest tag at the September 28 check.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
-<strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.21" target="_blank" rel="noopener noreferrer">
-<time>Sep 21, 2026, 6:10 PM</time>
-<div><b>Released v0.21.4 (tag v2026.9.21): a patch roll-up measured at 4b8a813 as 5,071 non-merge commits, 1,812 merged PRs and 2,116 closed issues since v0.21.3. The notes explicitly name, among undocumented window items, a host-wide gateway singleton lock with a rendezvous record, Desktop attaching to the running host backend instead of spawning a second one, a backend-owned connector setup card, --format stream-json CLI output, skills.auto_load, session_search after/before bounds, and a dozen new community plugins. It was superseded as the latest tag by v0.21.5 on September 24.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
+<div><b>Released v0.21.5 (tag v2026.9.24) at 10:09 UTC: a patch roll-up measured at f97608f as 1,610 non-merge commits, 460 merged PRs and 475 closed issues since v0.21.4. The notes name, among undocumented window items, a Desktop plugin SDK wave, a Simple/Advanced interface mode, the Connectors page replacing the MCP tab, French/German/Spanish Desktop catalogs with an RTL/LTR setting, per-profile stop/start/restart under the host multiplexer plus gateway.standalone, the live dock for /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna and Claude Opus 5.5 catalog entries. Curated notes stay deferred to v0.22.0. Still the latest tag at the October 1 check.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
 <strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Sep 29, 2026, 1:31 PM
+Last attempt: Oct 1, 2026, 1:31 PM
 <br>
-Last success: Sep 29, 2026, 1:31 PM
+Last success: Oct 1, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Sep 29, 2026, 1:31 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20260929t133153994z","title":"Make Repeat Work Remember","researched_at":"2026-09-29T13:30:14.650Z","generated_at":"2026-09-29T13:31:53.994Z","last_checked_at":"2026-09-29T13:31:53.994Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-09-29T13:31:53.994Z","last_success_at":"2026-09-29T13:31:53.994Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261001t133153990z","title":"Make Repeat Work Remember","researched_at":"2026-10-01T13:30:23.431Z","generated_at":"2026-10-01T13:31:53.990Z","last_checked_at":"2026-10-01T13:31:53.990Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-01T13:31:53.990Z","last_success_at":"2026-10-01T13:31:53.990Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
