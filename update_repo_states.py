@@ -52,8 +52,14 @@ FONTS_URL = (
 
 
 def resolve_token() -> str:
-    """Return a GitHub API token from env, falling back to gh auth token."""
-    for var in ("GH_TOKEN", "GITHUB_TOKEN"):
+    """Return a GitHub API token from env, falling back to gh auth token.
+
+    REPO_STATES_TOKEN comes first: the Actions GITHUB_TOKEN is scoped to
+    this repository only and gets HTTP 403 when listing the owner's
+    other repos, so the workflow needs a token with metadata read on
+    all of them (see README of this script).
+    """
+    for var in ("REPO_STATES_TOKEN", "GH_TOKEN", "GITHUB_TOKEN"):
         if os.environ.get(var):
             return os.environ[var]
     try:
@@ -86,8 +92,16 @@ def fetch_repos(token: str) -> list[dict]:
                 "User-Agent": "mastery-sites/repo-states",
             },
         )
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            batch = json.loads(resp.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                batch = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="replace")[:500]
+            try:
+                message = json.loads(body).get("message", body)
+            except json.JSONDecodeError:
+                message = body
+            raise RuntimeError(f"HTTP {exc.code} from {url}: {message}") from exc
         if not batch:
             break
         repos.extend(batch)

@@ -31,6 +31,10 @@ jobs:
 
       - name: Regenerate repo-states page
         env:
+          # Fine-grained PAT with Metadata: read-only on all owned repos.
+          # The default GITHUB_TOKEN is scoped to this repo and cannot
+          # list the owner's other repositories (HTTP 403).
+          REPO_STATES_TOKEN: ${{ secrets.REPO_STATES_TOKEN }}
           GH_TOKEN: ${{ github.token }}
         run: python update_repo_states.py
 
