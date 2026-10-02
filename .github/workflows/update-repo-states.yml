@@ -1,0 +1,55 @@
+name: Update repo-states watchlist
+
+# Regenerates watchlist/repo-states/index.html from the GitHub API daily.
+# The commit-and-push on change triggers the Cloudflare Workers deploy,
+# keeping the published page current without any local machine running.
+# A fresh "Data refreshed" timestamp every run guarantees a non-empty
+# commit, which also keeps the schedule from being auto-disabled after
+# 60 quiet days.
+
+on:
+  schedule:
+    - cron: "0 14 * * *" # 07:00 America/Vancouver (PDT)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-repo-states
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Regenerate repo-states page
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python update_repo_states.py
+
+      - name: Regenerate root index
+        run: python generate_index.py
+
+      - name: Tests
+        run: |
+          python -m unittest discover -s tests -v
+          node tests/test_index.cjs index.html
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add -A
+            git commit -m "chore: refresh watchlist/repo-states ($(date -u +%F))"
+            git push
+          fi

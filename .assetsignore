@@ -2,6 +2,7 @@
 # Only site pages belong on the public site; keep repo metadata and tooling off it.
 .git
 .gitignore
+/.github/
 *.py
 /tests/
 /README.md
