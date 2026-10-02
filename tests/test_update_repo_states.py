@@ -1,5 +1,6 @@
 """Stdlib regression tests for the repo-states watchlist generator."""
 import datetime as dt
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -46,14 +47,16 @@ class StalenessTests(unittest.TestCase):
 
 class RenderTests(unittest.TestCase):
     def test_sorted_by_last_push_descending(self):
+        """Row order comes from data-k, so bare-name substring matches
+        (e.g. "older" inside "placeholder") cannot fool the assertion."""
         repos = [
             repo("older", "2026-08-01T00:00:00Z"),
             repo("newest", "2026-10-01T00:00:00Z"),
             repo("middle", "2026-09-01T00:00:00Z"),
         ]
         html = u.render_page(repos, NOW)
-        self.assertLess(html.index("newest"), html.index("middle"))
-        self.assertLess(html.index("middle"), html.index("older"))
+        order = [k.strip() for k in re.findall(r'data-k="([^"]*)"', html)]
+        self.assertEqual(order, ["newest", "middle", "older"])
 
     def test_escapes_hostile_description(self):
         hostile = '<script>alert("x")</script>'
