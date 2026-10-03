@@ -173,7 +173,7 @@ def render_page(repos: list[dict], now: dt.datetime) -> str:
     return f"""<!doctype html><html lang="en"><head><!-- index:
 description: All aerin00 GitHub repos with last-push recency, language, and state. Auto-refreshed daily by a scheduled job.
 tags: github, repos, watchlist
-pinned: false
+pinned: true
 ingested: {INGESTED}
 --><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
