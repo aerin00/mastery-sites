@@ -73,6 +73,7 @@ CATEGORY_DOTS = {
     "grok": "#94a3b8",
     "watchlist": "#fb923c",
     "health": "#f87171",
+    "juas": "#22d3ee",
 }
 DOT_FALLBACK = "#6c737f"
 DOT_ALL = "#6c737f"
@@ -95,6 +96,7 @@ CATEGORY_BLURBS = {
     "grok": "Grok bot structure and coordination guides.",
     "watchlist": "Live watchlists refreshed by scheduled jobs.",
     "health": "Personal health protocols and device routines.",
+    "juas": "JUAS process maps and draw sheets.",
 }
 
 FRONT_MATTER_RE = re.compile(r"<!--\s*index:\s*(.*?)-->", re.DOTALL | re.IGNORECASE)

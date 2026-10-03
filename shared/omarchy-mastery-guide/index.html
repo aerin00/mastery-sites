@@ -1,0 +1,437 @@
+<!doctype html>
+<!-- index:
+description: Omarchy mastery guide: native stack, agentic toolchain, Windows migration, and a 7-day adoption plan.
+tags: guide, personal-os
+ingested: 2026-10-03T10:43:32-07:00
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Omarchy Mastery Guide — Windows 11 to Agentic Linux</title>
+<meta name="description" content="A standalone Omarchy mastery guide covering native apps, replacements, agentic development tools, commands, migration, and a 7-day adoption plan.">
+<style>
+:root{
+  --bg:#0d1117; --panel:#111823; --panel2:#161f2d; --text:#e6edf3; --muted:#9fb0c3;
+  --line:#283548; --accent:#a78bfa; --accent2:#22d3ee; --good:#7ee787; --warn:#f2cc60; --bad:#ff7b72;
+  --code:#0a0f15; --shadow:0 14px 45px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#0b0f15 0,#0d1117 22%,#0d1117 100%);color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+code,kbd,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+kbd{padding:.12rem .35rem;border:1px solid #4b5870;border-bottom-width:2px;border-radius:5px;background:#182131;color:#fff;font-size:.88em}
+.layout{display:grid;grid-template-columns:285px minmax(0,1fr);min-height:100vh}
+aside{position:sticky;top:0;height:100vh;padding:22px 18px;border-right:1px solid var(--line);background:rgba(13,17,23,.92);backdrop-filter:blur(10px);overflow:auto}
+.brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#071015;font-weight:900;box-shadow:var(--shadow)}
+.brand h1{font-size:15px;line-height:1.2;margin:0}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.search{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0f15;color:var(--text);outline:none;margin:10px 0 14px}
+nav a{display:block;padding:7px 9px;border-radius:7px;color:#cbd5e1;font-size:13px}
+nav a:hover, nav a.active{background:#172131;color:#fff;text-decoration:none}
+.meta{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+main{min-width:0}
+.wrap{max-width:1240px;margin:0 auto;padding:34px 38px 80px}
+.hero{padding:40px 0 28px;border-bottom:1px solid var(--line)}
+.eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);font-size:12px;font-weight:700}
+.hero h2{font-size:clamp(34px,5vw,62px);line-height:1.02;margin:10px 0 14px;max-width:950px}
+.hero p{max-width:880px;color:#c3cfdd;font-size:18px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.badge{border:1px solid var(--line);background:#111823;border-radius:999px;padding:6px 10px;color:#cdd8e5;font-size:12px}
+section{padding:34px 0;border-bottom:1px solid var(--line)}
+section h2{font-size:29px;margin:0 0 8px}
+section h3{font-size:19px;margin:24px 0 8px}
+.lede{color:var(--muted);max-width:900px;margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 4;background:linear-gradient(180deg,var(--panel),#0f1620);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 4px 18px rgba(0,0,0,.12)}
+.card h3{margin:0 0 6px;font-size:16px}
+.card p{margin:0;color:#b8c6d6}
+.card.big{grid-column:span 6}
+.card.full{grid-column:1/-1}
+.callout{border-left:4px solid var(--accent);background:#131b28;border-radius:8px;padding:13px 15px;margin:14px 0;color:#c8d4e3}
+.callout.warn{border-left-color:var(--warn)}
+.callout.good{border-left-color:var(--good)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#0f1620}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{padding:11px 12px;border-bottom:1px solid #253245;vertical-align:top;text-align:left}
+th{position:sticky;top:0;background:#172131;color:#fff;font-size:12px;letter-spacing:.03em}
+td{color:#c5d0dd}
+tr:last-child td{border-bottom:0}
+.small{font-size:12px;color:var(--muted)}
+pre{position:relative;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto;color:#d7e0ea}
+.copybtn{position:absolute;right:8px;top:8px;border:1px solid var(--line);background:#172131;color:#dbe7f3;border-radius:7px;padding:5px 8px;font-size:11px;cursor:pointer}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 7px;font-size:11px;color:#d6deea;margin:2px 4px 2px 0}
+.goodtxt{color:var(--good)} .warntxt{color:var(--warn)} .badtxt{color:var(--bad)}
+.timeline{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.day{border:1px solid var(--line);background:#111823;border-radius:12px;padding:14px}
+.day b{display:block;color:var(--accent2);margin-bottom:6px}
+.checks{list-style:none;padding:0}
+.checks li{margin:8px 0;padding-left:24px;position:relative}
+.checks li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:800}
+.risky li:before{content:"!";color:var(--warn)}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.filter-btn{border:1px solid var(--line);background:#111823;color:#cbd5e1;border-radius:999px;padding:6px 10px;cursor:pointer}
+.filter-btn.active{background:#27364a;color:#fff}
+.source-list li{margin-bottom:8px}
+.topbtn{position:fixed;right:18px;bottom:18px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:#172131;color:#fff;cursor:pointer;display:none}
+.mobile{display:none}
+@media(max-width:980px){
+ .layout{display:block}.mobile{display:flex;position:sticky;top:0;z-index:20;background:#0d1117;border-bottom:1px solid var(--line);padding:10px 14px;align-items:center;justify-content:space-between}
+ aside{display:none;position:fixed;z-index:30;left:0;top:49px;width:285px;height:calc(100vh - 49px);box-shadow:var(--shadow)}
+ aside.open{display:block}.wrap{padding:24px 18px 70px}.card,.card.big{grid-column:1/-1}.timeline{grid-template-columns:1fr}
+}
+@media print{
+ aside,.mobile,.topbtn,.copybtn,.filter-row{display:none!important}.layout{display:block}.wrap{max-width:none;padding:0 18px}body{background:#fff;color:#111}
+ section{break-inside:avoid} .card,.table-wrap,pre{box-shadow:none}
+}
+</style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+<div class="mobile"><strong>Omarchy Mastery Guide</strong><button onclick="document.querySelector('aside').classList.toggle('open')">Index</button></div>
+<div class="layout">
+<aside>
+  <div class="brand"><div class="logo">O</div><div><h1>Omarchy Mastery Guide</h1><p>Windows 11 → agentic Linux</p></div></div>
+  <input id="search" class="search" placeholder="Search guide…  /" aria-label="Search guide">
+  <nav id="nav">
+    <a href="#start">00 / Start here</a>
+    <a href="#mental-model">01 / Mental model</a>
+    <a href="#native">02 / Native stack</a>
+    <a href="#replacements">03 / Replacements</a>
+    <a href="#agentic">04 / Agentic toolchain</a>
+    <a href="#commands">05 / Commands</a>
+    <a href="#workflows">06 / Workflows</a>
+    <a href="#windows">07 / Windows migration</a>
+    <a href="#customize">08 / Customize safely</a>
+    <a href="#seven-days">09 / First 7 days</a>
+    <a href="#traps">10 / Traps & recovery</a>
+    <a href="#sources">11 / Sources</a>
+  </nav>
+  <div class="meta">Research date: 2026-09-29<br>Surface: standalone HTML<br>Focus: Omarchy + agentic development</div>
+</aside>
+
+<main><div class="wrap">
+
+<section id="start" class="hero searchable">
+  <div class="eyebrow">Omarchy / Mastery Reference</div>
+  <h2>Make Omarchy your primary OS without fighting what makes it good.</h2>
+  <p>Use Omarchy as an opinionated, keyboard-first Arch workstation. Keep the coherent defaults where they help, replace only the pieces that solve a real problem, and build your agentic workflow around terminal-native tools, Git, containers, and reproducible configuration.</p>
+  <div class="badges"><span class="badge">Arch Linux</span><span class="badge">Hyprland</span><span class="badge">Quickshell</span><span class="badge">Wayland</span><span class="badge">Neovim</span><span class="badge">Docker</span><span class="badge">Mise</span><span class="badge">AI agents</span></div>
+  <div class="callout good"><b>Best default strategy:</b> spend your first week learning Omarchy’s intended workflow before replacing core pieces. The fastest way to turn Omarchy into a worse Windows clone is to immediately install a full desktop environment and re-create every Windows habit.</div>
+</section>
+
+<section id="mental-model" class="searchable">
+<h2>01 / Mental model</h2>
+<p class="lede">The main shift is not “Windows commands vs Linux commands.” It is moving from app-centric desktop use to a composable system where the shell, files, services, keybindings, and agents are first-class interfaces.</p>
+<div class="grid">
+  <div class="card"><h3>Windows: app first</h3><p>Open a GUI, click through menus, store state inside the app.</p></div>
+  <div class="card"><h3>Omarchy: workflow first</h3><p>Use keybindings, terminal tools, text config, Git, and small composable programs.</p></div>
+  <div class="card"><h3>Windows: global installs</h3><p>Installers and registry state often accumulate invisibly.</p></div>
+  <div class="card"><h3>Omarchy: declarative-ish habits</h3><p>Package manager + dotfiles + project files make your environment reproducible.</p></div>
+  <div class="card"><h3>Windows: one desktop</h3><p>Floating windows and taskbar are the organizing model.</p></div>
+  <div class="card"><h3>Omarchy: workspaces</h3><p>Hyprland workspaces become contextual “rooms” for browser, code, agents, docs, and monitoring.</p></div>
+</div>
+</section>
+
+<section id="native" class="searchable">
+<h2>02 / Native Omarchy stack</h2>
+<p class="lede">Verified from Omarchy’s official manual where possible. Omarchy is an Arch-based “omakase” distribution built around Hyprland and Quickshell, with developer and AI tooling preconfigured.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Native / default</th><th>Role</th><th>Why it exists</th><th>Keep it when…</th></tr></thead>
+<tbody>
+<tr><td><b>Hyprland + Quickshell</b></td><td>Desktop / tiling / shell UI</td><td>Keyboard-first window management and a coherent desktop surface.</td><td>You want Omarchy’s intended experience.</td></tr>
+<tr><td><b>Foot</b></td><td>Terminal</td><td>Very fast and lightweight. Official docs note no native tabs or splits.</td><td>You are happy using multiple windows or a multiplexer.</td></tr>
+<tr><td><b>Neovim / omarchy-nvim</b></td><td>Editor</td><td>LazyVim-based, fully configured, terminal-native editing.</td><td>You want a fast editor that works beautifully with agents and shell tools.</td></tr>
+<tr><td><b>Chromium</b></td><td>Browser / web-app host</td><td>Default browser and host for Omarchy web apps.</td><td>You value compatibility and Omarchy theming.</td></tr>
+<tr><td><b>Mise</b></td><td>Runtime manager</td><td>One interface for Python, Node, Ruby, Go, Rust, Java and more.</td><td>You regularly move between projects and language versions.</td></tr>
+<tr><td><b>Docker + Compose</b></td><td>Containers</td><td>Local databases, services, reproducible dev environments.</td><td>You want clean isolation and standard team workflows.</td></tr>
+<tr><td><b>GitHub CLI + lazygit</b></td><td>Git / GitHub</td><td>Fast repo operations, PRs, auth, and terminal Git UI.</td><td>You want to stay in keyboard-driven flows.</td></tr>
+<tr><td><b>AI agent launchers</b></td><td>Coding / reasoning agents</td><td>Official manual lists CLI support for Claude Code, Codex, OpenCode, Grok CLI, Copilot and others.</td><td>You want multiple agents accessible from one OS workflow.</td></tr>
+<tr><td><b>Obsidian</b></td><td>Notes / knowledge</td><td>Local Markdown knowledge base, strong linking and plugin ecosystem.</td><td>You want durable plain-text knowledge.</td></tr>
+<tr><td><b>LibreOffice / Kdenlive / OBS</b></td><td>Productivity / media</td><td>Useful general-purpose desktop apps included in the Omarchy set.</td><td>You need local office/media tools without depending on web apps.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="replacements" class="searchable">
+<h2>03 / Native apps vs replacements</h2>
+<p class="lede">Replace a default only when the replacement solves a concrete problem. “More features” is not automatically better on a system whose strength is coherence.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Default</th><th>Popular replacements</th><th>Why users switch</th><th>Tradeoff</th><th>Who should switch</th></tr></thead>
+<tbody>
+<tr><td><b>Foot</b></td><td>Kitty, Ghostty, Alacritty, WezTerm</td><td>Tabs, splits, graphics protocols, richer config, portability.</td><td>More complexity and memory.</td><td>Heavy terminal users who do not want tmux/zellij.</td></tr>
+<tr><td><b>Neovim</b></td><td>VS Code, Cursor, Zed, JetBrains, Helix</td><td>GUI debugger, richer refactors, easier onboarding, integrated AI UX.</td><td>More RAM, more app-specific state.</td><td>Users who value IDE affordances over terminal purity.</td></tr>
+<tr><td><b>Chromium</b></td><td>Firefox, Brave, Zen, Chrome</td><td>Privacy, vertical tabs, profiles, extensions, sync preferences.</td><td>Web compatibility or theming may differ.</td><td>Anyone with a strong browser preference.</td></tr>
+<tr><td><b>Zsh</b></td><td>Fish, Bash, Nushell</td><td>Friendlier autosuggestions, POSIX familiarity, structured data shell.</td><td>Some Omarchy shell assumptions may need adaptation.</td><td>Experienced shell users with a clear reason.</td></tr>
+<tr><td><b>Docker</b></td><td>Podman, Distrobox, Nix/devbox</td><td>Rootless containers, desktop integration, stronger reproducibility.</td><td>Compatibility differences and more concepts.</td><td>Security-conscious or reproducibility-heavy users.</td></tr>
+<tr><td><b>Obsidian</b></td><td>Logseq, Joplin, Emacs org-mode, plain Markdown + Git</td><td>Open-source preference, task workflows, simpler storage.</td><td>Different plugin ecosystems and UX.</td><td>Users with an established notes methodology.</td></tr>
+<tr><td><b>lazygit / gh</b></td><td>GitButler, Fork, GitKraken</td><td>Visual branch management and conflict handling.</td><td>GUI dependence and extra app state.</td><td>Users who think visually or manage complex branch stacks.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="agentic" class="searchable">
+<h2>04 / End-to-end agentic development toolchain</h2>
+<p class="lede">Review this as a menu, not a shopping list. The strongest setup is usually one tool per unique role, with deliberate overlap only where it improves reliability.</p>
+<div class="filter-row">
+<button class="filter-btn active" data-filter="all">All</button>
+<button class="filter-btn" data-filter="core">Core</button>
+<button class="filter-btn" data-filter="agent">Agents</button>
+<button class="filter-btn" data-filter="infra">Infra</button>
+<button class="filter-btn" data-filter="quality">Quality</button>
+<button class="filter-btn" data-filter="knowledge">Knowledge</button>
+</div>
+<div class="table-wrap">
+<table id="tools">
+<thead><tr><th>Role</th><th>Tool</th><th>What it uniquely adds</th><th>Local / cloud</th><th>Omarchy fit</th><th>Skip if…</th></tr></thead>
+<tbody>
+<tr data-cat="core"><td>Terminal</td><td><b>Foot / Kitty / Ghostty</b></td><td>Fast shell surface, terminal-first workflows.</td><td>Local</td><td>Excellent</td><td>You work almost entirely in a GUI IDE.</td></tr>
+<tr data-cat="core"><td>Shell navigation</td><td><b>fzf + fd + ripgrep + zoxide</b></td><td>Instant file/content navigation, huge daily speedup.</td><td>Local</td><td>Excellent</td><td>You rarely use terminal.</td></tr>
+<tr data-cat="core"><td>Editor</td><td><b>Neovim / VS Code / Zed</b></td><td>Primary coding surface.</td><td>Local</td><td>Excellent</td><td>Choose one main editor first.</td></tr>
+<tr data-cat="agent"><td>CLI coding agent</td><td><b>Claude Code / Codex / OpenCode</b></td><td>Repository-aware coding, shell execution, long-running implementation tasks.</td><td>Hybrid</td><td>Excellent</td><td>You only want autocomplete.</td></tr>
+<tr data-cat="agent"><td>Agent harness</td><td><b>Hermes Agent</b></td><td>Skills, tool calling, persistent workflows, model routing, research and automation patterns.</td><td>Hybrid</td><td>Excellent</td><td>You do not want to operate an agent runtime.</td></tr>
+<tr data-cat="agent"><td>Multi-agent orchestration</td><td><b>LangGraph / CrewAI / AutoGen</b></td><td>State graphs, roles, handoffs, retries, long-horizon task structure.</td><td>Local/hybrid</td><td>Strong</td><td>A single coding agent already solves the job.</td></tr>
+<tr data-cat="agent"><td>MCP / tool integration</td><td><b>MCP servers</b></td><td>Standardized access to files, GitHub, databases, browsers, SaaS tools.</td><td>Hybrid</td><td>Excellent</td><td>You have no external tools to expose.</td></tr>
+<tr data-cat="agent"><td>Browser agent</td><td><b>Playwright / browser-use / Playwright MCP</b></td><td>Deterministic web navigation, testing, data collection.</td><td>Local/hybrid</td><td>Excellent</td><td>The task is API-first and browser automation adds fragility.</td></tr>
+<tr data-cat="agent"><td>Local models</td><td><b>Ollama / llama.cpp</b></td><td>Offline/private inference and cheap utility models.</td><td>Local</td><td>Strong</td><td>Your hardware is weak or cloud quality matters more.</td></tr>
+<tr data-cat="agent"><td>Model routing</td><td><b>LiteLLM / OpenRouter</b></td><td>One API across many providers, routing, fallbacks, spend control.</td><td>Hybrid/cloud</td><td>Strong</td><td>You use only one provider.</td></tr>
+<tr data-cat="infra"><td>Runtime versions</td><td><b>Mise</b></td><td>One manager for project language versions and tools.</td><td>Local</td><td>Native-quality</td><td>Your projects are all one runtime.</td></tr>
+<tr data-cat="infra"><td>Containers</td><td><b>Docker + Compose</b></td><td>Reproducible local services and environment isolation.</td><td>Local</td><td>Native-quality</td><td>Your projects are tiny and dependency-light.</td></tr>
+<tr data-cat="infra"><td>Dev environments</td><td><b>Dev Containers / Distrobox / Nix</b></td><td>Reproducible machines, stronger isolation, onboarding consistency.</td><td>Local</td><td>Strong</td><td>Mise + Docker already gives enough repeatability.</td></tr>
+<tr data-cat="infra"><td>Local DBs</td><td><b>Postgres / Redis / SQLite</b></td><td>Standard application data and cache layers.</td><td>Local</td><td>Excellent</td><td>You do not build stateful apps.</td></tr>
+<tr data-cat="infra"><td>API client</td><td><b>Bruno / HTTPie / curl</b></td><td>Test APIs without heavyweight GUI lock-in.</td><td>Local</td><td>Excellent</td><td>Your app has no APIs.</td></tr>
+<tr data-cat="core"><td>Git</td><td><b>git + gh + lazygit</b></td><td>Version control, GitHub operations, fast terminal review.</td><td>Local/cloud</td><td>Excellent</td><td>Never skip Git for code you care about.</td></tr>
+<tr data-cat="quality"><td>Testing</td><td><b>pytest / Vitest / Playwright</b></td><td>Fast unit/integration/E2E verification.</td><td>Local/CI</td><td>Excellent</td><td>Choose based on language.</td></tr>
+<tr data-cat="quality"><td>Static quality</td><td><b>ruff / biome / eslint / shellcheck</b></td><td>Cheap automated correctness and style gates.</td><td>Local/CI</td><td>Excellent</td><td>None, pick the tool matching your stack.</td></tr>
+<tr data-cat="quality"><td>Security</td><td><b>gitleaks / trivy / semgrep</b></td><td>Secrets, dependency/container, and code-pattern scanning.</td><td>Local/CI</td><td>Strong</td><td>Only skip components irrelevant to your stack.</td></tr>
+<tr data-cat="quality"><td>Secrets</td><td><b>1Password CLI / Bitwarden CLI / sops</b></td><td>Keeps secrets out of repos and shell history.</td><td>Hybrid/local</td><td>Strong</td><td>You have no credentials, which is rare.</td></tr>
+<tr data-cat="infra"><td>CI/CD</td><td><b>GitHub Actions</b></td><td>Automated tests/builds/deployments tied to commits and PRs.</td><td>Cloud</td><td>Excellent</td><td>Repo is purely local.</td></tr>
+<tr data-cat="infra"><td>Deployment</td><td><b>Cloudflare / Vercel / Fly.io / Railway</b></td><td>Fast path from Git to live service.</td><td>Cloud</td><td>Good</td><td>You do not deploy software.</td></tr>
+<tr data-cat="quality"><td>Observability</td><td><b>OpenTelemetry + Grafana</b></td><td>Logs, traces, metrics, performance visibility.</td><td>Hybrid</td><td>Strong</td><td>Prototype has no operational users yet.</td></tr>
+<tr data-cat="knowledge"><td>Knowledge base</td><td><b>Obsidian</b></td><td>Local Markdown, links, project memory, agent-readable notes.</td><td>Local</td><td>Excellent</td><td>You already have a durable notes system.</td></tr>
+<tr data-cat="knowledge"><td>Project specs</td><td><b>Markdown + Git</b></td><td>Versioned goals, plans, ADRs, runbooks, prompts, AGENTS.md.</td><td>Local/cloud</td><td>Excellent</td><td>Never skip this for long-horizon agentic work.</td></tr>
+<tr data-cat="knowledge"><td>Diagrams</td><td><b>Mermaid / D2</b></td><td>Text-based architecture diagrams agents can edit.</td><td>Local</td><td>Excellent</td><td>You only need hand-drawn sketches.</td></tr>
+<tr data-cat="core"><td>Task runner</td><td><b>just / make / task</b></td><td>Memorable, versioned commands for setup/test/build/run.</td><td>Local</td><td>Excellent</td><td>Project has only one obvious command.</td></tr>
+<tr data-cat="core"><td>Persistent terminal</td><td><b>tmux / zellij</b></td><td>Sessions survive disconnects; panes for agents/tests/logs.</td><td>Local</td><td>Excellent</td><td>You prefer terminal windows managed by Hyprland.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="commands" class="searchable">
+<h2>05 / Commands worth learning</h2>
+<p class="lede">These give you disproportionate leverage. Learn the mental model, not just the syntax.</p>
+
+<h3>Packages</h3>
+<pre><button class="copybtn">Copy</button><code>sudo pacman -Syu            # full system update
+pacman -Ss ripgrep           # search official repos
+sudo pacman -S ripgrep       # install package
+pacman -Qi ripgrep           # package information
+sudo pacman -Rns PACKAGE     # remove package + unused deps (review carefully)</code></pre>
+
+<h3>Files and search</h3>
+<pre><button class="copybtn">Copy</button><code>pwd                         # where am I?
+ls -lah                     # files including hidden files
+cd ~/Projects               # move to a directory
+cp source target            # copy
+mv old new                  # move / rename
+rm file                     # delete file
+rm -r folder                # ⚠ recursive delete, verify path first
+fd config ~/.config         # fast filename search
+rg "needle" .               # fast text search
+du -sh * | sort -h          # what is consuming disk space?</code></pre>
+
+<h3>Processes and services</h3>
+<pre><button class="copybtn">Copy</button><code>ps aux | rg PROCESS
+pgrep -af PROCESS
+kill PID
+systemctl status SERVICE
+sudo systemctl enable --now SERVICE
+journalctl -u SERVICE -b
+journalctl -b -p warning    # current boot warnings/errors</code></pre>
+
+<h3>Network and disks</h3>
+<pre><button class="copybtn">Copy</button><code>ip addr
+ip route
+ss -tulpn
+lsblk -f
+df -h
+mount | column -t</code></pre>
+
+<h3>Environment</h3>
+<pre><button class="copybtn">Copy</button><code>echo $PATH
+env | sort
+which python
+type python
+mise current
+mise use python@3.13</code></pre>
+
+<h3>Git daily loop</h3>
+<pre><button class="copybtn">Copy</button><code>git status
+git diff
+git add -p
+git commit -m "feat: concise description"
+git log --oneline --graph --decorate -20
+gh auth status
+gh repo view --web
+lazygit</code></pre>
+
+<div class="callout warn"><b>Risky commands:</b> treat `rm -rf`, `sudo`, disk partitioning, filesystem formatting, `chown -R`, `chmod -R`, and broad `pacman -R` operations as destructive. Read the target twice before pressing Enter.</div>
+</section>
+
+<section id="workflows" class="searchable">
+<h2>06 / Workflows worth adopting</h2>
+<div class="grid">
+<div class="card big"><h3>Workspace by context</h3><p>Use one Hyprland workspace for docs/research, one for editor, one for agents, one for app preview, one for logs/monitoring. This feels more natural than constantly alt-tabbing.</p></div>
+<div class="card big"><h3>Agent + verifier pattern</h3><p>Let one agent implement, then use tests, linters, `git diff`, and optionally a second model as verifier. Do not treat “agent says done” as evidence.</p></div>
+<div class="card big"><h3>Project command surface</h3><p>Add a `justfile`, `Makefile`, or `Taskfile` with stable commands: `setup`, `dev`, `test`, `lint`, `smoke`, `build`, `release`.</p></div>
+<div class="card big"><h3>Version your thinking</h3><p>Keep `README.md`, `AGENTS.md`, `ROADMAP.md`, ADRs, prompts, and runbooks in the repo so future agents inherit project context.</p></div>
+<div class="card big"><h3>Use containers for dependencies</h3><p>Prefer Docker Compose for Postgres, Redis, queues, and other infrastructure rather than polluting your host OS.</p></div>
+<div class="card big"><h3>Keep local knowledge agent-readable</h3><p>Markdown notes, code, shell scripts, and text configuration are easy for both you and agents to search, diff, and modify.</p></div>
+</div>
+</section>
+
+<section id="windows" class="searchable">
+<h2>07 / Windows 11 → Omarchy translation</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Windows concept</th><th>Omarchy / Linux equivalent</th><th>What to learn</th></tr></thead>
+<tbody>
+<tr><td>Explorer</td><td>Terminal + file manager</td><td>Paths, hidden files, `~`, `/`, mount points.</td></tr>
+<tr><td>Task Manager</td><td>`btop`, `ps`, `pgrep`, `kill`, `systemctl`</td><td>Processes vs services.</td></tr>
+<tr><td>Event Viewer</td><td>`journalctl`</td><td>Boot logs and service logs.</td></tr>
+<tr><td>Windows Update</td><td>`pacman -Syu`</td><td>Rolling-release updates, read relevant notices.</td></tr>
+<tr><td>Program Files</td><td>`/usr/bin`, `/usr/lib`, package database</td><td>Do not manually scatter software into system folders.</td></tr>
+<tr><td>Registry</td><td>Mostly text config under `/etc` and `~/.config`</td><td>Back up dotfiles and understand ownership.</td></tr>
+<tr><td>Services.msc</td><td>`systemctl`</td><td>Start, stop, enable, status.</td></tr>
+<tr><td>Environment Variables UI</td><td>Shell config and environment files</td><td>`PATH`, `EDITOR`, project env files.</td></tr>
+<tr><td>Drive letters</td><td>Single filesystem tree + mount points</td><td>`lsblk`, `/mnt`, `/run/media`.</td></tr>
+<tr><td>PowerShell package install</td><td>`pacman`, AUR helper, Flatpak when appropriate</td><td>Prefer official repos first.</td></tr>
+<tr><td>Hyper-V / VMware</td><td>KVM/QEMU, Omarchy Windows VM</td><td>Use Windows only for apps that truly require it.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="customize" class="searchable">
+<h2>08 / Customize safely</h2>
+<ul class="checks">
+<li>Keep changes small and reversible.</li>
+<li>Version your dotfiles before heavy customization.</li>
+<li>Prefer Omarchy’s own install/default menus where available.</li>
+<li>Change one core component at a time, then use the system for a day.</li>
+<li>Keep a known-good terminal available before changing shells or terminal emulators.</li>
+<li>For Hyprland, add user overrides rather than rewriting vendor config wholesale where possible.</li>
+<li>Use Git commits as checkpoints before editing complicated config.</li>
+<li>Prefer project-local dependencies and containers over global pollution.</li>
+</ul>
+<div class="callout"><b>Useful pattern:</b> `copy config → commit → change → reload → verify`. If something breaks, the diff tells you exactly what changed.</div>
+</section>
+
+<section id="seven-days" class="searchable">
+<h2>09 / First 7 days</h2>
+<div class="timeline">
+<div class="day"><b>Day 1</b>Learn workspaces, `Super` shortcuts, terminal launch, browser, clipboard history, screenshots.</div>
+<div class="day"><b>Day 2</b>Learn `pwd`, `ls`, `cd`, `cp`, `mv`, `rm`, `fd`, `rg`, `fzf`, `zoxide`.</div>
+<div class="day"><b>Day 3</b>Learn `pacman`, `systemctl`, `journalctl`, `btop`, `lsblk`, `df`.</div>
+<div class="day"><b>Day 4</b>Set up GitHub CLI, SSH keys, `lazygit`, dotfiles repo, and a `~/Projects` convention.</div>
+<div class="day"><b>Day 5</b>Use Mise + Docker Compose in one real project. Add a `justfile`.</div>
+<div class="day"><b>Day 6</b>Run one coding agent end-to-end: plan → edit → test → diff → commit.</div>
+<div class="day"><b>Day 7</b>Review friction. Replace only the defaults that caused repeated problems.</div>
+</div>
+</section>
+
+<section id="traps" class="searchable">
+<h2>10 / Common traps and recovery</h2>
+<ul class="checks risky">
+<li><b>Replacing the desktop too early:</b> if you install KDE/GNOME immediately, you may bypass the workflow Omarchy is designed to teach.</li>
+<li><b>Blind AUR installs:</b> AUR packages are community build recipes. Read the package page and PKGBUILD for sensitive tools.</li>
+<li><b>Partial upgrades:</b> on Arch, avoid piecemeal system upgrades. Use a full `pacman -Syu` workflow.</li>
+<li><b>Editing system config without backups:</b> prefer user config, then version it.</li>
+<li><b>Running Docker as root casually:</b> understand the security tradeoff before joining the `docker` group.</li>
+<li><b>Assuming X11 advice applies:</b> Omarchy is Wayland-first. Old Linux tutorials may use outdated Xorg tools.</li>
+<li><b>Agent trust:</b> never let an agent’s prose substitute for test output, logs, or `git diff`.</li>
+<li><b>Windows-only dependency creep:</b> keep a Windows VM as an escape hatch rather than making it the center of your workflow.</li>
+</ul>
+
+<h3>Recovery commands</h3>
+<pre><button class="copybtn">Copy</button><code>git diff ~/.config/...             # inspect dotfile change
+git restore PATH                   # restore tracked config file
+journalctl -b -p err               # current boot errors
+systemctl --failed                 # failed services
+pacman -Qk PACKAGE                 # verify package files
+pacman -Qo /path/to/file           # which package owns this file?
+sudo pacman -S PACKAGE             # reinstall package if needed</code></pre>
+</section>
+
+<section id="sources" class="searchable">
+<h2>11 / Core sources</h2>
+<p class="lede">The original research was grounded primarily in Omarchy’s official manual, with community discussion used for replacement preferences.</p>
+<ul class="source-list">
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/01-welcome-to-omarchy.md">Omarchy Manual: Welcome to Omarchy</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/02-getting-started.md">Omarchy Manual: Getting Started</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/08-unified-clipboard-history.md">Omarchy Manual: Unified Clipboard History</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/09-reminders.md">Omarchy Manual: Reminders</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/13-toggles-idle-screensaver.md">Omarchy Manual: Toggles / Idle / Screensaver</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/15-terminal.md">Omarchy Manual: Terminal</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/16-neovim.md">Omarchy Manual: Neovim</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/17-ai.md">Omarchy Manual: AI</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/18-development-tools.md">Omarchy Manual: Development Tools</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/23-browsers.md">Omarchy Manual: Browsers</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/25-web-apps.md">Omarchy Manual: Web Apps</a></li>
+<li><a href="https://github.com/omacom/omarchy/blob/quattro/manual/28-windows-vm.md">Omarchy Manual: Windows VM</a></li>
+<li><a href="https://www.reddit.com/r/omarchy/">r/omarchy community discussion</a></li>
+</ul>
+<div class="callout warn"><b>Version note:</b> Omarchy moves quickly. Treat exact package names, shortcuts, and installation paths as version-sensitive. Prefer the current manual over old blog posts or generic Arch/Hyprland advice.</div>
+</section>
+
+</div></main>
+</div>
+<button class="topbtn" id="topbtn" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+const q=document.getElementById('search');
+const searchable=[...document.querySelectorAll('.searchable')];
+q.addEventListener('input',()=>{
+  const term=q.value.trim().toLowerCase();
+  searchable.forEach(s=>s.style.display=!term||s.innerText.toLowerCase().includes(term)?'':'none');
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='/' && document.activeElement.tagName!=='INPUT'){e.preventDefault();q.focus()}
+});
+const links=[...document.querySelectorAll('nav a')];
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+en.target.id));
+    }
+  });
+},{rootMargin:'-35% 0px -55% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>observer.observe(s));
+
+document.querySelectorAll('.copybtn').forEach(btn=>{
+  btn.addEventListener('click',async()=>{
+    const code=btn.parentElement.querySelector('code').innerText;
+    await navigator.clipboard.writeText(code);
+    const old=btn.textContent; btn.textContent='Copied'; setTimeout(()=>btn.textContent=old,1000);
+  });
+});
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.filter;
+    document.querySelectorAll('#tools tbody tr').forEach(r=>r.style.display=(f==='all'||r.dataset.cat===f)?'':'none');
+  });
+});
+window.addEventListener('scroll',()=>document.getElementById('topbtn').style.display=scrollY>700?'block':'none');
+</script>
+</body>
+</html>

@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<!-- index:
+description: Build guide for a capture line: Supernote handwriting to Obsidian Markdown, filed by Hermes, reviewed from Telegram.
+tags: guide, personal-os, vault
+ingested: 2026-10-03T10:43:31-07:00
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capture Line: Supernote to Obsidian to Hermes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EFF0EB;
+  --raise:#F8F9F5;
+  --sink:#E3E5DE;
+  --ink:#191D1C;
+  --soft:#525A55;
+  --rule:#C7CCC3;
+  --rule-2:#AEB5AA;
+  --accent:#1D4E5F;
+  --accent-fill:#DCE7EA;
+  --warn:#7E5713;
+  --warn-fill:#F0E6D2;
+  --done:#3D6B4C;
+  --shadow:rgba(25,29,28,.10);
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131614;
+    --raise:#1B1F1D;
+    --sink:#0E100F;
+    --ink:#E7E9E3;
+    --soft:#98A19A;
+    --rule:#333A36;
+    --rule-2:#4A534D;
+    --accent:#7FBFCE;
+    --accent-fill:#1B2B30;
+    --warn:#D6A44A;
+    --warn-fill:#2B2317;
+    --done:#82B392;
+    --shadow:rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131614;
+  --raise:#1B1F1D;
+  --sink:#0E100F;
+  --ink:#E7E9E3;
+  --soft:#98A19A;
+  --rule:#333A36;
+  --rule-2:#4A534D;
+  --accent:#7FBFCE;
+  --accent-fill:#1B2B30;
+  --warn:#D6A44A;
+  --warn-fill:#2B2317;
+  --done:#82B392;
+  --shadow:rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.62;
+  font-weight:400;
+}
+img{max-width:100%}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+.shell{display:grid;grid-template-columns:212px minmax(0,1fr);gap:52px;align-items:start}
+@media (max-width:900px){.shell{grid-template-columns:1fr;gap:0}}
+
+/* ---------- masthead ---------- */
+header.mast{border-bottom:1px solid var(--rule);padding:44px 0 30px;margin-bottom:38px}
+.kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--soft);margin:0 0 18px}
+h1{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:clamp(2.1rem,5.2vw,3.4rem);
+  line-height:1.05;
+  letter-spacing:-.018em;
+  margin:0 0 14px;
+  max-width:18ch;
+}
+.standfirst{font-size:1.12rem;color:var(--soft);max-width:60ch;margin:0 0 26px;font-weight:300}
+.mast-meta{display:flex;flex-wrap:wrap;gap:10px 26px;font-family:var(--mono);font-size:11.5px;color:var(--soft)}
+.mast-meta b{color:var(--ink);font-weight:500}
+.themebtn{
+  position:fixed;top:14px;right:14px;z-index:50;
+  font-family:var(--mono);font-size:11px;
+  background:var(--raise);color:var(--soft);
+  border:1px solid var(--rule);border-radius:2px;
+  padding:6px 9px;cursor:pointer;
+}
+.themebtn:hover{color:var(--ink);border-color:var(--rule-2)}
+
+/* ---------- rail ---------- */
+nav.rail{position:sticky;top:22px;padding-bottom:40px}
+@media (max-width:900px){
+  nav.rail{position:static;border-bottom:1px solid var(--rule);margin-bottom:32px;padding-bottom:22px}
+}
+.rail h2{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--soft);font-weight:500;margin:0 0 14px}
+.rail ol{list-style:none;margin:0;padding:0;counter-reset:ph}
+.rail li{counter-increment:ph;margin:0 0 3px}
+.rail a{
+  display:grid;grid-template-columns:20px 1fr;gap:9px;align-items:baseline;
+  text-decoration:none;color:var(--soft);font-size:14.5px;padding:5px 0;line-height:1.32;
+}
+.rail a::before{content:counter(ph);font-family:var(--mono);font-size:10.5px;color:var(--rule-2)}
+.rail a:hover{color:var(--ink)}
+.rail a.is-here{color:var(--ink)}
+.rail a.is-here::before{color:var(--accent)}
+.rail .r-done::after{content:"";width:6px;height:6px;background:var(--done);border-radius:50%;display:inline-block;margin-left:6px;vertical-align:middle}
+.railfoot{margin-top:22px;padding-top:16px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:11px;color:var(--soft)}
+.railfoot button{
+  font-family:var(--mono);font-size:10.5px;background:none;border:1px solid var(--rule);
+  color:var(--soft);padding:4px 7px;border-radius:2px;cursor:pointer;margin-top:9px;
+}
+.railfoot button:hover{color:var(--ink);border-color:var(--rule-2)}
+.bar{height:3px;background:var(--sink);margin-top:8px;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--done);width:0%;transition:width .28s ease}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+
+/* ---------- sections ---------- */
+main{padding-bottom:100px;min-width:0}
+section{margin:0 0 68px;scroll-margin-top:20px}
+h2.sec{
+  font-size:1.62rem;font-weight:500;letter-spacing:-.012em;margin:0 0 6px;line-height:1.2;
+  display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:baseline;
+}
+h2.sec .n{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:500}
+.deck{color:var(--soft);margin:0 0 26px;max-width:62ch;font-weight:300}
+h3{font-size:1.06rem;font-weight:600;margin:34px 0 10px;letter-spacing:-.005em}
+h4{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--soft);margin:26px 0 8px;letter-spacing:.04em}
+p{max-width:68ch;margin:0 0 14px}
+ul,ol{max-width:68ch;padding-left:20px}
+li{margin:0 0 7px}
+code{font-family:var(--mono);font-size:.83em;background:var(--sink);padding:1px 4px;border-radius:2px;word-break:break-word}
+strong{font-weight:600}
+
+/* ---------- steps ---------- */
+.step{
+  display:grid;grid-template-columns:26px 1fr;gap:14px;
+  border-top:1px solid var(--rule);padding:18px 0 6px;
+}
+.step:last-of-type{border-bottom:1px solid var(--rule);margin-bottom:22px}
+.step .tick{padding-top:3px}
+.step input[type=checkbox]{
+  appearance:none;width:17px;height:17px;border:1px solid var(--rule-2);
+  background:var(--raise);border-radius:2px;cursor:pointer;display:block;position:relative;
+}
+.step input[type=checkbox]:checked{background:var(--done);border-color:var(--done)}
+.step input[type=checkbox]:checked::after{
+  content:"";position:absolute;left:5px;top:1px;width:4px;height:9px;
+  border:solid var(--paper);border-width:0 2px 2px 0;transform:rotate(42deg);
+}
+.step .head{font-weight:600;font-size:1.02rem;margin:0 0 6px}
+.step.is-done .head{color:var(--soft);text-decoration:line-through;text-decoration-color:var(--rule-2)}
+.step .body>*:last-child{margin-bottom:8px}
+
+/* ---------- code ---------- */
+figure.code{margin:14px 0 16px;border:1px solid var(--rule);background:var(--raise);border-radius:3px;overflow:hidden;max-width:76ch}
+figure.code figcaption{
+  font-family:var(--mono);font-size:10.5px;color:var(--soft);
+  padding:7px 11px;border-bottom:1px solid var(--rule);background:var(--sink);
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+figure.code button{
+  font-family:var(--mono);font-size:10px;background:none;border:1px solid var(--rule-2);
+  color:var(--soft);padding:2px 7px;border-radius:2px;cursor:pointer;flex:none;
+}
+figure.code button:hover{color:var(--ink)}
+pre{margin:0;padding:12px 13px;overflow-x:auto;font-family:var(--mono);font-size:12.6px;line-height:1.62}
+pre code{background:none;padding:0;font-size:inherit}
+
+/* ---------- callouts ---------- */
+.note{border-left:2px solid var(--rule-2);padding:2px 0 2px 15px;margin:16px 0;max-width:66ch;color:var(--soft);font-size:.96rem}
+.note.warn{border-left-color:var(--warn)}
+.note.gate{border-left-color:var(--done)}
+.note b{color:var(--ink)}
+.tag{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;
+  border:1px solid var(--warn);color:var(--warn);background:var(--warn-fill);
+  padding:1px 5px;border-radius:2px;white-space:nowrap;
+}
+
+/* ---------- tables ---------- */
+.tblwrap{overflow-x:auto;margin:16px 0 20px;border:1px solid var(--rule);border-radius:3px}
+table{border-collapse:collapse;width:100%;font-size:13.6px;min-width:520px}
+th{
+  text-align:left;font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--soft);
+  padding:9px 12px;background:var(--sink);border-bottom:1px solid var(--rule);letter-spacing:.03em;
+}
+td{padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.48}
+tr:last-child td{border-bottom:none}
+td code{font-size:11.6px}
+
+/* ---------- diagrams ---------- */
+figure.dia{margin:22px 0 26px;padding:0}
+figure.dia svg{display:block;width:100%;height:auto}
+figure.dia figcaption{font-family:var(--mono);font-size:10.5px;color:var(--soft);margin-top:9px;line-height:1.5}
+.d-node{fill:var(--raise);stroke:var(--rule-2);stroke-width:1}
+.d-node-acc{fill:var(--accent-fill);stroke:var(--accent);stroke-width:1.2}
+.d-node-warn{fill:var(--warn-fill);stroke:var(--warn);stroke-width:1}
+.d-lane{fill:none;stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4}
+.d-line{stroke:var(--rule-2);stroke-width:1.2;fill:none}
+.d-line-acc{stroke:var(--accent);stroke-width:1.4;fill:none}
+.d-line-back{stroke:var(--soft);stroke-width:1.1;fill:none;stroke-dasharray:5 4}
+.d-t{fill:var(--ink);font-family:"Newsreader",Georgia,serif;font-size:13px}
+.d-t-b{fill:var(--ink);font-family:"Newsreader",Georgia,serif;font-size:13.5px;font-weight:600}
+.d-m{fill:var(--soft);font-family:"JetBrains Mono",monospace;font-size:9.5px}
+.d-m-acc{fill:var(--accent);font-family:"JetBrains Mono",monospace;font-size:9.5px}
+.d-lab{fill:var(--soft);font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.05em}
+
+/* ---------- misc ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.trees{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;margin:18px 0 8px}
+.trees figure.code{max-width:none;margin:0}
+footer.end{border-top:1px solid var(--rule);padding:26px 0 60px;color:var(--soft);font-size:13.5px}
+footer.end p{max-width:70ch}
+</style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+
+<button class="themebtn" id="themebtn" type="button">theme</button>
+
+<div class="wrap">
+<header class="mast">
+  <p class="kicker">Build guide / personal infrastructure</p>
+  <h1>A capture line from paper to vault to agent</h1>
+  <p class="standfirst">Handwriting on the Nomad becomes searchable Markdown in Obsidian, filed by a Hermes specialist, reviewed from Telegram, and pushed back to the device as annotatable PDF. Five phases, each with a gate you can actually check.</p>
+  <div class="mast-meta">
+    <span>Device <b>Supernote A6 X2 Nomad</b></span>
+    <span>Transport <b>Google Drive</b></span>
+    <span>Host <b>Windows + WSL</b></span>
+    <span>Verified <b>Sept 2026</b></span>
+  </div>
+</header>
+
+<div class="shell">
+
+<nav class="rail">
+  <h2>Phases</h2>
+  <ol id="railnav">
+    <li><a href="#p1" data-sec="p1">Prove the transcription</a></li>
+    <li><a href="#p2" data-sec="p2">Lay the ground</a></li>
+    <li><a href="#p3" data-sec="p3">Build the ingest agent</a></li>
+    <li><a href="#p4" data-sec="p4">Surface and converge</a></li>
+    <li><a href="#p5" data-sec="p5">Close the loop back</a></li>
+  </ol>
+  <h2 style="margin-top:24px">Reference</h2>
+  <ol id="railref" style="counter-reset:none">
+    <li><a href="#map" data-sec="map" style="grid-template-columns:1fr">Folder map</a></li>
+    <li><a href="#safety" data-sec="safety" style="grid-template-columns:1fr">Write safety</a></li>
+    <li><a href="#breaks" data-sec="breaks" style="grid-template-columns:1fr">What breaks</a></li>
+    <li><a href="#caveats" data-sec="caveats" style="grid-template-columns:1fr">Caveats</a></li>
+  </ol>
+  <div class="railfoot">
+    <span id="progtext">0 of 0 steps</span>
+    <div class="bar"><i id="progbar"></i></div>
+    <button id="resetbtn" type="button">clear progress</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- =============== HERO DIAGRAM =============== -->
+<section id="flow">
+  <h2 class="sec"><span class="n">00</span><span>The optimal flow</span></h2>
+  <p class="deck">One direction of travel for capture, one for review. Everything crosses the machine boundary as files, never as an API the device does not have.</p>
+
+  <figure class="dia">
+  <svg viewBox="0 0 980 500" role="img" aria-label="End to end flow: Nomad writes .note files, manual sync pushes them to Google Drive, a local mirror feeds the Hermes supernote-ingest agent, which writes Markdown and source files into the Obsidian vault inbox, then promotion files them into projects. A return leg generates a PDF review packet back to Drive and the Nomad.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/>
+      </marker>
+    </defs>
+
+    <!-- lane labels -->
+    <text class="d-lab" x="12" y="26">DEVICE</text>
+    <text class="d-lab" x="248" y="26">TRANSPORT</text>
+    <text class="d-lab" x="470" y="26">MACHINE (WSL)</text>
+    <text class="d-lab" x="742" y="26">VAULT</text>
+    <line class="d-lane" x1="232" y1="34" x2="232" y2="470"/>
+    <line class="d-lane" x1="454" y1="34" x2="454" y2="470"/>
+    <line class="d-lane" x1="726" y1="34" x2="726" y2="470"/>
+
+    <!-- Nomad -->
+    <rect class="d-node" x="16" y="66" width="196" height="118" rx="3"/>
+    <text class="d-t-b" x="32" y="92">Supernote Nomad</text>
+    <text class="d-m" x="32" y="112">Note/mtg  Note/proj</text>
+    <text class="d-m" x="32" y="128">Note/jrnl  Note/idea</text>
+    <text class="d-m" x="32" y="152">writes .note (binary)</text>
+    <text class="d-m-acc" x="32" y="168">headings + keywords</text>
+
+    <!-- Drive -->
+    <rect class="d-node" x="248" y="66" width="190" height="118" rx="3"/>
+    <text class="d-t-b" x="264" y="92">Google Drive</text>
+    <text class="d-m" x="264" y="112">Supernote/Note/**</text>
+    <text class="d-m" x="264" y="136">manual sync only:</text>
+    <text class="d-m" x="264" y="152">swipe down, tap sync</text>
+    <text class="d-m" x="264" y="168">.note as-is, no PDF</text>
+
+    <!-- mirror -->
+    <rect class="d-node" x="470" y="66" width="240" height="54" rx="3"/>
+    <text class="d-t" x="486" y="88">Local mirror</text>
+    <text class="d-m" x="486" y="106">/mnt/g/... (read only)</text>
+
+    <!-- agent -->
+    <rect class="d-node-acc" x="470" y="132" width="240" height="126" rx="3"/>
+    <text class="d-t-b" x="486" y="156">supernote-ingest</text>
+    <text class="d-m" x="486" y="176">1  sha256 vs seen.json</text>
+    <text class="d-m" x="486" y="192">2  sn2md, vision LLM</text>
+    <text class="d-m" x="486" y="208">3  .note to PDF archive</text>
+    <text class="d-m" x="486" y="224">4  write + frontmatter</text>
+    <text class="d-m" x="486" y="244">cron, every 4h</text>
+
+    <!-- inbox -->
+    <rect class="d-node" x="742" y="66" width="222" height="94" rx="3"/>
+    <text class="d-t-b" x="758" y="90">10_inbox/supernote/</text>
+    <text class="d-m" x="758" y="110">status: unprocessed</text>
+    <text class="d-m" x="758" y="126">agent-owned, safe to</text>
+    <text class="d-m" x="758" y="142">overwrite</text>
+
+    <!-- attachments -->
+    <rect class="d-node" x="742" y="176" width="222" height="66" rx="3"/>
+    <text class="d-t" x="758" y="198">attachments/supernote/</text>
+    <text class="d-m" x="758" y="218">source .note + PDF</text>
+
+    <!-- promotion -->
+    <rect class="d-node" x="742" y="272" width="222" height="88" rx="3"/>
+    <text class="d-t-b" x="758" y="296">20_projects / 30_areas</text>
+    <text class="d-m" x="758" y="316">human-owned prose</text>
+    <text class="d-m" x="758" y="332">agents append only,</text>
+    <text class="d-m" x="758" y="348">inside markers</text>
+
+    <!-- telegram -->
+    <rect class="d-node" x="470" y="290" width="240" height="70" rx="3"/>
+    <text class="d-t" x="486" y="313">Orchestrator brief</text>
+    <text class="d-m" x="486" y="332">captured yesterday, N</text>
+    <text class="d-m" x="486" y="348">promote / keep / drop</text>
+
+    <!-- packet -->
+    <rect class="d-node-warn" x="470" y="404" width="240" height="66" rx="3"/>
+    <text class="d-t" x="486" y="427">Review packet, A6 PDF</text>
+    <text class="d-m" x="486" y="446">weekly, wide right margin</text>
+
+    <rect class="d-node" x="248" y="404" width="190" height="66" rx="3"/>
+    <text class="d-t" x="264" y="427">Drive review folder</text>
+    <text class="d-m" x="264" y="446">Document/review/</text>
+
+    <rect class="d-node" x="16" y="404" width="196" height="66" rx="3"/>
+    <text class="d-t" x="32" y="427">Annotate on device</text>
+    <text class="d-m" x="32" y="446">export flattened PDF</text>
+
+    <!-- forward arrows -->
+    <path class="d-line-acc" marker-end="url(#ah)" d="M212 125 L246 125"/>
+    <text class="d-m" x="216" y="116">manual</text>
+    <path class="d-line-acc" marker-end="url(#ah)" d="M438 108 L468 96"/>
+    <path class="d-line-acc" marker-end="url(#ah)" d="M590 120 L590 130"/>
+    <path class="d-line-acc" marker-end="url(#ah)" d="M710 170 L740 122"/>
+    <path class="d-line" marker-end="url(#ah)" d="M710 196 L740 200"/>
+    <path class="d-line" marker-end="url(#ah)" d="M710 236 L740 300"/>
+    <text class="d-m" x="700" y="266">promote</text>
+    <path class="d-line" marker-end="url(#ah)" d="M590 258 L590 288"/>
+    <path class="d-line" marker-end="url(#ah)" d="M742 118 C 726 118 722 300 712 316"/>
+
+    <!-- return leg -->
+    <path class="d-line-back" marker-end="url(#ah)" d="M852 360 L852 437 L712 437"/>
+    <text class="d-m" x="770" y="398">weekly render</text>
+    <path class="d-line-back" marker-end="url(#ah)" d="M468 437 L440 437"/>
+    <path class="d-line-back" marker-end="url(#ah)" d="M246 437 L214 437"/>
+    <path class="d-line-back" marker-end="url(#ah)" d="M114 404 L114 380 L340 380 L340 250 L470 200"/>
+    <text class="d-m" x="150" y="373">annotated PDF re-enters ingest</text>
+  </svg>
+  <figcaption>Solid teal is the capture path. Dashed grey is the return path. The device never talks to the vault directly: files cross through Drive in both directions.</figcaption>
+  </figure>
+
+  <div class="note"><b>The one constraint that shapes everything.</b> Third-party cloud sync on Chauvet firmware is manual: only Supernote Cloud auto-syncs, and Google Drive needs a swipe down from the top and a tap on the sync icon. Uploads are raw <code>.note</code> files, with no auto-export to PDF. So the pipeline converts off-device, and the health check has to watch for you forgetting to tap.</div>
+</section>
+
+<!-- =============== PHASE 1 =============== -->
+<section id="p1">
+  <h2 class="sec"><span class="n">Phase 1</span><span>Prove the transcription before you build anything</span></h2>
+  <p class="deck">One afternoon. The riskiest link in the chain is handwriting to usable Markdown, and no amount of pipeline engineering fixes bad transcription. Test that link alone, by hand.</p>
+
+  <div class="step" data-step="1-1">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Create the on-device folder skeleton</p>
+      <p>Four folders under <code>Note/</code>, nothing deeper. The device is where you capture, not where you organise.</p>
+      <figure class="code"><figcaption><span>Supernote / Note</span><button type="button">copy</button></figcaption><pre><code>Note/
+  mtg/    2026Q3-mtg.note          rolling, per quarter
+  proj/   PIC-interconnect.note    one per active project code
+          astro-engine.note
+          defi-research.note
+  jrnl/   2026-09-jrnl.note        rolling, monthly
+  idea/   2026-inbox.note          fast capture, rolling
+Document/
+  read/                            inbound reading
+  review/                          Hermes packets land here
+</code></pre></figure>
+      <p>Naming rules that survive OCR and scripting: date or quarter prefix, project codes not prose, lowercase, hyphens, no spaces, no special characters. The filename is the stable ID for everything downstream.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="1-2">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Write one realistic test page</p>
+      <p>Not a neat sample. Write the way you actually write in a meeting: normal speed, an arrow diagram, an abbreviation, a number. Use two Headings and two Keywords on the page, since <code>sn2md</code> extracts titles, keywords and links from the file and you want to see them land in the output.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="1-3">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Point Drive sync at <code>Note/</code> and sync manually</p>
+      <p>On the device: cloud settings, Google Drive, <b>Select Folders to Sync</b>, tick <code>Note</code>. To reach a subfolder, tap the row rather than the checkbox. Then swipe down from the top of the screen and tap the sync icon.</p>
+      <div class="note warn"><span class="tag">unverified</span> <b>One provider at a time.</b> Documentation says the device syncs with one cloud drive, so running Supernote Cloud and Google Drive together may not be possible. Check the setting on your device before you design around having both. If forced to choose, keep Google Drive for the machine-readable path.</div>
+    </div>
+  </div>
+
+  <div class="step" data-step="1-4">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Install the converter in WSL and run it on one file</p>
+      <p>Copy the <code>.note</code> into the Linux filesystem first. Do not run the tool with its working directory on <code>/mnt/g</code> or <code>/mnt/c</code>: DrvFS mounts throw <code>Function not implemented</code> on some operations and are slow.</p>
+      <figure class="code"><figcaption><span>bash, in WSL</span><button type="button">copy</button></figcaption><pre><code>mkdir -p ~/tmp/sn-test && cd ~/tmp/sn-test
+cp /mnt/g/My\ Drive/Supernote/Note/mtg/2026Q3-mtg.note .
+
+python3 -m venv .venv && source .venv/bin/activate
+pip install sn2md
+export OPENAI_API_KEY=sk-...
+
+sn2md file 2026Q3-mtg.note
+cat 2026Q3-mtg/2026Q3-mtg.md</code></pre></figure>
+      <p><code>sn2md</code> renders each page to PNG, sends it to a vision model (default <code>gpt-4o-mini</code>), and emits Markdown with YAML frontmatter, an image list, and extracted keywords, links and titles. It already targets Obsidian flavour: <code>#tags</code>, <code>[[wikilinks]]</code>, mermaid for diagrams, <code>$$</code> for maths.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="1-5">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Judge the output, then tune model or prompt</p>
+      <p>Configure at <code>~/.config/sn2md.toml</code>. If <code>gpt-4o-mini</code> mangles your handwriting, try Gemini, Claude, or a local <code>llama3.2-vision</code> through Ollama before changing anything else. The prompt is the second lever: tell it your abbreviations and that arrows mean sequence.</p>
+      <figure class="code"><figcaption><span>~/.config/sn2md.toml <span class="tag">key names unverified</span></span><button type="button">copy</button></figcaption><pre><code>model = "gpt-4o-mini"
+
+output_path_template = "{{ file_basename }}"
+output_filename_template = "{{ year_month_day }}-{{ file_basename }}.md"
+image_output_path_template = "{{ file_basename }}"
+
+prompt = """
+Transcribe this handwritten notebook page to Markdown.
+Preserve structure: headings, bullets, indentation, tables.
+Render arrow diagrams as mermaid. Render maths as $$ blocks.
+Keep abbreviations verbatim: PIC, JOUA, JUAS, I&PC.
+Do not summarise. Do not invent content for unreadable words:
+write [?] instead.
+"""</code></pre></figure>
+      <div class="note gate"><b>Gate.</b> Transcription is good enough to be worth keeping without re-reading the original page. If it is not, do not proceed. Fall back to Real-Time Recognition notes on the device for anything that must be text-perfect, and keep the vision model for everything else.</div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== PHASE 2 =============== -->
+<section id="p2">
+  <h2 class="sec"><span class="n">Phase 2</span><span>Lay the ground: mirror, vault, contract</span></h2>
+  <p class="deck">Three pieces of groundwork the agent will assume: a reliable local copy of Drive, a vault skeleton that is queryable by properties, and a written rule about where an agent may write.</p>
+
+  <div class="step" data-step="2-1">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Get Drive onto the machine</p>
+      <p><b>Default: Google Drive for Desktop.</b> Least code, mounts as <code>G:</code>, readable from WSL at <code>/mnt/g/</code>. Mark the <code>Supernote/</code> folder <b>available offline</b> so files are real on disk rather than streamed placeholders.</p>
+      <p><b>Runner-up: rclone</b>, if Drive for Desktop's down-sync proves flaky, which is a common field complaint. Use <code>copy</code>, never <code>sync</code>, so a local cleanup can never propagate deletions back to Drive.</p>
+      <figure class="code"><figcaption><span>rclone fallback</span><button type="button">copy</button></figcaption><pre><code>rclone config          # add remote named: gdrive
+rclone copy gdrive:Supernote ~/sn-mirror \
+  --drive-export-formats none --log-file ~/.hermes/logs/rclone.log</code></pre></figure>
+    </div>
+  </div>
+
+  <div class="step" data-step="2-2">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Build the vault skeleton</p>
+      <p>Shallow folders for humans, frontmatter properties for machines. PARA-lite wins here because it matches how the work actually divides, and because an agent should query <code>source: supernote AND status: unprocessed</code> rather than walk a directory tree whose shape drifts.</p>
+      <figure class="code"><figcaption><span>vault/</span><button type="button">copy</button></figcaption><pre><code>vault/
+  00_meta/            AGENTS.md, MOCs, templates/
+  10_inbox/           AGENT-OWNED
+    supernote/          sn2md output lands here
+    brain/              existing Brain-Scribe fragments
+  20_projects/        HUMAN-OWNED, per project code
+    PIC-interconnect/  astro-engine/  defi-research/
+  30_areas/           bchydro/  crypto/  numerology/
+  40_resources/
+  50_archive/
+  attachments/
+    supernote/          .note + generated PDF
+    pdf/</code></pre></figure>
+      <div class="note warn"><b>Never nest the vault inside cloud sync.</b> A vault inside Google Drive or Dropbox produces conflict files and version reverts, because <code>.obsidian/workspace.json</code> churns constantly. Put the vault on the local filesystem and version it with Git. Use Obsidian Sync if you need it on other devices.</div>
+    </div>
+  </div>
+
+  <div class="step" data-step="2-3">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Put the vault under Git before an agent ever writes to it</p>
+      <p>This is your undo button for a bad agent write, and it costs five minutes.</p>
+      <figure class="code"><figcaption><span>vault/.gitignore and .gitattributes</span><button type="button">copy</button></figcaption><pre><code># .gitignore
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/plugins/*/data.json
+.trash/
+
+# .gitattributes
+*.md merge=union</code></pre></figure>
+    </div>
+  </div>
+
+  <div class="step" data-step="2-4">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Write the agent write contract</p>
+      <p>One file, read by every Hermes specialist that touches the vault. Without it, the first agent that decides to tidy a note eats your prose.</p>
+      <figure class="code"><figcaption><span>vault/00_meta/AGENTS.md</span><button type="button">copy</button></figcaption><pre><code># Vault write rules for Hermes agents
+
+CREATE files only in:  10_inbox/**  attachments/**
+MODIFY human notes only inside a marker block:
+
+  &lt;!-- hermes:begin auto-summary --&gt;
+  ...agent content, freely rewritten...
+  &lt;!-- hermes:end --&gt;
+
+NEVER: edit outside markers, reorder frontmatter keys you
+did not add, rename files, delete anything.
+To retire a note set `status: archived` and stop.
+Every agent write is one git commit, prefixed `hermes:`.</code></pre></figure>
+    </div>
+  </div>
+
+  <div class="step" data-step="2-5">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Install the Obsidian plugins that pay off</p>
+      <ul>
+        <li><b>Dataview</b>: the reason to be strict about frontmatter. Gives you and the agent one shared review surface.</li>
+        <li><b>Omnisearch</b> plus <b>Text Extractor</b>: indexes PDFs and images, so archived source pages become searchable. PDF extraction fails on some files and does not run on mobile, so treat it as a complement to <code>sn2md</code>, not a replacement.</li>
+        <li><b>Supernote (Unofficial)</b> by philips: view and embed <code>.note</code> in the vault with <code>![[file.note#page=2]]</code>, export, and import notes edited today. Verified at 2.8.1, Feb 2026.</li>
+        <li><b>Templater</b> and <b>QuickAdd</b>: promotion templates.</li>
+      </ul>
+      <figure class="code"><figcaption><span>Dataview review query</span><button type="button">copy</button></figcaption><pre><code>```dataview
+TABLE captured, sn_keywords AS keywords, file.link AS note
+FROM "10_inbox/supernote"
+WHERE status = "unprocessed"
+SORT captured ASC
+```</code></pre></figure>
+    </div>
+  </div>
+</section>
+
+<!-- =============== PHASE 3 =============== -->
+<section id="p3">
+  <h2 class="sec"><span class="n">Phase 3</span><span>Build the ingest agent</span></h2>
+  <p class="deck">One specialist with one scope: read the mirror, write the inbox. It touches nothing else in the vault, which is what makes it safe to run unattended on cron.</p>
+
+  <figure class="dia">
+  <svg viewBox="0 0 900 300" role="img" aria-label="Ingest loop: for each note file, hash it, compare against the state file, skip if unchanged, otherwise convert to markdown and PDF, write to the vault, and record the hash.">
+    <defs>
+      <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/>
+      </marker>
+    </defs>
+
+    <rect class="d-node" x="10" y="112" width="118" height="52" rx="3"/>
+    <text class="d-t" x="26" y="136">walk mirror</text>
+    <text class="d-m" x="26" y="152">*.note</text>
+
+    <rect class="d-node" x="164" y="112" width="118" height="52" rx="3"/>
+    <text class="d-t" x="180" y="136">sha256</text>
+    <text class="d-m" x="180" y="152">per file</text>
+
+    <path class="d-node" d="M382 138 L318 106 L318 170 z" fill="none"/>
+    <rect class="d-node-acc" x="318" y="106" width="128" height="64" rx="3"/>
+    <text class="d-t" x="334" y="132">in seen.json</text>
+    <text class="d-t" x="334" y="150">unchanged?</text>
+
+    <rect class="d-node" x="318" y="220" width="128" height="46" rx="3"/>
+    <text class="d-t" x="334" y="248">skip, log</text>
+
+    <rect class="d-node" x="486" y="88" width="150" height="104" rx="3"/>
+    <text class="d-t-b" x="502" y="112">convert</text>
+    <text class="d-m" x="502" y="132">sn2md file</text>
+    <text class="d-m" x="502" y="148">to .md + page PNG</text>
+    <text class="d-m" x="502" y="168">supernote_pdf</text>
+    <text class="d-m" x="502" y="184">to archival PDF</text>
+
+    <rect class="d-node" x="676" y="60" width="212" height="76" rx="3"/>
+    <text class="d-t" x="692" y="84">write to vault</text>
+    <text class="d-m" x="692" y="104">10_inbox/supernote/*.md</text>
+    <text class="d-m" x="692" y="122">attachments/supernote/*</text>
+
+    <rect class="d-node" x="676" y="160" width="212" height="70" rx="3"/>
+    <text class="d-t" x="692" y="184">record state</text>
+    <text class="d-m" x="692" y="204">seen.json: hash, mtime,</text>
+    <text class="d-m" x="692" y="220">output, status</text>
+
+    <path class="d-line" marker-end="url(#ah2)" d="M128 138 L162 138"/>
+    <path class="d-line" marker-end="url(#ah2)" d="M282 138 L316 138"/>
+    <path class="d-line" marker-end="url(#ah2)" d="M382 170 L382 218"/>
+    <text class="d-m" x="390" y="200">yes</text>
+    <path class="d-line-acc" marker-end="url(#ah2)" d="M446 138 L484 138"/>
+    <text class="d-m-acc" x="450" y="128">no</text>
+    <path class="d-line-acc" marker-end="url(#ah2)" d="M636 120 L674 104"/>
+    <path class="d-line" marker-end="url(#ah2)" d="M782 136 L782 158"/>
+    <path class="d-line-back" marker-end="url(#ah2)" d="M676 195 C 560 260 520 250 446 250 L446 250"/>
+    <text class="d-m" x="524" y="278">next file</text>
+  </svg>
+  <figcaption>Two layers of idempotency: your own hash check, plus <code>sn2md</code>'s built-in refusal to reprocess an unchanged source or clobber an output you edited by hand. Both are bypassed with <code>--force</code>.</figcaption>
+  </figure>
+
+  <div class="step" data-step="3-1">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Create the Hermes workspace layout</p>
+      <p>Schedule definitions in <code>jobs/</code>, mutable progress in <code>state/</code>, scratch in <code>workspaces/</code>. Keeping them apart is what lets you delete state and re-run cleanly.</p>
+      <figure class="code"><figcaption><span>~/.hermes/</span><button type="button">copy</button></figcaption><pre><code>~/.hermes/
+  SOUL.md                          Orchestrator routing doctrine
+  orchestrator/routing.md          specialist registry, scopes
+  agents/
+    supernote-ingest/
+      AGENT.md    scope: mirror -> 10_inbox/supernote ONLY
+      config.toml
+      run.py
+    brain-scribe/                  existing
+    astrology/                     existing
+  jobs/
+    supernote_ingest.cron
+    promote_candidates.cron        existing weekly sweep
+  state/supernote_ingest/
+    seen.json                      {path: {hash, mtime, output, status}}
+    last_run.json                  {ts, processed, skipped, errors}
+  logs/supernote_ingest/2026-09-10.log
+  workspaces/supernote-ingest/tmp/ page renders before vault write
+  outputs/
+    briefs/                        morning brief artifacts
+    review-packets/                PDFs staged for Drive</code></pre></figure>
+    </div>
+  </div>
+
+  <div class="step" data-step="3-2">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Write the agent scope file</p>
+      <p>Non-overlapping scopes are the whole point of the Orchestrator plus specialists architecture. Write the boundary down so the Orchestrator can route without ambiguity.</p>
+      <figure class="code"><figcaption><span>~/.hermes/agents/supernote-ingest/AGENT.md</span><button type="button">copy</button></figcaption><pre><code># supernote-ingest
+
+OWNS:    .note and annotated-PDF conversion, and only that.
+READS:   ~/sn-mirror/** (or /mnt/g/My Drive/Supernote/**)
+WRITES:  vault/10_inbox/supernote/**
+         vault/attachments/supernote/**
+         ~/.hermes/state/supernote_ingest/**
+REPORTS: count processed, count skipped, errors, newest capture age
+DEFERS:  filing and promotion -> promote_candidates
+         fragment routing     -> brain-scribe
+NEVER:   writes outside the two vault paths above</code></pre></figure>
+    </div>
+  </div>
+
+  <div class="step" data-step="3-3">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Implement the run loop</p>
+      <p>Skeleton below. The only non-obvious parts are hashing before conversion (cheap, avoids paying for LLM calls on unchanged pages) and writing frontmatter that links the Markdown to both source artefacts.</p>
+      <figure class="code"><figcaption><span>~/.hermes/agents/supernote-ingest/run.py</span><button type="button">copy</button></figcaption><pre><code>#!/usr/bin/env python3
+import hashlib, json, shutil, subprocess, sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+MIRROR = Path.home() / "sn-mirror" / "Note"
+VAULT  = Path.home() / "vault"
+INBOX  = VAULT / "10_inbox" / "supernote"
+ATTACH = VAULT / "attachments" / "supernote"
+TMP    = Path.home() / ".hermes/workspaces/supernote-ingest/tmp"
+STATE  = Path.home() / ".hermes/state/supernote_ingest/seen.json"
+
+def sha256(p: Path) -> str:
+    h = hashlib.sha256()
+    with p.open("rb") as f:
+        for chunk in iter(lambda: f.read(1 &lt;&lt; 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+def load_state() -> dict:
+    return json.loads(STATE.read_text()) if STATE.exists() else {}
+
+def main() -> int:
+    state = load_state()
+    processed = skipped = errors = 0
+
+    for src in sorted(MIRROR.rglob("*.note")):
+        key = str(src.relative_to(MIRROR))
+        digest = sha256(src)
+        if state.get(key, {}).get("hash") == digest:
+            skipped += 1
+            continue
+
+        work = TMP / src.stem
+        work.mkdir(parents=True, exist_ok=True)
+        local = work / src.name
+        shutil.copy2(src, local)          # never process on /mnt/*
+
+        try:
+            subprocess.run(["sn2md", "file", str(local)], check=True)
+            subprocess.run(["supernote_pdf", str(local)], check=True)
+        except subprocess.CalledProcessError as e:
+            errors += 1
+            print(f"FAIL {key}: {e}", file=sys.stderr)
+            continue
+
+        md = next(work.rglob("*.md"))
+        out = INBOX / f"{src.stem}.md"
+        out.write_text(frontmatter(src, key, digest) + md.read_text())
+
+        for asset in list(work.rglob("*.png")) + list(work.rglob("*.pdf")):
+            shutil.copy2(asset, ATTACH / asset.name)
+        shutil.copy2(src, ATTACH / src.name)
+
+        state[key] = {"hash": digest, "mtime": src.stat().st_mtime,
+                      "output": str(out), "status": "unprocessed"}
+        processed += 1
+
+    STATE.write_text(json.dumps(state, indent=2))
+    print(json.dumps({"processed": processed, "skipped": skipped,
+                      "errors": errors}))
+    return 1 if errors else 0
+
+def frontmatter(src: Path, key: str, digest: str) -> str:
+    now = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
+    captured = datetime.fromtimestamp(src.stat().st_mtime).date().isoformat()
+    return (
+        "---\n"
+        "source: supernote\n"
+        "device: nomad-a6x2\n"
+        f"captured: {captured}\n"
+        f"ingested: {now}\n"
+        "status: unprocessed\n"
+        "project:\n"
+        "area:\n"
+        f'note_file: "[[attachments/supernote/{src.name}]]"\n'
+        f'pdf_file: "[[attachments/supernote/{src.stem}.pdf]]"\n'
+        f"hash: sha256:{digest}\n"
+        f'sn_path: "{key}"\n'
+        "---\n\n"
+    )
+
+if __name__ == "__main__":
+    raise SystemExit(main())</code></pre></figure>
+      <div class="note"><span class="tag">unverified</span> The <code>supernote_pdf</code> invocation signature is illustrative. <code>supernote-tool convert -t pdf</code> from <code>supernotelib</code> is the fallback if the CLI differs.</div>
+    </div>
+  </div>
+
+  <div class="step" data-step="3-4">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Schedule it and commit each run</p>
+      <figure class="code"><figcaption><span>~/.hermes/jobs/supernote_ingest.cron</span><button type="button">copy</button></figcaption><pre><code>0 */4 * * * cd ~/.hermes/agents/supernote-ingest && \
+  ./.venv/bin/python run.py \
+  &gt;&gt; ~/.hermes/logs/supernote_ingest/$(date +\%F).log 2&gt;&1 && \
+  git -C ~/vault add -A && \
+  git -C ~/vault commit -qm "hermes: supernote ingest $(date -Iseconds)" || true</code></pre></figure>
+      <div class="note gate"><b>Gate.</b> Run three times in a row with no new captures. Second and third runs must report <code>processed: 0</code> and produce no git commit. If they do not, your hashing or your output paths are unstable, and duplicates will accumulate silently.</div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== PHASE 4 =============== -->
+<section id="p4">
+  <h2 class="sec"><span class="n">Phase 4</span><span>Surface it, and converge with what you already run</span></h2>
+  <p class="deck">Ingest without review is a landfill. The important design decision here is subtractive: do not build a second promotion flow, extend the one you have.</p>
+
+  <div class="step" data-step="4-1">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Add a captures section to the morning brief</p>
+      <p>Per new inbox note: title, keywords, one-line LLM summary. Plus the aggregate: count ingested, count awaiting promotion, ingest errors.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="4-2">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Add the health line</p>
+      <p>One green, amber or red line. It exists mainly to catch the two silent failures: you stopped tapping sync, and Drive stopped syncing down.</p>
+      <figure class="code"><figcaption><span>health check, five signals</span><button type="button">copy</button></figcaption><pre><code>1  age of newest .note in mirror        &gt; 3 days   -> amber "tap sync?"
+2  files in mirror vs entries in seen   mismatch   -> amber
+3  last_run.json ts                     &gt; 8h old   -> red   "cron dead"
+4  errors in last 24h                   &gt; 0        -> red   + last message
+5  notes with status: unprocessed       &gt; 20       -> amber "review queue"</code></pre></figure>
+    </div>
+  </div>
+
+  <div class="step" data-step="4-3">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Teach the existing sweep about Supernote notes</p>
+      <p>Rather than a second sweep, have <code>promote_candidates.py</code> treat <code>source: supernote</code> as one more candidate class alongside Brain-Scribe fragments. Likewise, the end-of-day compile should read notes derived from <code>Note/idea/</code>, so a handwritten scrap and a Telegram fragment go through the same router.</p>
+      <p>Promotion writes three things: <code>status: promoted</code>, the <code>project</code> or <code>area</code> value, and a move into <code>20_projects/</code> or <code>30_areas/</code>. Everything else stays put.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="4-4">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Make the queue actionable from Telegram</p>
+      <p>Promote, keep, discard, per note. This is the piece that earns the whole pipeline on days you are away from the desk: capture on paper in a meeting, triage from your phone on the way home, and arrive at a filed vault.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =============== PHASE 5 =============== -->
+<section id="p5">
+  <h2 class="sec"><span class="n">Phase 5</span><span>Close the loop back to paper</span></h2>
+  <p class="deck">The return leg is what turns the Nomad from a capture device into a review surface. It is also where most people get the page geometry wrong.</p>
+
+  <div class="step" data-step="5-1">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Render a weekly review packet at the right size</p>
+      <p>The screen is 7.8 inches at 1404 by 1872. An A4 page forces zoom and pan; a two-column academic PDF is unreadable. Generate at A6.</p>
+      <ul>
+        <li>A6 page, single column, 14 to 16pt body.</li>
+        <li>Wide right margin, roughly a third of the page, for annotation.</li>
+        <li>One item per page, so a marked page maps cleanly back to one note.</li>
+        <li>For long reading material, use EPUB instead: it reflows. Keep PDF only for things you must annotate at a fixed position.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step" data-step="5-2">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Stage it in Drive and pull it on the device</p>
+      <p>Write to <code>~/.hermes/outputs/review-packets/</code>, copy into the Drive <code>Supernote/Document/review/</code> folder, then sync on the device.</p>
+      <div class="note warn"><span class="tag">unverified</span> <b>Cloud to device delivery.</b> Third-party sync is documented as device-initiated, and deletion propagation is undocumented. Community consensus treats it as backup rather than true two-way sync. Test one packet before you rely on this weekly, and keep the Partner App or a USB copy as the fallback path.</div>
+    </div>
+  </div>
+
+  <div class="step" data-step="5-3">
+    <div class="tick"><input type="checkbox" aria-label="Step complete"></div>
+    <div class="body">
+      <p class="head">Get the annotations back</p>
+      <p>Annotations live in a separate layer and must be exported: three-dot menu, Export, choose original or vector handwriting, choose colour. You get a flattened annotated PDF, not a separable ink layer. Teach <code>supernote-ingest</code> to pick these up from <code>EXPORT/</code>, transcribe the margin notes, and attach them to the originating note rather than creating a new one.</p>
+    </div>
+  </div>
+
+  <h3>Optional, only if file-shuffling becomes the bottleneck</h3>
+  <p>Stand up <code>allenporter/supernote</code> as a self-hosted private cloud on a NAS: native <code>.note</code> parsing, optional Gemini OCR, semantic search, and an MCP server the Orchestrator can call directly. A beta firmware (3.24.39_beta) also adds WebDAV and a private server app. Both remove the manual sync tap. Neither is worth doing before the file pipeline has proven itself.</p>
+</section>
+
+<!-- =============== REFERENCE: MAP =============== -->
+<section id="map">
+  <h2 class="sec"><span class="n">Ref</span><span>Folder map, end to end</span></h2>
+  <p class="deck">Every device folder has exactly one staging destination and exactly one owning agent. Ambiguity here is what produces duplicate notes six months later.</p>
+
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>Supernote folder</th><th>Staging</th><th>Promoted to</th><th>Owner</th></tr></thead>
+    <tbody>
+      <tr><td><code>Note/mtg/</code></td><td><code>10_inbox/supernote/</code></td><td><code>20_projects/&lt;code&gt;/</code> or <code>30_areas/</code></td><td><code>supernote-ingest</code></td></tr>
+      <tr><td><code>Note/proj/&lt;code&gt;</code></td><td><code>10_inbox/supernote/</code></td><td><code>20_projects/&lt;code&gt;/</code></td><td><code>supernote-ingest</code></td></tr>
+      <tr><td><code>Note/jrnl/</code></td><td><code>10_inbox/supernote/</code></td><td><code>30_areas/journal/</code></td><td><code>supernote-ingest</code></td></tr>
+      <tr><td><code>Note/idea/</code></td><td><code>10_inbox/supernote/</code></td><td>promote or discard</td><td><code>supernote-ingest</code> then <code>brain-scribe</code></td></tr>
+      <tr><td><code>Document/review/</code> annotated</td><td><code>attachments/pdf/</code></td><td>linked from source note</td><td><code>supernote-ingest</code></td></tr>
+      <tr><td><code>EXPORT/</code></td><td>ignored by default</td><td>n/a</td><td>none</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Frontmatter contract</h3>
+  <p>These keys are the query surface. Agents read them, Dataview reads them, and promotion writes to them. Nothing else should be load-bearing.</p>
+  <figure class="code"><figcaption><span>every ingested note</span><button type="button">copy</button></figcaption><pre><code>source:     supernote           # fixed
+device:     nomad-a6x2          # fixed
+captured:   2026-09-05          # device mtime
+ingested:   2026-09-05T07:14:00-07:00
+status:     unprocessed         # unprocessed | reviewed | promoted | archived
+project:                        # written at promotion
+area:                           # written at promotion
+note_file:  "[[attachments/supernote/2026Q3-mtg.note]]"
+pdf_file:   "[[attachments/supernote/2026Q3-mtg.pdf]]"
+sn_titles:  []                  # from sn2md headings
+sn_keywords: []                 # from sn2md keywords
+hash:       sha256:...</code></pre></figure>
+
+  <div class="note"><b>Links.</b> Use <code>[[wikilinks]]</code> for note-to-note so Obsidian repairs them on rename. Use plain Markdown links for attachments and anything external tooling must resolve without Obsidian's link resolver. <code>sn2md</code> already emits image links the second way, which is correct.</div>
+</section>
+
+<!-- =============== REFERENCE: SAFETY =============== -->
+<section id="safety">
+  <h2 class="sec"><span class="n">Ref</span><span>Where an agent may write</span></h2>
+  <p class="deck">The single guardrail that matters most in a vault a human also edits.</p>
+
+  <figure class="dia">
+  <svg viewBox="0 0 880 280" role="img" aria-label="Two zones: agent-owned folders where agents may create and overwrite files freely, and human-owned folders where agents may only write inside explicit marker comments.">
+    <rect class="d-node-acc" x="14" y="46" width="392" height="212" rx="3"/>
+    <text class="d-lab" x="30" y="72">AGENT-OWNED</text>
+    <text class="d-t-b" x="30" y="106">Create, overwrite, delete outputs</text>
+    <text class="d-m" x="30" y="134">10_inbox/supernote/</text>
+    <text class="d-m" x="30" y="152">10_inbox/brain/</text>
+    <text class="d-m" x="30" y="170">attachments/supernote/</text>
+    <text class="d-m" x="30" y="188">attachments/pdf/</text>
+    <text class="d-t" x="30" y="220">A bad run here costs a re-run,</text>
+    <text class="d-t" x="30" y="238">not a lost thought.</text>
+
+    <rect class="d-node" x="446" y="46" width="420" height="212" rx="3"/>
+    <text class="d-lab" x="462" y="72">HUMAN-OWNED</text>
+    <text class="d-t-b" x="462" y="106">Append only, inside markers</text>
+    <text class="d-m" x="462" y="134">20_projects/**   30_areas/**</text>
+    <text class="d-m" x="462" y="152">40_resources/**  50_archive/**</text>
+    <rect class="d-node-warn" x="462" y="168" width="388" height="72" rx="2"/>
+    <text class="d-m" x="476" y="190">&lt;!-- hermes:begin auto-summary --&gt;</text>
+    <text class="d-m" x="476" y="208">   agent content, freely rewritten</text>
+    <text class="d-m" x="476" y="226">&lt;!-- hermes:end --&gt;</text>
+  </svg>
+  <figcaption>Promotion is the only operation that crosses the boundary, and it is human-confirmed. Everything else stays on its own side.</figcaption>
+  </figure>
+</section>
+
+<!-- =============== REFERENCE: BREAKS =============== -->
+<section id="breaks">
+  <h2 class="sec"><span class="n">Ref</span><span>What breaks, and what catches it</span></h2>
+  <p class="deck">Ranked roughly by how likely you are to hit it. The first two are near-certain.</p>
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>Failure</th><th>How it looks</th><th>Guardrail</th></tr></thead>
+    <tbody>
+      <tr><td>You forget to tap sync</td><td>No new <code>.note</code> for days, vault looks fine</td><td>Health signal 1: newest capture age</td></tr>
+      <tr><td>Drive for Desktop stops syncing down</td><td>Files in cloud, absent from <code>/mnt/g</code></td><td>Health signal 2: mirror count vs state count; fall back to <code>rclone copy</code></td></tr>
+      <tr><td>Duplicate notes</td><td>Same page ingested twice under different names</td><td>SHA-256 state file plus <code>sn2md</code> change detection; filename keyed on stable ID</td></tr>
+      <tr><td>OCR quality drift</td><td>Garbled transcription after a model change</td><td>Source <code>.note</code> and PDF always retained and linked; re-run with <code>--force</code></td></tr>
+      <tr><td>Agent overwrites human prose</td><td>Edits vanish</td><td>Marker blocks, agent-owned folders, git revert</td></tr>
+      <tr><td>Vault conflict files</td><td><code>*.conflict</code>, versions reverting</td><td>Vault never inside cloud sync; <code>workspace.json</code> gitignored</td></tr>
+      <tr><td>OAuth or token expiry</td><td>Ingest fails silently at 3am</td><td>Health signals 3 and 4; document the re-auth steps in <code>AGENT.md</code></td></tr>
+      <tr><td>Firmware changes the <code>.note</code> format</td><td>Parser errors after an update</td><td>Pin tool versions; re-test after every Chauvet update</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- =============== CAVEATS =============== -->
+<section id="caveats">
+  <h2 class="sec"><span class="n">Ref</span><span>Caveats and unverified claims</span></h2>
+  <ul>
+    <li><span class="tag">unverified</span> Bidirectional behaviour and deletion propagation of Google Drive third-party sync are not officially documented. This design assumes device-to-cloud only.</li>
+    <li><span class="tag">unverified</span> Whether Supernote Cloud auto-sync and Google Drive manual sync can both be active at once. Documentation says one cloud drive at a time.</li>
+    <li><span class="tag">unverified</span> Clean extraction of the annotation ink layer alone. Export produces a flattened annotated PDF.</li>
+    <li><span class="tag">unverified</span> Exact <code>sn2md.toml</code> key names and the <code>supernote_pdf</code> CLI signature. Confirm against the installed version's help output.</li>
+    <li><b>Tool currency.</b> <code>supernotelib</code> shows a 0.7.0 wheel on PyPI while one advisory site labels it inactive, likely a stale snapshot. The <code>sn2md</code> release date of 18 June 2026 is confirmed, the exact version string is not. The Obsidian Supernote plugin is confirmed at 2.8.1, 14 February 2026; a later tag was reported but not independently confirmed.</li>
+    <li><b>Source conflict.</b> Some Supernote marketing pages describe third-party cloud sync as automatic. Official support steps and firmware documentation describe it as manual. This guide follows the latter.</li>
+    <li><b>Anecdote, not vendor position.</b> Reports of Google Drive for Desktop down-sync flakiness are practitioner accounts. Treat as a risk to monitor.</li>
+    <li>All findings verified as of September 2026. Re-check after any Chauvet firmware update.</li>
+  </ul>
+</section>
+
+<footer class="end">
+  <p>Progress is stored in this browser only, and is not shared with anyone else who opens this page.</p>
+</footer>
+
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "sn-hermes-guide-v1";
+
+  /* ---------- theme ---------- */
+  var btn = document.getElementById("themebtn");
+  try{
+    var saved = localStorage.getItem(KEY + ":theme");
+    if(saved){ document.documentElement.setAttribute("data-theme", saved); }
+  }catch(e){}
+  btn.addEventListener("click", function(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var next;
+    if(cur === "dark"){ next = "light"; }
+    else if(cur === "light"){ next = "dark"; }
+    else {
+      var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      next = prefersDark ? "light" : "dark";
+    }
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem(KEY + ":theme", next); }catch(e){}
+  });
+
+  /* ---------- copy buttons ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("figure.code button"), function(b){
+    b.addEventListener("click", function(){
+      var pre = b.closest("figure").querySelector("pre");
+      var text = pre.innerText;
+      var done = function(){ b.textContent = "copied"; setTimeout(function(){ b.textContent = "copy"; }, 1400); };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done, function(){ b.textContent = "select manually"; });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand("copy"); done(); }catch(e){ b.textContent = "select manually"; }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  /* ---------- progress ---------- */
+  var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
+  var bar = document.getElementById("progbar");
+  var ptxt = document.getElementById("progtext");
+  var state = {};
+  try{
+    var raw = localStorage.getItem(KEY + ":steps");
+    if(raw){ state = JSON.parse(raw) || {}; }
+  }catch(e){ state = {}; }
+
+  function persist(){
+    try{ localStorage.setItem(KEY + ":steps", JSON.stringify(state)); }catch(e){}
+  }
+
+  function paintRail(){
+    var secs = {};
+    steps.forEach(function(s){
+      var sec = s.closest("section").id;
+      if(!(sec in secs)){ secs[sec] = true; }
+      if(!state[s.dataset.step]){ secs[sec] = false; }
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#railnav a"), function(a){
+      a.classList.toggle("r-done", secs[a.dataset.sec] === true);
+    });
+  }
+
+  function render(){
+    var done = 0;
+    steps.forEach(function(s){
+      var on = !!state[s.dataset.step];
+      s.classList.toggle("is-done", on);
+      s.querySelector("input").checked = on;
+      if(on){ done++; }
+    });
+    var pct = steps.length ? Math.round(done / steps.length * 100) : 0;
+    bar.style.width = pct + "%";
+    ptxt.textContent = done + " of " + steps.length + " steps";
+    paintRail();
+  }
+
+  steps.forEach(function(s){
+    s.querySelector("input").addEventListener("change", function(e){
+      state[s.dataset.step] = e.target.checked;
+      persist(); render();
+    });
+  });
+
+  document.getElementById("resetbtn").addEventListener("click", function(){
+    state = {}; persist(); render();
+  });
+
+  render();
+
+  /* ---------- current section in rail ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.rail a"));
+  var byId = {};
+  links.forEach(function(a){ byId[a.dataset.sec] = a; });
+  if("IntersectionObserver" in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          links.forEach(function(a){ a.classList.remove("is-here"); });
+          if(byId[en.target.id]){ byId[en.target.id].classList.add("is-here"); }
+        }
+      });
+    }, { rootMargin: "-10% 0px -70% 0px", threshold: 0 });
+    Array.prototype.forEach.call(document.querySelectorAll("section[id]"), function(s){ obs.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2738 @@
+<!DOCTYPE html>
+<!-- index:
+description: JUAS process distillation in nine draw sheets, from pole lifecycle to the pattern card.
+tags: reference, process
+ingested: 2026-10-03T10:43:32-07:00
+-->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JUAS Process Distillation — Draw Sheets</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#161a21; --ink:#e6e9ef; --dim:#98a2b3; --line:#262c36;
+  --accent:#7aa2f7; --warn:#e0af68; --ok:#9ece6a; --code:#0b0d11;
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#fbfbfd;--panel:#fff;--ink:#1a1d23;--dim:#5c6572;--line:#e3e6ec;
+        --accent:#2f5fd0;--warn:#a86412;--ok:#3d7a2b;--code:#f5f6f9;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;}
+.wrap{display:grid;grid-template-columns:270px minmax(0,1fr);gap:0;max-width:1600px;margin:0 auto}
+nav{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:24px 18px;
+  border-right:1px solid var(--line);background:var(--panel)}
+nav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 14px}
+nav a{display:block;padding:7px 10px;margin:2px 0;border-radius:6px;color:var(--ink);
+  text-decoration:none;font-size:13px;line-height:1.35;border-left:2px solid transparent}
+nav a:hover{background:var(--bg);border-left-color:var(--accent)}
+main{padding:32px 40px 120px;min-width:0}
+h1{font-size:22px;margin:56px 0 4px;padding-bottom:10px;border-bottom:2px solid var(--accent);
+  scroll-margin-top:20px;letter-spacing:-.01em}
+h1:first-of-type{margin-top:8px}
+h2{font-size:15px;margin:26px 0 8px;color:var(--accent);letter-spacing:.02em}
+p{margin:8px 0;max-width:82ch}
+hr{display:none}
+table{border-collapse:collapse;margin:12px 0;font-size:13px;width:100%;max-width:1100px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel);font-weight:600;color:var(--dim);font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.06em}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--panel) 55%,transparent)}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:12.5px;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:18px;
+  overflow:auto;line-height:1.28;font-size:12.5px}
+pre code{background:none;padding:0;font-size:inherit;white-space:pre}
+ol,ul{max-width:82ch}
+li{margin:4px 0}
+li code{font-size:12px}
+.meta{color:var(--dim);font-size:13px}
+.legendkey{color:var(--warn)}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:20px}}
+@media print{nav{display:none}.wrap{display:block}pre{page-break-inside:avoid}h1{page-break-before:always}h1:first-of-type{page-break-before:avoid}}
+</style></head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+<div class="wrap">
+<nav><h2>Sheets</h2><a href="#juas-process-distillation-draw-sheets">JUAS Process Distillation — Draw Sheets</a>
+<a href="#sheet-1-of-9-pole-lifecycle-the-trunk">SHEET 1 of 9 — Pole Lifecycle (the trunk)</a>
+<a href="#sheet-2-of-9-data-crossings-c">SHEET 2 of 9 — Data Crossings (C)</a>
+<a href="#sheet-3-of-9-billing-b">SHEET 3 of 9 — Billing (B)</a>
+<a href="#sheet-4-of-9-maintenance-requests-tro-hro-t">SHEET 4 of 9 — Maintenance Requests, TRO/HRO (T)</a>
+<a href="#sheet-5-of-9-move-down-pole-removal-e">SHEET 5 of 9 — Move-Down / Pole Removal (E)</a>
+<a href="#sheet-5b-of-9-roadblock-feedback-loop-r">SHEET 5B of 9 — Roadblock Feedback Loop (R)</a>
+<a href="#sheet-6-of-9-licensee-attachment-l">SHEET 6 of 9 — Licensee Attachment (L)</a>
+<a href="#sheet-7-of-9-communication-and-reporting-rhythm-k">SHEET 7 of 9 — Communication and Reporting Rhythm (K)</a>
+<a href="#sheet-8-of-9-migration-transition-m">SHEET 8 of 9 — Migration / Transition (M)</a>
+<a href="#sheet-9-of-9-pattern-card-p">SHEET 9 of 9 — Pattern Card (P)</a>
+<a href="#open-items-11-not-diagrammed">OPEN ITEMS (§11, not diagrammed)</a></nav>
+<main><h1 id="juas-process-distillation-draw-sheets">JUAS Process Distillation — Draw Sheets</h1>
+<p><strong>Source:</strong> <code>juasprocessdistillation.md</code> | Sections 1 to 10 of 11.
+<strong>Coverage:</strong> all eight flows plus the pattern card. Section 11 (Unresolved Process
+Questions) is not diagrammed; it is a question list, not a flow, and is reproduced as an
+open-items strip at the end.</p>
+<p><strong>Global classification:</strong> Process distillation of a cross-organizational operating model
+(evidence: two named organizations exchanging work, explicit handoff tables, cadence
+language, break-point tables, and a stated current-state / target-state pair for every
+flow). No single archetype covers it. Each flow is classified and assigned separately.</p>
+<p><strong>Sheet index and off-page connectors:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Sheet</th>
+<th>Flow</th>
+<th>Source §</th>
+<th>Archetype</th>
+<th>Connector</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Pole lifecycle (the trunk)</td>
+<td>§1</td>
+<td>A3 swimlane</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Data crossings</td>
+<td>§2</td>
+<td>A4 layered model</td>
+<td>(C)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Billing</td>
+<td>§3</td>
+<td>A2 decision tree</td>
+<td>(B)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Maintenance requests TRO/HRO</td>
+<td>§4</td>
+<td>A1 linear sequence</td>
+<td>(T)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Move-down / pole removal</td>
+<td>§5</td>
+<td>A3 swimlane</td>
+<td>(E)</td>
+</tr>
+<tr>
+<td>5B</td>
+<td>Roadblock feedback loop</td>
+<td>§5</td>
+<td>A6 cycle</td>
+<td>(R)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Licensee attachment</td>
+<td>§6</td>
+<td>A3 swimlane</td>
+<td>(L)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Communication and reporting rhythm</td>
+<td>§7</td>
+<td>A7 timeline</td>
+<td>(K)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Migration / transition</td>
+<td>§8</td>
+<td>A1 linear sequence</td>
+<td>(M)</td>
+</tr>
+<tr>
+<td>P</td>
+<td>Pattern card (three transforms)</td>
+<td>§10</td>
+<td>reference strip</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Shared legend — use this vocabulary on every sheet:</strong></p>
+<pre><code>+--------+   Rectangle       Action or step
+&lt; ... &gt;      Diamond         Decision
+( ... )      Stadium         Start or end
+/ ..... /    Parallelogram   Input, output, or document
+[= ... =]    Cylinder        Data store or system of record
+ (A)         Circle          Off-page connector
+[[ ... ]]    Double box      Subprocess (has its own sheet)
+ !           Bang            Exception, break point, or failure path
+ @           Clock           Wait, timer, cadence, or SLA
+- - - -      Dashed line     Exception route or optional path
+=====        Band label      Swimlane divider
+</code></pre>
+<h2>---</h2>
+<h1 id="sheet-1-of-9-pole-lifecycle-the-trunk">SHEET 1 of 9 — Pole Lifecycle (the trunk)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §1 (steps ① to ⑪, break table, transformation note).</p>
+<h2>2. Classification</h2>
+<p>Type: Cross-actor workflow (evidence: two named organizations, seven marked boundary
+crossings, six of them manual).
+Archetype: <strong>A3 swimlane</strong> (chosen because: who holds the work at each moment is the whole
+point; a single spine would hide the six manual handoffs).</p>
+<h2>3. Legend</h2>
+<p>Uses: rectangle, diamond, stadium, cylinder, double box, off-page circle, <code>!</code>, <code>@</code>, dashed.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>Stadium</td>
+<td>Work need identified</td>
+<td>① (Gateway to Passport to DAD)</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>Action</td>
+<td>Early design consultation</td>
+<td>② <code>des:003/027</code></td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>Decision</td>
+<td>Affects TELUS?</td>
+<td>② "does this affect TELUS?"</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>Action</td>
+<td>Set ownership: joint/sole/offer</td>
+<td>③ <code>des:001/005/006/015</code></td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>Action</td>
+<td>Detailed design, SPIDAcalc PLA</td>
+<td>④ <code>jub:018</code>, S-codes <code>des:013</code></td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>Document</td>
+<td>Pole plan released</td>
+<td>⑤</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td>Action</td>
+<td>Set new pole, field complete</td>
+<td>⑥</td>
+</tr>
+<tr>
+<td>1.8</td>
+<td>System</td>
+<td>JUAS activity created (unbilled)</td>
+<td>⑦ UNBILLED_ACTIVITY</td>
+</tr>
+<tr>
+<td>1.9</td>
+<td>Decision</td>
+<td>WO closed + perm pole ID?</td>
+<td>⑧ <code>issue:wip-billing-delay</code></td>
+</tr>
+<tr>
+<td>1.10</td>
+<td>Action <code>!</code></td>
+<td>WIP backlog queue</td>
+<td>⑧ "large WIP backlog"</td>
+</tr>
+<tr>
+<td>1.11</td>
+<td>Subprocess</td>
+<td>Billing release + reconciliation (B)</td>
+<td>⑨ ⑪ <code>fin:001/002/006/014</code></td>
+</tr>
+<tr>
+<td>1.12</td>
+<td>Action <code>@</code></td>
+<td>TELUS intake, bi-weekly report pull</td>
+<td>⑤ to intake, <code>rpt:24</code>, <code>rpt:65</code></td>
+</tr>
+<tr>
+<td>1.13</td>
+<td>Subprocess</td>
+<td>Move-down, transfer, removal (E)</td>
+<td>⑥ to ⑩ TELUS column</td>
+</tr>
+<tr>
+<td>1.14</td>
+<td>Action <code>!</code></td>
+<td>JUAS write-off, record by record</td>
+<td>⑩ <code>issue:manual-removal-entry</code></td>
+</tr>
+<tr>
+<td>1.15</td>
+<td>Stadium</td>
+<td>Pole retired and billed <code>[inferred]</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>1.2</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>1.3</td>
+<td>email / phone, no decision record <code>!</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>1.4</td>
+<td>Yes</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>1.15</td>
+<td>No — BCH-only work</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>1.5</td>
+<td>JUAS record (visible to TELUS)</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>1.6</td>
+<td>email PDF, PLA may be disputed <code>!</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>1.7</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>1.12</td>
+<td>JUAS record, pulled bi-weekly <code>@ up to 14 days</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td>1.8</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.8</td>
+<td>1.9</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.9</td>
+<td>1.10</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>1.10</td>
+<td>1.9</td>
+<td>year-end sweep, re-test</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>1.9</td>
+<td>1.11</td>
+<td>Yes</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.12</td>
+<td>1.13</td>
+<td>scrub + bulk load to Fulcrum</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.13</td>
+<td>1.14</td>
+<td>removal complete</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>1.14</td>
+<td>1.11</td>
+<td>manual entry into JUAS <code>!</code></td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>1.11</td>
+<td>1.15</td>
+<td>invoice issued</td>
+<td>solid</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<p>Draw this one landscape.</p>
+<pre><code>              | Design            Ownership   Build        Bill        Close
+==============+=========================================================================
+              | (1.1)
+              |   |
+              |   v
+              | +--------------+   +--------------+   +---------------+
+  BCH DESIGN  | | 1.2 Early    |   | 1.4 Set      |   | 1.5 Detailed  |
+              | | design       |--&gt;| ownership    |--&gt;| design / PLA  |
+              | | consultation |   | joint/sole   |   +---------------+
+              | +--------------+   +--------------+          |
+              |   |     ! no decision record                 v
+              |   v                                    / 1.6 Pole plan /
+              | &lt; 1.3 Affects TELUS? &gt;                 /    released   /
+              |   |  Yes ^                                   |      |
+              |   +------+                                   |      | @ bi-weekly
+              |   | No                                       |      | pull
+              |   - - - - - - - - - - - - - - - - - - -+     |      |
+==============+=========================================|=====|======|===================
+              |                                         |     v      |
+  BCH BUILD   |                                +---------------+     |
+  + FINANCE   |                                | 1.7 Set new   |     |
+              |                                | pole, field   |     |
+              |                                | complete      |     |
+              |                                +---------------+     |
+              |                                         |            |
+              |                                [= 1.8 JUAS       =]  |
+              |                                [=  activity      =]  |
+              |                                [=  (unbilled)    =]  |
+              |                                         |            |
+              |                            &lt; 1.9 WO closed + perm ID? &gt;
+              |                                  |            |      |
+              |                               No |         Yes|      |
+              |                                  v            |      |
+              |                        - -+--------------+    |      |
+              |                           | 1.10 WIP   ! |    |      |
+              |                           | backlog      |    |      |
+              |                           +--------------+    |      |
+              |                                  ^  |         |      |
+              |                     year-end sweep  +---------+      |
+              |                                                |     |
+              |                                    [[ 1.11 Billing ]]|
+              |                                    [[ release (B)  ]]|
+              |                                                |     |
+              |                                                v     |
+              |                                             (1.15)   |
+==============+======================================================|===================
+              |                                                      v
+  TELUS       |                                         +-----------------------+
+              |                                         | 1.12 Intake @ 14 day  |
+              |                                         | report pull #24/#65   |
+              |                                         +-----------------------+
+              |                                                      |
+              |                                         [[ 1.13 Move-down /  ]]
+              |                                         [[ transfer / removal ]]
+              |                                         [[        (E)         ]]
+              |                                                      |
+              |                                         +-----------------------+
+              |                                         | 1.14 JUAS write-off ! |
+              |                                         | record by record      |
+              |                                         +-----------------------+
+              |                                                      |
+              |                          - - - - - - - - - - - - - - +
+              |                          (dashed back up to 1.11 Billing)
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Rule three horizontal lanes, label left: BCH DESIGN, BCH BUILD + FINANCE, TELUS.</li>
+<li>Draw the design spine across the top lane: 1.1, 1.2, 1.4, 1.5, 1.6.</li>
+<li>Drop into the middle lane: 1.7, 1.8, then the 1.9 gate, then 1.11 and 1.15.</li>
+<li>Draw the bottom lane right-hand chain: 1.12, 1.13, 1.14.</li>
+<li>Add the two lane-crossing arrows from 1.6 (to 1.7 and down to 1.12) and label the second
+   <code>@ up to 14 days</code>.</li>
+<li>Add branch labels on 1.3 and 1.9.</li>
+<li>Dashed last: the 1.10 WIP loop, the 1.14 to 1.11 write-off return, the 1.3 No exit.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> 1.15 terminal state: the source ends at reconciliation and names no closure.</li>
+<li><code>[inferred]</code> 1.3 No branch: the source states the check but not what happens when TELUS is
+  unaffected.</li>
+<li><code>[gap]</code> Construction (⑥) has no cross-org status node because none exists —
+  <code>issue:no-workflow-visibility</code>. The blank space in the TELUS lane between 1.12 and 1.13 is
+  the finding, not a drawing error.</li>
+<li>Count note: 7 boundary crossings, 6 manual. Only 1.6 to 1.12 is system-mediated, and even
+  that is a batch pull with a manual scrub.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-2-of-9-data-crossings-c">SHEET 2 of 9 — Data Crossings (C)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §2, including the 18-row crossing table.</p>
+<h2>2. Classification</h2>
+<p>Type: Structural model (evidence: components, systems of record, directional data flows,
+no imperative verbs).
+Archetype: <strong>A4 layered model</strong> (chosen because: the content is what the systems are and how
+they connect, not what anyone does; the manual transport tier is the object being replaced).</p>
+<h2>3. Legend</h2>
+<p>Uses: cylinder, parallelogram, rectangle, dashed, <code>!</code>.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>System</td>
+<td>DAD (design authoring)</td>
+<td>BCH systems map</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>System</td>
+<td>GIS DB / SAM</td>
+<td>BCH systems map, crossing 4</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>System</td>
+<td>JUAS (Oracle + Smallworld Magik)</td>
+<td>BCH systems map, crossings 1/3/6/15</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>System</td>
+<td>Passport / SAP (BCH)</td>
+<td>BCH systems map, crossing 14</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>System</td>
+<td>DesignHub / PAT / MDTS</td>
+<td>BCH systems map</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td>System</td>
+<td>Gateway / McLaren / ServiceLink</td>
+<td>BCH systems map</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td>System</td>
+<td>SharePoint (licensee intake)</td>
+<td>crossing 16</td>
+</tr>
+<tr>
+<td>2.8</td>
+<td>Document</td>
+<td>Reports #24 / #65</td>
+<td>crossing 2</td>
+</tr>
+<tr>
+<td>2.9</td>
+<td>Document</td>
+<td>TRO web form (one-way)</td>
+<td>crossing 6</td>
+</tr>
+<tr>
+<td>2.10</td>
+<td>Action <code>!</code></td>
+<td>TRANSPORT TIER: email, phone, Excel, fillable PDF, shared drives</td>
+<td>§2 "ALL OTHER DATA TRANSFER"</td>
+</tr>
+<tr>
+<td>2.11</td>
+<td>Action <code>!</code></td>
+<td>Manual scrub + bulk load</td>
+<td>crossing 2</td>
+</tr>
+<tr>
+<td>2.12</td>
+<td>System</td>
+<td>Fulcrum</td>
+<td>TELUS systems map</td>
+</tr>
+<tr>
+<td>2.13</td>
+<td>System</td>
+<td>JIRA</td>
+<td>TELUS systems map, crossing 16</td>
+</tr>
+<tr>
+<td>2.14</td>
+<td>System</td>
+<td>Looker</td>
+<td>TELUS systems map</td>
+</tr>
+<tr>
+<td>2.15</td>
+<td>System</td>
+<td>Fieldglass to SAP (TELUS)</td>
+<td>TELUS systems map</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>2.2</td>
+<td>automated</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.1</td>
+<td>2.3</td>
+<td>automated (crossing 1)</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>2.8</td>
+<td>report generation</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.8</td>
+<td>2.11</td>
+<td>download, bi-weekly <code>@</code></td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>2.11</td>
+<td>2.12</td>
+<td>bulk load</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>2.12</td>
+<td>2.14</td>
+<td>reporting</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.13</td>
+<td>2.12</td>
+<td>ticket linkage</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.9</td>
+<td>2.3</td>
+<td>TELUS submits, one direction only</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>2.3</td>
+<td>TELUS JUO cross-access (crossing 4)</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.12</td>
+<td>2.3</td>
+<td>BCH JUO cross-access (crossing 5)</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>2.10</td>
+<td>manual OPEX extract (crossing 14)</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>2.10</td>
+<td>2.12</td>
+<td>pole plans, PLA, EDC, work-with, roadblocks <code>!</code></td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td>2.10</td>
+<td>licensee requests (crossing 16)</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>2.15</td>
+<td>2.12</td>
+<td>TELUS internal</td>
+<td>solid</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<pre><code>   BC HYDRO TIER                                          TELUS TIER
+ +-------------------------------+              +------------------------------+
+ | [= 2.1 DAD =]                 |              | [= 2.12 Fulcrum =]           |
+ |     |                         |              |      ^        |              |
+ |     +--&gt; [= 2.2 GIS / SAM =]  |&lt;-- crossing 4|      |        v              |
+ |     |          ^              |    TELUS JUO |      |   [= 2.14 Looker =]   |
+ |     +--&gt; [= 2.3 JUAS =] &lt;-----|--- crossing 3|      |                       |
+ |     |          |    ^         |    direct    | [= 2.13 JIRA =]              |
+ |     |          |    |         |    entry     |                              |
+ |     |          |    +---------|--------------|------+ crossing 5            |
+ |     |          |              |              |      | BCH JUO access        |
+ |     |          v              |              | [= 2.15 Fieldglass -&gt; SAP =] |
+ |     |   / 2.8 Reports #24/#65 /              |                              |
+ |     |          |              |              +------------------------------+
+ |     |          |  crossing 2  |                       ^          ^
+ |     |          v              |                       |          |
+ |     |   +-----------------+   |                       |          |
+ |     |   | 2.11 Scrub +  ! |---|-----------------------+          |
+ |     |   | bulk load  @2wk |   |                                  |
+ |     |   +-----------------+   |                                  |
+ |     |                         |                                  |
+ |     |   / 2.9 TRO form / -----|-- one direction only -&gt;          |
+ |     +--&gt; [= 2.4 Passport / SAP =]                                |
+ |     +--&gt; [= 2.5 DesignHub / PAT / MDTS =]                        |
+ |     +--&gt; [= 2.6 Gateway / McLaren / ServiceLink =]               |
+ |          [= 2.7 SharePoint =]                                    |
+ +-------------------------------+                                  |
+                 |                                                  |
+                 v                                                  |
+ +==================================================================|==========+
+ |  2.10 TRANSPORT TIER  !   email | phone | Excel | fillable PDF | shared drv |
+ |  carries: pole plans, PLA results, EDC, work-with, roadblocks (both ways),  |
+ |  OPEX extracts, licensee requests, partner invoices, wireless data          |
+ +=============================================================================+
+
+  SCORE (as stated in source): 4 of 18 automated, 14 manual.
+  SCORE (as tabulated in source): 6 of 18 automated. See gaps note.
+  TARGET: delete tier 2.10. Replace with API / event -&gt; shared data layer.
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Rule two vertical boxes: BC HYDRO TIER left, TELUS TIER right.</li>
+<li>Fill the BCH box top-down: 2.1, then its four children 2.2 / 2.3 / 2.4 / 2.5, then 2.6, 2.7.</li>
+<li>Fill the TELUS box: 2.12 centre, 2.13 and 2.15 feeding it, 2.14 below it.</li>
+<li>Draw the four automated crossings as solid lines between the boxes and number them 1, 3, 4, 5.</li>
+<li>Draw the semi-manual path: 2.8, 2.11, into 2.12. Mark <code>@ 2wk</code>.</li>
+<li>Rule the full-width TRANSPORT TIER band 2.10 across the bottom last, with dashed lines
+   from both boxes into it. That band is the thing being deleted; drawing it last keeps it visually separate.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> The tier ordering (BCH above, TELUS right, transport below) is a drawing
+  convention; the source draws two side-by-side columns with no layering claim.</li>
+<li><code>[gap]</code> The source does not name what replaces Fulcrum on the TELUS side —
+  <code>future:telus-fulcrum-replacement</code>. Every TELUS-side connector is therefore drawn to a
+  system that is itself scheduled for replacement.</li>
+<li>Crossing 18 (wireless attachment data, quarterly/annual) has no named system on either
+  side; it lives entirely in tier 2.10.</li>
+<li><strong>Contradiction in the source.</strong> §2 states "Score: 4 of 18 crossings are automated", but the
+  crossing table itself marks six rows automated: 1 (DAD to JUAS), 3 (TELUS direct entry),
+  4 (TELUS JUO to SAM), 5 (BCH JUO to Fulcrum), 6 (TRO submissions), 15 (CAPEX billing
+  engine). Drawn as six solid crossings, per the table, which is the more specific statement.
+  The stated score of 4 is reproduced on the sheet unaltered. Resolve before quoting either
+  figure externally.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-3-of-9-billing-b">SHEET 3 of 9 — Billing (B)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §3, both the trigger diagram and the decision-point ladder.</p>
+<h2>2. Classification</h2>
+<p>Type: Conditional logic (evidence: four sequential gates, each with a named blocked state;
+the reader's question is "can this bill yet", not "what do I do first").
+Archetype: <strong>A2 decision tree</strong> (chosen because: branching is the content, and three of the
+four branches are the failure modes the document is complaining about).</p>
+<h2>3. Legend</h2>
+<p>Uses: stadium, diamond, rectangle, cylinder, <code>!</code>, <code>@</code>, dashed.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>Stadium</td>
+<td>Activity record created</td>
+<td>§3 decision points, line 1</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>Decision</td>
+<td>Q1: WO complete?</td>
+<td>§3 "Is WO complete?"</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>Action <code>!</code></td>
+<td>WIP queue, can sit months</td>
+<td>§3 <code>issue:wip-billing-delay</code></td>
+</tr>
+<tr>
+<td>3.4</td>
+<td>Action <code>@</code></td>
+<td>Year-end sweep</td>
+<td>§3 "Year-end sweep attempts to clear backlog"</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td>Decision</td>
+<td>Q2: Permanent pole ID assigned?</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>3.6</td>
+<td>Action <code>!</code></td>
+<td>Blocked, wait for GIS update</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>3.7</td>
+<td>Decision</td>
+<td>Q3: Standard billing type?</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>3.8</td>
+<td>Action <code>!</code></td>
+<td>Manual exception: ACA, move-down, make-ready, FRP</td>
+<td>§3 invoice prep note</td>
+</tr>
+<tr>
+<td>3.9</td>
+<td>Action</td>
+<td>Release for billing</td>
+<td>§3 RELEASE_FOR_BILLING field</td>
+</tr>
+<tr>
+<td>3.10</td>
+<td>System</td>
+<td>Billing engine (Smallworld Magik)</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>3.11</td>
+<td>Action <code>!</code></td>
+<td>Proxy rate applied, not actual cost</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>3.12</td>
+<td>System</td>
+<td>UNBILLED to BILLED table</td>
+<td>§3</td>
+</tr>
+<tr>
+<td>3.13</td>
+<td>Document</td>
+<td>Invoice generated</td>
+<td>fin:001/002/003/005/022</td>
+</tr>
+<tr>
+<td>3.14</td>
+<td>Decision</td>
+<td>Q4: Credit correction needed?</td>
+<td>§3, fin:014</td>
+</tr>
+<tr>
+<td>3.15</td>
+<td>Stadium</td>
+<td>Settled</td>
+<td><code>[inferred]</code></td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>3.2</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>3.3</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>3.4</td>
+<td><code>@ year end</code></td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.4</td>
+<td>3.2</td>
+<td>re-test</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>3.5</td>
+<td>Yes</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td>3.6</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.6</td>
+<td>3.5</td>
+<td>GIS updated</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td>3.7</td>
+<td>Yes</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.7</td>
+<td>3.8</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.8</td>
+<td>3.13</td>
+<td>manual invoice prep</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.7</td>
+<td>3.9</td>
+<td>Yes</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.9</td>
+<td>3.10</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.10</td>
+<td>3.11</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.11</td>
+<td>3.12</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.12</td>
+<td>3.13</td>
+<td><code>@ WD5 / EOM / quarterly / annual</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.13</td>
+<td>3.14</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>3.14</td>
+<td>3.13</td>
+<td>Yes — FIN 014 ad hoc</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>3.14</td>
+<td>3.15</td>
+<td>No</td>
+<td>solid</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<pre><code> ( 3.1 Activity record created )
+              |
+              v
+     &lt; 3.2 Q1: WO complete? &gt;
+        |               |
+     No |               | Yes
+        v               |
+ - +-------------+      |
+   | 3.3 WIP   ! |      |
+   | queue,      |      |
+   | months      |      |
+   +-------------+      |
+        | @ year end    |
+        v               |
+   +-------------+      |
+   | 3.4 Year-end|      |
+   | sweep       |--+   |
+   +-------------+  |   |
+        ^-----------+   |   (re-test 3.2)
+                        v
+          &lt; 3.5 Q2: Perm pole ID assigned? &gt;
+             |                     |
+          No |                  Yes|
+             v                     |
+   - +------------------+          |
+     | 3.6 Blocked    ! |          |
+     | wait GIS update  |          |
+     +------------------+          |
+             ^--- GIS updated ---+ |
+                                   v
+            &lt; 3.7 Q3: Standard billing type? &gt;
+               |                        |
+            No |                     Yes|
+               v                        v
+  - +--------------------------+   +------------------------+
+    | 3.8 Manual exception   ! |   | 3.9 Release for billing|
+    | ACA / move-down /        |   | RELEASE_FOR_BILLING    |
+    | make-ready / FRP         |   +------------------------+
+    +--------------------------+                |
+               |                                v
+               |                    [= 3.10 Billing engine =]
+               |                    [=  Smallworld Magik   =]
+               |                                |
+               |                                v
+               |                    +------------------------+
+               |                    | 3.11 Proxy rate    !   |
+               |                    | applied, not actual    |
+               |                    +------------------------+
+               |                                |
+               |                                v
+               |                    [= 3.12 UNBILLED -&gt; BILLED =]
+               |                                |
+               +--------------+-----------------+
+                              v
+                  / 3.13 Invoice generated /
+                    @ WD5 shared | EOM capex
+                    @ qtr opex   | Jan veg
+                              |
+                              v
+               &lt; 3.14 Q4: Credit correction? &gt;
+                    |                  |
+                Yes |                No|
+                    - - -&gt; back to 3.13 (FIN 014, ad hoc)
+                                       v
+                                 ( 3.15 Settled )
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Draw the four diamonds down the right-of-centre of the page first, evenly spaced:
+   3.2, 3.5, 3.7, 3.14. They are the skeleton.</li>
+<li>Join them with the Yes spine and label every Yes.</li>
+<li>Hang the three blocked states 3.3, 3.6, 3.8 off to the left as dashed No branches.</li>
+<li>Add the engine chain 3.9, 3.10, 3.11, 3.12 under the last Yes.</li>
+<li>Add 3.13 with its four cadence labels, then 3.15.</li>
+<li>Dashed last: the 3.4 year-end sweep return, the 3.6 GIS return, the 3.8 manual join into
+   3.13, and the 3.14 credit loop.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> 3.15 Settled: the source ends at invoice and credit correction.</li>
+<li>The removal branch ("Is this a removal? Yes, manual record-by-record entry in JUAS") is
+  drawn on Sheet 5 at node 5.14 rather than here, because it is a TELUS-side action that
+  writes into JUAS. Cross-reference (E).</li>
+<li><code>[gap]</code> The source does not state who decides that an activity is a non-standard billing
+  type at 3.7, nor the queue that 3.8 work sits in.</li>
+<li>Target-state note, §3: gate 3.2 is meant to be deleted (bill on field-complete plus
+  permanent ID), 3.11 replaced by actual cost from SAP, and the Sheet 5 removal branch
+  automated.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-4-of-9-maintenance-requests-tro-hro-t">SHEET 4 of 9 — Maintenance Requests, TRO/HRO (T)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §4, both current state and the target flow drawn from Table 4.</p>
+<h2>2. Classification</h2>
+<p>Type: Sequential task with capability failures (evidence: one request object moving through
+one queue; every branch in the source is a "cannot" rather than a real fork).
+Archetype: <strong>A1 linear sequence</strong> (chosen because: there is one actor chain and one object;
+the branches are dead ends, not paths).</p>
+<h2>3. Legend</h2>
+<p>Uses: stadium, rectangle, diamond, <code>!</code>, <code>@</code>, dashed.</p>
+<h2>4. Nodes — current state</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.1</td>
+<td>Stadium</td>
+<td>Maintenance need on joint pole</td>
+<td>§4 both entry columns</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td>Decision</td>
+<td>Which party identified it?</td>
+<td>§4 two entry columns</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td>Action <code>!</code></td>
+<td>No pathway: BCH cannot request TELUS</td>
+<td>§4 "NO PATHWAY"</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td>Action</td>
+<td>TRO created in JUAS</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>Action</td>
+<td>BCH JUO receives</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.6</td>
+<td>Action <code>!</code></td>
+<td>Cannot assign: no assignment function</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.7</td>
+<td>Action <code>!</code></td>
+<td>Evidence capped: 3 small photos, constrained text</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.8</td>
+<td>Action <code>!</code></td>
+<td>Not searchable or filterable</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.9</td>
+<td>Action <code>!</code></td>
+<td>No DesignHub linkage</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.10</td>
+<td>Action</td>
+<td>Manual tracking to resolution</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.11</td>
+<td>Action <code>!</code></td>
+<td>Status change, no notification to submitter</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.12</td>
+<td>Stadium</td>
+<td>Resolved / closed</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>4.13</td>
+<td>Action <code>!</code></td>
+<td>Monthly reporting, limited extract</td>
+<td>§4</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors — current state</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.1</td>
+<td>4.2</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td>4.3</td>
+<td>BCH</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td>4.4</td>
+<td>TELUS</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td>4.5</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>4.6</td>
+<td>capability check</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>4.7</td>
+<td>capability check</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>4.8</td>
+<td>capability check</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>4.9</td>
+<td>capability check</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>4.10</td>
+<td>proceed anyway</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>4.10</td>
+<td>4.11</td>
+<td></td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>4.10</td>
+<td>4.12</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>4.12</td>
+<td>4.13</td>
+<td><code>@ monthly</code></td>
+<td>solid</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering — CURRENT</h2>
+<pre><code> ( 4.1 Maintenance need on joint pole )
+                 |
+                 v
+      &lt; 4.2 Which party identified it? &gt;
+        |                            |
+  BCH   |                            | TELUS
+        v                            v
+ - +----------------------+   +--------------------+
+   | 4.3 NO PATHWAY     ! |   | 4.4 TRO created    |
+   | BCH cannot raise a   |   | in JUAS            |
+   | request to TELUS     |   +--------------------+
+   +----------------------+            |
+        (dead end)                     v
+                              +--------------------+
+                              | 4.5 BCH JUO        |
+                              | receives           |
+                              +--------------------+
+                                  |  |  |  |  |
+              - - - - - - - - - - +  |  |  |  +- - - - - - - - -+
+              |          - - - - - - +  |  +- - - - -+          |
+              v          v              |            v          v
+      +---------------+ +--------------+|  +----------------+ +----------------+
+      | 4.6 Cannot  ! | | 4.7 3 photos!||  | 4.8 Not      ! | | 4.9 No       ! |
+      | assign        | | max, short   ||  | searchable     | | DesignHub link |
+      +---------------+ +--------------+|  +----------------+ +----------------+
+                                        v
+                              +--------------------+
+                              | 4.10 Manual        |
+                              | tracking           |
+                              +--------------------+
+                                     |     |
+                                     |     - - -&gt; +---------------------+
+                                     |            | 4.11 No notify    ! |
+                                     |            | on status change    |
+                                     v            +---------------------+
+                              ( 4.12 Resolved )
+                                     | @ monthly
+                                     v
+                              +----------------------+
+                              | 4.13 Limited       ! |
+                              | extract capability   |
+                              +----------------------+
+</code></pre>
+<h2>6b. ASCII rendering — TARGET (source §4 "Transformation Needed")</h2>
+<pre><code> ( T1 Either party identifies need )
+                 |
+                 v
+ +-------------------------------------+
+ | T2 TRO / HRO created, bidirectional |   des:004 + new HRO path
+ +-------------------------------------+
+                 |
+     +-----------+-----------+
+     |           |           |
+     v           v           v
+ / T3 Rich   / / T4 Type  / / T5 No     /
+ / media     / / dropdown / / char limit/
+     |           |           |
+     +-----------+-----------+
+                 |
+                 v
+ +-------------------------------------+
+ | T6 System assigns to person /       |
+ | project / program                   |
+ +-------------------------------------+
+        |                     |
+        v                     v
+ [= T7 SAM GIS =]      [= T8 DesignHub =]
+   action req no.        if design needed
+        |                     |
+        +----------+----------+
+                   v
+ +-------------------------------------+
+ | T9 Work progresses                  |
+ +-------------------------------------+
+        |                     |
+        v                     v
+ +-------------------+  +--------------------------+
+ | T10 Status change |  | T11 Due date @ -1 month  |
+ | -&gt; notify sender  |  | -&gt; reminder email        |
+ +-------------------+  +--------------------------+
+        |                     |
+        +----------+----------+
+                   v
+ +-------------------------------------+
+ | T12 Admin: close / open / cancel /  |
+ | reassign                            |
+ +-------------------------------------+
+                   |
+                   v
+ / T13 Monthly status report, auto-generated /
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Current sheet first: spine 4.1, 4.2, 4.4, 4.5, 4.10, 4.12, 4.13 straight down the centre.</li>
+<li>Add 4.3 as a dashed dead-end branch off 4.2 on the left, and box it — the dead end is the finding.</li>
+<li>Add the four capability boxes 4.6 to 4.9 as a dashed fan off 4.5. Keep them on one row.</li>
+<li>Add 4.11 dashed to the right of 4.10.</li>
+<li>Turn the page. Target sheet: single spine T1, T2, T6, T9, T12, T13 down the centre.</li>
+<li>Add the three input parallelograms T3 to T5 as a fan under T2, the two system links T7 and
+   T8 as a fan under T6, and the two notification boxes T10 and T11 as a fan under T9.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> 4.2 as a decision node: the source draws two separate entry columns rather
+  than a fork. Drawn as a fork so the BCH dead end sits on the same sheet.</li>
+<li><code>[gap]</code> The source gives no resolution SLA, no escalation path, and no state list for a TRO
+  between created and resolved.</li>
+<li>§4 calls this "one of the most fully specified transformations in the document. It can be
+  built directly." The target sheet is therefore the only one here that is buildable as drawn.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-5-of-9-move-down-pole-removal-e">SHEET 5 of 9 — Move-Down / Pole Removal (E)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §5, current state diagram plus the 5-row handoff table.</p>
+<h2>2. Classification</h2>
+<p>Type: Cross-actor workflow (evidence: three actors — BCH, TELUS, Encepta — and an explicit
+count of five boundary crossings).
+Archetype: <strong>A3 swimlane</strong> (chosen because: this is the highest-volume cross-org workflow and
+every stated problem is a lane crossing).</p>
+<h2>3. Legend</h2>
+<p>Uses: rectangle, diamond, cylinder, document, double box, <code>!</code>, <code>@</code>, dashed.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.1</td>
+<td>Action</td>
+<td>BCH determines move-down required</td>
+<td>§5 <code>des:002/009</code></td>
+</tr>
+<tr>
+<td>5.2</td>
+<td>Document</td>
+<td>Pole plan released with move-down</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td>System</td>
+<td>Appears in JUAS</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.4</td>
+<td>Action <code>@</code></td>
+<td>TELUS pulls reports #24 / #65</td>
+<td>§5, crossing 1, up to 14 days</td>
+</tr>
+<tr>
+<td>5.5</td>
+<td>Action <code>!</code></td>
+<td>Manual scrub for accuracy</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.6</td>
+<td>Action</td>
+<td>Bulk load to Fulcrum, attach plans</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.7</td>
+<td>System</td>
+<td>JIRA ticket for move-down tracking</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.8</td>
+<td>Action</td>
+<td>Pre-fielding, field assessment</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.9</td>
+<td>Decision</td>
+<td>Roadblock?</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.10</td>
+<td>Subprocess</td>
+<td>Roadblock loop (R)</td>
+<td>§5 feedback loop, <code>ops:010</code></td>
+</tr>
+<tr>
+<td>5.11</td>
+<td>Action</td>
+<td>TELUS network design</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.12</td>
+<td>Action</td>
+<td>Partner dispatch via Fulcrum</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.13</td>
+<td>Action</td>
+<td>Transfer + removal, field execution</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>5.14</td>
+<td>Action <code>!</code></td>
+<td>JUAS write-off, manual record by record</td>
+<td>§5, crossing 4</td>
+</tr>
+<tr>
+<td>5.15</td>
+<td>System</td>
+<td>Fulcrum updated, Looker reporting</td>
+<td>§5</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.1</td>
+<td>5.2</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.2</td>
+<td>5.3</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td>5.4</td>
+<td>crossing 1, <code>@ up to 14 days</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.4</td>
+<td>5.5</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.5</td>
+<td>5.6</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.6</td>
+<td>5.7</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.6</td>
+<td>5.8</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.8</td>
+<td>5.9</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.9</td>
+<td>5.10</td>
+<td>Yes, crossings 2 and 3</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>5.10</td>
+<td>5.11</td>
+<td>resolved, work can proceed</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>5.9</td>
+<td>5.11</td>
+<td>No</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.11</td>
+<td>5.12</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.12</td>
+<td>5.13</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.13</td>
+<td>5.14</td>
+<td>crossing 4, <code>@ days to weeks</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.13</td>
+<td>5.15</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>5.7</td>
+<td>5.15</td>
+<td>tracking closed</td>
+<td>solid</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<pre><code>             | Design       Intake        Assess       Execute      Close
+=============+===============================================================
+             | +-----------+
+ BCH         | | 5.1 Move- |
+ DESIGN      | | down req'd|
+             | +-----------+
+             |      |
+             | / 5.2 Pole  /
+             | / plan      /
+             |      |
+             | [= 5.3 JUAS =]
+             |      |  crossing 1  @ up to 14 days
+=============+======|========================================================
+             |      v
+             | +-----------+  +-----------+  +-----------+
+ TELUS       | | 5.4 Pull  |-&gt;| 5.5 Scrub!|-&gt;| 5.6 Bulk  |
+ OPERATIONS  | | #24 / #65 |  | manual    |  | load to   |
+             | +-----------+  +-----------+  | Fulcrum   |
+             |                               +-----------+
+             |                                  |      |
+             |                       +----------+      +--&gt; [= 5.7 JIRA =]
+             |                       v                            |
+             |                 +-----------+                      |
+             |                 | 5.8 Pre-  |                      |
+             |                 | fielding  |                      |
+             |                 +-----------+                      |
+             |                       |                            |
+             |                 &lt; 5.9 Roadblock? &gt;                 |
+             |                   |          |                     |
+             |               Yes |       No |                     |
+             |                   |          v                     |
+             |                   |    +-----------+               |
+             |                   |    | 5.11 TELUS|               |
+             |                   |    | network   |               |
+             |                   |    | design    |               |
+             |                   |    +-----------+               |
+             |                   |          |                     |
+             |                   |    +-----------+               |
+             |                   |    | 5.12      |               |
+             |                   |    | Partner   |               |
+             |                   |    | dispatch  |               |
+             |                   |    +-----------+               |
+             |                   |          |                     |
+             |                   |    +-----------+               |
+             |                   |    | 5.13      |               |
+             |                   |    | Transfer +|               |
+             |                   |    | removal   |               |
+             |                   |    +-----------+               |
+             |                   |       |     |                  |
+=============+===================|=======|=====|==================|=========
+             |                   v       |     |                  |
+ ENCEPTA /   |        [[ 5.10 Roadblock ]]     |                  |
+ PARTNER     |        [[ loop  (R)  @30d ]]    |                  |
+             |                   |             |                  |
+             |     resolved - - -+             |                  |
+             |     (back up to 5.11)           |                  |
+=============+=================================|==================|=========
+             |                                 v                  v
+ SHARED      |                        +------------------+  [= 5.15 Fulcrum =]
+ RECORD      |                        | 5.14 JUAS      ! |  [=  + Looker    =]
+             |                        | write-off,       |
+             |                        | record by record |
+             |                        | @ days to weeks  |
+             |                        +------------------+
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Rule four lanes: BCH DESIGN, TELUS OPERATIONS, ENCEPTA / PARTNER, SHARED RECORD.</li>
+<li>Draw the BCH lane: 5.1, 5.2, 5.3, then the crossing arrow down into the TELUS lane and
+   label it <code>crossing 1 @ up to 14 days</code>.</li>
+<li>Draw the TELUS intake row left to right: 5.4, 5.5, 5.6, then branch to 5.7 and 5.8.</li>
+<li>Draw the 5.9 diamond and the vertical execution column 5.11, 5.12, 5.13 under its No branch.</li>
+<li>Drop the 5.10 subprocess box into the Encepta lane off the Yes branch, mark <code>@ 30d</code>, and
+   draw the dashed return up to 5.11.</li>
+<li>Finish in the SHARED RECORD lane: 5.14 and 5.15, with the crossing-4 label on the 5.13 arrow.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li>Five boundary crossings, all manual or semi-manual. Numbering on the sheet matches the
+  source table: 1 intake pull, 2 roadblock notification, 3 roadblock resolution, 4 removal
+  completion, 5 assorted email/phone coordination (not drawable as a single arrow, so it is
+  not drawn — it is the ambient medium of the whole sheet).</li>
+<li><code>[gap]</code> Crossing 5 has no node. The source describes it as "email/phone throughout".</li>
+<li><code>[gap]</code> No stated path when pre-fielding finds the pole plan itself is wrong, as distinct
+  from a field roadblock.</li>
+<li>Worst-case latency, adding the source's own figures: 14 days intake + 30 days roadblock
+  notification + variable resolution + variable write-off.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-5b-of-9-roadblock-feedback-loop-r">SHEET 5B of 9 — Roadblock Feedback Loop (R)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §5, "Feedback Loop: Roadblock Handling".</p>
+<h2>2. Classification</h2>
+<p>Type: Cycle with cadence as the message (evidence: a monthly compile step and a stated
+30-plus day minimum round trip).
+Archetype: <strong>A6 cycle</strong> (chosen because: the source calls it "the most critical recovery
+mechanism in the system, and it's the slowest" — the loop time is the finding).</p>
+<h2>3. Legend</h2>
+<p>Uses: rectangle, <code>!</code>, <code>@</code>, dashed.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>Action</td>
+<td>Field issue found, entered in Fulcrum</td>
+<td>§5 loop</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>Action <code>@</code></td>
+<td>Encepta compiles monthly</td>
+<td>§5 loop, <code>ops:010</code></td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Action <code>!</code></td>
+<td>Email to BCH JUO, monthly cadence</td>
+<td>§5 crossing 2</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>Action</td>
+<td>BCH investigates and resolves</td>
+<td>§5 loop</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>Action <code>!</code></td>
+<td>BCH emails Encepta, high-profile only</td>
+<td>§5 crossing 3</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>Action</td>
+<td>Fulcrum updated, work can proceed</td>
+<td>§5 loop</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>Action <code>!</code></td>
+<td>TELUS checks status independently</td>
+<td>§5 "TELUS must check status independently"</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>R2</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>R3</td>
+<td><code>@ monthly batch</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>R4</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>R5</td>
+<td>emergent / high profile</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>R7</td>
+<td>everything else, no notification</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>R6</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>R6</td>
+<td>polled, not pushed</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>R1</td>
+<td>next issue</td>
+<td>solid</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<pre><code>              +--------------------------+
+        +----&gt;| R1 Field issue found     |----+
+        |     | (entered in Fulcrum)     |    |
+        |     +--------------------------+    |
+        |                                     v
+ +--------------------+              +--------------------------+
+ | R6 Fulcrum updated |              | R2 Encepta compiles  @   |
+ | work can proceed   |              | monthly                  |
+ +--------------------+              +--------------------------+
+        ^         ^                              |
+        |         |  - - polled - -              v
+        |         |                +--------------------------+
+        |         +- - - - - - - - | R3 Email to BCH JUO    ! |
+        |                   +------| @ monthly cadence        |
+        |                   |      +--------------------------+
+        |                   |                    |
+ +--------------------+     |                    v
+ | R5 BCH emails    ! |     |      +--------------------------+
+ | Encepta, high-     |&lt;----|------| R4 BCH investigates      |
+ | profile only       |     |      | and resolves             |
+ +--------------------+     |      +--------------------------+
+                            |                    |
+                            |  - - no notify - - + 
+                            v
+                  +--------------------------+
+                  | R7 TELUS checks status ! |
+                  | independently            |
+                  +--------------------------+
+
+        CENTRE OF RING:  @ 30+ days minimum round trip
+        WORST CASE: issue on day 1 of month does not reach BCH
+        until day 1 of next month. Resolution time adds on top.
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Draw a large ring of four stations clockwise from twelve o'clock: R1, R2, R3, R4.</li>
+<li>Write <code>@ 30+ days minimum</code> in the centre of the ring. That is the point of the sheet.</li>
+<li>Add R5 and R6 closing the ring back to R1 on the left side.</li>
+<li>Add R7 outside the ring, on a dashed line from R4, rejoining at R6. It is the silent
+   majority path.</li>
+<li>Label R2 and R3 with their cadences last.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> R7 as a node: the source states TELUS must check independently but does not
+  place it in the loop diagram.</li>
+<li><code>[gap]</code> No stated definition of "emergent / high-profile", which is the criterion deciding
+  whether a resolution is pushed (R5) or must be polled (R7).</li>
+<li>Target, §5: same-day roadblock loop with status tracked in the shared system. R2, R3, R5
+  and R7 all disappear; R1 emits an event and R4 subscribes to it.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-6-of-9-licensee-attachment-l">SHEET 6 of 9 — Licensee Attachment (L)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §6, both current-state blocks plus the overlap table.</p>
+<h2>2. Classification</h2>
+<p>Type: Cross-actor workflow, two parallel silos (evidence: two separate intake paths that
+never meet, and a stated coordination need between them).
+Archetype: <strong>A3 swimlane</strong> (chosen because: the finding is that the two lanes never touch;
+only a lane diagram makes an absent crossing visible).</p>
+<h2>3. Legend</h2>
+<p>Uses: stadium, rectangle, cylinder, <code>!</code>, dashed, <code>[gap]</code> box.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6.1</td>
+<td>Stadium</td>
+<td>Licensee submits attachment request</td>
+<td>§6 BCH block</td>
+</tr>
+<tr>
+<td>6.2</td>
+<td>System <code>!</code></td>
+<td>SharePoint intake, cloud migration 2026</td>
+<td>§6, <code>future:sharepoint-cloud</code></td>
+</tr>
+<tr>
+<td>6.3</td>
+<td>Action</td>
+<td>Register request</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.4</td>
+<td>Action</td>
+<td>Vet for feasibility</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.5</td>
+<td>Action <code>!</code></td>
+<td>Issue for design, overlaps JU request process</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.6</td>
+<td>Action</td>
+<td>Manage agreement / MSA in SharePoint</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.7</td>
+<td>Action <code>!</code></td>
+<td>Billing, overlaps JU billing process</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.8</td>
+<td>Action</td>
+<td>Ongoing management</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.9</td>
+<td>Stadium</td>
+<td>BCH sends move-down request for licensee</td>
+<td>§6 TELUS block</td>
+</tr>
+<tr>
+<td>6.10</td>
+<td>System</td>
+<td>Group email intake, BCH3PLMVDN@telus.com</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.11</td>
+<td>System</td>
+<td>JIRA ticket created</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.12</td>
+<td>Action</td>
+<td>End-to-end workflow tracked in JIRA</td>
+<td>§6</td>
+</tr>
+<tr>
+<td>6.13</td>
+<td>Gap box</td>
+<td>No shared view of joint-asset leasing</td>
+<td>§6 "legitimate interest in knowing"</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6.1</td>
+<td>6.2</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.2</td>
+<td>6.3</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.3</td>
+<td>6.4</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.4</td>
+<td>6.5</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.5</td>
+<td>6.6</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.6</td>
+<td>6.7</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.7</td>
+<td>6.8</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.9</td>
+<td>6.10</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.10</td>
+<td>6.11</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.11</td>
+<td>6.12</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>6.5</td>
+<td>6.13</td>
+<td>should cross, does not</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>6.12</td>
+<td>6.13</td>
+<td>should cross, does not</td>
+<td>dashed</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<pre><code>             | Intake            Vet / design      Agreement        Run
+=============+=================================================================
+             | ( 6.1 Licensee request )
+ LICENSEE    |            |
+ (3rd party) |            |
+=============+============|====================================================
+             |            v
+             | [= 6.2 SharePoint =] !cloud migration 2026
+             |            |
+ BC HYDRO    |     +-------------+   +-------------+   +-------------+
+             |     | 6.3 Register|--&gt;| 6.4 Vet for |--&gt;| 6.5 Issue   |
+             |     | request     |   | feasibility |   | for design !|
+             |     +-------------+   +-------------+   +-------------+
+             |                                                |
+             |                                         +-------------+
+             |                                         | 6.6 MSA in  |
+             |                                         | SharePoint  |
+             |                                         +-------------+
+             |                                                |
+             |                                         +-------------+   +-----------+
+             |                                         | 6.7 Billing!|--&gt;| 6.8 Ongoing|
+             |                                         | (overlaps)  |   | management |
+             |                                         +-------------+   +-----------+
+             |                                                |
+=============+================================================|================
+             | ( 6.9 BCH move-down req for licensee )         |
+             |            |                                   |
+ TELUS       |            v                                   |
+             | [= 6.10 Group email =] BCH3PLMVDN@telus.com    |
+             |            |                                   |
+             |            v                                   |
+             | [= 6.11 JIRA ticket =]                         |
+             |            |                                   |
+             |     +--------------+                           |
+             |     | 6.12 E2E in  |                           |
+             |     | JIRA         |                           |
+             |     +--------------+                           |
+             |            |                                   |
+=============+============|===================================|================
+             |            - - - - - - -+       +- - - - - - - +
+ SHARED      |                         v       v
+ (ABSENT)    |            +==================================+
+             |            | 6.13  [gap]  No shared view of   |
+             |            | leasing on jointly owned assets  |
+             |            +==================================+
+
+  OVERLAP TABLE (draw as a 3-row strip beside the sheet):
+    Request intake + vetting | JU: JUAS + Gateway | Lic: SharePoint / email+JIRA
+    Agreement management     | JU: JOUA central   | Lic: MSAs in SharePoint
+    Billing                  | JU: JUAS engine    | Lic: SharePoint-managed
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Rule four lanes: LICENSEE, BC HYDRO, TELUS, SHARED (ABSENT).</li>
+<li>Draw the BCH chain left to right: 6.2 through 6.8, with 6.1 dropping in from the top lane.</li>
+<li>Draw the TELUS chain in its own lane, starting at 6.9. Keep it visually parallel to the
+   BCH chain and do not connect them — the absence is the content.</li>
+<li>Draw the SHARED lane as an empty band, then place the 6.13 gap box in it.</li>
+<li>Add the two dashed "should cross, does not" lines into 6.13 last.</li>
+<li>Write the three-row overlap strip in the margin.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> The SHARED (ABSENT) lane and node 6.13. The source states the coordination
+  need in prose; it draws no such lane. Drawn as an empty lane because an empty lane is the
+  clearest rendering of a missing capability.</li>
+<li><code>[gap]</code> The source does not say whether TELUS runs its own licensee intake for attachments
+  it originates, only the BCH-initiated move-down path.</li>
+<li><code>[gap]</code> No stated routing rule for deciding whether a request is a JU request or a licensee
+  request — that is open question 5 in §11.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-7-of-9-communication-and-reporting-rhythm-k">SHEET 7 of 9 — Communication and Reporting Rhythm (K)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §7, operational cadence block plus the supported/unsupported table.</p>
+<h2>2. Classification</h2>
+<p>Type: Temporal plan (evidence: everything is anchored to a cadence — daily, bi-weekly,
+monthly working day 5, quarterly, annual January working day 1).
+Archetype: <strong>A7 timeline</strong> (chosen because: the cadence is the content, and the finding is
+that nothing fires on an event, only on a calendar).</p>
+<h2>3. Legend</h2>
+<p>Uses: <code>*</code> point event, <code>[==]</code> recurring bar, <code>^</code> hard date, <code>!</code> gap, ad hoc band.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7.1</td>
+<td>Gap <code>!</code></td>
+<td>Daily: no system touchpoints</td>
+<td>§7 DAILY</td>
+</tr>
+<tr>
+<td>7.2</td>
+<td>Bar <code>@</code></td>
+<td>Bi-weekly: reports #24/#65 pull, scrub, load</td>
+<td>§7, "operational heartbeat"</td>
+</tr>
+<tr>
+<td>7.3</td>
+<td>Event <code>@</code></td>
+<td>Monthly WD5: shared costs invoice</td>
+<td><code>fin:001</code></td>
+</tr>
+<tr>
+<td>7.4</td>
+<td>Event <code>@</code></td>
+<td>Monthly EOM: CAPEX invoice</td>
+<td><code>fin:002</code></td>
+</tr>
+<tr>
+<td>7.5</td>
+<td>Event <code>@</code></td>
+<td>Monthly: new roadblocks assigned</td>
+<td><code>ops:010</code></td>
+</tr>
+<tr>
+<td>7.6</td>
+<td>Bar</td>
+<td>Jun to Dec: budget / workplan setting</td>
+<td><code>fin:007</code></td>
+</tr>
+<tr>
+<td>7.7</td>
+<td>Event <code>@</code></td>
+<td>Quarterly: OPEX invoice</td>
+<td><code>fin:003</code></td>
+</tr>
+<tr>
+<td>7.8</td>
+<td>Event <code>^</code></td>
+<td>Jan WD1: vegetation funding reset</td>
+<td><code>fin:005</code></td>
+</tr>
+<tr>
+<td>7.9</td>
+<td>Event</td>
+<td>Annual: CAPEX workplan + budget</td>
+<td><code>fin:007</code></td>
+</tr>
+<tr>
+<td>7.10</td>
+<td>Event</td>
+<td>Annual: PTW rental review + sharing</td>
+<td><code>ptw:014</code>, <code>fin:022</code></td>
+</tr>
+<tr>
+<td>7.11</td>
+<td>Event</td>
+<td>Annual/quarterly: wireless attachment data</td>
+<td><code>ops:004</code></td>
+</tr>
+<tr>
+<td>7.12</td>
+<td>Band</td>
+<td>Ad hoc: true-up, credits, roadblock resolution, TRO, work-with, EDC, emergent</td>
+<td><code>fin:006/014</code>, <code>ops:001/002/010</code>, <code>des:003/016</code></td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<p>Timeline sheets carry no flow connectors. The relationships that matter are alignments:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Aligns with</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7.2</td>
+<td>5.4 on Sheet 5</td>
+<td>the bi-weekly pull IS the move-down intake</td>
+</tr>
+<tr>
+<td>7.5</td>
+<td>R2/R3 on Sheet 5B</td>
+<td>the monthly roadblock batch</td>
+</tr>
+<tr>
+<td>7.3, 7.4, 7.7, 7.8</td>
+<td>3.13 on Sheet 3</td>
+<td>the four invoice cadences</td>
+</tr>
+<tr>
+<td>7.12</td>
+<td>every sheet</td>
+<td>ad hoc work has no cadence and no system record</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<pre><code>  Jan      Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec
+   |--------|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+ ^ 7.8 Veg funding reset (WD1, hard date)
+ * 7.9 CAPEX workplan + budget      * 7.10 PTW review     * 7.11 Wireless data
+                                     |
+                                     [======= 7.6 Budget / workplan setting =======]
+                                     Jun ------------------------------------- Dec
+
+  MONTHLY BAND (repeats every month across the whole axis)
+   |--WD5--|----------------------------|--EOM--|
+   * 7.3 Shared costs invoice (fin:001)
+                                         * 7.4 CAPEX invoice (fin:002)
+   * 7.5 New roadblocks assigned, Encepta -&gt; BCH (ops:010)
+
+  QUARTERLY BAND
+   * 7.7 OPEX invoice (fin:003)   Q1   Q2   Q3   Q4
+
+  BI-WEEKLY BAND  &lt;-- the operational heartbeat
+   [==] [==] [==] [==] [==] [==] [==] [==] [==] [==] [==] [==] ...
+   7.2 Reports #24/#65 -&gt; download -&gt; scrub -&gt; bulk load to Fulcrum
+
+  DAILY BAND
+   ! 7.1 NO automated system touchpoints. All daily coordination is
+     email / phone / in person.
+
+  AD HOC BAND (no cadence, no system record)
+   ~ 7.12 true-up (fin:006) ~ credit corrections (fin:014)
+     ~ roadblock resolution (ops:010) ~ TRO submissions
+     ~ work-with coordination (ops:001/002) ~ EDC (des:003/016)
+     ~ emergent / unplanned work
+
+  WHAT THE SYSTEM DOES vs DOES NOT (draw as a checklist beside the axis)
+    [x] Generate billing invoices     partial: CAPEX yes, OPEX + exceptions manual
+    [x] Generate reports             35+ numbered, no dashboard
+    [x] Track TRO submissions        partial: TELUS only, limited search / media
+    [ ] Notify users of status       ! &quot;JUAS does not issue automated messaging&quot;
+    [ ] Cross-org messaging          ! all communication outside the system
+    [ ] Dashboard views              ! manual extract, combine, format
+    [ ] Workflow status              ! completions only, in-progress invisible
+    [ ] Share media                  ! email / shared drives only
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Rule one horizontal axis across the page, ticked Jan to Dec.</li>
+<li>Place the four annual markers above the axis: 7.8 as a caret (hard date), 7.9, 7.10, 7.11
+   as asterisks. Add the 7.6 bar Jun to Dec.</li>
+<li>Below the axis, rule five stacked bands in this order: monthly, quarterly, bi-weekly,
+   daily, ad hoc. Widest cadence at the top, no cadence at the bottom.</li>
+<li>Fill each band with its markers and slugs.</li>
+<li>Draw the eight-row capability checklist down the right margin. Four ticks, four blanks —
+   keep the blanks aligned so the ratio is visible at a glance.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> The band ordering and the checklist placement are drawing conventions; the
+  source is a flat list.</li>
+<li><code>[gap]</code> The source gives no cadence at all for design coordination (EDC, work-with, pole
+  plan issue) — those sit in the ad hoc band by default, which is itself the finding.</li>
+<li>Target, §7: the daily band fills with event-driven notifications, the bi-weekly band
+  disappears, and the ad hoc band gets a system record. The 16 Tier 2 reports named in the
+  Order phase become dashboard views rather than extracts.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-8-of-9-migration-transition-m">SHEET 8 of 9 — Migration / Transition (M)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §8, the Phase 0 gate, the triage fan (line 304), and the
+four-stage migration block.</p>
+<h2>2. Classification</h2>
+<p>Type: Sequential task with one external gate and one triage fork (evidence: numbered
+pre-migration steps, a hard dependency on BCH IT, four named dispositions).
+Archetype: <strong>A1 linear sequence</strong> (chosen because: fixed order, single owning body (JUOC),
+one branch that routes work rather than splitting the path).</p>
+<h2>3. Legend</h2>
+<p>Uses: stadium, rectangle, diamond, document, <code>!</code>, <code>@</code>, dashed.</p>
+<h2>4. Nodes</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Shape</th>
+<th>Label</th>
+<th>Source anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.1</td>
+<td>Stadium</td>
+<td>Technology study (this document)</td>
+<td>§8 Phase 0</td>
+</tr>
+<tr>
+<td>8.2</td>
+<td>Document</td>
+<td>Order-of-magnitude estimate + pathway</td>
+<td>§8 deliverables</td>
+</tr>
+<tr>
+<td>8.3</td>
+<td>Action</td>
+<td>Investment Justification prepared</td>
+<td>§8</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td>Decision</td>
+<td>Improvement in scope for DDM?</td>
+<td>§8 line 304 triage</td>
+</tr>
+<tr>
+<td>8.5</td>
+<td>Action</td>
+<td>Influence DDM design team</td>
+<td>§8 Yes branch</td>
+</tr>
+<tr>
+<td>8.6</td>
+<td>Action</td>
+<td>Route: standalone IT project</td>
+<td>§8 No branch</td>
+</tr>
+<tr>
+<td>8.7</td>
+<td>Action</td>
+<td>Route: part of JUAS renewal</td>
+<td>§8 No branch</td>
+</tr>
+<tr>
+<td>8.8</td>
+<td>Action</td>
+<td>Route: non-IT process improvement</td>
+<td>§8 No branch</td>
+</tr>
+<tr>
+<td>8.9</td>
+<td>Action <code>!</code></td>
+<td>Route: accept the issue</td>
+<td>§8 No branch</td>
+</tr>
+<tr>
+<td>8.10</td>
+<td>Gate <code>@</code></td>
+<td>DDM completes, poles in SAP</td>
+<td>§8, external to JU, <code>future:ddm</code></td>
+</tr>
+<tr>
+<td>8.11</td>
+<td>Action</td>
+<td>Pre-migration: inventory, schema map, DQ, retention, archive</td>
+<td>§8 block 1</td>
+</tr>
+<tr>
+<td>8.12</td>
+<td>Action <code>!</code></td>
+<td>Migration execution, pole ID linkage at risk</td>
+<td>§8 block 2, <code>fields:pole-identity</code></td>
+</tr>
+<tr>
+<td>8.13</td>
+<td>Action</td>
+<td>Validation: counts, linkage, billing vs history, parallel run</td>
+<td>§8 block 3</td>
+</tr>
+<tr>
+<td>8.14</td>
+<td>Action</td>
+<td>Cutover: 400 users, training, JUAS read-only, decommission</td>
+<td>§8 block 4</td>
+</tr>
+<tr>
+<td>8.15</td>
+<td>Stadium</td>
+<td>New system operating</td>
+<td><code>[inferred]</code></td>
+</tr>
+</tbody>
+</table>
+<h2>5. Connectors</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Label</th>
+<th>Style</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8.1</td>
+<td>8.2</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.2</td>
+<td>8.3</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.1</td>
+<td>8.4</td>
+<td>improvement identified</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td>8.5</td>
+<td>Yes</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td>8.6</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td>8.7</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td>8.8</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>8.4</td>
+<td>8.9</td>
+<td>No</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>8.3</td>
+<td>8.10</td>
+<td>funding secured</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.5</td>
+<td>8.10</td>
+<td>folded into DDM</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.7</td>
+<td>8.11</td>
+<td>carried into renewal scope</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>8.10</td>
+<td>8.11</td>
+<td>Phase 1 begins, cannot be accelerated <code>!</code></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.11</td>
+<td>8.12</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.12</td>
+<td>8.13</td>
+<td></td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.13</td>
+<td>8.12</td>
+<td>reconciliation fails, remediate</td>
+<td>dashed</td>
+</tr>
+<tr>
+<td>8.13</td>
+<td>8.14</td>
+<td>parallel run clean</td>
+<td>solid</td>
+</tr>
+<tr>
+<td>8.14</td>
+<td>8.15</td>
+<td></td>
+<td>solid</td>
+</tr>
+</tbody>
+</table>
+<h2>6. ASCII rendering</h2>
+<pre><code> ( 8.1 Technology study — this document )
+        |                          |
+        v                          | improvement identified
+ / 8.2 Estimate + pathway /        v
+        |                  &lt; 8.4 In scope for DDM? &gt;
+        v                     |                  |
+ +---------------------+   Yes|               No |
+ | 8.3 Investment      |      v                  |
+ | Justification       |  +------------------+   +--- - -&gt; +------------------------+
+ +---------------------+  | 8.5 Influence    |   |         | 8.6 Standalone IT proj |
+        |                 | DDM design team  |   +--- - -&gt; +------------------------+
+        | funding         +------------------+   |         | 8.7 Part of JUAS renew |
+        |                          |             +--- - -&gt; +------------------------+
+        |                          |             |         | 8.8 Non-IT process     |
+        +------------+-------------+             +--- - -&gt; +------------------------+
+                     v                                     | 8.9 Accept the issue ! |
+        +=====================================+            +------------------------+
+        | 8.10 GATE @  DDM completes          |                        |
+        | (poles in SAP)                      |                        | 8.7 only
+        | ! external to JU, BCH IT owns it,   |                        |
+        |   cannot be accelerated             |                        |
+        +=====================================+                        |
+                     |  PHASE 1 BEGINS                                 |
+                     v                                                 |
+        +-------------------------------------+ &lt;- - - - - - - - - - - +
+        | 8.11 PRE-MIGRATION                  |
+        |  1 feature/function inventory       |
+        |  2 Oracle -&gt; SAP schema map         |
+        |    ! 67-field tables, UNBILLED /    |
+        |      BILLED overlap                 |
+        |  3 data quality issues up front     |
+        |  4 retention policy                 |
+        |  5 archive format + repository      |
+        +-------------------------------------+
+                     |
+                     v
+        +-------------------------------------+
+        | 8.12 MIGRATION EXECUTION            |
+        |  UNBILLED_ACTIVITY -&gt; new system    |
+        |  BILLED_ACTIVITY   -&gt; archive + BI  |
+        |  NOTES             -&gt; new system    |
+        |  Pole Plan         -&gt; new system    |
+        |  AUDITS            -&gt; archive       |
+        |  ! POLE_ID / CURRENT_POLE_ID /      |
+        |    HISTORY_POLE_ID must survive     |
+        +-------------------------------------+
+                     |
+                     v
+        +-------------------------------------+
+        | 8.13 VALIDATION                     |
+        |  reconcile record counts            |
+        |  verify pole ID linkage             |
+        |  test billing vs known history      |
+        |  parallel run, old + new            |
+        +-------------------------------------+
+             |                    ^
+             | clean              - - - remediate - - -+
+             v                                         |
+        +-------------------------------------+        |
+        | 8.14 CUTOVER                        |--------+
+        |  400 users, BCH + TELUS + partners  |
+        |  training                           |
+        |  JUAS -&gt; read-only archive          |
+        |  legacy decommissioned              |
+        +-------------------------------------+
+                     |
+                     v
+             ( 8.15 New system operating )
+</code></pre>
+<h2>7. Stroke order</h2>
+<ol>
+<li>Draw the spine down the left-centre: 8.1, 8.2, 8.3, then the 8.10 gate band.</li>
+<li>Draw the 8.10 gate as a double-ruled band, not a box. It is external and it is the thing
+   nothing else can move.</li>
+<li>Draw the four big stage boxes below it: 8.11, 8.12, 8.13, 8.14, then 8.15. Leave each box
+   tall enough for its five internal bullets.</li>
+<li>Return to the top right and draw the 8.4 triage diamond with its five outcomes 8.5 to 8.9.</li>
+<li>Join 8.5 down into the gate, and 8.7 down into 8.11 as a dashed carry-forward.</li>
+<li>Add the dashed remediate loop from 8.13 back to 8.12 last.</li>
+</ol>
+<h2>8. Gaps and inferences</h2>
+<ul>
+<li><code>[inferred]</code> 8.15 and the 8.13 remediate loop: the source names a parallel run but no
+  failure path out of validation.</li>
+<li><code>[inferred]</code> The 8.7 carry-forward into 8.11: the source lists JUAS renewal as a
+  disposition without stating where that work re-enters.</li>
+<li><code>[gap]</code> No stated interim approach for the window between DDM completion and TELUS
+  S/4HANA go-live, roughly 2026 to 2027 — §11 open question 6.</li>
+<li><code>[gap]</code> No stated duration for any stage. The gate is the only timing fact in §8, and it is
+  owned by someone else.</li>
+</ul>
+<h2>---</h2>
+<h1 id="sheet-9-of-9-pattern-card-p">SHEET 9 of 9 — Pattern Card (P)</h1>
+<h2>1. Source</h2>
+<p><code>juasprocessdistillation.md</code> §10, plus the §9 transformation summary table.</p>
+<h2>2. Classification</h2>
+<p>Type: Design principles, not a flow. Rendered as a reference strip, not an archetype.
+Keep this on the inside cover of the notebook; it is the key to all eight sheets.</p>
+<h2>3. ASCII rendering</h2>
+<pre><code> PATTERN 1 — REPLACE BATCH WITH EVENT
+   NOW:   Accumulate -&gt; batch export -&gt; manual transport -&gt; batch import
+   TGT:   State change -&gt; event emitted -&gt; subscriber notified -&gt; action available
+   Applies to: 1.12, 2.8/2.11, 3.9, 5.4, 5.10, R2/R3, 7.2
+
+ PATTERN 2 — REPLACE SILOS WITH SHARED STATE
+   NOW:   BCH in system A | TELUS in system B | humans sync
+   TGT:   Both see shared state | each works in own system | shared layer syncs
+   Applies to: 1.7 (invisible construction), 2.x all, 5.x all, 6.13
+
+ PATTERN 3 — REPLACE DOCUMENT TRANSPORT WITH RECORD ATTACHMENT
+   NOW:   Create doc -&gt; email / shared drive -&gt; recipient hunts for it
+   TGT:   Create artifact -&gt; attach to asset record -&gt; available to all parties
+   Applies to: 1.6 pole plans, 1.5 PLA results, 4.7 media cap, 2.10 whole tier
+
+ FLOW SCORECARD (§9)
+   Flow              | Crossings | Manual | Worst latency
+   Pole lifecycle    |     7     |   6    | 14 d + WIP months
+   Data transfer     |    18     |  14    | n/a
+   Billing           |     -     |   -    | months in WIP
+   Maintenance TRO   |     1     |   1    | no SLA stated
+   Move-down/removal |     5     |   5    | 14 d + 30 d + variable
+   Licensee          |     0     |   -    | no crossing exists at all
+   Communication     |     -     |  all   | system emits zero notifications
+</code></pre>
+<h2>---</h2>
+<h1 id="open-items-11-not-diagrammed">OPEN ITEMS (§11, not diagrammed)</h1>
+<p>These are unresolved design questions, not flows. Each one blocks a node on a sheet above.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Integration interface to TELUS's Fulcrum replacement (does not exist yet)</td>
+<td>Sheet 2 TELUS tier, Sheet 5 lanes 2 and 3</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Does new JUAS absorb Fulcrum's GIS field-collection role, or stay a portal?</td>
+<td>Sheet 2 architecture, Sheet 5 nodes 5.6, 5.15</td>
+</tr>
+<tr>
+<td>3</td>
+<td>How does billing decouple from WO completion?</td>
+<td>Sheet 3 node 3.2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Data firewall model between organizations</td>
+<td>Sheet 2 transport tier replacement</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Licensee workflows absorbed or linked as a module?</td>
+<td>Sheet 6 node 6.13</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Gap between DDM completion and TELUS S/4HANA go-live (2026 to 2027)</td>
+<td>Sheet 8 node 8.10</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Who owns roadblock management in the new system?</td>
+<td>Sheet 5B, whole loop</td>
+</tr>
+</tbody>
+</table></main>
+</div></body></html>
