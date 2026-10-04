@@ -34,7 +34,7 @@ ingested: 2026-09-11T16:11:25Z
 <div class="eyebrow"><i></i> Independent field guide · researched Oct 3, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 3, 2026, 1:32 PM · Last published: Oct 3, 2026, 1:32 PM · published</p>
+<p>Last checked: Oct 4, 2026, 1:32 PM · Last published: Oct 4, 2026, 1:32 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -163,6 +163,12 @@ ingested: 2026-09-11T16:11:25Z
 
 <section id="pulse" class="section pulse">
 <article>
+<h3>Skills guide: one precedence order now applies on every surface, with skills.create_dir as its own tier and ambiguous duplicate names refused</h3>
+<p><strong>documented-unverified</strong> · The October 4 retrieval of the skills guide replaces the old &#x27;local precedence&#x27; rule (local beats an external dir) with a single order applied everywhere: the skill index, skills_list, hermes skills list, skill_view, slash commands, -s preload and cron. The order is project -&gt; local (~/.hermes/skills/) -&gt; skills.create_dir -&gt; external_dirs. The hidden copy is logged as shadowed. The October 3 retrieval already described skills.create_dir, but it did not place it in this order. A new &#x27;Duplicate skill names&#x27; section adds a rule for one directory: if two different skills inside it share a name, Hermes will not guess between them. Both are listed under their relative paths, and loading the bare name fails with an &#x27;Ambiguous skill name ... use one of ...&#x27; error. The same error is reported by hermes -s and by cron jobs. Identical copies (a symlink view or byte-identical copy) resolve to the shallowest path. Plugin skills use plugin:skill names and never collide. Practical reading: if you mirror a shared skill library through symlinks or extra directories, a cron job that preloads a bare skill name can now fail on ambiguity instead of loading an arbitrary copy. Documentation evidence only; not tested against an installed build.</p>
+<blockquote>Inside one directory, two different skills that share a name are never guessed between.</blockquote>
+<p>Run hermes skills list and look for shadowed-skill warnings in the logs. For each cron job that preloads skills, confirm the name resolves to one skill rather than an ambiguous pair in one directory. Where it is ambiguous, rename one skill or reference its exact relative path. Do not delete or move shared skill copies until you have confirmed which copy each profile actually loads.</p>
+<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
 <h3>Cron guide: a per-job base_url override must match the origin of the provider whose stored key it would carry</h3>
 <p><strong>documented-unverified</strong> · The October 3 retrieval of the cron guide adds a credential-scoping rule to the job storage section. A per-job base_url override now needs an explicit provider. For a provider with a stored key (a named custom provider or a built-in one), the override must have the same origin as that provider&#x27;s configured endpoint, meaning the same scheme, host and port; another scheme, port or subdomain is refused, so the stored key is only ever sent where it was configured. A bare provider: custom accepts any base_url that no stored key goes with, and when a stored key matches the URL&#x27;s hostname (the guide&#x27;s example is DEEPSEEK_API_KEY for api.deepseek.com) the same origin rule applies. The same retrieval also states that automatic re-runs after a transient pre-model network failure do not count toward a job&#x27;s repeat limit, because the occurrence they repeat already counted once. Practical reading: a job that pins a proxy, alternate port or regional subdomain against a keyed provider may now be refused rather than silently sending that key elsewhere. Documentation evidence only; not tested against an installed build.</p>
 <blockquote>Another scheme, port or subdomain is refused, so the stored key is only ever sent where you configured it.</blockquote>
@@ -181,12 +187,6 @@ ingested: 2026-09-11T16:11:25Z
 <p>If any profile uses Honcho or Supermemory, run hermes memory status per profile after the next update and read the migration notice rather than assuming the provider carried over; a headless or declined install can leave a profile without its external provider. Built-in MEMORY.md and USER.md are unaffected. Keep plugin installs on production profiles user-approved.</p>
 <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article><article>
-<h3>Cron guide: Python script and monitor_script jobs can pin a user-managed venv via --interpreter</h3>
-<p><strong>documented-unverified</strong> · The September 28 retrieval of the cron guide adds venv pinning to the script-interpreter rules. Non-.sh scripts run under the current Python interpreter (sys.executable); a Python script or monitor_script that needs packages the Hermes runtime doesn&#x27;t carry can now pin a user-managed venv by passing --interpreter ~/venvs/.../bin/python at create/edit time, with the linked &#x27;Using your own Python environment&#x27; section for setup. Constraints are unchanged and explicit: the Hermes-managed venv stays Hermes-owned and nothing is installed or restored automatically, scripts must still resolve inside $HERMES_HOME/scripts/ (relative, absolute, and ~-prefixed paths accepted only when the resolved target stays in that directory; escaping paths are rejected), and the subprocess environment remains sanitized so provider API credentials and other Hermes-managed secrets are not inherited by cron scripts. Documentation evidence only; not tested against an installed build.</p>
-<blockquote>can also pin a user-managed venv (for packages the Hermes runtime doesn&#x27;t carry) by passing --interpreter ~/venvs/.../bin/python at create/edit time</blockquote>
-<p>If a cron script needs a third-party package the runtime lacks, create the venv yourself outside Hermes, then set --interpreter on the job at create or edit time rather than pip-installing into the Hermes-managed venv. Verify the script still resolves inside $HERMES_HOME/scripts/ and remember secrets are not inherited, so any credential the script needs must be declared through the documented env-passthrough.</p>
-<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
-</article><article>
 <h3>v0.21.5 (v2026.9.24) becomes the latest tagged release, closing the post-v0.21.4 window</h3>
 <p><strong>released</strong> · The September 24 10:09 UTC patch release rolls the window since v0.21.4 into a stable tag for downstream consumers: measured at f97608f, 1,610 non-merge commits across 4,828 changed files, 460 merged PRs and 475 closed issues. Its notes explicitly name, though &#x27;undocumented here on purpose&#x27;, a Desktop plugin SDK wave (composer draft API, session-list and row-decoration slots, typed settings/skills/toolsets/profiles bridges, a sandboxed embed primitive, a public event bridge for plugin backends), a Simple/Advanced Desktop interface mode, the Connectors page replacing the MCP tab with installed plugins&#x27; tools and skills going live in open chats, French/German/Spanish Desktop catalogs with an RTL/LTR setting, custom model entry from the composer, per-profile stop/start/restart under the host multiplexer with gateway.standalone to opt a profile out, the live dock showing the standing /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna plus Claude Opus 5.5 in the Nous and OpenRouter catalogs. Curated notes remain deferred to v0.22.0. This is release-note evidence, not a local runtime test.</p>
 <blockquote>Patch release. This tag rolls up the ~460 PRs merged since v0.21.4 into a stable tagged release for downstream consumers</blockquote>
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 4, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 4, after the v0.21.5 tag (first commits page): mostly plugin-catalog maintenance. New catalog entries include talaria-webui, parcel-deliveries, model-drift-watch, parlor, Chat Studio 1.1.0 at its validated commit, and a Usage Ledger 0.4.3 Windows beta. Version bumps include thomas 0.1.2 (1298c8e), Gmail 1.0.13 (7008188), prompt-studio 1.9.0, by2kb 0.7.0, hermes-workflows 1.2.0 and agent-mail-gateway 0.3.1. A qdrant pin moved to 0.1.7 with an md_search disclosure (6e73827), and tam went to 0.1.1 with its credentials withheld. Disclosure-at-merge and contributor-email mapping commits (for example c75a4be, 27de330) also landed. The same day&#x27;s cron guide lists the homeassistant delivery target as a plugin (&#x27;requires the homeassistant plugin&#x27;). Commit-title and documentation evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 3, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 3, after the v0.21.5 tag (first commits page): Telegram ingress dispatch stall recovery, escalating a stalled ingress dispatch to a supervisor rebuild (3671e52), unblocking the recovery retry (96efe44), dropping the no-loop fallback (3d3fdbd), sizing the stall budget past a bounded slow handler (1809f4f), naming the actual stall in the fatal message (1a51ced) and raising a plain _PollingStallError (e2501d7), with pinned tests (98d8ea7, 37afba8, bb5b4f4); session display dedupe keying tool rows on stable tool identity rather than payload bytes (912c9de, #117750) while keeping the content key for tool result rows (24d05b2); compressor in-flight replay dedup replacing a duplicate in-flight task replay (a14e929) and keeping role alternation and the opening user turn intact (7b3fc99, d20a55c, 2667c96); and gateway /compress fixes stopping a false &#x27;failed to persist compressed transcript&#x27; on a rotated /compress (6cde268), publishing the /compress here N tail with a rotated child (b75c29d) and resolving the published-child probe through the parent&#x27;s store (4c8f0ff). Commit-title evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Sep 29, 2026, 1:30 PM</time>
 <div><b>Main-branch on September 29, after the v0.21.5 tag: desktop refactors routing tool cards and bridge events through lookup tables (fc042f1) and gating the HUD bridge sentence on tool availability with the note firing again when tool search defers the desktop tools (09581ca, 312f6bc); a unified clarify contract distinguishing skip, cancel, timeout and undelivered on every surface (5eea878, #127760); gateway first-contact note now DM-only with the offer flag saved in the routed profile (bc7f58f); debug-share redaction hardening (URL tokens and passwords masked in debug share uploads b8a8be1, fallback api_key masked per field whatever its YAML shape f907520, every secret fallback field per agent.redact policy 536802c, GCS and Azure SAS signatures counted as URL credentials cf94e3e, strict URL-credential redaction for the system dump 205d5d7 with a replay test 139876e); gateway lock work (a live gateway identified from its lock when gateway.pid is gone 5d1ab29, tests bounding and reaping live strict-identity lock holders e4e16a5, 5ed979b); update-tail handling (supervised launches kept off the pending completion tail 8d22a82, 69f8b70, the owed-tail notice printed once in the process that boots d9f6a84, a supervised start saying when it leaves the update tail owed a91a24c); sticky-profile recovery (recovery allowed from a missing active profile a4748e9, stale-profile recovery refusing uninstall --full and abbreviated --data 167d3bb, the missing sticky-profile error naming the recovery command fbb0eb3, and profiles docs on what still runs when the sticky profile was deleted 192e574, bca2e3c); and a test-suite preservation pass. Commit-page evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.24" target="_blank" rel="noopener noreferrer">
-<time>Sep 24, 2026, 10:09 AM</time>
-<div><b>Released v0.21.5 (tag v2026.9.24) at 10:09 UTC: a patch roll-up measured at f97608f as 1,610 non-merge commits, 460 merged PRs and 475 closed issues since v0.21.4. The notes name, among undocumented window items, a Desktop plugin SDK wave, a Simple/Advanced interface mode, the Connectors page replacing the MCP tab, French/German/Spanish Desktop catalogs with an RTL/LTR setting, per-profile stop/start/restart under the host multiplexer plus gateway.standalone, the live dock for /goal and queued prompts in CLI and TUI, webhook deliveries mirrored into the target chat session, and GPT-6 Sol/Terra/Luna and Claude Opus 5.5 catalog entries. Curated notes stay deferred to v0.22.0. Still the latest tag at the October 2 check.</b><span>github.com/NousResearch/hermes-agent/releases/tag/v2…</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 3, 2026, 1:32 PM
+Last attempt: Oct 4, 2026, 1:32 PM
 <br>
-Last success: Oct 3, 2026, 1:32 PM
+Last success: Oct 4, 2026, 1:32 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 3, 2026, 1:32 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261003t133239282z","title":"Make Repeat Work Remember","researched_at":"2026-10-03T13:30:29.237Z","generated_at":"2026-10-03T13:32:39.282Z","last_checked_at":"2026-10-03T13:32:39.282Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-03T13:32:39.282Z","last_success_at":"2026-10-03T13:32:39.282Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261004t133225437z","title":"Make Repeat Work Remember","researched_at":"2026-10-03T13:30:29.237Z","generated_at":"2026-10-04T13:32:25.437Z","last_checked_at":"2026-10-04T13:32:25.437Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-04T13:32:25.437Z","last_success_at":"2026-10-04T13:32:25.437Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
