@@ -6,5 +6,6 @@
 *.py
 /tests/
 /README.md
+/CLAUDE.md
 /wrangler.jsonc
 /AGENTS.md

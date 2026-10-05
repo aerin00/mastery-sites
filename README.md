@@ -8,6 +8,11 @@ A monorepo of standalone static HTML sites, organized by category and deployed t
 00_Mastery_Sites/
 ├── index.html              ← generated homepage and current site inventory
 ├── generate_index.py       ← regenerates index.html
+├── import_site.py          ← imports an inbox page as a new site
+├── update_repo_states.py   ← regenerates watchlist/repo-states from the GitHub API
+├── tests/                  ← Python unit tests and Node harness for the index
+├── .github/workflows/      ← daily repo-states refresh
+├── .assetsignore           ← keeps repo-only files off the public site
 ├── README.md               ← conventions and workflow
 └── <category>/
     └── <site-slug>/
@@ -28,7 +33,7 @@ You can nest one level deep. Deeper nesting is not supported and not needed.
 
 ### Naming
 
-- **Categories**: lowercase, no spaces. One word if possible (`hermes`, `codex`, `claude`, `shared`, `sharepoint`).
+- **Categories**: lowercase, no spaces. One word if possible (`hermes`, `codex`, `claude`, `shared`, `sharepoint`, `watchlist`).
 - **Sites**: lowercase, hyphens, descriptive (`bot-mode-handoff`, `codex-mastery`). Avoid generic names like `site1`.
 
 ### Which category?
@@ -44,6 +49,8 @@ You can nest one level deep. Deeper nesting is not supported and not needed.
 | Trading indicators and TradingView field guides | `trading/` |
 | Natal and financial astrology                   | `astrology/` |
 | Oracle practice                                | `oracle/`  |
+| Personal health protocols and device routines   | `health/`  |
+| Live watchlists and scheduled-job pages (repo-states, amex-points) | `watchlist/` |
 | Something new that doesn't fit any of the above  | make a new category folder |
 
 When in doubt, start a new category folder. A sparse category is better than a wrong one.
@@ -126,6 +133,19 @@ node tests/test_index.cjs index.html
 
 The Python tests cover ingestion metadata and date validation. The Node harness executes the generated inline JavaScript against a small DOM stub, checking ordering, filters, pagination, unknown dates, and the empty index. No package installation is required; these checks do not replace visual browser inspection.
 
+## Scheduled job: repo-states
+
+`watchlist/repo-states/index.html` is generated, not hand-edited. `update_repo_states.py` lists every repo owned by the authenticated GitHub user and renders a filterable table sorted by last push.
+
+```bash
+python update_repo_states.py            # fetch and write the page
+python update_repo_states.py --dry-run  # print HTML instead of writing
+```
+
+The token comes from `REPO_STATES_TOKEN`, then `GH_TOKEN`/`GITHUB_TOKEN`, then `gh auth token`. The workflow `.github/workflows/update-repo-states.yml` runs daily at 14:00 UTC (and on manual dispatch): it regenerates the page and root index, runs the tests, and commits and pushes any change, which triggers the Cloudflare deploy. The Actions `GITHUB_TOKEN` cannot list the owner's other repos, so the repository needs a `REPO_STATES_TOKEN` secret (fine-grained PAT, Metadata read-only on all owned repos).
+
+Its `INGESTED` constant is fixed and must not change; the visible "Data refreshed" line changes on every run, so daily commits are never empty. The `chore: refresh watchlist/repo-states` commits in history come from this job. Pull before committing locally.
+
 ## Deploy
 
 The production site is deployed by **Cloudflare Workers Builds** from `origin/main`. Every site folder becomes a path:
@@ -136,7 +156,7 @@ The production site is deployed by **Cloudflare Workers Builds** from `origin/ma
 
 Regenerate and commit the root index before pushing. Check the GitHub commit's `Workers Builds: mastery-sites` result and verify the live homepage and changed site paths before considering deployment complete. Build settings are managed outside this repository; this workflow does not change them.
 
-The build publishes the whole repository root, so `.assetsignore` (gitignore syntax) keeps `.git`, the Python tooling, `tests/`, and this README off the public site. Add any new repo-only file at the root to it.
+The build publishes the whole repository root, so `.assetsignore` (gitignore syntax) keeps `.git`, `.github/`, the Python tooling, `tests/`, and this README off the public site. Add any new repo-only file at the root to it.
 
 ## Rules
 
@@ -144,6 +164,6 @@ The build publishes the whole repository root, so `.assetsignore` (gitignore syn
 2. Max one level of nesting: `category/site/index.html`. Not `category/subcategory/site/index.html`.
 3. Always set a `<title>` in each site's `index.html`.
 4. Always include the `<!-- index: ... -->` block (description, tags, ingested date, pinned) and the All-sites bar (`#ms-homebar`) as the first child of `<body>`.
-5. Always run `python generate_index.py` after structural changes.
+5. Always run `python generate_index.py` after structural changes. Do not hand-edit `watchlist/repo-states/index.html`; `update_repo_states.py` owns it.
 6. The generator is the source of truth for the root `index.html`; regenerate and commit its output rather than hand-editing it.
 7. Keep repository tooling at the root and site assets beside their page. The generator discovers only folders containing `index.html`, directly or one category level down; it skips dot-directories and known noise (`.git`, `node_modules`, `__pycache__`).
