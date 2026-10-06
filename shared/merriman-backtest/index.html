@@ -1,0 +1,251 @@
+<!doctype html>
+<!-- index:
+description: Interactive backtest of six published Merriman market-timing claims against daily OHLC history (S&P 1970-2026, gold/silver/crude 2000-2026, BTC 2011-2026) using Astrolog 8.00 Swiss Ephemeris positions. Verdicts, events, and method.
+tags: backtesting, market-timing, financial-astrology, merriman
+pinned: false
+ingested: 2026-10-05T22:43:26-07:00
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merriman Claims: Backtested</title>
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --line:#262d38; --text:#d8dee8; --dim:#8b94a3;
+  --accent:#58a6ff; --ok:#3fb950; --bad:#f85149; --mid:#d29922; --code:#f0f6fc;
+}
+body.light{
+  --bg:#f6f8fa; --panel:#ffffff; --line:#d0d7de; --text:#1f2328; --dim:#57606a;
+  --accent:#0969da; --ok:#1a7f37; --bad:#cf222e; --mid:#9a6700; --code:#24292f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:28px 24px 12px;max-width:1060px;margin:0 auto}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--dim);font-size:13.5px}
+main{max-width:1060px;margin:0 auto;padding:10px 24px 40px;display:grid;
+  grid-template-columns:250px 1fr;gap:18px}
+@media(max-width:800px){main{grid-template-columns:1fr}}
+nav{display:flex;flex-direction:column;gap:6px}
+nav button{text-align:left;padding:9px 12px;border:1px solid var(--line);
+  border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer;
+  font-size:13.5px;line-height:1.3}
+nav button:hover{border-color:var(--accent)}
+nav button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel))}
+nav .tag{display:block;color:var(--dim);font-size:11.5px;margin-top:2px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px 22px}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;
+  font-weight:600;border:1px solid}
+.badge.inconclusive{color:var(--mid);border-color:var(--mid)}
+.badge.supported{color:var(--ok);border-color:var(--ok)}
+.badge.not_supported{color:var(--bad);border-color:var(--bad)}
+h2{margin:0 0 2px;font-size:19px}
+.claim{color:var(--dim);font-size:13.5px;margin:6px 0 14px}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;margin:12px 0}
+.stat{border:1px solid var(--line);border-radius:8px;padding:8px 11px}
+.stat b{display:block;font-size:16px;font-weight:650}
+.stat span{color:var(--dim);font-size:12px}
+.note{border-left:3px solid var(--accent);padding:8px 12px;margin:12px 0;
+  font-size:13.5px;background:color-mix(in srgb,var(--accent) 7%,var(--panel))}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:10px}
+th,td{border:1px solid var(--line);padding:5px 9px;text-align:left}
+th{color:var(--dim);font-weight:600}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+.bar .lbl{width:190px;color:var(--dim);flex-shrink:0}
+.bar .track{flex:1;height:16px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bar .fill{height:100%;border-radius:4px}
+footer{max-width:1060px;margin:0 auto;padding:0 24px 40px;color:var(--dim);
+  font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+.toggle{position:fixed;top:12px;right:14px;padding:5px 11px;border-radius:8px;
+  border:1px solid var(--line);background:var(--panel);color:var(--text);
+  cursor:pointer;font-size:12.5px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.92em;color:var(--code);
+  background:color-mix(in srgb,var(--code) 8%,transparent);padding:1px 5px;border-radius:5px}
+</style>
+</head>
+<body>
+<nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+<button class="toggle" id="theme">theme</button>
+<header>
+  <h1>Merriman Claims: Backtested</h1>
+  <div class="sub">Six published Merriman market-timing claims, operationalized and
+  tested against daily OHLC history (1970&ndash;2026) with Astrolog 8.00 Swiss
+  Ephemeris positions. Verdicts are statistical honesty, not advocacy.</div>
+</header>
+<main>
+<nav id="nav"></nav>
+<section id="panel"></section>
+</main>
+<footer>
+  Data: S&amp;P 500 1970&ndash;2026, DJIA 1992&ndash;2026, gold / silver / WTI
+  2000&ndash;2026 (Yahoo), BTC 2011&ndash;2026 (Bitstamp); audited extracts in
+  <code>05_Finance_Crypto/ohlc_history</code>. Astronomy: Astrolog 8.00
+  (Swiss Ephemeris), daily 12:00 UT longitudes, Sun&ndash;Saturn, generated by
+  <code>gen_ephemeris.py</code>. Statistics: two-sided permutation tests,
+  10,000 shuffles, seed 42; Bonferroni bar across 6 tests is p &lt; 0.0083.
+  Verdict key: supported = p &lt; 0.05 in the claimed direction; not_supported
+  = significant against; inconclusive = no significant effect (direction may
+  still lean as claimed). Small-n claims are descriptive only. Gold and silver
+  rows before 2012 carry disclosed source quirks. No position sizing, no
+  forecasts, no advice.
+</footer>
+<script>
+const R = {"generated": "2026-10-04", "engine": "Astrolog 8.00 (Swiss Ephemeris), positions 12:00 UT", "data": {"sp500": "1970-01..2026-10", "djia": "1992-01..2026-10", "gold": "2000-08..2026-10", "silver": "2000-08..2026-10", "crude": "2000-08..2026-10", "btc": "2011-08..2026-10"}, "stats_policy": {"permutations": 10000, "seed": 42, "bonferroni_bar": 0.0083, "verdicts": "supported / not_supported / inconclusive"}, "hypotheses": [{"id": "h1", "title": "Jupiter-Saturn conjunctions precede bear markets", "claim": "Merriman: long-term stock declines follow Jupiter-Saturn conjunctions within ~2.5 years, worst from earth signs", "n": 5, "events": [{"date": "1980-12-31", "aligned_trading_day": "1980-12-31", "zodiac_lon": 189.5, "element": "air", "peak_date": "1980-11-28", "trough_date": "1982-08-12", "max_drawdown_pct": -27.1}, {"date": "1981-03-05", "aligned_trading_day": "1981-03-05", "zodiac_lon": 188.0, "element": "air", "peak_date": "1980-11-28", "trough_date": "1982-08-12", "max_drawdown_pct": -27.1}, {"date": "1981-07-24", "aligned_trading_day": "1981-07-24", "zodiac_lon": 185.0, "element": "air", "peak_date": "1981-03-25", "trough_date": "1982-08-12", "max_drawdown_pct": -25.3}, {"date": "2000-05-28", "aligned_trading_day": "2000-05-30", "zodiac_lon": 52.8, "element": "earth", "peak_date": "2000-03-24", "trough_date": "2002-10-09", "max_drawdown_pct": -49.1}, {"date": "2020-12-21", "aligned_trading_day": "2020-12-21", "zodiac_lon": 300.5, "element": "air", "peak_date": "2022-01-03", "trough_date": "2022-10-12", "max_drawdown_pct": -25.4}], "stats": {"earth_mean_dd_pct": -49.1, "other_mean_dd_pct": -26.2}, "verdict": "inconclusive", "note": "n=5 (below 8, descriptive only): every conjunction 1980-2020 was straddled or followed by a 25-49% bear within 2.5 years; the earth-sign conjunction (2000, Taurus) was the deepest at -49.1%"}, {"id": "h2", "title": "Venus Rx stations align with gold/silver swing reversals", "claim": "Merriman: gold and silver make important swing highs or lows within days of Venus retrograde stations", "n": 36, "events": [{"date": "2001-03-09", "asset": "gold", "kind": "start", "hit": false}, {"date": "2001-04-20", "asset": "gold", "kind": "end", "hit": false}, {"date": "2002-10-10", "asset": "gold", "kind": "start", "hit": false}, {"date": "2002-11-21", "asset": "gold", "kind": "end", "hit": false}, {"date": "2004-05-18", "asset": "gold", "kind": "start", "hit": true}, {"date": "2004-06-30", "asset": "gold", "kind": "end", "hit": false}, {"date": "2006-02-03", "asset": "gold", "kind": "end", "hit": false}, {"date": "2007-07-27", "asset": "gold", "kind": "start", "hit": false}, {"date": "2009-03-06", "asset": "gold", "kind": "start", "hit": true}, {"date": "2009-04-17", "asset": "gold", "kind": "end", "hit": false}, {"date": "2010-10-08", "asset": "gold", "kind": "start", "hit": false}, {"date": "2010-11-19", "asset": "gold", "kind": "end", "hit": false}, {"date": "2012-05-15", "asset": "gold", "kind": "start", "hit": true}, {"date": "2012-06-27", "asset": "gold", "kind": "end", "hit": false}, {"date": "2018-10-05", "asset": "gold", "kind": "start", "hit": false}, {"date": "2018-11-16", "asset": "gold", "kind": "end", "hit": false}, {"date": "2020-05-13", "asset": "gold", "kind": "start", "hit": false}, {"date": "2020-06-25", "asset": "gold", "kind": "end", "hit": false}, {"date": "2001-03-09", "asset": "silver", "kind": "start", "hit": false}, {"date": "2001-04-20", "asset": "silver", "kind": "end", "hit": false}, {"date": "2002-10-10", "asset": "silver", "kind": "start", "hit": true}, {"date": "2002-11-21", "asset": "silver", "kind": "end", "hit": false}, {"date": "2004-05-18", "asset": "silver", "kind": "start", "hit": false}, {"date": "2004-06-30", "asset": "silver", "kind": "end", "hit": false}, {"date": "2006-02-03", "asset": "silver", "kind": "end", "hit": false}, {"date": "2007-07-27", "asset": "silver", "kind": "start", "hit": false}, {"date": "2009-03-06", "asset": "silver", "kind": "start", "hit": false}, {"date": "2009-04-17", "asset": "silver", "kind": "end", "hit": false}, {"date": "2010-10-08", "asset": "silver", "kind": "start", "hit": false}, {"date": "2010-11-19", "asset": "silver", "kind": "end", "hit": false}, {"date": "2012-05-15", "asset": "silver", "kind": "start", "hit": false}, {"date": "2012-06-27", "asset": "silver", "kind": "end", "hit": true}, {"date": "2018-10-05", "asset": "silver", "kind": "start", "hit": false}, {"date": "2018-11-16", "asset": "silver", "kind": "end", "hit": true}, {"date": "2020-05-13", "asset": "silver", "kind": "start", "hit": false}, {"date": "2020-06-25", "asset": "silver", "kind": "end", "hit": false}], "stats": {"hit_rate": 0.167, "chance_baseline": 0.174, "z_vs_binomial": -0.11}, "verdict": "inconclusive", "note": "verdict set below after z threshold"}, {"id": "h3", "title": "Mars retrograde coincides with metals rallies", "claim": "Merriman silver studies: precious metals advance during Mars retrograde periods", "n": 598, "events": [], "stats": {"gold": {"mean_ret_rx": 0.000845, "mean_ret_all": 0.000416, "n_days": 6547, "n_rx_days": 598, "perm_p": 0.343}, "silver": {"mean_ret_rx": 0.000595, "mean_ret_all": 0.000383, "n_days": 6548, "n_rx_days": 598, "perm_p": 0.7934}}, "verdict": "inconclusive", "note": "perm n=10000, seed 42; Bonferroni bar is 0.0083"}, {"id": "h4", "title": "Mercury Rx stations raise reversal frequency", "claim": "Merriman: markets reverse trend more often around Mercury retrograde stations", "n": 358, "events": [], "stats": {"sp": {"persistence_in_window": 0.4973, "persistence_all": 0.5094, "n_stations": 358, "n_window_days": 2196, "perm_p": 0.2334}, "djia": {"persistence_in_window": 0.4719, "persistence_all": 0.4872, "n_stations": 358, "n_window_days": 1350, "perm_p": 0.2282}}, "verdict": "inconclusive"}, {"id": "h5", "title": "The 4-year stock cycle (40-42 months)", "claim": "Merriman: major equity troughs recur roughly every 3.5-4.5 years", "n": 7, "events": [{"date": "1970-05-26"}, {"date": "1974-10-03"}, {"date": "1978-03-06"}, {"date": "1982-08-12"}, {"date": "2002-10-09"}, {"date": "2009-03-09"}, {"date": "2020-03-23"}], "stats": {"troughs": 7, "spacings": 6, "mean_spacing_years": 8.3, "share_in_3.5_4.5y": 0.333, "naive_null_share": 0.333}, "verdict": "inconclusive", "note": "trough = lowest close of its +/-2 trading-year window. Spacings 1970-1974-1978-1982: 4.4, 3.4, 4.5 years (on the Merriman 4-year claim); after 1982 the structure lengthened to 6.4 and 10.8 years (2002, 2009, 2020). Era-dependent."}, {"id": "h6", "title": "New-moon strength, full-moon weakness", "claim": "Merriman lunar cycle work: equities firm around new moons, weak around full moons (+/-3 days)", "n": 1404, "events": [], "stats": {"new_moons": 702, "full_moons": 702, "mean_ret_new_3d": 0.000524, "mean_ret_full_3d": 0.000298, "diff": 0.000226, "perm_p": 0.3909}, "verdict": "inconclusive"}]};
+const NAV = document.getElementById('nav');
+const PANEL = document.getElementById('panel');
+const VERDICT_LABEL = {supported:'supported', not_supported:'not supported',
+  inconclusive:'inconclusive'};
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmt(x){
+  if (x===null||x===undefined) return 'n/a';
+  if (typeof x === 'boolean') return x ? 'yes' : 'no';
+  if (typeof x === 'number'){
+    if (Math.abs(x) < 1 && x !== 0) return x.toFixed(6).replace(/0+$/,'');
+    return Math.round(x*1000)/1000;
+  }
+  return esc(x);
+}
+function bar(label, value, min, max, color, right){
+  const w = Math.max(0, Math.min(100, (value-min)/(max-min)*100));
+  return `<div class="bar"><div class="lbl">${esc(label)}</div>
+    <div class="track"><div class="fill" style="width:${w}%;background:${color}"></div></div>
+    <div style="width:90px;text-align:right">${right}</div></div>`;
+}
+function statsHtml(stats){
+  const keys = Object.keys(stats);
+  return `<div class="statgrid">` + keys.map(k=>{
+    let v = stats[k];
+    if (typeof v === 'object' && v !== null) v = JSON.stringify(v);
+    return `<div class="stat"><b>${fmt(v)}</b><span>${esc(k)}</span></div>`;
+  }).join('') + `</div>`;
+}
+const H1 = h => {
+  const ev = h.events;
+  const bars = ev.map(e=>bar(`${e.date} (${e.element})`, e.max_drawdown_pct,
+    -55, 0, e.element==='earth' ? 'var(--bad)' : 'var(--accent)',
+    e.max_drawdown_pct + '%')).join('');
+  return `<h2>${esc(h.title)}</h2><span class="badge ${h.verdict}">${
+    VERDICT_LABEL[h.verdict]}</span>
+  <p class="claim">${esc(h.claim)}</p>
+  <div class="note">${esc(h.note)}</div>
+  <p>Max S&amp;P 500 drawdown in a window from 6 months before each Jupiter-Saturn
+  conjunction to 2.5 years after (peak must precede trough):</p>${bars}
+  <table><tr><th>conjunction</th><th>sign lon</th><th>element</th><th>peak</th>
+  <th>trough</th><th>drawdown</th></tr>
+  ${ev.map(e=>`<tr><td>${e.date}</td><td class="num">${e.zodiac_lon}</td>
+   <td>${e.element}</td><td>${e.peak_date}</td><td>${e.trough_date}</td>
+   <td class="num">${e.max_drawdown_pct}%</td></tr>`).join('')}</table>`;
+};
+const H2 = h => {
+  const s = h.stats;
+  return `<h2>${esc(h.title)}</h2><span class="badge ${h.verdict}">${
+    VERDICT_LABEL[h.verdict]}</span>
+  <p class="claim">${esc(h.claim)}</p>${statsHtml(s)}
+  <div class="note">${esc(h.note)}</div>
+  <p>Hit rate vs pure chance, gold and silver, 18 Venus stations x 2 assets.
+  A swing extreme near the station must also be the extreme of the surrounding
+  +/-60 trading-day window. The two rates are statistically indistinguishable.</p>
+  ${bar('observed hit rate', s.hit_rate, 0, 0.35, 'var(--accent)', Math.round(s.hit_rate*100)+'%')}
+  ${bar('chance baseline', s.chance_baseline, 0, 0.35, 'var(--dim)', Math.round(s.chance_baseline*100)+'%')}
+  <table><tr><th>station date</th><th>asset</th><th>kind</th><th>swing extreme hit</th></tr>
+  ${h.events.filter(e=>e.hit).map(e=>`<tr><td>${e.date}</td><td>${e.asset}</td>
+   <td>${e.kind}</td><td>yes</td></tr>`).join('')}</table>`;
+};
+const H3 = h => {
+  const g = h.stats.gold, s = h.stats.silver;
+  const bars = (o, key, lbl, color) =>
+    bar(lbl + ' (Mars Rx days)', o.mean_ret_rx, 0, 0.001, color,
+         (o.mean_ret_rx*100).toFixed(3) + '%') +
+    bar(lbl + ' (all days)', o.mean_ret_all, 0, 0.001, 'var(--dim)',
+         (o.mean_ret_all*100).toFixed(3) + '%');
+  return `<h2>${esc(h.title)}</h2><span class="badge ${h.verdict}">${
+    VERDICT_LABEL[h.verdict]}</span>
+  <p class="claim">${esc(h.claim)}</p>${statsHtml(h.stats)}
+  <div class="note">${esc(h.note)}</div>
+  <p>Mean daily log return. Both metals average roughly twice as much on Mars
+  retrograde days, but the permutation p-values (gold 0.34, silver 0.79) are
+  far from significance, so this is a lean, not a finding.</p>
+  ${bars(g,'gold','gold','var(--accent)')}${bars(s,'silver','silver','var(--mid)')}`;
+};
+const H4 = h => {
+  const sp = h.stats.sp, dj = h.stats.djia;
+  const rows = (o, lbl) =>
+    bar(lbl + ': in station window', o.persistence_in_window, 0.4, 0.6,
+        'var(--accent)', (o.persistence_in_window*100).toFixed(2)+'%') +
+    bar(lbl + ': all days', o.persistence_all, 0.4, 0.6, 'var(--dim)',
+        (o.persistence_all*100).toFixed(2)+'%') +
+    `<p style="font-size:12.5px;color:var(--dim)">perm p = ${o.perm_p}</p>`;
+  return `<h2>${esc(h.title)}</h2><span class="badge ${h.verdict}">${
+    VERDICT_LABEL[h.verdict]}</span>
+  <p class="claim">${esc(h.claim)}</p>${statsHtml(h.stats)}
+  <p>Direction persistence (does today move the same way as yesterday) is lower
+  in the +/-4 trading-day window around Mercury stations for both indices, i.e.
+  reversals are slightly more frequent, as claimed. Neither reaches p &lt; 0.05
+  (0.23 both).</p>${rows(sp,'S&P 500')}${rows(dj,'DJIA')}`;
+};
+const H5 = h => {
+  const ev = h.events.map(e=>e.date);
+  return `<h2>${esc(h.title)}</h2><span class="badge ${h.verdict}">${
+    VERDICT_LABEL[h.verdict]}</span>
+  <p class="claim">${esc(h.claim)}</p>${statsHtml(h.stats)}
+  <div class="note">${esc(h.note)}</div>
+  <p>Major troughs (lowest close of their +/-2 trading-year window):</p>
+  <table><tr><th>#</th><th>trough date</th><th>spacing from previous</th></tr>
+  ${ev.map((d,i)=>{
+    let sp = '';
+    if (i>0){
+      const days = (new Date(d)-new Date(ev[i-1]))/86400000;
+      sp = (days/365.25).toFixed(1)+' y';
+    }
+    return `<tr><td>${i+1}</td><td>${d}</td><td>${sp}</td></tr>`;
+  }).join('')}</table>`;
+};
+const H6 = h => {
+  const s = h.stats;
+  return `<h2>${esc(h.title)}</h2><span class="badge ${h.verdict}">${
+    VERDICT_LABEL[h.verdict]}</span>
+  <p class="claim">${esc(h.claim)}</p>${statsHtml(s)}
+  <p>Mean S&amp;P daily return within +/-3 days of each syzygy (702 new moons,
+  702 full moons, 1970-2026). New-moon days average about 1.8x the full-moon
+  days, direction as claimed, but p = 0.39.</p>
+  ${bar('new moon +/-3d', s.mean_ret_new_3d, 0, 0.0008, 'var(--accent)',
+        (s.mean_ret_new_3d*100).toFixed(3)+'%')}
+  ${bar('full moon +/-3d', s.mean_ret_full_3d, 0, 0.0008, 'var(--dim)',
+        (s.mean_ret_full_3d*100).toFixed(3)+'%')}`;
+};
+const RENDER = {h1:H1, h2:H2, h3:H3, h4:H4, h5:H5, h6:H6};
+const ORDER = ['h1','h2','h3','h4','h5','h6'];
+const HYPS = {};
+R.hypotheses.forEach(h=>HYPS[h.id]=h);
+ORDER.forEach(id=>{
+  const h = HYPS[id];
+  const b = document.createElement('button');
+  b.innerHTML = `<b>${id.toUpperCase()}</b> ${esc(h.title)}
+    <span class="tag">${VERDICT_LABEL[h.verdict]}</span>`;
+  b.onclick = ()=>show(id, b);
+  NAV.appendChild(b);
+});
+function show(id, btn){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  PANEL.innerHTML = RENDER[id](HYPS[id]);
+}
+const saved = localStorage.getItem('merriman-theme');
+if (saved === 'light') document.body.classList.add('light');
+document.getElementById('theme').onclick = ()=>{
+  document.body.classList.toggle('light');
+  localStorage.setItem('merriman-theme',
+    document.body.classList.contains('light') ? 'light' : 'dark');
+};
+show('h1', NAV.firstChild);
+</script>
+</body>
+</html>
