@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Oct 8, 2026, 1:30 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Oct 9, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 8, 2026, 1:45 PM · Last published: Oct 8, 2026, 1:45 PM · published</p>
+<p>Last checked: Oct 9, 2026, 1:32 PM · Last published: Oct 9, 2026, 1:32 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 8 evidence: v0.21.6 was released at 11:51 UTC (measured at 818c13b), replacing v0.21.5 as the latest tag; ancestry of the commits cited in this edition (05eecbc, 781334e, 8079fd0, 762f419, 7e53b3e, d85d23c, 33530d1) against 818c13b was checked through the official GitHub compare API. The cron guide gained an unwritable-store section and a silence-based stale-claim bound; the memory guide moved OpenViking to the plugin catalog (commit 05eecbc); the skills guide was byte-identical to the October 6 retrieval. This is not a Monday, so no evergreen review ran; ranks, scores, stable IDs, prompts and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 9 evidence: no new tag since v0.21.6 (the releases page changed only in reaction counts). The memory guide gained an &#x27;External recall size&#x27; section backed by main-branch commits 2327290 and 8bff64d, which the official GitHub compare API shows are 300 commits ahead of v0.21.6 and therefore unreleased. The cron and skills guides were byte-identical to the October 8 retrieval. The October 4 skills-precedence change entry was retired to keep five change entries; the guide still documents it. This is not a Monday, so no evergreen review ran; ranks, scores, stable IDs, prompts and use-case research dates are unchanged. Unknown source dates remain null; retrieval timestamps come from code and publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
 </div>
 </section>
 
@@ -163,6 +163,12 @@ ingested: 2026-09-11T16:11:25Z
 
 <section id="pulse" class="section pulse">
 <article>
+<h3>Memory guide: external-provider recall is kept whole by default, with spilling now opt-in and a 100k-character runaway ceiling</h3>
+<p><strong>merged-unreleased</strong> · The October 9 retrieval of the memory guide adds an &#x27;External recall size&#x27; section. External memory providers now return their full prefetched context by default, up to a safety ceiling of 10x hooks.output_spill.max_chars (at least 100,000 characters). Recall above that ceiling still spills, so a runaway provider cannot overflow the context window. Setting memory.prefetch_spill_enabled: true opts a profile into replacing oversized recall with a head/tail preview and a file path. The guide warns that this can reduce replayed context, but the relevance-ranked middle is no longer immediately visible to the model, and it recommends using the provider&#x27;s own recall budget where one exists. The opt-in uses the shared hooks.output_spill threshold, preview lengths and directory. hooks.output_spill.enabled: false still disables it, ordinary plugin hooks keep spilling by default, and settings are captured at provider registration, so Hermes must be restarted after a change. The guide&#x27;s example config now shows prefetch_spill_enabled: false. Main-branch commits 2327290 (&#x27;make external prefetch spilling opt-in&#x27;) and 8bff64d (&#x27;keep a runaway-recall ceiling when prefetch spilling is off&#x27;, which says normal provider-budgeted recall of about 16 KB for Honcho is unaffected) were committed October 9 at 09:59 UTC. Through the GitHub compare API, they are 300 commits ahead of the v0.21.6 tag, so the docs site describes unreleased behavior. Not tested locally.</p>
+<blockquote>External memory providers return their full prefetched context by default</blockquote>
+<p>If a profile uses an external memory provider (Honcho, Hindsight, Mem0 and so on) and you see recall replaced by a file-path preview, check whether your installed build predates these commits before changing config. After updating, prefer the provider&#x27;s own recall budget over memory.prefetch_spill_enabled, and restart Hermes after changing either. Keep config changes user-approved.</p>
+<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
 <h3>v0.21.6 becomes the latest tagged release, rolling up ~2,100 PRs since v0.21.5 for Docker and Hermes Cloud</h3>
 <p><strong>released</strong> · The October 8 11:51 UTC patch release is measured at 818c13b: 8,867 non-merge commits across 8,342 changed files, 2,106 merged PRs and 3,027 closed issues since v0.21.5. It is the first release cut by a new stable release pipeline and ships the tag, GitHub release and Docker image (nousresearch/hermes-agent:stable or :latest); git installs get it through hermes update, while the Desktop app, Termux and Microsoft Store stay on their current build until the next bundled release. Security fixes: dashboard auth hardening (spoofed X-Forwarded-For resetting the login rate limit #133367, unbounded audit-log writes #133369, no body-size limit on /auth/ #133370, and native sign-in sending codes to a non-loopback redirect, allowing session takeover #130685); automatic git calls running clean/smudge/process filters from an untrusted repository&#x27;s own config before the first prompt (#130661); and a quoted display name in an email From header passing the allowlist (#125212). Named but &#x27;undocumented here on purpose&#x27;: streaming speech-to-text, a per-profile plugin host (plugins.isolation: host), summary-first hermes status, cron/doctor warnings when the cron store goes unwritable, and approval flags for credential uploads and invisible Unicode in terminal commands. Curated notes are deferred to v0.22.0. Release-note evidence, not a local test.</p>
 <blockquote>This tag rolls up the ~2,100 PRs merged since v0.21.5 into a stable tagged release for Docker and Hermes Cloud.</blockquote>
@@ -186,12 +192,6 @@ ingested: 2026-09-11T16:11:25Z
 <blockquote>the limit is checked only on the batch result.</blockquote>
 <p>If an agent&#x27;s memory writes keep failing near capacity, check the installed version before expecting the new messages, then look for a tool result that reports success rather than trusting a retry loop. Prefer one consolidating batch over repeated single adds, and read back MEMORY.md or USER.md afterwards. Do not hand-edit a live profile&#x27;s memory files to work around the drift guard without user approval.</p>
 <a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
-</article><article>
-<h3>Skills guide: one precedence order now applies on every surface, with skills.create_dir as its own tier and ambiguous duplicate names refused</h3>
-<p><strong>documented-unverified</strong> · The October 4 retrieval of the skills guide replaces the old &#x27;local precedence&#x27; rule (local beats an external dir) with a single order applied everywhere: the skill index, skills_list, hermes skills list, skill_view, slash commands, -s preload and cron. The order is project -&gt; local (~/.hermes/skills/) -&gt; skills.create_dir -&gt; external_dirs. The hidden copy is logged as shadowed. The October 3 retrieval already described skills.create_dir, but it did not place it in this order. A new &#x27;Duplicate skill names&#x27; section adds a rule for one directory: if two different skills inside it share a name, Hermes will not guess between them. Both are listed under their relative paths, and loading the bare name fails with an &#x27;Ambiguous skill name ... use one of ...&#x27; error. The same error is reported by hermes -s and by cron jobs. Identical copies (a symlink view or byte-identical copy) resolve to the shallowest path. Plugin skills use plugin:skill names and never collide. Practical reading: if you mirror a shared skill library through symlinks or extra directories, a cron job that preloads a bare skill name can now fail on ambiguity instead of loading an arbitrary copy. Documentation evidence only; not tested against an installed build.</p>
-<blockquote>Inside one directory, two different skills that share a name are never guessed between.</blockquote>
-<p>Run hermes skills list and look for shadowed-skill warnings in the logs. For each cron job that preloads skills, confirm the name resolves to one skill rather than an ambiguous pair in one directory. Where it is ambiguous, rename one skill or reference its exact relative path. Do not delete or move shared skill copies until you have confirmed which copy each profile actually loads.</p>
-<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article>
 <div class="sectionhead">
 <div>
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 9, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 9, after the v0.21.6 tag (first commits page): external memory prefetch spilling made opt-in with a runaway-recall ceiling kept when it is off (2327290, 8bff64d); a failed agent-start memory provider install is no longer retried on every process start (6a2909c), and providers are detected past the first 8 KB of __init__.py (a114e7a); hermes update no longer lets a Desktop-only Node dependency failure block the TUI and web UI (73162b0); the gateway process scan ignores other Unix users&#x27; gateways unless running as root (99b57a4, 93257fd); a linked plugins/&lt;name&gt; slot reads &#x27;already installed&#x27; rather than a bad manifest (d2639c0); a failed TTS synthesis no longer deletes an existing file (7085fbf); browser CDP captured-dispatch fixes (aad11be, 66e0cee); a Desktop plugin SDK pet bubble, ctx.pet.say (ecb66f6); and plugin-catalog additions including redline, huddo, agent-batch, Enchanted Composer and dashboard-auth-feishu. Commit-title evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 8, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 8, after the v0.21.6 tag (first commits page): one plugin name resolver for every verb, so the catalog name you installed with keeps working for enable/disable/show/update/remove and turning a unified package on also enables its opt-in Desktop half (8f46331); on_session_finalize hooks can now return a message shown at the session boundary in CLI, TUI and gateway /new or shutdown (dacb06e); Docker stable/latest promoted only from a published receipt tag (cbe5e53); a linked plugin checkout drives its Desktop half, with doctor flagging a stale copy (cc1500a); and catalog additions profile-models, openrouter-spend, invinoveritas-receipts and nowstamp. Commit-page evidence, not a local test; not in any tag yet. Earlier items below dated October 2-6 are now part of v0.21.6.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 4, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 4, after the v0.21.5 tag (first commits page): mostly plugin-catalog maintenance. New catalog entries include talaria-webui, parcel-deliveries, model-drift-watch, parlor, Chat Studio 1.1.0 at its validated commit, and a Usage Ledger 0.4.3 Windows beta. Version bumps include thomas 0.1.2 (1298c8e), Gmail 1.0.13 (7008188), prompt-studio 1.9.0, by2kb 0.7.0, hermes-workflows 1.2.0 and agent-mail-gateway 0.3.1. A qdrant pin moved to 0.1.7 with an md_search disclosure (6e73827), and tam went to 0.1.1 with its credentials withheld. Disclosure-at-merge and contributor-email mapping commits (for example c75a4be, 27de330) also landed. The same day&#x27;s cron guide lists the homeassistant delivery target as a plugin (&#x27;requires the homeassistant plugin&#x27;). Commit-title and documentation evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 3, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 3, after the v0.21.5 tag (first commits page): Telegram ingress dispatch stall recovery, escalating a stalled ingress dispatch to a supervisor rebuild (3671e52), unblocking the recovery retry (96efe44), dropping the no-loop fallback (3d3fdbd), sizing the stall budget past a bounded slow handler (1809f4f), naming the actual stall in the fatal message (1a51ced) and raising a plain _PollingStallError (e2501d7), with pinned tests (98d8ea7, 37afba8, bb5b4f4); session display dedupe keying tool rows on stable tool identity rather than payload bytes (912c9de, #117750) while keeping the content key for tool result rows (24d05b2); compressor in-flight replay dedup replacing a duplicate in-flight task replay (a14e929) and keeping role alternation and the opening user turn intact (7b3fc99, d20a55c, 2667c96); and gateway /compress fixes stopping a false &#x27;failed to persist compressed transcript&#x27; on a rotated /compress (6cde268), publishing the /compress here N tail with a rotated child (b75c29d) and resolving the published-child probe through the parent&#x27;s store (4c8f0ff). Commit-title evidence, not a local test; not in any tag yet.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 8, 2026, 1:45 PM
+Last attempt: Oct 9, 2026, 1:32 PM
 <br>
-Last success: Oct 8, 2026, 1:45 PM
+Last success: Oct 9, 2026, 1:32 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 8, 2026, 1:45 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261008t134505548z","title":"Make Repeat Work Remember","researched_at":"2026-10-08T13:30:51.347Z","generated_at":"2026-10-08T13:45:05.548Z","last_checked_at":"2026-10-08T13:45:05.548Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-08T13:45:05.548Z","last_success_at":"2026-10-08T13:45:05.548Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261009t133232338z","title":"Make Repeat Work Remember","researched_at":"2026-10-09T13:30:50.794Z","generated_at":"2026-10-09T13:32:32.338Z","last_checked_at":"2026-10-09T13:32:32.338Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-09T13:32:32.338Z","last_success_at":"2026-10-09T13:32:32.338Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
