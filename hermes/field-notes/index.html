@@ -34,7 +34,7 @@ ingested: 2026-09-11T16:11:25Z
 <div class="eyebrow"><i></i> Independent field guide · researched Oct 15, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 15, 2026, 1:37 PM · Last published: Oct 15, 2026, 1:37 PM · published</p>
+<p>Last checked: Oct 16, 2026, 1:33 PM · Last published: Oct 16, 2026, 1:33 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -163,6 +163,12 @@ ingested: 2026-09-11T16:11:25Z
 
 <section id="pulse" class="section pulse">
 <article>
+<h3>Cron guide on main: agent runs keep their fire identity through restarts, Bot Chat delivery runs only inside the target profile&#x27;s gateway, and a new hermes cron tick needs a running gateway; not yet in v0.22.2</h3>
+<p><strong>merged-unreleased</strong> · The October 16 cron guide adds an &#x27;Admission recovery&#x27; section. An agent-backed run keeps its fire identity until output and a durable delivery handoff are recorded, and each tick reconciles unfinished receipts, including after an owner restart. A known terminal result is handed to delivery without running the agent again. A delivery interrupted after a send claim stays unknown and is not retried. An interrupted execution, or a prepared fire that cannot be found, stays paused for operator review and is never re-admitted or resumed automatically. hermes cron run exits nonzero for a known synchronous failure; a background dispatch is not a pass/fail verdict. Bot Chat delivery changes too. The &#x27;Bot Chat delivery timeout&#x27; section (cron.bot_chat_delivery_timeout_seconds) becomes &#x27;Bot Chat delivery completion&#x27;: delivery is admitted to the target profile&#x27;s running gateway and recorded as delivery_outcome=queued until the target&#x27;s receipt settles, and a retry reuses the same receipt. If the target gateway is down, the run is recorded delivery_failed with no local fallback turn and no automatic redelivery; the old bot_chat_pending queue and the hermes chat -c &quot;Bot Chat&quot; lane are gone from the text. Also new: hermes cron tick runs one scheduler pass for an external crontab, but agent jobs execute only inside the gateway (skipped with a logged reason and not penalised while it is down); no_agent scripts still run; and --script must name a file, so --script &quot;echo hi&quot; is refused at creation. The docs file on the v0.22.2 tag still has the old timeout text, and the GitHub compare API shows main diverged from v0.22.2 (650 ahead, 11 behind). Related main commits e2042c8 and 04e1447 (October 15) key cron run history by scheduler admission. Documentation and commit evidence, not tested locally.</p>
+<blockquote>If the target profile&#x27;s gateway is not running, the run is recorded delivery_failed and no local fallback turn is run.</blockquote>
+<p>No action on v0.22.2. Before moving to the next release (expected v0.23.0), list any cron job that delivers to bot-chat and confirm the target profile&#x27;s gateway will be running, because it will no longer queue or fall back. Check for jobs left paused after a crash with hermes cron list instead of expecting them to resume, and rewrite any inline --script command as a file under the Hermes scripts directory. Keep updates user-approved.</p>
+<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/cron" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
+</article><article>
 <h3>v0.22.2 is the latest release: it replaces v0.22.1, which was built from the wrong commit, and fixes gateway start after reboot</h3>
 <p><strong>released</strong> · Published 2026-10-15T08:21:32Z by jquesnelle (tag commit d923a5e), v0.22.2 states that v0.22.1 (published October 14 23:59 UTC) was built from the wrong commit, shipped unreleased gateway work, and could leave the Microsoft Store app stuck on &#x27;Connecting&#x27;; v0.22.2 is the release v0.22.1 was meant to be. Known issue: sessions that ran under the 0.22.1 gateway cannot be deleted in 0.22.2. Highlights: a supervised gateway (systemd, launchd, Docker) starts after a reboot again, because Hermes records the boot it started in and otherwise asks the host lock instead of trusting a recycled PID; and long local-model turns survive on laptops (streamed prompt-reading progress, stall timers that skip sleep, a recovered local server gets another try, and compression no longer times out during long prefill; Windows unified-memory machines size launch and prompt cache to free memory). The notes say work that is only on main ships with v0.23.0. Release-note evidence, not a local test.</p>
 <blockquote>v0.22.1 was built from the wrong commit. It shipped unreleased gateway work, and the Microsoft Store app could stick on &quot;Connecting.&quot; 0.22.2 is the release 0.22.1 was meant to be.</blockquote>
@@ -186,12 +192,6 @@ ingested: 2026-09-11T16:11:25Z
 <blockquote>A source install of the official repository updates to the latest published vX.Y.Z release instead of every commit on main.</blockquote>
 <p>Run hermes version, then decide deliberately which channel each source install should follow before the next hermes update: stable is now the default, while hermes update --set-channel main restores per-commit updates. A host already ahead of v0.21.7 will wait for the next tag, so do not expect main-branch fixes dated after October 12 until then. Keep updates and channel changes user-approved.</p>
 <a href="https://github.com/NousResearch/hermes-agent/releases/tag/v0.21.7" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
-</article><article>
-<h3>Memory guide: Holographic leaves the bundled set for a community-maintained catalog plugin; shipped in v0.21.7</h3>
-<p><strong>released</strong> · The October 11 retrieval of the memory guide says Hermes ships 2 external memory provider plugins (RetainDB and ByteRover), with Honcho, Hindsight, Supermemory, Mem0, OpenViking and Holographic available from the plugin catalog via hermes plugins install &lt;name&gt;. The October 10 text still listed Holographic as bundled. Main-branch commit cca8384 (October 11, 04:18 UTC) re-lands 9e82768 after a same-hour revert (435b7bd): it says Holographic has a standalone third-party maintainer (itpartypattaya) and a reviewed catalog entry (plugin-catalog holographic 0.6.1, f26b2c4), so it leaves core now rather than on October 15, while byterover and retaindb stay bundled until the announced date. The memory-providers guide&#x27;s new &#x27;Migrating from bundled Holographic&#x27; section says the provider name, plugins.hermes-memory-store settings and memory_store.db are unchanged; hermes update installs the catalog plugin into every profile home that names it; a still-missing plugin is installed on first agent start unless security.allow_lazy_installs is false, in which case Hermes prints the install command; and a copy installed from the archived NousResearch/hermes-plugin-holographic moves over with hermes plugins update holographic. On October 12 the GitHub compare API shows the commit is an ancestor of the v0.21.7 tag (143 commits behind it), so this shipped in v0.21.7. The earlier Honcho, Supermemory, Mem0 and OpenViking removals (7e53b3e, 87be434, 781334e, 05eecbc) are ancestors of v0.21.6 and shipped in that release. Documentation and commit evidence; not tested locally.</p>
-<blockquote>Hermes ships with 2 external memory provider plugins — RetainDB and ByteRover</blockquote>
-<p>If a profile uses memory.provider: holographic, run hermes memory status and hermes plugins list after the next update rather than assuming the provider carried over; if allow_lazy_installs is false, expect to run the printed install command. Your fact database should be untouched. If you rely on RetainDB or ByteRover, note that the commit refers to an announced date for them too and check the release notes before updating. Keep plugin installs user-approved.</p>
-<a href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article>
 <div class="sectionhead">
 <div>
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 16, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 16 (first commits page): macOS installer fixes so a Command Line Tools git stub no longer counts as installed git (ca9b5f0, 5aaedc1, e6bfe7a, b65e078); Windows gateway Docker fixes keeping drive-letter volumes and translating container paths per profile (0108ed7, e74f2b8, 581eb61, 5c76158); messages queued behind an exhausted context now run on the fresh session (b5e2ca9, 18d043d, 3b1c70e); delegation redacts child output before the parent sees it while keeping structured JSON valid (9ed387c, 24dfa8a, c0ba1a3); and /model save publishes selections atomically (5ae26ec, 3a02759). These sit on main after the v0.22.2 release branch. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 15, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 14-15 (first commits pages): October 14 was mostly plugin-catalog work (Korean and Brazilian Portuguese language packs, teamorouter, author-feed, wait-ledger, lightningai, Gmail and Telegram Client bumps), which the compare API shows reached v0.22.2. October 15 commits sit on main after the release branch (compare: 124 ahead of v0.22.2, diverged): hermes update no longer refuses an update when a git ancestry probe never answers, while the retirement downgrade probe stays fail-closed (023b5ed, 3bdb82d); config-watcher and config-backup race fixes (c3ddf75); a plugin-rewritten gateway message keeps its callback provenance (988c5d8); gateway logging of why a watch notification was refused, plus internal wakes no longer reply-anchored to their producer (bab92c3, 1b39742); Desktop gateway tickets minted for a home&#x27;s identity rather than its spelling (13ab702); and CI moved to Blacksmith runners. Per the v0.22.2 notes, main-only work ships with v0.23.0. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 11, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 11 (first commits page): multiple named accounts per connector, with a new hermes connectors command that lists, connects, renames and removes accounts (af530e8), a TUI /connectors panel (0daa6d7), Desktop listing and renaming several accounts per connector (9a83171), and repairs that reconnect exactly the account picked by id (d0ef95e); a CI rule that new config keys and slash commands must ship with docs (4e8fe56); a release artifact download that fails its checksum is fetched again (76c1a50); and Holographic leaving core for its catalog plugin (cca8384, covered in changes). Commit-title evidence, not a local test; the compare API shows these commits are included in v0.21.7.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 10, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 10 (first commits page): a large compaction-telemetry series, with Relay compaction marks emitted from the compression attempt record (a64501e), bounded marks and skipped unused prune estimates (3b146be), no longer waiting on Relay after one stalled mark (f925b01), and overflow_reason recording why an overflow compaction ran (8810cf2); compression fixes that restore the transcript when a candidate is refused (2e4e024) and roll back mutating engine failures (bd6d576); plus plugin-catalog additions claude-code-theme (requiring Hermes 0.21.6) and lowrouter, and a crew 0.8.1 re-pin. Skills-guide commits 097fcaa and 18ee425 are covered in changes. Commit-title evidence, not a local test; the compare API shows these commits are included in v0.21.7.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 15, 2026, 1:37 PM
+Last attempt: Oct 16, 2026, 1:33 PM
 <br>
-Last success: Oct 15, 2026, 1:37 PM
+Last success: Oct 16, 2026, 1:33 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 15, 2026, 1:37 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261015t133729213z","title":"Make Repeat Work Remember","researched_at":"2026-10-15T13:30:12.456Z","generated_at":"2026-10-15T13:37:29.213Z","last_checked_at":"2026-10-15T13:37:29.213Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-15T13:37:29.213Z","last_success_at":"2026-10-15T13:37:29.213Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261016t133303060z","title":"Make Repeat Work Remember","researched_at":"2026-10-15T13:30:12.456Z","generated_at":"2026-10-16T13:33:03.060Z","last_checked_at":"2026-10-16T13:33:03.060Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-16T13:33:03.060Z","last_success_at":"2026-10-16T13:33:03.060Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
