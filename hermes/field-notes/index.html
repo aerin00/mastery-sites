@@ -34,7 +34,7 @@ ingested: 2026-09-11T16:11:25Z
 <div class="eyebrow"><i></i> Independent field guide · researched Oct 15, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 16, 2026, 1:33 PM · Last published: Oct 16, 2026, 1:33 PM · published</p>
+<p>Last checked: Oct 17, 2026, 1:31 PM · Last published: Oct 17, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 17, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 17 (first commits page): a foreground terminal command ending in a lone trailing &amp; now runs as a tracked background process instead of being refused, with substitutions still refused and approval identity kept (d5c74fc, 390b1e3, c8be452); quiet background processes are no longer re-waited and notify on exit instead, honoring notifications-off (33a2505, ef0af71, 05b51c8); patch and write_file return in milliseconds because LSP diagnostics no longer block the write, while type errors still reach the model inline or before the turn ends (fb55eb6, eb8a135, f8536de, ff6a08c); messaging users are no longer sent to /login for a host-side resolution failure (bf3866d, 7e9eb8d); state.db read-only directories are repaired under the quarantine lock (59b70c9, 8c118f7); and an official X Chat plugin joins the catalog (5195b5d). These sit on main after the v0.22.2 release branch (compare: 1130 ahead). Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 16, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 16 (first commits page): macOS installer fixes so a Command Line Tools git stub no longer counts as installed git (ca9b5f0, 5aaedc1, e6bfe7a, b65e078); Windows gateway Docker fixes keeping drive-letter volumes and translating container paths per profile (0108ed7, e74f2b8, 581eb61, 5c76158); messages queued behind an exhausted context now run on the fresh session (b5e2ca9, 18d043d, 3b1c70e); delegation redacts child output before the parent sees it while keeping structured JSON valid (9ed387c, 24dfa8a, c0ba1a3); and /model save publishes selections atomically (5ae26ec, 3a02759). These sit on main after the v0.22.2 release branch. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 12, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 12, after the v0.21.7 tag (first commits page): kanban tasks with text timestamps coerced on load so mixed int/ISO completed_at values sort correctly (956c810, e8fe370); browser_exec erroring when Browser Use is selected without BROWSER_USE_API_KEY and resolving the managed Browser Use provider through its session path (2828793, 004dcc0, 9f3a534); sk-ant-usr, sk-ant-svc and sk-ant-admin Anthropic keys sent as x-api-key rather than treated as OAuth (3328743, 82ef40a); plugin installs no longer failing on package mirrors that lack upload times, because the 3-day release-age check now runs only when Hermes locks dependencies (abbc2ba, 37725f2); and plugin-catalog additions hermes-devin, fish-audio, nine-balance-widget and profile-picker. On October 15 the compare API shows these commits are included in v0.22.0. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 11, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 11 (first commits page): multiple named accounts per connector, with a new hermes connectors command that lists, connects, renames and removes accounts (af530e8), a TUI /connectors panel (0daa6d7), Desktop listing and renaming several accounts per connector (9a83171), and repairs that reconnect exactly the account picked by id (d0ef95e); a CI rule that new config keys and slash commands must ship with docs (4e8fe56); a release artifact download that fails its checksum is fetched again (76c1a50); and Holographic leaving core for its catalog plugin (cca8384, covered in changes). Commit-title evidence, not a local test; the compare API shows these commits are included in v0.21.7.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 16, 2026, 1:33 PM
+Last attempt: Oct 17, 2026, 1:31 PM
 <br>
-Last success: Oct 16, 2026, 1:33 PM
+Last success: Oct 17, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 16, 2026, 1:33 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261016t133303060z","title":"Make Repeat Work Remember","researched_at":"2026-10-15T13:30:12.456Z","generated_at":"2026-10-16T13:33:03.060Z","last_checked_at":"2026-10-16T13:33:03.060Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-16T13:33:03.060Z","last_success_at":"2026-10-16T13:33:03.060Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261017t133153742z","title":"Make Repeat Work Remember","researched_at":"2026-10-15T13:30:12.456Z","generated_at":"2026-10-17T13:31:53.742Z","last_checked_at":"2026-10-17T13:31:53.742Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-17T13:31:53.742Z","last_success_at":"2026-10-17T13:31:53.742Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
