@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Oct 15, 2026, 1:30 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Oct 19, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 18, 2026, 1:32 PM · Last published: Oct 18, 2026, 1:32 PM · published</p>
+<p>Last checked: Oct 19, 2026, 1:33 PM · Last published: Oct 19, 2026, 1:33 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 15 evidence: three releases landed since the last edition. v0.22.0 &#x27;The Threshold Release&#x27; (tag e06df9c, published 2026-10-14T03:21:46Z, release date October 13) documents everything since v0.21.0; v0.22.1 (published October 14 23:59 UTC) was, per the v0.22.2 notes, built from the wrong commit; v0.22.2 (tag commit d923a5e, published 2026-10-15T08:21:32Z) is the GitHub latest release. The GitHub compare API shows memory-tool commits cf2ffb3, 4125123, cb62ae4 and 2c54533 are ancestors of v0.22.0, so the replace-to-patch change is now labeled released and the memory tip and the project-recall prompt were updated to patch semantics; the memory guide was byte-identical to October 13. Two new change entries (v0.22.0, v0.22.2) retire the October 9 and October 10 entries to stay within five; both retired items are named in v0.22.0&#x27;s notes. The October 12 and 13 activity notes were corrected: the compare API shows those commits are included in v0.22.0. The cron and skills guides were byte-identical to October 13. Ranks, scores, stable IDs and other prompts are unchanged; only the re-reviewed project-recall use case has a new research date. Not a Monday, so no full evergreen re-review (last: Monday October 12). Unknown source dates remain null; publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 19 (Monday) evergreen review: all four use cases and eight tips were re-checked against their cited official sources. The cron, skills and memory guides were byte-identical to October 18; the cron guide still documents per-job pin, then cron.model, then the main model at fire time, the pinned-job exception to fallback_providers, detached-by-default workdir, the 60-second standalone send timeout, incident signatures and hermes cron doctor; the skills guide still documents /learn and progressive disclosure; the memory guide still documents the frozen snapshot, separate profiles for independent agents, /new at session boundaries and /journey. The messaging guide still lists /stop and /resume, the context-files guide still documents AGENTS.md project instructions, and the v0.21.0 (v2026.8.31) notes still describe cron continuity and the durable notepad. No ranking, score, prompt or tip changed, so stable IDs and scores are retained; use-case research dates are updated only because each was actually re-reviewed. No new release since v0.22.2 (GitHub latest on October 19); one October 19 main-branch activity entry replaces the October 13 entry to stay within five. Unknown source dates remain null; publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
 </div>
 </section>
 
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 19, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 19 (first commits page): hermes plugins update with no name now checks every plugin, lists what it can move and why it skips the rest (pinned, needs fixing, unknown, pip distributions), asks once and keeps per-plugin consent; without a terminal nothing moves unless --yes is passed, and one plugin&#x27;s unexpected error no longer stops the batch (ced2a39, e1065b4, 349e4f7); a successful tool result carrying &quot;error&quot;: null (such as web_extract) or a nested error key is no longer tagged failed or counted toward the repeated-failure guardrail (b5b4918, e01fdd1, 32fe390, 28734be); on Windows, a browser session reuses the last completed real-profile snapshot when a running Chrome, Edge or Brave locks the live profile instead of falling back to signed out (e3cb799, 2e83e2a); and busy /undo and /retry now say to stop the reply first or wait for compression on Desktop and TUI. These sit on main after the v0.22.2 release (compare: 2142 ahead, 0 behind). Commit-title and commit-message evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 18, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 18 (first commits page): Docker sandbox files the container wrote as root are handed back to the host user at teardown, so persistent-filesystem home and workspace files no longer stay undeletable and break scratch cleanup (220270d, #141033); plugins gain ctx.post_message, which posts one status message into the current conversation and edits it in place on any channel without per-platform code (a2eab1f, 3e4f28e, 2db6656, 0eb4f62); a new post_compaction plugin hook fires on every committed compaction path, including gateway /compress, and is keyed per session (35948f2 #118382, ed9fb3c, a319752); a non-TTY gateway registers a shell hook as soon as its consent is recorded, without a restart (5a18d0f, 8f9aae9); and the shared gateway now serves the Desktop connection card and TUI subagent kill/steer, with refused session controls showing the gateway reason. These sit on main after the v0.22.2 release (compare: 1690 ahead, 0 behind). Commit-title and commit-message evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 15, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 14-15 (first commits pages): October 14 was mostly plugin-catalog work (Korean and Brazilian Portuguese language packs, teamorouter, author-feed, wait-ledger, lightningai, Gmail and Telegram Client bumps), which the compare API shows reached v0.22.2. October 15 commits sit on main after the release branch (compare: 124 ahead of v0.22.2, diverged): hermes update no longer refuses an update when a git ancestry probe never answers, while the retirement downgrade probe stays fail-closed (023b5ed, 3bdb82d); config-watcher and config-backup race fixes (c3ddf75); a plugin-rewritten gateway message keeps its callback provenance (988c5d8); gateway logging of why a watch notification was refused, plus internal wakes no longer reply-anchored to their producer (bab92c3, 1b39742); Desktop gateway tickets minted for a home&#x27;s identity rather than its spelling (13ab702); and CI moved to Blacksmith runners. Per the v0.22.2 notes, main-only work ships with v0.23.0. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 13, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 13, after the v0.21.7 tag (first commits page): update-channel fixes in #137714, so an installer or Hermes-Setup rerun keeps an install on the update channel it chose instead of switching it to main (bb35d7a), and a stable release older than the checkout is presented as a rollback in hermes update, --version, the dashboard and Desktop (bb122da, e353369, e36fa7b); a git exiting mid-scan no longer makes the update&#x27;s index.lock owner unknowable (d4e7b65); Desktop catalog deep links that ask the backend for the entry and open the install dialog (d8e94b5, c70332f); and plugin-catalog activity including Holographic bumped from 0.6.2 to 0.13.0, a new auto-pin plugin, crew 0.9.7 and hermes-live-voice v0.2.6 (requires Hermes 0.21.7). The memory-tool commits are covered in changes. On October 15 the compare API shows these commits are included in v0.22.0. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 18, 2026, 1:32 PM
+Last attempt: Oct 19, 2026, 1:33 PM
 <br>
-Last success: Oct 18, 2026, 1:32 PM
+Last success: Oct 19, 2026, 1:33 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 18, 2026, 1:32 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261018t133210545z","title":"Make Repeat Work Remember","researched_at":"2026-10-15T13:30:12.456Z","generated_at":"2026-10-18T13:32:10.545Z","last_checked_at":"2026-10-18T13:32:10.545Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-18T13:32:10.545Z","last_success_at":"2026-10-18T13:32:10.545Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261019t133304138z","title":"Make Repeat Work Remember","researched_at":"2026-10-19T13:30:12.983Z","generated_at":"2026-10-19T13:33:04.138Z","last_checked_at":"2026-10-19T13:33:04.138Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-19T13:33:04.138Z","last_success_at":"2026-10-19T13:33:04.138Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
