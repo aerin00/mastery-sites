@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Oct 24, 2026, 1:30 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Oct 25, 2026, 1:31 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 24, 2026, 1:31 PM · Last published: Oct 24, 2026, 1:31 PM · published</p>
+<p>Last checked: Oct 25, 2026, 1:31 PM · Last published: Oct 25, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 24 (Saturday) change review: the cron, skills and memory guides were byte-identical to October 23 (matching SHA-256), and the releases page still lists v0.22.5 as latest with unchanged text, so the release change entries, all four use cases and all eight tips keep their stable IDs, scores, prompts and prior research dates. The commits first page now contains only October 24 commits, so the October 23 main-branch entry is replaced by an October 24 entry and the October 18 entry leaves to stay within five. Unknown source dates remain null; publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 25 (Sunday) change review: cron and skills evidence hashes match October 24; release-page differences are reaction counts only, with v0.22.5 still latest. The memory guide only clarifies that manual /refine works with or without focus text when automatic reviews are disabled. All four use cases and eight tips retain their stable IDs, scores, prompts and prior research dates. Add October 25 main-branch activity from commit titles and drop the oldest activity to stay within five. Unknown source dates remain null; publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
 </div>
 </section>
 
@@ -190,7 +190,7 @@ ingested: 2026-09-11T16:11:25Z
 <h3>v0.22.2 replaced v0.22.1, which was built from the wrong commit, and fixes gateway start after reboot</h3>
 <p><strong>released</strong> · Published 2026-10-15T08:21:32Z by jquesnelle (tag commit d923a5e), v0.22.2 states that v0.22.1 (published October 14 23:59 UTC) was built from the wrong commit, shipped unreleased gateway work, and could leave the Microsoft Store app stuck on &#x27;Connecting&#x27;; v0.22.2 is the release v0.22.1 was meant to be. Known issue: sessions that ran under the 0.22.1 gateway cannot be deleted in 0.22.2. Highlights: a supervised gateway (systemd, launchd, Docker) starts after a reboot again, because Hermes records the boot it started in and otherwise asks the host lock instead of trusting a recycled PID; and long local-model turns survive on laptops (streamed prompt-reading progress, stall timers that skip sleep, a recovered local server gets another try, and compression no longer times out during long prefill; Windows unified-memory machines size launch and prompt cache to free memory). The notes say work that is only on main ships with v0.23.0. Release-note evidence, not a local test.</p>
 <blockquote>v0.22.1 was built from the wrong commit. It shipped unreleased gateway work, and the Microsoft Store app could stick on &quot;Connecting.&quot; 0.22.2 is the release 0.22.1 was meant to be.</blockquote>
-<p>If a host is on v0.22.1, move it off v0.22.1 (v0.22.3 is now latest) rather than staying put; expect that sessions created under the 0.22.1 gateway may not delete. If you run a supervised gateway that failed to start after a reboot, check hermes version before debugging. Keep updates user-approved.</p>
+<p>If a host is on v0.22.1, move it off v0.22.1 (v0.22.5 is now latest) rather than staying put; expect that sessions created under the 0.22.1 gateway may not delete. If you run a supervised gateway that failed to start after a reboot, check hermes version before debugging. Keep updates user-approved.</p>
 <a href="https://github.com/NousResearch/hermes-agent/releases/tag/v0.22.2" target="_blank" rel="noopener noreferrer">Supporting source ↗</a>
 </article>
 <div class="sectionhead">
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 25, 2026, 1:31 PM</time>
+<div><b>Main-branch on October 25 (first commits page): plugins gain register_hook(..., hold_stream=True) for transform_llm_output, holding a session reply until the transform rewrites it (2eec2a7, 83b4128); follow-up titles describe failing closed, preserving transform hooks across reload, preventing original-text side paths, and keeping unseen rows out of history (2cd20e5, 6030e77, e2ec5e7, 90bc28a, ad249d9). Codex app-server replies run transform_llm_output and external memory syncs with the transformed reply (53b086a, 995dac1). Browser-vault work adds scoped backend plugins, restricts login backends to bundled or verified/official catalog plugins, and confines plugins to their own entries (d4e19b9, 895eb4e, b2f6533). Opt-in OS-keychain storage for vault keys lands with migration and follow-up cleanup, clone-custody and late-unlock fixes (7abb9cc, 4c11da1, 7cb0168, 6400c96, d778246); a migration without a key now reports that instead of claiming a verified move (d327d5b). These are main-branch changes after v0.22.5, not a new stable release. Commit-title evidence only, not local security or runtime verification.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 24, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 24 (first commits page): gateway messaging /refine and /review get a series of cold-path fixes — /refine runs as the user&#x27;s own request, works on a session left idle in the same chat, keeps the profile scope and stops cold-cache false emptiness (03288ca, 406ea87, e5771f1, 97e7764, 5141460, ab80e12), while a cold /review sends what a resident one sends, keeps the session&#x27;s backup providers and works without a message first (b222bce, 132a42b, 328f7bd); half-streamed MEDIA:/[[...]] directives in gateway replies are held back until a path-shaped MEDIA: form is confirmed, and a MEDIA prefix after punctuation is held back in a sibling (b488f14, 14847f4, 3403b92); desktop plugins can render the media their own tools produce, with tool-media ownership keyed per chat owner and refreshed when MCP servers connect (6dc1c39, cff668d, 4fb80ec, a4d824f, 434649a, 5675692); portable plugin skills are named after the plugin rather than a hashed namespace and clashing names are kept apart, and a plugin skill called with its index-heading prefix now loads (7ae117e, d764d0c, 9515798, f7fb481); one-shot runs no longer tell the model not to create skills (0778f33); a gateway control socket falls back to a private temp dir when the home refuses sockets (6887d4e); a hermes chat started from an agent&#x27;s terminal runs in its launch directory (dc8e416); and Desktop&#x27;s Windows SSH path sends PowerShell scripts without stdin (1f8f961, 7f72db1). These sit on main after the v0.22.5 release. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 20, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 20 (first commits page): MCP servers&#x27; notifications/progress messages are now forwarded as live tool.progress events, with progress owned per chat so the CLI shows it only for its own call and stores are released afterward (60affe7, bcb054c); gateway lifecycle verbs never stop, restart or start another install&#x27;s systemd unit from a sandbox home and refuse while sessions are live, and profile delete/rename never removes another install&#x27;s gateway service (f02efc4, 9248d84, f6718a5); remote terminal backends no longer inherit the TUI&#x27;s launch directory as their working directory (781d8e5, 4a2bb98); A2A servers can bind and advertise IPv6 hosts such as ::1, with a dual-stack bind when A2A_HOST=:: (36a6c85); memory trimming runs gc.collect() on every platform and torn-down sessions and closed agents free their replay rings and token-estimate memos (b7e9879); and the manage_connections card returns to the classic CLI (54455f3, #142039). These sit on main after the v0.22.2 release (compare: 2601 ahead, 0 behind); no new release was published. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 19, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 19 (first commits page): hermes plugins update with no name now checks every plugin, lists what it can move and why it skips the rest (pinned, needs fixing, unknown, pip distributions), asks once and keeps per-plugin consent; without a terminal nothing moves unless --yes is passed, and one plugin&#x27;s unexpected error no longer stops the batch (ced2a39, e1065b4, 349e4f7); a successful tool result carrying &quot;error&quot;: null (such as web_extract) or a nested error key is no longer tagged failed or counted toward the repeated-failure guardrail (b5b4918, e01fdd1, 32fe390, 28734be); on Windows, a browser session reuses the last completed real-profile snapshot when a running Chrome, Edge or Brave locks the live profile instead of falling back to signed out (e3cb799, 2e83e2a); and busy /undo and /retry now say to stop the reply first or wait for compression on Desktop and TUI. These sit on main after the v0.22.2 release (compare: 2142 ahead, 0 behind). Commit-title and commit-message evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 24, 2026, 1:31 PM
+Last attempt: Oct 25, 2026, 1:31 PM
 <br>
-Last success: Oct 24, 2026, 1:31 PM
+Last success: Oct 25, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 24, 2026, 1:31 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261024t133104903z","title":"Make Repeat Work Remember","researched_at":"2026-10-24T13:30:13.957Z","generated_at":"2026-10-24T13:31:04.903Z","last_checked_at":"2026-10-24T13:31:04.903Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-24T13:31:04.903Z","last_success_at":"2026-10-24T13:31:04.903Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261025t133120612z","title":"Make Repeat Work Remember","researched_at":"2026-10-25T13:31:14.144Z","generated_at":"2026-10-25T13:31:20.612Z","last_checked_at":"2026-10-25T13:31:20.612Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-25T13:31:20.612Z","last_success_at":"2026-10-25T13:31:20.612Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
