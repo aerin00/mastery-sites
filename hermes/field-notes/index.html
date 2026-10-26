@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Oct 25, 2026, 1:31 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Oct 26, 2026, 1:31 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 25, 2026, 1:31 PM · Last published: Oct 25, 2026, 1:31 PM · published</p>
+<p>Last checked: Oct 26, 2026, 1:31 PM · Last published: Oct 26, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 25 (Sunday) change review: cron and skills evidence hashes match October 24; release-page differences are reaction counts only, with v0.22.5 still latest. The memory guide only clarifies that manual /refine works with or without focus text when automatic reviews are disabled. All four use cases and eight tips retain their stable IDs, scores, prompts and prior research dates. Add October 25 main-branch activity from commit titles and drop the oldest activity to stay within five. Unknown source dates remain null; publication/check timestamps belong to the publisher. Suggested workflows and upstream behavior were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 26 Monday review: re-reviewed all four evergreen use cases and copy-ready prompts against the official skills, cron, memory, messaging and context-files guides. Rankings, scores and prompts remain supported and unchanged; use-case review dates advance. Cron, skills and memory evidence hashes match October 25; release-page differences are reactions only, with v0.22.5 still latest. Added October 26 first-page main-branch activity, explicitly not a stable release, and dropped the oldest activity to retain five. Publication/check timestamps belong to the publisher; suggested workflows and upstream changes were not runtime-tested.</p>
 </div>
 </section>
 
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 26, 2026, 1:31 PM</time>
+<div><b>Main-branch on October 26 (first commits page): provider/auth fixes give each served profile home its own provider rows and aliases (0e38973, 3c36ea5), key the bound home layer on a Path (2b88e99), use one guarded api_mode_for_model for resolution, /model and resume (fbb1b41), and fall back when a credential-refresh hook fails (51e731f). Safe mode no longer scans home provider plugins (5e8f892), and the catalog lists a github-copilot Labs plugin (9b904dc). Gateway restart-drain work refuses new internal wakes, rechecks drain after admission, and runs wakes admitted before the drain, including receipted wakes queued behind human follow-ups (31bb59e, fe614d2, 1e1fa5a, 05d7b5a). Kanban worker turns are attributed to the dispatcher rather than the operator (eb1d54a, 08f954e). Discord config allow_from also governs guild channels, and thread button clicks get the thread&#x27;s authorization verdict (9c1a75e, 2712a09). These are main-branch changes after v0.22.5, not a new stable release. Commit-title evidence only, not local runtime or security verification.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 25, 2026, 1:31 PM</time>
 <div><b>Main-branch on October 25 (first commits page): plugins gain register_hook(..., hold_stream=True) for transform_llm_output, holding a session reply until the transform rewrites it (2eec2a7, 83b4128); follow-up titles describe failing closed, preserving transform hooks across reload, preventing original-text side paths, and keeping unseen rows out of history (2cd20e5, 6030e77, e2ec5e7, 90bc28a, ad249d9). Codex app-server replies run transform_llm_output and external memory syncs with the transformed reply (53b086a, 995dac1). Browser-vault work adds scoped backend plugins, restricts login backends to bundled or verified/official catalog plugins, and confines plugins to their own entries (d4e19b9, 895eb4e, b2f6533). Opt-in OS-keychain storage for vault keys lands with migration and follow-up cleanup, clone-custody and late-unlock fixes (7abb9cc, 4c11da1, 7cb0168, 6400c96, d778246); a migration without a key now reports that instead of claiming a verified move (d327d5b). These are main-branch changes after v0.22.5, not a new stable release. Commit-title evidence only, not local security or runtime verification.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 21, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 21 (first commits page): MCP servers can declare per-tool costs and a per-chat spend_limit; the approval prompt names the cost and running total, a call that would pass the limit asks even on a trust: full server, and unattended contexts refuse it without dispatching (4baddd2, 2fe3034, c799345, ce18aaf); session-store FTS layout drift is detected structurally for the stamp, hermes doctor and the update notice, and an unrecognised layout no longer blocks the store from opening (f42c307, 281d5ce, b3bfe6b, 136d64c, 9cd1ea2); the gateway publishes its control-socket pointer atomically (f1d6277); and, after the v0.22.3 tag, plugin-catalog entries move hermes mcp serve, hermes import-agent and the Singularity/Apptainer terminal backend out of core into official plugins and add a Linux bubblewrap terminal backend (a89ab31, 7162533, 3cbb13f, 7dcb1b4). The commits up to 5b147ab are in v0.22.3; main is 7 commits ahead of it. Commit-title and commit-message evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 20, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 20 (first commits page): MCP servers&#x27; notifications/progress messages are now forwarded as live tool.progress events, with progress owned per chat so the CLI shows it only for its own call and stores are released afterward (60affe7, bcb054c); gateway lifecycle verbs never stop, restart or start another install&#x27;s systemd unit from a sandbox home and refuse while sessions are live, and profile delete/rename never removes another install&#x27;s gateway service (f02efc4, 9248d84, f6718a5); remote terminal backends no longer inherit the TUI&#x27;s launch directory as their working directory (781d8e5, 4a2bb98); A2A servers can bind and advertise IPv6 hosts such as ::1, with a dual-stack bind when A2A_HOST=:: (36a6c85); memory trimming runs gc.collect() on every platform and torn-down sessions and closed agents free their replay rings and token-estimate memos (b7e9879); and the manage_connections card returns to the classic CLI (54455f3, #142039). These sit on main after the v0.22.2 release (compare: 2601 ahead, 0 behind); no new release was published. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 25, 2026, 1:31 PM
+Last attempt: Oct 26, 2026, 1:31 PM
 <br>
-Last success: Oct 25, 2026, 1:31 PM
+Last success: Oct 26, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 25, 2026, 1:31 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261025t133120612z","title":"Make Repeat Work Remember","researched_at":"2026-10-25T13:31:14.144Z","generated_at":"2026-10-25T13:31:20.612Z","last_checked_at":"2026-10-25T13:31:20.612Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-25T13:31:20.612Z","last_success_at":"2026-10-25T13:31:20.612Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261026t133119780z","title":"Make Repeat Work Remember","researched_at":"2026-10-26T13:31:11.951Z","generated_at":"2026-10-26T13:31:19.780Z","last_checked_at":"2026-10-26T13:31:19.780Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-26T13:31:19.780Z","last_success_at":"2026-10-26T13:31:19.780Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
