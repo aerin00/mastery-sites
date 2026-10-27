@@ -34,7 +34,7 @@ ingested: 2026-09-11T16:11:25Z
 <div class="eyebrow"><i></i> Independent field guide · researched Oct 26, 2026, 1:31 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 26, 2026, 1:31 PM · Last published: Oct 26, 2026, 1:31 PM · published</p>
+<p>Last checked: Oct 27, 2026, 1:31 PM · Last published: Oct 27, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 26 Monday review: re-reviewed all four evergreen use cases and copy-ready prompts against the official skills, cron, memory, messaging and context-files guides. Rankings, scores and prompts remain supported and unchanged; use-case review dates advance. Cron, skills and memory evidence hashes match October 25; release-page differences are reactions only, with v0.22.5 still latest. Added October 26 first-page main-branch activity, explicitly not a stable release, and dropped the oldest activity to retain five. Publication/check timestamps belong to the publisher; suggested workflows and upstream changes were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 27 review: re-checked the official release page, first-page main-branch commits, and the cron, skills and memory guides against the current edition. v0.22.5 remains the latest release with no new release-page content. Added October 27 first-page main-branch activity (A2A no-token Host hardening, the unbroker spam-call skill lane, Docker webapp image changes, plugin-catalog additions, and a poll_until refactor), explicitly not a stable release, and dropped the oldest activity to retain five. Evergreen use cases, rankings, scores and prompts remain supported and unchanged; their documented review dates stay at the October 26 Monday review. Publication/check timestamps belong to the publisher; suggested workflows and upstream changes were not runtime-tested.</p>
 </div>
 </section>
 
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 27, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 27 (first commits page): A2A no-token mode hardens its Host checks: browser-originated POSTs are refused, a non-loopback Host is refused, the absolute form localhost. is accepted, and loopback literals plus the configured A2A_PUBLIC_URL host pass the check, with new Host/Content-Type test coverage (881eb6c, 3846641, 53d28d9, 544edcf, 1ae3c55). An unbroker spam-call skill lane lands: phone-led runs with a DNC one-shot, field-test findings for phone URL patterns, dead brokers and SSRF quirks, an opt-out gate pass, operator confirmation before filing a contact email, captcha-gated spokeo opt-out forms, defunct-broker exclusions, and full autonomy now waits on confirm_first actions (3e1a5b1, 589f84e, 8097f63, 62c4232, 5f99d0b, 2969d73, de40625, 24170bb, be2e2bd, a4ed3b3, f33e481, 33fa91e, 932b510, 085f562). Docker changes ship the Webapp renderer in the image, reuse the baked bundle, and keep local Desktop files out of the image (25a6a44, 11a7535). The plugin catalog adds tracekit and backupdrill and repins kinocut with a review disclosure (fe3160b, 8e62018, f4bcb4d, 4950307, 6cc00de, e37b659, 69f73ec, 1479271). A refactor series moves check-until-deadline loops onto one poll_until helper with pinned review tests and one age-based cache sweep helper (de5f56c, a4baee2, fa59cb9, 18ee986). These are main-branch changes after v0.22.5, not a new stable release. Commit-title evidence only, not local runtime or security verification.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 26, 2026, 1:31 PM</time>
 <div><b>Main-branch on October 26 (first commits page): provider/auth fixes give each served profile home its own provider rows and aliases (0e38973, 3c36ea5), key the bound home layer on a Path (2b88e99), use one guarded api_mode_for_model for resolution, /model and resume (fbb1b41), and fall back when a credential-refresh hook fails (51e731f). Safe mode no longer scans home provider plugins (5e8f892), and the catalog lists a github-copilot Labs plugin (9b904dc). Gateway restart-drain work refuses new internal wakes, rechecks drain after admission, and runs wakes admitted before the drain, including receipted wakes queued behind human follow-ups (31bb59e, fe614d2, 1e1fa5a, 05d7b5a). Kanban worker turns are attributed to the dispatcher rather than the operator (eb1d54a, 08f954e). Discord config allow_from also governs guild channels, and thread button clicks get the thread&#x27;s authorization verdict (9c1a75e, 2712a09). These are main-branch changes after v0.22.5, not a new stable release. Commit-title evidence only, not local runtime or security verification.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 23, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 23 (first commits page): a v52 config migration lands around the browser stack — legacy AGENT_BROWSER_* settings survive homes that skip the v52 step, browser.* settings are read through the effective config loader, and the migration names what it removed or pinned, including browser.backend: off (c225308, 8685128, 5fb0111, 24ee063, 182fede, 69ba4bd, 9dd0545); browser launches are keyed by launch record rather than a pid number, with leases, the key registry and shutdown matched per profile, a paused shared browser waited for and refused rather than launched over, and browser_cdp tab handling kept working while the private-page guard is on (f87f958, 491f403, d812d97, 0083c92, f720cbb, 5be0607, 3c9aad4, bd5d473, aa81047); the plugin catalog lists the official Camofox browser backend plugin and catalog requires_hermes is enforced at install and update (afe3cbd, 0255ded, 7489b22); a token refresh no longer replaces a guest in the shared Nous store (7f16d66, cb757fa); and the Vercel backend retries httpx2 transport errors from the sandbox SDK (7528243). These sit on main after the v0.22.5 release. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 21, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 21 (first commits page): MCP servers can declare per-tool costs and a per-chat spend_limit; the approval prompt names the cost and running total, a call that would pass the limit asks even on a trust: full server, and unattended contexts refuse it without dispatching (4baddd2, 2fe3034, c799345, ce18aaf); session-store FTS layout drift is detected structurally for the stamp, hermes doctor and the update notice, and an unrecognised layout no longer blocks the store from opening (f42c307, 281d5ce, b3bfe6b, 136d64c, 9cd1ea2); the gateway publishes its control-socket pointer atomically (f1d6277); and, after the v0.22.3 tag, plugin-catalog entries move hermes mcp serve, hermes import-agent and the Singularity/Apptainer terminal backend out of core into official plugins and add a Linux bubblewrap terminal backend (a89ab31, 7162533, 3cbb13f, 7dcb1b4). The commits up to 5b147ab are in v0.22.3; main is 7 commits ahead of it. Commit-title and commit-message evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 26, 2026, 1:31 PM
+Last attempt: Oct 27, 2026, 1:31 PM
 <br>
-Last success: Oct 26, 2026, 1:31 PM
+Last success: Oct 27, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 26, 2026, 1:31 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261026t133119780z","title":"Make Repeat Work Remember","researched_at":"2026-10-26T13:31:11.951Z","generated_at":"2026-10-26T13:31:19.780Z","last_checked_at":"2026-10-26T13:31:19.780Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-26T13:31:19.780Z","last_success_at":"2026-10-26T13:31:19.780Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261027t133108112z","title":"Make Repeat Work Remember","researched_at":"2026-10-26T13:31:11.951Z","generated_at":"2026-10-27T13:31:08.112Z","last_checked_at":"2026-10-27T13:31:08.112Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-27T13:31:08.112Z","last_success_at":"2026-10-27T13:31:08.112Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
