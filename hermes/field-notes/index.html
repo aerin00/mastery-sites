@@ -31,10 +31,10 @@ ingested: 2026-09-11T16:11:25Z
 </nav>
 
 <header id="top">
-<div class="eyebrow"><i></i> Independent field guide · researched Oct 26, 2026, 1:31 PM</div>
+<div class="eyebrow"><i></i> Independent field guide · researched Oct 28, 2026, 1:30 PM</div>
 
 <h1>Make Repeat Work Remember</h1>
-<p>Last checked: Oct 27, 2026, 1:31 PM · Last published: Oct 27, 2026, 1:31 PM · published</p>
+<p>Last checked: Oct 28, 2026, 1:31 PM · Last published: Oct 28, 2026, 1:31 PM · published</p>
 <p class="lede">An official-source edition of Hermes Field Notes ranking practical workflows for Nous Research&#x27;s Hermes Agent. Capabilities are supported by retrieved documentation and release notes; prompts are proposed workflows, not independently executed demonstrations.</p>
 <div class="actions">
 <a class="primary" href="#plays">Explore the playbook ↓</a>
@@ -144,7 +144,7 @@ ingested: 2026-09-11T16:11:25Z
 </div>
 <div class="method">
 <b>Ranking methodology</b>
-<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 27 review: re-checked the official release page, first-page main-branch commits, and the cron, skills and memory guides against the current edition. v0.22.5 remains the latest release with no new release-page content. Added October 27 first-page main-branch activity (A2A no-token Host hardening, the unbroker spam-call skill lane, Docker webapp image changes, plugin-catalog additions, and a poll_until refactor), explicitly not a stable release, and dropped the oldest activity to retain five. Evergreen use cases, rankings, scores and prompts remain supported and unchanged; their documented review dates stay at the October 26 Monday review. Publication/check timestamps belong to the publisher; suggested workflows and upstream changes were not runtime-tested.</p>
+<p>Editorial scores use practical impact (30), Hermes-specific advantage (25), repeatability and compounding (20), development momentum (15), and setup-to-value ratio (10), not adoption or measured ROI. October 28 review: re-checked the official release page, first-page main-branch commits, and the cron, skills and memory guides against the current edition; the three documentation pages were byte-identical to the October 27 retrieval. v0.22.5 remains the latest release with no new release-page content. Added October 28 first-page main-branch activity (a kanban lost-worker recovery and redial-bounding series, desktop linkification fixes for tool error headlines, Discord approval-card timeout and stale-click fixes, and desktop deep-confirm fallback hardening), explicitly not a stable release, and dropped the oldest activity to retain five. Evergreen use cases, rankings, scores and prompts remain supported and unchanged; their documented review dates stay at the October 26 Monday review. Publication/check timestamps belong to the publisher; suggested workflows and upstream changes were not runtime-tested.</p>
 </div>
 </section>
 
@@ -201,6 +201,10 @@ ingested: 2026-09-11T16:11:25Z
 <p><i class="live"></i> From official sources, captured during the last research cycle</p>
 </div>
 <div class="commitlist"><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
+<time>Oct 28, 2026, 1:30 PM</time>
+<div><b>Main-branch on October 28 (first commits page): a kanban lost-worker recovery series lands: a worker whose socket drops redials instead of ending the turn, the redial budget resets only after receipt progress or a successful reconnect, transports resume the same attempt bounded from the owner&#x27;s last answer, a lost managed worker is disposed within one tick, a restarting owner&#x27;s socket or handshake failure during a redial retries, one owner-refusal rule and one give-up message, a bound run stays the crash sweep&#x27;s with no recorded pid proof inside the claim TTL, the protocol-violation streak never matches a worker&#x27;s quoted output, and a lost worker&#x27;s clean exit is a crash not a protocol violation (2432f9c, c480d67, 51f18d7, db48f91, 89f1359, f4e042e, b2e0171, c91bd23, f10386a, e62c15e, 0431192, c777ba4, a0712a5, 08527ee, 757ada0, 365ac30). Desktop linkification stops rewriting tool error headlines: bare-domain linkification is off for error summaries and www.-prefixed local paths stay literal in explicit-only linkify (a33a7ac, b8ac495, 6d8b6cf). Discord approval cards get a timeout-alignment pass: buttons align with the request timeout, configured timeouts are preserved, stale clicks leave the card to the request&#x27;s observer, an answered click whose edit fails still retires the card, coalesced followers wait the leader&#x27;s captured timeout, and a card that settles mid-send shows how it ended (4f86e97, 39b2158, 8365383, ac50e08, 50f57a1, aecf04f, e776cdf, 8654f1a, b5caaf7, 8acb7f6, e0e3349, cfed2ca). Desktop submit paths harden: a stale-target retry that sends nothing leaves a turn started meanwhile running, and an older backend&#x27;s deep-confirm rejection is remembered and pinned by tests (ee7e0f5, 7828ab3, 7bb2442, 3248aa2). These are main-branch changes after v0.22.5, not a new stable release. Commit-title evidence only, not local runtime or security verification.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
+<strong>↗</strong>
+</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
 <time>Oct 27, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 27 (first commits page): A2A no-token mode hardens its Host checks: browser-originated POSTs are refused, a non-loopback Host is refused, the absolute form localhost. is accepted, and loopback literals plus the configured A2A_PUBLIC_URL host pass the check, with new Host/Content-Type test coverage (881eb6c, 3846641, 53d28d9, 544edcf, 1ae3c55). An unbroker spam-call skill lane lands: phone-led runs with a DNC one-shot, field-test findings for phone URL patterns, dead brokers and SSRF quirks, an opt-out gate pass, operator confirmation before filing a contact email, captcha-gated spokeo opt-out forms, defunct-broker exclusions, and full autonomy now waits on confirm_first actions (3e1a5b1, 589f84e, 8097f63, 62c4232, 5f99d0b, 2969d73, de40625, 24170bb, be2e2bd, a4ed3b3, f33e481, 33fa91e, 932b510, 085f562). Docker changes ship the Webapp renderer in the image, reuse the baked bundle, and keep local Desktop files out of the image (25a6a44, 11a7535). The plugin catalog adds tracekit and backupdrill and repins kinocut with a review disclosure (fe3160b, 8e62018, f4bcb4d, 4950307, 6cc00de, e37b659, 69f73ec, 1479271). A refactor series moves check-until-deadline loops onto one poll_until helper with pinned review tests and one age-based cache sweep helper (de5f56c, a4baee2, fa59cb9, 18ee986). These are main-branch changes after v0.22.5, not a new stable release. Commit-title evidence only, not local runtime or security verification.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
@@ -216,10 +220,6 @@ ingested: 2026-09-11T16:11:25Z
 <time>Oct 24, 2026, 1:30 PM</time>
 <div><b>Main-branch on October 24 (first commits page): gateway messaging /refine and /review get a series of cold-path fixes — /refine runs as the user&#x27;s own request, works on a session left idle in the same chat, keeps the profile scope and stops cold-cache false emptiness (03288ca, 406ea87, e5771f1, 97e7764, 5141460, ab80e12), while a cold /review sends what a resident one sends, keeps the session&#x27;s backup providers and works without a message first (b222bce, 132a42b, 328f7bd); half-streamed MEDIA:/[[...]] directives in gateway replies are held back until a path-shaped MEDIA: form is confirmed, and a MEDIA prefix after punctuation is held back in a sibling (b488f14, 14847f4, 3403b92); desktop plugins can render the media their own tools produce, with tool-media ownership keyed per chat owner and refreshed when MCP servers connect (6dc1c39, cff668d, 4fb80ec, a4d824f, 434649a, 5675692); portable plugin skills are named after the plugin rather than a hashed namespace and clashing names are kept apart, and a plugin skill called with its index-heading prefix now loads (7ae117e, d764d0c, 9515798, f7fb481); one-shot runs no longer tell the model not to create skills (0778f33); a gateway control socket falls back to a private temp dir when the home refuses sockets (6887d4e); a hermes chat started from an agent&#x27;s terminal runs in its launch directory (dc8e416); and Desktop&#x27;s Windows SSH path sends PowerShell scripts without stdin (1f8f961, 7f72db1). These sit on main after the v0.22.5 release. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
 <strong>↗</strong>
-</a><a href="https://github.com/NousResearch/hermes-agent/commits/main/" target="_blank" rel="noopener noreferrer">
-<time>Oct 23, 2026, 1:30 PM</time>
-<div><b>Main-branch on October 23 (first commits page): a v52 config migration lands around the browser stack — legacy AGENT_BROWSER_* settings survive homes that skip the v52 step, browser.* settings are read through the effective config loader, and the migration names what it removed or pinned, including browser.backend: off (c225308, 8685128, 5fb0111, 24ee063, 182fede, 69ba4bd, 9dd0545); browser launches are keyed by launch record rather than a pid number, with leases, the key registry and shutdown matched per profile, a paused shared browser waited for and refused rather than launched over, and browser_cdp tab handling kept working while the private-page guard is on (f87f958, 491f403, d812d97, 0083c92, f720cbb, 5be0607, 3c9aad4, bd5d473, aa81047); the plugin catalog lists the official Camofox browser backend plugin and catalog requires_hermes is enforced at install and update (afe3cbd, 0255ded, 7489b22); a token refresh no longer replaces a guest in the shared Nous store (7f16d66, cb757fa); and the Vercel backend retries httpx2 transport errors from the sandbox SDK (7528243). These sit on main after the v0.22.5 release. Commit-title evidence, not a local test.</b><span>github.com/NousResearch/hermes-agent/commits/main/</span></div>
-<strong>↗</strong>
 </a></div>
 <div class="refresh-meta">
 <div>
@@ -227,9 +227,9 @@ ingested: 2026-09-11T16:11:25Z
 <p>
 State: success
 <br>
-Last attempt: Oct 27, 2026, 1:31 PM
+Last attempt: Oct 28, 2026, 1:31 PM
 <br>
-Last success: Oct 27, 2026, 1:31 PM
+Last success: Oct 28, 2026, 1:31 PM
 
 </p>
 </div>
@@ -247,7 +247,7 @@ Last success: Oct 27, 2026, 1:31 PM
 <a href="#top">Back to top ↑</a>
 </footer>
 
-<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261027t133108112z","title":"Make Repeat Work Remember","researched_at":"2026-10-26T13:31:11.951Z","generated_at":"2026-10-27T13:31:08.112Z","last_checked_at":"2026-10-27T13:31:08.112Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-27T13:31:08.112Z","last_success_at":"2026-10-27T13:31:08.112Z"}}</script>
+<script type="application/json" id="field-notes-data">{"edition_id":"field-notes-20261028t133102047z","title":"Make Repeat Work Remember","researched_at":"2026-10-28T13:30:30.000Z","generated_at":"2026-10-28T13:31:02.047Z","last_checked_at":"2026-10-28T13:31:02.047Z","use_cases_count":4,"tips_count":8,"status":{"state":"success","last_attempt_at":"2026-10-28T13:31:02.047Z","last_success_at":"2026-10-28T13:31:02.047Z"}}</script>
 <script>
 (function(){
   function copyText(text, btn){
