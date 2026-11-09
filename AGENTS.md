@@ -7,7 +7,7 @@ README.md is the full convention reference. Read it before adding, moving, or re
 
 ## Run and test
 - Regenerate the index after any title, metadata, or structural change: python generate_index.py (use --strict before committing, --dry-run to preview).
-- Import an inbox page: python import_site.py SRC.html category/slug --description "..." --tags "a, b". Archive the inbox source only after the live path is verified.
+- Import an inbox page: python import_site.py SRC.html category/slug --description "..." --tags "a, b". Archive the inbox source only after the live path is verified, by running the same command again with --archive.
 - Tests use only the standard library and Node, with nothing to install: python -m unittest discover -s tests -v, then node tests/test_index.cjs index.html.
 - The GitHub Action runs the same tests on every refresh, so keep them green.
 

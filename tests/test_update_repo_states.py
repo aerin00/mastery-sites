@@ -74,6 +74,12 @@ class RenderTests(unittest.TestCase):
         self.assertIn("Data refreshed", html)
         self.assertIn(f'<meta name="generated" content="{NOW.isoformat()}">', html)
 
+    def test_page_can_report_its_own_staleness(self):
+        """The warning ships hidden; the page script shows it from the generated meta."""
+        html = u.render_page([repo("r", "2026-10-01T00:00:00Z")], NOW)
+        self.assertIn('<div class="stale" id="stale" role="status" hidden></div>', html)
+        self.assertIn(f"if(days>={u.STALE_DAYS}){{", html)
+
     def test_empty_description_row_renders(self):
         html = u.render_page([repo("bare", "2026-10-01T00:00:00Z")], NOW)
         self.assertIn("bare", html)

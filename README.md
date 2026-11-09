@@ -82,7 +82,17 @@ python import_site.py "/path/to/inbox/page.html" category/slug \
   --description "One line for the index row." --tags "runbook, copilot"
 ```
 
-It refuses an existing target, refuses content that matches an already deployed site (so a re-dropped file does not become a second copy), inserts the front-matter and All-sites bar without touching anything else, and regenerates the index. Re-run with `--archive` after the live path is verified, or move the file by hand.
+It refuses an existing target, refuses content that matches an already deployed site (so a re-dropped file does not become a second copy), inserts the front-matter and All-sites bar without touching anything else, and regenerates the index. If the generator fails, the copy is removed again, so nothing is left half-imported.
+
+A source moves through three states, and the script reads the current one from the files:
+
+| State | Meaning | What the same command does |
+|-------|---------|----------------------------|
+| new | Target folder does not exist | Imports the page and regenerates the index |
+| imported | Target holds this same page | Stops and names the next step; with `--archive`, moves the source to `archive/` |
+| conflict | Target holds a different page | Always refuses |
+
+So after the live path is verified, run the same command again with `--archive` (or move the file by hand).
 
 For inbox imports, preserve source HTML and add metadata only to the deployed copy. After the live deployment is verified, move only successfully imported sources into the sibling `00_Mastery_Sites_Inbox/archive/` folder. Leave unprocessed files in the inbox and never overwrite an existing archive file.
 
@@ -115,11 +125,14 @@ python generate_index.py --root DIR   # scan a different directory
 python generate_index.py --dry-run    # print HTML instead of writing
 ```
 
-The generator also lints every site and prints `lint:` warnings to stderr for a missing description, missing ingested date, missing All-sites bar, or a category without a `CATEGORY_DOTS` entry. Warnings do not stop generation; `--strict` makes them fatal and `--no-lint` silences them.
+The generator also lints every site and prints `lint:` warnings to stderr for a missing description, missing ingested date, missing All-sites bar, a category without a `CATEGORY_DOTS` or `CATEGORY_BLURBS` entry, or a category folder named `all`, `recent`, or `pinned` (those names belong to the built-in nav views). Warnings do not stop generation; `--strict` makes them fatal and `--no-lint` silences them.
 
 `--titles` is still accepted for backward compatibility but is a no-op: titles are always read.
 
-The output is one static HTML file with inline style and script: a left rail with category navigation, search, and tag filters, plus a responsive grid paginated at 10 sites per page. There is no frontend compilation or tracking; Google Fonts loads externally. Run the generator any time you change a site's title or index metadata, or add, remove, rename, or move a site. The generated `index.html` overwrites the previous one. Identical inputs on the same calendar day produce byte-identical HTML.
+The output is one static HTML file with inline style and script: a left rail with category navigation, search, and tag filters, plus a responsive grid paginated at 10 sites per page. There is no frontend compilation or tracking; Google Fonts loads externally.
+
+The current view is mirrored in the URL hash, so it survives reload and Back and can be linked to: `/#cat=hermes&tag=runbook&q=flow&page=2`. The keys are `cat` (a category folder, `recent`, or `pinned`), `tag`, `q` (search text), and `page`. Defaults are left out, and unknown values fall back to the default view. Nothing is stored in the browser.
+ Run the generator any time you change a site's title or index metadata, or add, remove, rename, or move a site. The generated `index.html` overwrites the previous one. Identical inputs on the same calendar day produce byte-identical HTML.
 
 Category dot colors and per-category blurbs live in `generate_index.py` (`CATEGORY_DOTS`, `CATEGORY_BLURBS`). Unknown categories get a fallback dot and no blurb.
 
@@ -131,7 +144,7 @@ python generate_index.py
 node tests/test_index.cjs index.html
 ```
 
-The Python tests cover ingestion metadata and date validation. The Node harness executes the generated inline JavaScript against a small DOM stub, checking ordering, filters, pagination, unknown dates, and the empty index. No package installation is required; these checks do not replace visual browser inspection.
+The Python tests cover ingestion metadata and date validation. The Node harness executes the generated inline JavaScript against a small DOM stub, checking ordering, filters, pagination, URL-hash state, unknown dates, and the empty index. No package installation is required; these checks do not replace visual browser inspection.
 
 ## Scheduled job: repo-states
 
@@ -143,6 +156,8 @@ python update_repo_states.py --dry-run  # print HTML instead of writing
 ```
 
 The token comes from `REPO_STATES_TOKEN`, then `GH_TOKEN`/`GITHUB_TOKEN`, then `gh auth token`. The workflow `.github/workflows/update-repo-states.yml` runs daily at 14:00 UTC (and on manual dispatch): it regenerates the page and root index, runs the tests, and commits and pushes any change, which triggers the Cloudflare deploy. The Actions `GITHUB_TOKEN` cannot list the owner's other repos, so the repository needs a `REPO_STATES_TOKEN` secret (fine-grained PAT, Metadata read-only on all owned repos).
+
+The page checks its own age: once the data is 2 days old (`STALE_DAYS`), it shows a "Stale data" warning, so a failing job is visible to readers. An HTTP 401 from the job means `REPO_STATES_TOKEN` expired; create a new token and update the secret.
 
 Its `INGESTED` constant is fixed and must not change; the visible "Data refreshed" line changes on every run, so daily commits are never empty. The `chore: refresh watchlist/repo-states` commits in history come from this job. Pull before committing locally.
 

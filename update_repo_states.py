@@ -42,6 +42,7 @@ INGESTED = "2026-10-02T14:18:10-07:00"
 FRESH_DAYS = 7       # pushed within N days -> green
 ACTIVE_DAYS = 30      # within N days -> default text
 DORMANT_DAYS = 90     # within N days -> amber; older -> dim/grey
+STALE_DAYS = 2        # page shows a warning once its data is this old
 
 FONTS_URL = (
     "https://fonts.googleapis.com/css2?"
@@ -101,6 +102,11 @@ def fetch_repos(token: str) -> list[dict]:
                 message = json.loads(body).get("message", body)
             except json.JSONDecodeError:
                 message = body
+            if exc.code == 401:
+                message += (
+                    " (the token is expired or revoked; create a new fine-grained PAT"
+                    " with Metadata read-only and update the REPO_STATES_TOKEN secret)"
+                )
             raise RuntimeError(f"HTTP {exc.code} from {url}: {message}") from exc
         if not batch:
             break
@@ -216,11 +222,14 @@ tr:hover td{{background:var(--surface)}}
 border:1px solid #23272f;border-radius:999px;padding:1px 8px;margin-right:4px}}
 .chip-arch{{color:var(--aging);border-color:#3a3324;background:#221d12}}
 .foot{{margin-top:26px;font-family:var(--mono);font-size:11px;color:var(--dim)}}
+.stale{{margin-bottom:18px;padding:8px 12px;border:1px solid #3a3324;border-radius:8px;background:#221d12;
+color:var(--aging);font-family:var(--mono);font-size:12px}}
 @media(max-width:720px){{.d{{display:none}}th.h-d{{display:none}}}}
 </style></head><body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
 <main>
 <h1>GitHub Repo States</h1>
 <div class="sub">every repo owned by aerin00, sorted by last push · refreshes daily at 07:00 Pacific</div>
+<div class="stale" id="stale" role="status" hidden></div>
 <input id="q" type="search" placeholder="Filter repos…" autocomplete="off">
 <div class="stats">
 <span class="stat"><b>{n_total}</b> repos</span>
@@ -242,6 +251,14 @@ q.addEventListener('input',()=>{{
     tr.hidden=s!==''&&!tr.dataset.k.includes(s);
   }}
 }});
+// The page cannot know the daily job failed, so it checks its own age.
+const made=new Date(document.querySelector('meta[name="generated"]').content);
+const days=Math.floor((Date.now()-made)/864e5);
+if(days>={STALE_DAYS}){{
+  const stale=document.getElementById('stale');
+  stale.textContent=`Stale data: last refreshed ${{days}} days ago. The daily refresh job has not succeeded since.`;
+  stale.hidden=false;
+}}
 </script>
 </body></html>"""
 

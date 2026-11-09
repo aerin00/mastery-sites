@@ -48,7 +48,21 @@ function fixture() {
     JSON.stringify(entries)], {cwd:root, encoding:'utf8'});
 }
 
-function check(html, label) {
+// Minimal window: a location whose hash follows history.replaceState.
+function fakeWindow(hash = '') {
+  const listeners = {};
+  const win = {
+    location: {hash, pathname: '/', search: ''},
+    history: {replaceState(_state, _title, url) {
+      win.location.hash = url.includes('#') ? url.slice(url.indexOf('#')) : '';
+    }},
+    addEventListener(event, handler) {(listeners[event] ||= []).push(handler);},
+    go(next) {win.location.hash = next; for (const handler of listeners.hashchange || []) handler();}
+  };
+  return win;
+}
+
+function mount(html, win) {
   const data = JSON.parse(html.match(/const SITES = (.*?);\s*\n/)[1]);
   const attrs = text => Object.fromEntries([...text.matchAll(/([\w-]+)="([^"]*)"/g)].map(m=>[m[1],m[2]]));
   const ids = Object.fromEntries([...html.matchAll(/\bid="([^"]+)"/g)].map(m=>[m[1],element()]));
@@ -64,7 +78,8 @@ function check(html, label) {
     querySelectorAll: selector=>({'#rows .row':rows, '#nav .nav-row':nav,
       '#tags .tag':tags, '#page-buttons .page-number':pages}[selector] || [])
   };
-  vm.runInNewContext(html.match(/<script>([\s\S]*?)<\/script>/)[1], {document});
+  vm.runInNewContext(html.match(/<script>([\s\S]*?)<\/script>/)[1],
+    win ? {document, window: win} : {document});
   const shown = ()=>ids.rows.children.filter(r=>!r.hidden).map(r=>data[Number(r.getAttribute('data-i'))]);
   const select = cat=>ids.nav.fire('click', nav.find(n=>n.getAttribute('data-cat')===cat));
   const reset = ()=>ids.clear.fire('click');
@@ -72,6 +87,11 @@ function check(html, label) {
   const chronological = [...data].sort((a,b)=>
     a.ingested_sort === b.ingested_sort ? (a.path < b.path ? -1 : a.path > b.path ? 1 : 0)
       : a.ingested_sort > b.ingested_sort ? -1 : 1);
+  return {data, ids, nav, tags, pages, shown, select, reset, all, chronological};
+}
+
+function check(html, label) {
+  const {data, ids, nav, tags, pages, shown, select, reset, all, chronological} = mount(html);
   assert.deepEqual(shown(), all.slice(0,10));
   assert.equal(ids['recent-columns'].hidden, true);
   select('recent');
@@ -113,7 +133,39 @@ function check(html, label) {
   }
   console.log(`PASS ${label}: Recent search/tag filters, empty state, reset, original categories and pins`);
 }
+function checkHash(html) {
+  // A linked view loads as given.
+  let win = fakeWindow('#cat=recent&page=2');
+  let m = mount(html, win);
+  assert.equal(m.ids.h1.textContent, 'Recent Sites');
+  assert.deepEqual(m.shown(), m.chronological.slice(10,20));
+  // Every transition is mirrored; defaults leave no hash.
+  m.select('hermes');
+  assert.equal(win.location.hash, '#cat=hermes');
+  m.ids.tags.fire('click', m.tags.find(t=>t.getAttribute('data-tag')==='guide'));
+  m.ids.q.value = 'site 1';m.ids.q.fire('input');
+  assert.equal(win.location.hash, '#cat=hermes&tag=guide&q=site%201');
+  const filtered = m.shown();
+  m.reset();
+  assert.equal(win.location.hash, '');
+  // The hash it wrote restores the same view, including the search box.
+  win = fakeWindow('#cat=hermes&tag=guide&q=site%201');
+  m = mount(html, win);
+  assert.deepEqual(m.shown(), filtered);
+  assert.equal(m.ids.q.value, 'site 1');
+  // Editing the hash in place re-renders.
+  win.go('#cat=pinned');
+  assert.deepEqual(m.shown(), m.all.filter(s=>s.pinned));
+  // Unknown values fall back to defaults; an oversized page clamps to the last.
+  win = fakeWindow('#cat=nope&tag=nope&page=99&junk&q=%E0');
+  m = mount(html, win);
+  assert.equal(m.ids.h1.textContent, 'All Sites');
+  assert.deepEqual(m.shown(), m.all.slice(10));
+  assert.equal(win.location.hash, '#page=2');
+  console.log('PASS fixture: URL hash loads, mirrors, restores, and rejects unknown values');
+}
 check(fixture(), 'fixture (ties, unknown, same-day batches)');
+checkHash(fixture());
 check(execFileSync(process.env.PYTHON || 'python', ['-c',
   'import generate_index as g; print(g.build_html([]))'], {cwd:root, encoding:'utf8'}), 'empty index');
 if (process.argv[2]) check(fs.readFileSync(path.resolve(process.argv[2]), 'utf8'), 'repository');

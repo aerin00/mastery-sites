@@ -5,6 +5,7 @@ import re
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import generate_index as g
@@ -72,8 +73,16 @@ class LintTests(unittest.TestCase):
             root = Path(d)
             self._site(root, 'mystery', 'bare', '<title>T</title><body></body>')
             problems = '\n'.join(g.lint(root, g.collect(root)))
-            for needle in ['no description', 'no ingested', 'All-sites bar', 'CATEGORY_DOTS']:
+            for needle in ['no description', 'no ingested', 'All-sites bar', 'CATEGORY_DOTS',
+                           'CATEGORY_BLURBS']:
                 self.assertIn(needle, problems)
+
+    def test_category_named_after_builtin_view_is_flagged(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self._site(root, 'recent', 'x', '<title>T</title><body></body>')
+            self.assertIn('collides with a built-in nav view',
+                          '\n'.join(g.lint(root, g.collect(root))))
 
 
 class ImportSiteTests(unittest.TestCase):
@@ -99,3 +108,69 @@ class ImportSiteTests(unittest.TestCase):
             self.m.build_page('<html><body></body></html>', 'd', '', False, '2026-09-21')
         with self.assertRaises(SystemExit):
             self.m.build_page('<title>t</title><div></div>', 'd', '', False, '2026-09-21')
+
+    def _run(self, root, *argv):
+        with mock.patch.object(self.m, 'ROOT', root), \
+             mock.patch.object(sys, 'argv', ['import_site.py', *argv]), \
+             mock.patch.object(self.m.subprocess, 'run') as generator:
+            self.m.main()
+        return generator
+
+    def test_lifecycle_new_imported_archived(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / 'repo'
+            inbox = Path(d) / 'inbox'
+            inbox.mkdir(parents=True)
+            src = inbox / 'page.html'
+            src.write_text(self.src, encoding='utf-8')
+            dest = root / 'shared' / 'page' / 'index.html'
+            args = [str(src), 'shared/page', '--description', 'd']
+            self.assertEqual(self.m.import_state(self.src, dest), 'new')
+
+            self.assertTrue(self._run(root, *args).called)
+            self.assertEqual(self.m.import_state(self.src, dest), 'imported')
+            self.assertTrue(src.exists())
+
+            # A plain re-run changes nothing and names the next step.
+            with self.assertRaises(SystemExit) as stop:
+                self._run(root, *args)
+            self.assertIn('re-run with --archive', str(stop.exception))
+
+            # The documented second run only archives; it does not re-import.
+            before = dest.read_text(encoding='utf-8')
+            self.assertFalse(self._run(root, *args, '--archive').called)
+            self.assertEqual(dest.read_text(encoding='utf-8'), before)
+            self.assertFalse(src.exists())
+            self.assertTrue((inbox / 'archive' / 'page.html').exists())
+
+    def test_different_page_at_target_is_a_conflict(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / 'repo'
+            src = Path(d) / 'page.html'
+            src.write_text(self.src, encoding='utf-8')
+            dest = root / 'shared' / 'page' / 'index.html'
+            dest.parent.mkdir(parents=True)
+            dest.write_text('<title>Other</title><body>other</body>', encoding='utf-8')
+            with self.assertRaises(SystemExit) as stop:
+                self._run(root, str(src), 'shared/page', '--description', 'd', '--archive')
+            self.assertIn('different page', str(stop.exception))
+            self.assertTrue(src.exists())
+
+    def test_bad_ingested_or_failed_generator_leaves_nothing_behind(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / 'repo'
+            root.mkdir()
+            src = Path(d) / 'page.html'
+            src.write_text(self.src, encoding='utf-8')
+            args = [str(src), 'shared/page', '--description', 'd']
+            with self.assertRaises(SystemExit):
+                self._run(root, *args, '--ingested', 'yesterday')
+            self.assertEqual(list(root.iterdir()), [])
+
+            failure = self.m.subprocess.CalledProcessError(1, 'generate_index.py')
+            with mock.patch.object(self.m, 'ROOT', root), \
+                 mock.patch.object(sys, 'argv', ['import_site.py', *args]), \
+                 mock.patch.object(self.m.subprocess, 'run', side_effect=failure), \
+                 self.assertRaises(SystemExit):
+                self.m.main()
+            self.assertEqual(list(root.iterdir()), [])

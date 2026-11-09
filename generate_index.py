@@ -6,7 +6,9 @@ a left-rail + responsive paginated grid with client-side filtering.
 The output is ONE self-contained static HTML file: inline <style>, one small
 inline <script>, no build step, no dependencies, no network requests except
 the Google Fonts stylesheet, and no localStorage / cookies / analytics.
-All filter state lives in memory only.
+Filter state lives in memory and is mirrored in the URL hash
+(#cat=hermes&tag=runbook&q=flow&page=2), so a view survives reload and
+Back and can be linked to. Unknown hash values fall back to defaults.
 
 Metadata: single source of truth
 --------------------------------
@@ -78,6 +80,10 @@ CATEGORY_DOTS = {
 DOT_FALLBACK = "#6c737f"
 DOT_ALL = "#6c737f"
 DOT_PINNED = "#dfae5c"
+
+# Nav ids the index script uses for its built-in views. A category folder
+# with one of these names would hijack that view, so lint flags it.
+RESERVED_NAV_IDS = {"all", "recent", "pinned"}
 
 # One-line blurb shown under the heading for each nav target. Unknown
 # categories get "" and the blurb line is hidden.
@@ -193,8 +199,9 @@ def lint(root: Path, entries: list) -> list[str]:
     """Return human-readable warnings for sites missing required metadata.
 
     Checks: front-matter description, ingested date, the All-sites bar, and
-    a known category (one with a dot colour). Never raises; main() decides
-    whether warnings are fatal (--strict)."""
+    a known category (one with a dot colour and a blurb, and not named
+    after a built-in nav view). Never raises; main() decides whether
+    warnings are fatal (--strict)."""
     problems = []
     for e in entries:
         text = (root / e["href"]).read_text(encoding="utf-8", errors="ignore")
@@ -207,6 +214,10 @@ def lint(root: Path, entries: list) -> list[str]:
             problems.append(f"{where}: missing All-sites bar (#{HOMEBAR_ID})")
         if e["category"] != "Sites" and e["category"] not in CATEGORY_DOTS:
             problems.append(f"{where}: category '{e['category']}' has no CATEGORY_DOTS entry")
+        if e["category"] != "Sites" and e["category"] not in CATEGORY_BLURBS:
+            problems.append(f"{where}: category '{e['category']}' has no CATEGORY_BLURBS entry")
+        if e["category"] in RESERVED_NAV_IDS:
+            problems.append(f"{where}: category '{e['category']}' collides with a built-in nav view; rename the folder")
     return problems
 
 
@@ -389,6 +400,46 @@ JS_CORE = """\
   var pageBtns = Array.prototype.slice.call(
     document.querySelectorAll("#page-buttons .page-number")
   );
+  var win = (typeof window !== "undefined" && window.location && window.history) ? window : null;
+
+  function known(btns, attr, value) {
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute(attr) === value) return true;
+    }
+    return false;
+  }
+
+  // The URL hash mirrors state (#cat=hermes&tag=runbook&q=flow&page=2).
+  // Defaults are omitted; unknown categories and tags fall back to defaults.
+  function readHash() {
+    var next = { cat: "all", tag: null, q: "", page: 1 };
+    var pairs = win.location.hash.replace("#", "").split("&");
+    for (var i = 0; i < pairs.length; i++) {
+      var eq = pairs[i].indexOf("=");
+      if (eq === -1) continue;
+      var key = pairs[i].slice(0, eq), value;
+      try { value = decodeURIComponent(pairs[i].slice(eq + 1)); } catch (e) { continue; }
+      if (key === "cat" && known(navBtns, "data-cat", value)) next.cat = value;
+      else if (key === "tag" && known(tagBtns, "data-tag", value)) next.tag = value;
+      else if (key === "q") next.q = value;
+      else if (key === "page" && parseInt(value, 10) >= 1) next.page = parseInt(value, 10);
+    }
+    state = next;
+    qInput.value = state.q;
+  }
+
+  function writeHash() {
+    var parts = [];
+    if (state.cat !== "all") parts.push("cat=" + encodeURIComponent(state.cat));
+    if (state.tag !== null) parts.push("tag=" + encodeURIComponent(state.tag));
+    if (state.q !== "") parts.push("q=" + encodeURIComponent(state.q));
+    if (state.page > 1) parts.push("page=" + state.page);
+    var hash = parts.length ? "#" + parts.join("&") : "";
+    if (hash === win.location.hash) return;
+    try {
+      win.history.replaceState(null, "", hash || win.location.pathname + win.location.search);
+    } catch (e) {}
+  }
 
   function matches(s) {
     if (state.cat === "pinned") {
@@ -463,6 +514,7 @@ JS_CORE = """\
     if (tagsToggleLabel) {
       tagsToggleLabel.textContent = state.tag === null ? "Filter by tag" : "tag: " + state.tag;
     }
+    if (win) writeHash();
   }
 
   function goToPage(page) {
@@ -535,6 +587,13 @@ JS_CORE = """\
     apply();
   });
 
+  if (win) {
+    readHash();
+    win.addEventListener("hashchange", function () {
+      readHash();
+      apply();
+    });
+  }
   apply();
 })();"""
 

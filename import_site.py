@@ -3,20 +3,28 @@
 
     python import_site.py SRC.html CATEGORY/SLUG --description "..." [--tags a,b] [--pinned] [--archive]
 
-What it does, in order:
-  1. Refuses if CATEGORY/SLUG/index.html already exists.
-  2. Refuses if the page body is byte-identical (after front-matter and
+A source moves through three states: new -> imported -> archived. The
+script works out the current state from the files and does the next step.
+
+New source (target does not exist):
+  1. Refuses if the page body is byte-identical (after front-matter and
      homebar are stripped and whitespace collapsed) to any deployed site,
      so a re-dropped file does not become a second copy.
-  3. Copies the source, inserting the <!-- index: --> block after the
+  2. Copies the source, inserting the <!-- index: --> block after the
      doctype and the All-sites bar as the first child of <body>. Nothing
      else in the source is changed.
-  4. Runs generate_index.py.
-  5. With --archive, moves the source into the sibling archive/ folder next
-     to it, never overwriting an existing archive file.
+  3. Runs generate_index.py. If that fails, the copy is removed again so
+     no half-imported site is left behind.
 
-Only step 5 touches the inbox. Deploy verification stays manual: push,
-check the live path, then archive (or run again with --archive later).
+Imported source (target holds this same page):
+  Without --archive, reports the state and the next step. With --archive,
+  moves the source into the sibling archive/ folder next to it, never
+  overwriting an existing archive file.
+
+A target that holds a different page is a conflict and is always refused.
+
+Only --archive touches the inbox. Deploy verification stays manual: push,
+check the live path, then run the same command again with --archive.
 """
 import argparse
 import hashlib
@@ -26,6 +34,8 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
+from generate_index import ingestion_date
 
 ROOT = Path(__file__).resolve().parent
 HOMEBAR = (
@@ -58,6 +68,17 @@ def existing_fingerprints(root: Path) -> dict[str, Path]:
             continue
         out[fingerprint(page.read_text(encoding="utf-8", errors="ignore"))] = page
     return out
+
+
+def import_state(src_text: str, dest: Path) -> str:
+    """Where a source sits in the import lifecycle, read from the files.
+
+    "new": the target does not exist yet. "imported": the target holds this
+    same page. "conflict": the target holds a different page."""
+    if not dest.exists():
+        return "new"
+    dest_text = dest.read_text(encoding="utf-8", errors="ignore")
+    return "imported" if fingerprint(dest_text) == fingerprint(src_text) else "conflict"
 
 
 def build_page(src_text: str, description: str, tags: str, pinned: bool, ingested: str) -> str:
@@ -107,12 +128,27 @@ def main():
         raise SystemExit("target must be category/slug, lowercase with hyphens")
     category, slug = parts
     dest = ROOT / category / slug / "index.html"
-    if dest.exists():
-        raise SystemExit(f"{dest.relative_to(ROOT)} already exists")
     if not args.src.is_file():
-        raise SystemExit(f"no such file: {args.src}")
+        hint = f"; {dest.relative_to(ROOT)} exists, so it may already be archived" if dest.exists() else ""
+        raise SystemExit(f"no such file: {args.src}{hint}")
+    if args.ingested:
+        try:
+            ingestion_date(args.ingested)
+        except ValueError as exc:
+            raise SystemExit(f"--ingested {args.ingested!r}: {exc}")
 
     src_text = args.src.read_text(encoding="utf-8")
+    state = import_state(src_text, dest)
+    if state == "conflict":
+        raise SystemExit(f"{dest.relative_to(ROOT)} already exists and holds a different page")
+    if state == "imported":
+        if not args.archive:
+            raise SystemExit(f"already imported as {dest.relative_to(ROOT)}; "
+                             "verify the live path, then re-run with --archive")
+        print(f"already imported as {dest.relative_to(ROOT)}")
+        print(f"archived to {archive(args.src)}")
+        return
+
     dupe = existing_fingerprints(ROOT).get(fingerprint(src_text))
     if dupe and not args.force_duplicate:
         raise SystemExit(f"content matches deployed {dupe.relative_to(ROOT)}; "
@@ -120,16 +156,23 @@ def main():
 
     ingested = args.ingested or datetime.now().astimezone().replace(microsecond=0).isoformat()
     page = build_page(src_text, args.description, args.tags, args.pinned, ingested)
+    created = [d for d in (dest.parent, dest.parent.parent) if not d.exists()]
     dest.parent.mkdir(parents=True)
     dest.write_text(page, encoding="utf-8")
     print(f"wrote {dest.relative_to(ROOT)}")
 
-    subprocess.run([sys.executable, str(ROOT / "generate_index.py")], check=True, cwd=ROOT)
+    try:
+        subprocess.run([sys.executable, str(ROOT / "generate_index.py")], check=True, cwd=ROOT)
+    except subprocess.CalledProcessError:
+        dest.unlink()
+        for d in created:
+            d.rmdir()
+        raise SystemExit(f"generate_index.py failed; removed {dest.relative_to(ROOT)} again, nothing was imported")
 
     if args.archive:
         print(f"archived to {archive(args.src)}")
     else:
-        print("source left in place; verify the live path, then move it to archive/")
+        print("source left in place; verify the live path, then re-run with --archive")
 
 
 if __name__ == "__main__":

@@ -327,6 +327,46 @@ const PAGE_SIZE = 10;
   var pageBtns = Array.prototype.slice.call(
     document.querySelectorAll("#page-buttons .page-number")
   );
+  var win = (typeof window !== "undefined" && window.location && window.history) ? window : null;
+
+  function known(btns, attr, value) {
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute(attr) === value) return true;
+    }
+    return false;
+  }
+
+  // The URL hash mirrors state (#cat=hermes&tag=runbook&q=flow&page=2).
+  // Defaults are omitted; unknown categories and tags fall back to defaults.
+  function readHash() {
+    var next = { cat: "all", tag: null, q: "", page: 1 };
+    var pairs = win.location.hash.replace("#", "").split("&");
+    for (var i = 0; i < pairs.length; i++) {
+      var eq = pairs[i].indexOf("=");
+      if (eq === -1) continue;
+      var key = pairs[i].slice(0, eq), value;
+      try { value = decodeURIComponent(pairs[i].slice(eq + 1)); } catch (e) { continue; }
+      if (key === "cat" && known(navBtns, "data-cat", value)) next.cat = value;
+      else if (key === "tag" && known(tagBtns, "data-tag", value)) next.tag = value;
+      else if (key === "q") next.q = value;
+      else if (key === "page" && parseInt(value, 10) >= 1) next.page = parseInt(value, 10);
+    }
+    state = next;
+    qInput.value = state.q;
+  }
+
+  function writeHash() {
+    var parts = [];
+    if (state.cat !== "all") parts.push("cat=" + encodeURIComponent(state.cat));
+    if (state.tag !== null) parts.push("tag=" + encodeURIComponent(state.tag));
+    if (state.q !== "") parts.push("q=" + encodeURIComponent(state.q));
+    if (state.page > 1) parts.push("page=" + state.page);
+    var hash = parts.length ? "#" + parts.join("&") : "";
+    if (hash === win.location.hash) return;
+    try {
+      win.history.replaceState(null, "", hash || win.location.pathname + win.location.search);
+    } catch (e) {}
+  }
 
   function matches(s) {
     if (state.cat === "pinned") {
@@ -401,6 +441,7 @@ const PAGE_SIZE = 10;
     if (tagsToggleLabel) {
       tagsToggleLabel.textContent = state.tag === null ? "Filter by tag" : "tag: " + state.tag;
     }
+    if (win) writeHash();
   }
 
   function goToPage(page) {
@@ -473,6 +514,13 @@ const PAGE_SIZE = 10;
     apply();
   });
 
+  if (win) {
+    readHash();
+    win.addEventListener("hashchange", function () {
+      readHash();
+      apply();
+    });
+  }
   apply();
 })();
 </script>
