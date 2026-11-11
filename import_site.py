@@ -64,7 +64,7 @@ def fingerprint(text: str) -> str:
 def existing_fingerprints(root: Path) -> dict[str, Path]:
     out = {}
     for page in root.glob("*/*/index.html"):
-        if page.parts[-3].startswith(".") or page.parts[-3] in {"tests", "__pycache__"}:
+        if page.parts[-3].startswith(".") or page.parts[-3] in {"tests", "__pycache__", "inbox"}:
             continue
         out[fingerprint(page.read_text(encoding="utf-8", errors="ignore"))] = page
     return out

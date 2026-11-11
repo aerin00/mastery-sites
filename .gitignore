@@ -35,6 +35,9 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 
+# Drafts waiting for publish_inbox.py; never committed or deployed
+inbox/
+
 # Logs
 *.log
 

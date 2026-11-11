@@ -96,6 +96,19 @@ So after the live path is verified, run the same command again with `--archive` 
 
 For inbox imports, preserve source HTML and add metadata only to the deployed copy. After the live deployment is verified, move only successfully imported sources into the sibling `00_Mastery_Sites_Inbox/archive/` folder. Leave unprocessed files in the inbox and never overwrite an existing archive file.
 
+### One-command publish from `inbox/`
+
+Drop finished `.html` pages into `inbox/` (gitignored, skipped by the generator, never deployed) and run:
+
+```bash
+python publish_inbox.py --dry-run   # show category, folder, description, tags for each page
+python publish_inbox.py             # same plan, then "y" to import, test, commit, push, verify, archive
+```
+
+The script asks an LLM through OpenRouter for each page's category, folder name, description and tags. It needs `OPENROUTER_API_KEY` in the environment; `OPENROUTER_MODEL` overrides the default `~anthropic/claude-haiku-latest`. The page's title and first 3,000 characters of visible text are sent. To send nothing, name the file `category--slug.html` or pass `--local`; the description then comes from the page's meta description or `<title>`.
+
+Pages with an unknown category, a taken folder, or an unusable reply are skipped and named. Tests run before the commit, and a source moves to `inbox/archive/` only after the Workers Builds check succeeds and its live page loads. The working tree must be clean before a real run.
+
 ## Site front-matter (optional)
 
 Each page may carry an HTML comment block near the top of its own `index.html` (the generator only looks in the first 8000 chars):

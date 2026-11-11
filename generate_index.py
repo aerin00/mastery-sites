@@ -54,7 +54,7 @@ from collections import OrderedDict
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__", ".venv", "venv"}
+SKIP_DIRS = {".git", ".github", "node_modules", "__pycache__", ".venv", "venv", "inbox"}
 
 # Flip to False to list sites in plain generator order (pinned not first).
 PINNED_FIRST = True
