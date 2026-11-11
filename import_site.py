@@ -41,9 +41,12 @@ ROOT = Path(__file__).resolve().parent
 HOMEBAR = (
     '<nav id="ms-homebar" class="ms-homebar" aria-label="All sites">'
     '<a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>\n'
-    '<style>#ms-homebar{position:sticky;top:0;z-index:2147483647;display:block;'
+    '<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;'
+    'overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;'
+    'position:sticky;top:0;z-index:2147483647;display:block;'
     'padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,'
-    '"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{color:#93c5fd;'
+    '"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;'
+    'background:none;font:inherit;color:#93c5fd;'
     'text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>'
 )
 FM_RE = re.compile(r"<!--\s*index:.*?-->\s*", re.DOTALL | re.IGNORECASE)

@@ -98,6 +98,19 @@ class ImportSiteTests(unittest.TestCase):
         self.assertIn('<body class="x"><nav id="ms-homebar"', out)
         self.assertEqual(g.parse_front_matter(out)['tags'], ['a', 'b'])
 
+    def test_homebar_resets_page_nav_rules(self):
+        # Pages often style bare `nav` (height:100vh, max-height:0, flex); the bar's id rule must undo that.
+        style = self.m.HOMEBAR.split('#ms-homebar{', 1)[1].split('}', 1)[0]
+        for decl in ['height:auto', 'max-height:none', 'overflow:visible', 'margin:0', 'transition:none']:
+            self.assertIn(decl, style)
+        self.assertLess(style.index('border:0'), style.index('border-bottom:'))
+        self.assertIn('#ms-homebar a{display:inline;margin:0;padding:0;border:0', self.m.HOMEBAR)
+        for page in Path(__file__).resolve().parents[1].glob('*/*/index.html'):
+            text = page.read_text(encoding='utf-8')
+            if '<style>#ms-homebar{' in text:
+                with self.subTest(page=str(page)):
+                    self.assertIn('<style>#ms-homebar{height:auto;', text)
+
     def test_fingerprint_ignores_injected_metadata(self):
         out = self.m.build_page(self.src, 'desc', '', False, '2026-09-21')
         self.assertEqual(self.m.fingerprint(out), self.m.fingerprint(self.src))
