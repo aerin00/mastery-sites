@@ -104,10 +104,10 @@ class DryRunTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             (root / 'inbox').mkdir()
-            (root / 'inbox' / 'shared--fresh.html').write_text(PAGE, encoding='utf-8')
+            (root / 'inbox' / 'shared--fresh.html').write_text(PAGE.replace('Hello', 'Fresh'), encoding='utf-8')
             (root / 'inbox' / 'shared--taken.html').write_text(PAGE, encoding='utf-8')
             (root / 'shared' / 'taken').mkdir(parents=True)
-            (root / 'shared' / 'taken' / 'index.html').write_text(PAGE, encoding='utf-8')
+            (root / 'shared' / 'taken' / 'index.html').write_text('<title>Other</title>', encoding='utf-8')
             out = io.StringIO()
             with mock.patch.object(p, 'ROOT', root), mock.patch.object(p, 'INBOX', root / 'inbox'), \
                  mock.patch.object(sys, 'argv', ['publish_inbox.py', '--dry-run']), \
@@ -117,6 +117,20 @@ class DryRunTests(unittest.TestCase):
             self.assertIn('-> shared/fresh', out.getvalue())
             self.assertIn('SKIP shared--taken.html: shared/taken already exists', out.getvalue())
             self.assertFalse((root / 'shared' / 'fresh').exists())
+
+    def test_dry_run_skips_page_already_published_under_another_name(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'inbox').mkdir()
+            (root / 'inbox' / 'shared--again.html').write_text(PAGE, encoding='utf-8')
+            (root / 'shared' / 'original').mkdir(parents=True)
+            (root / 'shared' / 'original' / 'index.html').write_text(PAGE, encoding='utf-8')
+            out = io.StringIO()
+            with mock.patch.object(p, 'ROOT', root), mock.patch.object(p, 'INBOX', root / 'inbox'), \
+                 mock.patch.object(sys, 'argv', ['publish_inbox.py', '--dry-run']), \
+                 mock.patch('sys.stdout', out), self.assertRaises(SystemExit):
+                p.main()
+            self.assertIn('already published as shared/original', out.getvalue())
 
 
 if __name__ == '__main__':

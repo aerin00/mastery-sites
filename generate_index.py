@@ -77,6 +77,8 @@ CATEGORY_DOTS = {
     "health": "#f87171",
     "juas": "#22d3ee",
     "finance": "#facc15",
+    "ai": "#38bdf8",
+    "growth": "#a3e635",
 }
 DOT_FALLBACK = "#6c737f"
 DOT_ALL = "#6c737f"
@@ -105,6 +107,8 @@ CATEGORY_BLURBS = {
     "health": "Personal health protocols and device routines.",
     "juas": "JUAS process maps and draw sheets.",
     "finance": "Personal finance playbooks: accounts, taxes, investing, planning.",
+    "ai": "AI research, forecasts, and prompt libraries.",
+    "growth": "Personal growth: annual plans, learning methods, habits.",
 }
 
 FRONT_MATTER_RE = re.compile(r"<!--\s*index:\s*(.*?)-->", re.DOTALL | re.IGNORECASE)

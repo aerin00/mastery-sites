@@ -33,7 +33,7 @@ import urllib.request
 from pathlib import Path
 
 from generate_index import CATEGORY_DOTS
-from import_site import SLUG_RE, TITLE_RE
+from import_site import SLUG_RE, TITLE_RE, existing_fingerprints, fingerprint
 
 ROOT = Path(__file__).resolve().parent
 INBOX = ROOT / "inbox"
@@ -197,11 +197,16 @@ def main():
 
     categories = sorted(CATEGORY_DOTS)
     taken = existing_targets(ROOT)
+    deployed = existing_fingerprints(ROOT)
     model = os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
     key = os.environ.get("OPENROUTER_API_KEY", "")
     plans, skipped = [], []
     for src in sources:
         text = src.read_text(encoding="utf-8")
+        dupe = deployed.get(fingerprint(text))
+        if dupe:  # import_site.py would refuse it mid-run, after earlier pages were imported
+            skipped.append((src, f"already published as {dupe.parent.relative_to(ROOT)}; delete it from inbox/"))
+            continue
         try:
             if args.local or from_filename(src.name):
                 plan = local_plan(src, text)
