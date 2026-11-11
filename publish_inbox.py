@@ -12,7 +12,8 @@ description and tags, shows the plan, and waits for "y". Then it:
   5. moves each source into inbox/archive/ once its live page is verified.
 
 Metadata comes from an LLM through OpenRouter (OPENROUTER_API_KEY, model
-OPENROUTER_MODEL, default ~anthropic/claude-haiku-latest). The page's title
+OPENROUTER_MODEL, default ~anthropic/claude-haiku-latest). Plans are saved in
+inbox/.plans.json, so a real run reuses what the dry run showed. The page's title
 and first few thousand characters of visible text are sent. With --local,
 or for a file named category--slug.html, nothing is sent: the file name
 gives the target and the page's meta description or <title> gives the
@@ -37,6 +38,7 @@ from import_site import SLUG_RE, TITLE_RE, existing_fingerprints, fingerprint
 
 ROOT = Path(__file__).resolve().parent
 INBOX = ROOT / "inbox"
+PLANS = INBOX / ".plans.json"  # page fingerprint -> plan, so the real run repeats the dry run
 LIVE_BASE = "https://mastery-sites.stenguye.workers.dev"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "~anthropic/claude-haiku-latest"
@@ -132,6 +134,13 @@ def validate(plan: dict, categories: list[str], taken: set[str]) -> dict:
     return {"category": category, "slug": slug, "description": description, "tags": tags}
 
 
+def load_plans(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
 def existing_targets(root: Path) -> set[str]:
     return {f"{p.parts[-3]}/{p.parts[-2]}" for p in root.glob("*/*/index.html")}
 
@@ -200,6 +209,7 @@ def main():
     deployed = existing_fingerprints(ROOT)
     model = os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
     key = os.environ.get("OPENROUTER_API_KEY", "")
+    cache, kept = load_plans(PLANS), {}
     plans, skipped = [], []
     for src in sources:
         text = src.read_text(encoding="utf-8")
@@ -207,20 +217,25 @@ def main():
         if dupe:  # import_site.py would refuse it mid-run, after earlier pages were imported
             skipped.append((src, f"already published as {dupe.parent.relative_to(ROOT)}; delete it from inbox/"))
             continue
+        fp = fingerprint(text)
         try:
-            if args.local or from_filename(src.name):
+            if fp in cache and not args.local:
+                plan = cache[fp]
+            elif args.local or from_filename(src.name):
                 plan = local_plan(src, text)
             elif not key:
                 raise ValueError("OPENROUTER_API_KEY is not set; use --local or a category--slug.html name")
             else:
                 plan = llm_plan(text, categories, model, key)
             plan = validate(plan, categories, taken)
+            kept[fp] = plan
         except ValueError as exc:
             skipped.append((src, str(exc)))
             continue
         taken.add(f"{plan['category']}/{plan['slug']}")
         plans.append((src, text, plan))
 
+    PLANS.write_text(json.dumps(kept, indent=1), encoding="utf-8")
     for src, text, p in plans:
         print(f"\n{src.name}\n  -> {p['category']}/{p['slug']}\n  {p['description']}\n  tags: {', '.join(p['tags']) or '-'}")
     for src, reason in skipped:
@@ -264,7 +279,8 @@ def main():
                          "import_site.py SRC TARGET --archive for each verified page")
     for src, target, title in targets:
         if live_ok(target, title):
-            run([sys.executable, "import_site.py", str(src), target, "--archive"], capture_output=True)
+            run([sys.executable, "import_site.py", str(src), target, "--description", "-", "--archive"],
+                capture_output=True)
             print(f"live  {LIVE_BASE}/{target}/  (source archived)")
         else:
             print(f"NOT VERIFIED  {LIVE_BASE}/{target}/  (source left in inbox/)")

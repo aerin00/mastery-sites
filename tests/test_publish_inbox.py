@@ -88,6 +88,32 @@ class LlmPlanTests(unittest.TestCase):
                 p.llm_plan(PAGE, CATS, 'm', 'k')
 
 
+class PlanCacheTests(unittest.TestCase):
+    def test_second_run_reuses_saved_plan_without_calling_llm(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / 'inbox').mkdir()
+            (root / 'inbox' / 'page.html').write_text(PAGE, encoding='utf-8')
+            first = {'category': 'shared', 'slug': 'first-name', 'description': 'd', 'tags': []}
+
+            def dry_run(llm):
+                out = io.StringIO()
+                with mock.patch.object(p, 'ROOT', root), mock.patch.object(p, 'INBOX', root / 'inbox'), \
+                     mock.patch.object(p, 'PLANS', root / 'inbox' / '.plans.json'), \
+                     mock.patch.object(p, 'CATEGORY_DOTS', {'shared': '#000'}), \
+                     mock.patch.dict(p.os.environ, {'OPENROUTER_API_KEY': 'k'}), \
+                     mock.patch.object(p, 'llm_plan', llm), \
+                     mock.patch.object(sys, 'argv', ['publish_inbox.py', '--dry-run']), \
+                     mock.patch('sys.stdout', out):
+                    p.main()
+                return out.getvalue()
+
+            self.assertIn('-> shared/first-name', dry_run(mock.Mock(return_value=first)))
+            again = mock.Mock(side_effect=AssertionError('LLM called again'))
+            self.assertIn('-> shared/first-name', dry_run(again))
+            again.assert_not_called()
+
+
 class LiveCheckTests(unittest.TestCase):
     def test_sends_explicit_user_agent_and_matches_title(self):
         resp = mock.MagicMock()
