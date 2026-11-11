@@ -77,6 +77,7 @@ class LlmPlanTests(unittest.TestCase):
         req = op.call_args[0][0]
         sent = json.loads(req.data)
         self.assertEqual(sent['model'], 'm/model')
+        self.assertEqual(sent['temperature'], 0)
         self.assertIn('shared, sharepoint', sent['messages'][0]['content'])
         self.assertIn('Hello World text', sent['messages'][0]['content'])
         self.assertEqual(req.get_header('Authorization'), 'Bearer k')
@@ -85,6 +86,17 @@ class LlmPlanTests(unittest.TestCase):
         with mock.patch.object(p.urllib.request, 'urlopen', return_value=self.reply('no idea')):
             with self.assertRaises(ValueError):
                 p.llm_plan(PAGE, CATS, 'm', 'k')
+
+
+class LiveCheckTests(unittest.TestCase):
+    def test_sends_explicit_user_agent_and_matches_title(self):
+        resp = mock.MagicMock()
+        resp.__enter__.return_value = resp
+        resp.status = 200
+        resp.read.return_value = b'<title>A &amp; B</title>'
+        with mock.patch.object(p.urllib.request, 'urlopen', return_value=resp) as op:
+            self.assertTrue(p.live_ok('shared/x', 'A & B'))
+        self.assertTrue(op.call_args[0][0].get_header('User-agent'))
 
 
 class DryRunTests(unittest.TestCase):

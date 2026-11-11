@@ -90,6 +90,7 @@ def llm_plan(text: str, categories: list[str], model: str, key: str) -> dict:
     )
     body = {
         "model": model,
+        "temperature": 0,  # same page, same plan: a dry run should predict the real run
         "response_format": {"type": "json_object"},
         "messages": [{"role": "user", "content": prompt}],
     }
@@ -171,7 +172,9 @@ def wait_for_deploy(sha: str, timeout: int = 600) -> str:
 
 def live_ok(path: str, title: str) -> bool:
     try:
-        with urllib.request.urlopen(f"{LIVE_BASE}/{path}/", timeout=30) as r:
+        # Cloudflare answers 403 to urllib's default User-Agent
+        req = urllib.request.Request(f"{LIVE_BASE}/{path}/", headers={"User-Agent": "mastery-sites-publish/1.0"})
+        with urllib.request.urlopen(req, timeout=30) as r:
             return r.status == 200 and title in html.unescape(r.read().decode("utf-8", "ignore"))
     except (urllib.error.URLError, TimeoutError):
         return False
