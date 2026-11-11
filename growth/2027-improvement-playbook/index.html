@@ -1,0 +1,669 @@
+<!doctype html>
+<!-- index:
+description: A 2027 planning playbook with an annual plan, seven modules, weekly review templates, a KPI dashboard, a risk register, and 50 prompts.
+tags: planning, annual-review, productivity, career
+ingested: 2026-11-11T13:28:47-08:00
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A customizable, evidence-based 2027 personal and professional improvement framework.">
+  <title>2027 Personal and Professional Improvement Playbook</title>
+  <style>:root {
+  color-scheme: light;
+  --ink: #172e2d;
+  --muted: #4a605d;
+  --teal: #08665c;
+  --deep: #123e39;
+  --light: #e6f1ea;
+  --paper: #fbfaf6;
+  --line: #d6e0d8;
+  --white: #fff;
+  font-family: 'Instrument Sans', 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+a { color: var(--teal); text-underline-offset: .16em; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid #147d71; outline-offset: 3px; }
+.skip { position: absolute; left: 1rem; top: 1rem; transform: translateY(-180%); z-index: 5; padding: .5rem 1rem; background: white; }
+.skip:focus { transform: translateY(0); }
+.layout { max-width: 1520px; margin: 0 auto; display: grid; grid-template-columns: 228px minmax(0, 1fr); }
+.rail { border-right: 1px solid var(--line); background: #f2f5ed; }
+.rail-inner { position: sticky; top: 0; padding: 2rem 1.05rem; max-height: 100vh; overflow: auto; }
+.brand { margin: 0 .65rem 1.3rem; display: flex; align-items: center; gap: .55rem; font-size: .94rem; font-weight: 750; color: var(--ink); text-decoration: none; }
+.brand-mark { border: 1px solid #91b6a7; background: #dfede1; color: #184f46; padding: .12rem .42rem; border-radius: .42rem; font-variant-numeric: tabular-nums; }
+.rail nav { display: grid; gap: .13rem; }
+.rail nav a { padding: .39rem .65rem; border-radius: .45rem; color: #3e5753; text-decoration: none; font-size: .91rem; }
+.rail nav a:hover, .rail nav a[aria-current="location"] { background: #dceae0; color: #154b43; }
+.print-action { border: 1px solid #a9bdb1; border-radius: .5rem; margin: 1.15rem .65rem 0; padding: .33rem .7rem; color: var(--deep); background: transparent; font-size: .83rem; }
+main { min-width: 0; max-width: 1200px; padding: 2rem clamp(1.4rem, 4vw, 4.2rem) 3rem; }
+.hero { position: relative; isolation: isolate; overflow: hidden; border-radius: 1.45rem; padding: clamp(1.6rem, 5vw, 4.45rem); background: linear-gradient(135deg, #123e39 5%, #11574c 100%); color: #fff; }
+.hero::before, .hero::after { content: ''; position: absolute; z-index: -1; border: 1px solid #a1d7c653; border-radius: 50%; pointer-events: none; }
+.hero::before { width: 38rem; height: 38rem; top: -16rem; right: -20rem; box-shadow: 0 0 0 35px #b4e0d21f, 0 0 0 77px #b4e0d216, 0 0 0 120px #b4e0d211; }
+.hero::after { width: 30rem; height: 30rem; top: -12rem; right: -16rem; }
+.hero-meta { font-size: .78rem; letter-spacing: .105em; text-transform: uppercase; font-weight: 750; color: #c7eedf; }
+.hero-meta span { display: inline-block; margin-left: .65rem; font-weight: 550; }
+h1, h2 { font-family: Georgia, 'Baskervville', serif; letter-spacing: -.04em; font-weight: 500; line-height: 1.03; }
+h1 { font-size: clamp(3.35rem, 7.3vw, 6.8rem); margin: .7rem 0 .9rem; }
+.hero-intro { max-width: 37rem; margin: 0; font-size: clamp(1.05rem, 1.55vw, 1.26rem); color: #ebf6ed; }
+.hero-links { display: flex; flex-wrap: wrap; gap: .7rem; margin: 1.4rem 0 1.85rem; }
+.hero-links a { display: inline-flex; align-items: center; gap: .7rem; padding: .61rem .95rem; border-radius: .6rem; font-size: .91rem; font-weight: 700; text-decoration: none; }
+.hero-links .primary { background: #e5f3d8; color: #173c31; }
+.hero-links .secondary { border: 1px solid #b6d8cc; color: white; }
+.hero-links a:focus-visible { outline-color: #e5f3d8; }
+.hero-stats { display: flex; flex-wrap: wrap; gap: .6rem 1.9rem; padding: 1.05rem 0 0; margin: 0; border-top: 1px solid #b0d5c98c; }
+.hero-stats dt { font-size: 1.25rem; font-weight: 700; line-height: 1.2; }
+.hero-stats dd { margin: .2rem 0 0; font-size: .82rem; color: #d3ebe1; }
+.chapter { margin-top: 3.25rem; padding-top: 1.5rem; border-top: 1px solid var(--line); scroll-margin-top: 1rem; }
+.chapter > header { margin-bottom: 1.35rem; }
+.eyebrow { margin: 0 0 .32rem; text-transform: uppercase; font-size: .74rem; letter-spacing: .12em; color: var(--teal); font-weight: 760; }
+h2 { margin: 0 0 .55rem; font-size: clamp(2.25rem, 4.4vw, 4rem); }
+h3 { font-size: 1.17rem; line-height: 1.3; margin: 1.55rem 0 .55rem; }
+p { margin: .6rem 0 .9rem; max-width: 88ch; }
+.chapter > header > p:last-child { color: var(--muted); font-size: 1.07rem; }
+.grid { display: grid; gap: .85rem; margin: .9rem 0; }
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.panel { min-width: 0; background: #fff; border: 1px solid var(--line); border-radius: .85rem; padding: 1rem 1.1rem; }
+.panel h3, .panel p:last-child { margin-top: 0; margin-bottom: .3rem; }
+.panel h3 + p { margin-top: .5rem; }
+.panel p + p { margin-top: .6rem; }
+.table-wrap { max-width: 100%; overflow: auto; border-radius: .75rem; border: 1px solid var(--line); background: #fff; margin: .8rem 0 1.05rem; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: .91rem; line-height: 1.46; text-align: left; }
+thead { background: #e7efe5; color: #254942; }
+th, td { padding: .63rem .76rem; vertical-align: top; }
+td { border-top: 1px solid #e4eae4; }
+td:first-child { font-weight: 660; min-width: 7.2rem; }
+tr:nth-child(even) td { background: #f8faf6; }
+.note { border-left: 4px solid #478a73; border-radius: 0 .7rem .7rem 0; padding: .8rem .95rem; margin: 1.05rem 0; background: var(--light); }
+.template { position: relative; padding: .65rem .8rem .8rem; border: 1px solid var(--line); border-radius: .7rem; background: #f1f5ed; }
+.template .copy { margin-bottom: .42rem; }
+.copy, .quiet-button { border: 1px solid #9cb8ac; border-radius: .46rem; background: #fff; color: #1c5147; padding: .28rem .62rem; font-size: .81rem; font-weight: 650; }
+.copy:hover, .quiet-button:hover, .print-action:hover { background: #e2f1e5; }
+pre { margin: 0; font-family: 'IBM Plex Mono', 'Cascadia Mono', Consolas, monospace; font-size: .86rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; }
+.steps { padding-left: 1.5rem; max-width: 91ch; }
+.steps li { padding-left: .18rem; margin-bottom: .55rem; }
+.prompt-controls { display: flex; align-items: end; flex-wrap: wrap; gap: .6rem; margin: .8rem 0 .45rem; }
+.prompt-controls label { display: grid; gap: .18rem; color: var(--deep); font-size: .85rem; font-weight: 650; }
+.prompt-controls label:first-child { flex: 1 1 240px; }
+.prompt-controls input, .prompt-controls select { max-width: 100%; min-width: 0; background: #fff; padding: .48rem .63rem; border: 1px solid #a8bfb0; border-radius: .48rem; color: var(--ink); }
+.prompt-controls .quiet-button { min-height: 2.4rem; }
+.prompt-count { margin: .5rem 0 .8rem; font-size: .9rem; color: var(--muted); }
+.prompt-group { margin-top: 1.2rem; }
+.prompt-card { border: 1px solid var(--line); border-radius: .65rem; background: #fff; margin: .44rem 0; }
+.prompt-card summary { padding: .58rem .8rem; cursor: pointer; font-weight: 660; color: var(--deep); }
+.prompt-card summary:hover { background: #edf5ec; border-radius: .65rem; }
+.prompt-id { font-size: .79rem; color: #4c6861; margin: 0 .47rem 0 .15rem; font-variant-numeric: tabular-nums; }
+.prompt-body { padding: .2rem .85rem .85rem; }
+.prompt-body p { margin: .25rem 0 .6rem; }
+.sources { padding-left: 1.5rem; }
+.sources li { padding-left: .15rem; margin-bottom: .5rem; scroll-margin-top: 1rem; }
+.sources li:target { background: #e4f0de; }
+.footer { margin-top: 2.3rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .88rem; }
+.toast { position: fixed; z-index: 3; right: 1rem; bottom: 1rem; background: var(--deep); color: #fff; border-radius: .55rem; padding: .55rem .85rem; max-width: calc(100vw - 2rem); }
+[hidden] { display: none !important; }
+@media (max-width: 1040px) {
+  .layout { grid-template-columns: 190px minmax(0, 1fr); }
+  main { padding-inline: 1.35rem; }
+}
+@media (max-width: 820px) {
+  .layout { display: block; }
+  .rail { border-right: 0; border-bottom: 1px solid var(--line); }
+  .rail-inner { position: static; padding: .65rem 1.05rem; }
+  .brand { margin: .1rem 0 .4rem; }
+  .rail nav { display: flex; overflow-x: auto; gap: .12rem; padding: .16rem 0; }
+  .rail nav a { white-space: nowrap; padding: .32rem .48rem; }
+  .print-action { display: none; }
+  main { padding-top: 1.1rem; }
+}
+@media (max-width: 610px) {
+  main { padding-inline: .85rem; }
+  .hero { border-radius: .95rem; }
+  h1 { font-size: clamp(2.2rem, 9vw, 3.35rem); }
+  .hero-meta span { margin-left: .3rem; }
+  .hero-stats { gap: .65rem 1.25rem; }
+  .grid.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
+  .chapter { margin-top: 2.3rem; }
+}
+@media print {
+  @page { margin: 15mm; }
+  :root, .hero, .panel, .note, .template, .prompt-card { background: #fff; color: #111; }
+  .rail, .skip, .hero-links, .hero::before, .hero::after, .footer, .copy, .prompt-controls, .prompt-count, .toast { display: none !important; }
+  .layout, .grid { display: block; }
+  main { max-width: none; padding: 0; }
+  .hero { padding: 0 0 .6rem; }
+  .hero-meta, .hero-intro, .hero-stats dd { color: #333; }
+  h1 { font-size: 40pt; }
+  h2 { font-size: 26pt; }
+  .chapter { margin-top: 1.3rem; padding-top: .65rem; }
+  h2, h3, summary { break-after: avoid; }
+  .panel, .template, .prompt-card, tr { break-inside: avoid; }
+  .panel, .template { margin: .4rem 0; }
+  .table-wrap { overflow: visible; }
+  table { min-width: 0; font-size: 9pt; }
+  th, td { padding: .25rem .32rem; }
+  .prompt-card[hidden], .prompt-group[hidden] { display: block !important; }
+  .prompt-card::details-content { display: block; content-visibility: visible; }
+}</style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="layout">
+    <aside class="rail"><div class="rail-inner">
+      <a class="brand" href="#start"><span class="brand-mark">2027</span> Playbook</a>
+      <nav aria-label="Playbook sections"><a href="#start">Overview</a>
+<a href="#setup">Annual plan</a>
+<a href="#modules">Seven modules</a>
+<a href="#roadmap">2027 roadmap</a>
+<a href="#week">Weekly templates</a>
+<a href="#decisions">Decision framework</a>
+<a href="#dashboard">KPI dashboard</a>
+<a href="#automation">Automation map</a>
+<a href="#risks">Risk register</a>
+<a href="#prompts">50 prompts</a>
+<a href="#evidence">Evidence and sources</a></nav>
+      <button class="print-action" type="button" id="print">Print playbook</button>
+    </div></aside>
+    <main id="main">
+      <section id="start" class="hero">
+  <div class="hero-meta">2027 planning playbook <span>January–December</span></div>
+  <h1>2027 improvement<br>playbook</h1>
+  <p class="hero-intro">A personal and professional improvement framework built around a few measurable outcomes, a realistic weekly calendar, and a review that tells you when to change course.</p>
+  <div class="hero-links"><a class="primary" href="#setup">Set up your plan <span aria-hidden="true">↓</span></a><a class="secondary" href="#prompts">Browse 50 prompts <span aria-hidden="true">↗</span></a></div>
+  <dl class="hero-stats"><div><dt>7</dt><dd>customizable modules</dd></div><div><dt>12</dt><dd>monthly milestones</dd></div><div><dt>20–35 min</dt><dd>weekly planning and review</dd></div></dl>
+</section>
+
+<section id="setup" class="chapter">
+  <header><p class="eyebrow">Start here</p><h2>Build your annual plan</h2><p>Use one setup session to make the first month actionable. Use January’s observations to finalize your targets.</p></header>
+  <div class="grid three">
+    <article class="panel"><h3>1. Baseline · 20 min</h3><p>List fixed commitments, near-term deadlines and constraints. Estimate usable hours from a representative week. Inventory existing obligations before adding a project.</p></article>
+    <article class="panel"><h3>2. Choose · 25 min</h3><p>Set up to three year-end outcomes, with at most two projects active at once. Give every other module a maintenance floor or defer it explicitly.</p></article>
+    <article class="panel"><h3>3. Schedule · 15 min</h3><p>Pick this month’s first deliverable, book the first work blocks and set a weekly review. Leave an open slot for spillover or recovery.</p></article>
+  </div>
+  <h3>What you need to supply</h3>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Personalization inputs"><table><thead><tr><th>Area</th><th>Inputs to supply</th><th>Decision you own</th></tr></thead><tbody>
+    <tr><td>Direction</td><td>One to three outcomes you value, existing obligations, and any fixed deadlines or transitions.</td><td>What to pursue, maintain, defer, or stop. Name one trade-off you accept.</td></tr>
+    <tr><td>Time and energy</td><td>Usable hours by day, predictable low-capacity weeks, work and household commitments, preferred planning tools.</td><td>Weekly mode, protected time, and what gets dropped when capacity falls.</td></tr>
+    <tr><td>Career</td><td>Current work situation, desired role or change, geography, strengths and gaps, access to feedback, employer rules.</td><td>Grow in place, explore, change roles, or maintain. Choose what evidence can be shared.</td></tr>
+    <tr><td>Money</td><td>Jurisdiction, after-tax income and timing, essential and irregular bills, cash reserves, debt terms, dependants, benefits, insurance and goals. Add account eligibility and risk tolerance if relevant.</td><td>Which financial constraint comes first, the reserve floor, and which actions require verification.</td></tr>
+    <tr><td>Learning</td><td>Skill, current level, use case, resources, access to feedback and time for practice.</td><td>One performance task, its rubric, and when it must be repeatable without help.</td></tr>
+    <tr><td>Health habits</td><td>Desired habit, current routine, schedule constraints, access, and relevant limits or clinician advice you choose to disclose.</td><td>Which habit feels feasible, when to do it, and which tracking data you want to keep private.</td></tr>
+    <tr><td>Digital tools</td><td>Approved storage and apps, personal/work boundaries, data owners, backup method and tasks that repeat.</td><td>Where the authoritative copy of each item lives and which data may enter an automation or AI tool.</td></tr>
+  </tbody></table></div>
+  <div class="note"><strong>Planning assumptions.</strong> The year is January–December 2027. All time budgets, project caps, example scores and thresholds are adjustable planning defaults. The financial and health references include Canadian examples. Confirm the guidance that applies to your jurisdiction and circumstances. Baselines, targets and constraints remain yours to supply. Ranges and sanitized summaries are enough for a first pass.</div>
+  <h3>Choose a weekly mode</h3>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Weekly time budgets"><table><thead><tr><th>Mode</th><th>Weekly system time</th><th>Use it for</th></tr></thead><tbody>
+    <tr><td>Minimum</td><td>65 min = 10 min plan + 10 min review + one 35 min block + 10 min buffer</td><td>One project or stabilization during a disrupted week. Use the block for the most important next action.</td></tr>
+    <tr><td>Standard</td><td>170 min = 15 min plan + 20 min review + two 50 min blocks + 15 min admin + 20 min buffer</td><td>One primary project and one small secondary project, or both blocks on the same project.</td></tr>
+    <tr><td>Expanded</td><td>285 min = 15 min plan + 20 min review + four 50 min blocks + 20 min admin + 30 min buffer</td><td>Two active projects when the calendar and energy allow. Use extra blocks to finish a deliverable.</td></tr>
+  </tbody></table></div>
+  <p>System time covers planning, review, admin and project execution. Count any learning or career work done in those blocks once. Book movement, sleep and other routine commitments on the calendar before estimating project capacity. In month-end weeks, substitute a 30-minute review for the weekly review. At quarter-end, substitute a 60-minute review for both. Reserve 60 minutes for annual setup.</p>
+  <h3>Copy the annual plan</h3>
+  <div class="template"><button type="button" class="copy">Copy template</button><pre>2027 ANNUAL PLAN
+Year-end direction and why it matters: [one sentence]
+Fixed commitments, deadlines and protected time: [list]
+Weekly mode and usable hours: [mode / hours]
+What I am deferring and what would reopen it: [list / condition]
+
+Repeat for up to three outcomes
+Outcome ID and module: [O1 / module]
+By [date], move [metric or capability] from [baseline / measurement date] to [target].
+Acceptance evidence: [artifact, dated source or observable test]
+Reason this matters and trade-off I accept: [reason / trade-off]
+Quarterly proof: [Q1 / Q2 / Q3 / Q4]
+First monthly milestone and next scheduled action: [proof / calendar slot]
+Leading measure and outcome measure: [KPI IDs]
+Constraint, maintenance floor and fallback: [constraint / floor / if–then]
+Owner and next review: [self or agreed owner / date]</pre></div>
+  <p><strong>Worked example, illustrative.</strong> O1 is “By December 15, produce one approved work sample that meets 4 of 5 criteria on a stakeholder rubric.” The baseline is zero verified samples. Q1 proof is an agreed rubric and one baseline attempt. Q2 is a reviewed prototype. Q3 is a revised sample tested on a fresh case. Q4 is the final rubric and evidence link. This month’s milestone is the rubric. This week’s first block is a 50-minute draft with a reviewer identified. If access to work data is unavailable, use a synthetic case and record the evidence limitation.</p>
+</section>
+
+<section id="modules" class="chapter">
+  <header><p class="eyebrow">Choose what to improve</p><h2>Seven modules</h2><p>For each module, choose Build, Maintain, or Defer. Build consumes a project slot. Maintain gets one small routine. Defer gets a restart condition.</p></header>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Module playbooks"><table><thead><tr><th>Module</th><th>Build sequence</th><th>Maintenance floor and proof</th></tr></thead><tbody>
+    <tr><td>Productivity</td><td>Observe one week. Identify one bottleneck, such as unplanned work or overbooking. Protect a block for the highest-priority deliverable and compare planned versus completed work across four weeks. Use a specific trigger and response for the most likely interruption.</td><td>One weekly plan and review. Track completed focus blocks and a finished deliverable. Treat time blocking as an experiment in your own schedule. <a href="#s03">[3]</a> <a href="#s02">[2]</a></td></tr>
+    <tr><td>Career</td><td>Pick a path. <strong>Grow in place:</strong> agree a concrete contribution with a manager or stakeholder, deliver it and record the evidence. <strong>Explore:</strong> compare two roles using postings, official labour data and conversations. <strong>Change roles:</strong> practice job-search skills, seek feedback or peer support, and log application-to-screen conversion with sample counts.</td><td>Record one achievement or career signal each month. Use verified outcomes, authorized work samples and specific feedback. <a href="#s04">[4]</a> <a href="#s05">[5]</a> <a href="#s06">[6]</a></td></tr>
+    <tr><td>Financial planning</td><td>Reconcile income and spending, map due dates and set aside for known irregular bills. If essentials or minimums look at risk, prioritize the next 30 days and contact providers or creditors early. With positive cash flow, compare reserve building, debt reduction and time-bound goals using the actual terms. Check employer benefits, insurance gaps and longer-term savings at a quarterly or annual review.</td><td>One monthly close. Keep a dated cash forecast and one action. FCAC gives three to six months of regular expenses as an emergency-fund reference. Size your target from actual obligations, income volatility and available support. Verify current rules before acting on tax, benefit or account eligibility. <a href="#s09">[9]</a> <a href="#s10">[10]</a> <a href="#s11">[11]</a> <a href="#s12">[12]</a></td></tr>
+    <tr><td>Skill building</td><td>Define one task you want to perform independently. Take a baseline test. Practice recalling or doing it from memory over multiple sessions. Get feedback against a rubric. Repeat a parallel task after a delay and try a fresh use case.</td><td>One short practice opportunity each week when feasible. Measure delayed performance and transfer to a new problem. A sample rhythm is day 1, 3, 7 and 14, adjusted to errors and the retention goal. <a href="#s07">[7]</a> <a href="#s08">[8]</a></td></tr>
+    <tr><td>Health habits</td><td>Pick one routine, attach it to an existing cue and choose a version you can complete on a difficult day. Track repetitions for two weeks, then adapt. For context, Canadian guidance for adults aged 18–64 includes 150 minutes of moderate-to-vigorous activity weekly, strength work twice a week and 7–9 hours of regular sleep. Adapt to the guidance and clinical advice that apply to you.</td><td>One chosen action, measured as completions over opportunities. For example, if a regular walk is appropriate, use an existing break as the cue. Resume at the next cue after a miss. <a href="#s13">[13]</a> <a href="#s14">[14]</a></td></tr>
+    <tr><td>Digital organization</td><td>Choose an approved capture point, calendar, task list and document location for each environment. Link to authoritative records. Pilot a small set of active files, then test whether you can retrieve five representative records and restore a sample backup.</td><td>Clear the capture queue weekly. Protect important accounts with unique passwords and multi-factor authentication, which adds a separate sign-in check. Follow applicable work retention and storage rules. <a href="#s15">[15]</a> <a href="#s16">[16]</a> <a href="#s17">[17]</a></td></tr>
+    <tr><td>Long-term goal execution</td><td>Write a year-end outcome, define quarterly proof and translate the next month into a deliverable. Record progress and pre-plan the response to the most likely obstacle. Reassess at quarter-end using evidence, current capacity and remaining cost.</td><td>One dated check-in per active outcome. Evidence can be a signed-off artifact, a measurement, or a repeatable test. <a href="#s01">[1]</a> <a href="#s02">[2]</a></td></tr>
+  </tbody></table></div>
+  <div class="note"><strong>Choose the starting bottleneck.</strong> If cash obligations are at risk, make stabilization the active project. If your available time is unpredictable, use Minimum mode until you see two workable weeks. If a career deadline is fixed, give the most time-sensitive deliverable the first protected block. When nothing is urgent, choose the project whose evidence will help you make the next major decision.</div>
+  <div class="grid two">
+    <article class="panel"><h3>Example · Stabilize cash flow</h3><p>Suppose essential spending including minimum payments averages $2,400 per month and the designated reserve holds $3,000. Runway is 1.25 months. A hypothetical two-month interim floor is $4,800, leaving a $1,800 gap. A verified surplus allocation of $300 per month would close that gap in six months, before interest or interruptions. Put known irregular bills in the forecast first. Check monthly statements to validate the surplus and revisit the allocation if the next 30 days fall below the cash floor.</p></article>
+    <article class="panel"><h3>Example · Build a skill with career evidence</h3><p>Choose a common work task and a five-part rubric agreed with a reviewer. In week 1, spend one 50-minute block on a baseline attempt and rubric. In weeks 2 and 3, use each block for 10 minutes of recall, 30 minutes of independent work and 10 minutes of error review. In week 4, attempt a comparable new task before checking notes. A sample target is 4 of 5 criteria on a fresh case. Record the rubric, attempt, permitted artifact and reviewer feedback.</p></article>
+  </div>
+</section>
+
+<section id="roadmap" class="chapter">
+  <header><p class="eyebrow">Annual cadence</p><h2>Quarterly priorities and monthly milestones</h2><p>Apply each milestone to the outcomes you’ve activated. The last month of each quarter ends with a decision to continue, change, maintain, pause, or stop.</p></header>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Monthly roadmap"><table><thead><tr><th>Quarter and priority</th><th>Month</th><th>Milestone and evidence of completion</th></tr></thead><tbody>
+    <tr><td rowspan="3"><strong>Q1 · Establish the baseline</strong><br>Exit with a viable calendar, a baseline, and a tested first deliverable.</td><td>January</td><td>Complete the annual plan, log two representative weeks and close one month of finances or flag missing records. Confirm the time mode and choose each active outcome’s baseline, acceptance criteria and Q1 proof.</td></tr>
+    <tr><td>February</td><td>Run one four-week pilot on the primary outcome. Save weekly records and one tangible draft, test result, or completed action. Record which bottleneck the pilot is testing.</td></tr>
+    <tr><td>March</td><td>Compare pilot results with the baseline, obtain one relevant feedback signal and record the Q1 decision. Book April’s first action and confirm the revised target and capacity.</td></tr>
+    <tr><td rowspan="3"><strong>Q2 · Build and validate</strong><br>Exit with a usable deliverable and a feedback-based revision.</td><td>April</td><td>Write a one-page scope with a due date, evidence standard and dependencies. Deliver the first usable slice. Resolve or escalate the dependency most likely to block May.</td></tr>
+    <tr><td>May</td><td>Put the deliverable into a realistic use case. Capture feedback or test results against the criteria and prioritize the two highest-value changes.</td></tr>
+    <tr><td>June</td><td>Deliver the revision, record a before/after measure, and close or rescope the quarter. Reforecast annual outcomes and review cash reserves, obligations and capacity.</td></tr>
+    <tr><td rowspan="3"><strong>Q3 · Make it repeatable</strong><br>Exit with evidence it works in a second context or a smaller sustainable scope.</td><td>July</td><td>Test the method or skill in a different context. Preserve the same acceptance criteria where comparable and record exceptions.</td></tr>
+    <tr><td>August</td><td>Standardize one repeatable process as a checklist. If eligible, run one automation in parallel with the manual process and log misses and duplicates.</td></tr>
+    <tr><td>September</td><td>Run a reduced-capacity week or tabletop exercise. Verify the fallback and review the evidence. Retire one low-value commitment if the remaining plan exceeds capacity.</td></tr>
+    <tr><td rowspan="3"><strong>Q4 · Finish and carry forward</strong><br>Exit with documented results and an explicit 2028 starting point.</td><td>October</td><td>List the exact gaps between each active outcome and its year-end proof. Lock the finishing scope, schedule the critical work and settle any review or approval dates.</td></tr>
+    <tr><td>November</td><td>Submit the deliverables for review or rerun the outcome tests. Review expected year-end bills and confirm any applicable deadlines with the issuing organization.</td></tr>
+    <tr><td>December</td><td>Record final results against the original baseline and the latest approved targets. Archive evidence, shut down stale automations, and identify one 2028 priority with its first action.</td></tr>
+  </tbody></table></div>
+  <div class="grid two"><article class="panel"><h3>Month-end · 30 min</h3><p>Check each milestone against its acceptance evidence. Reconcile the relevant dashboard figures and log the remaining gap. Choose next month’s deliverable, owner, date and first block. Revise scope or timing explicitly when the numbers diverge.</p></article><article class="panel"><h3>Quarter-end · 60 min</h3><p>Spend 15 minutes on evidence, 15 on causes and constraints, 20 on next-quarter scope and calendar, and 10 on risks and automation. Record the decision, rationale, revised targets if any, and what will reopen the decision.</p></article></div>
+</section>
+
+<section id="week" class="chapter">
+  <header><p class="eyebrow">Weekly operating rhythm</p><h2>Plan and review the week</h2><p>Start from the calendar and current milestone. Each scheduled block should produce a small piece of evidence or resolve a named uncertainty.</p></header>
+  <div class="grid two templates">
+    <article><h3>Weekly plan · 10–15 min</h3><div class="template"><button type="button" class="copy">Copy template</button><pre>WEEK OF [date] · MODE [minimum / standard / expanded]
+Fixed commitments and usable time: [list / minutes]
+Must-finish result: [deliverable and acceptance evidence]
+Next result, if capacity permits: [deliverable]
+Block 1: [day, time, minutes, exact first action]
+Block 2 or later blocks, if any: [day, time, minutes, output]
+Maintenance action and cue: [action / cue]
+Buffer and what I will drop first: [slot / item]
+If [likely obstacle], then [specific fallback].
+Review time and data to capture: [slot / KPI IDs]</pre></div></article>
+    <article><h3>Weekly review · 10–20 min</h3><div class="template"><button type="button" class="copy">Copy template</button><pre>WEEK ENDING [date]
+Promised vs completed: [result / evidence link or missing proof]
+Planned vs completed blocks: [count / count]
+KPI readings: [value / source / date or unknown]
+What caused the gap: [capacity, scope, dependency, skill or other]
+One change to test next week: [change / predicted signal]
+One item to close, defer, delegate or rescope: [item / decision]
+Risk triggered and action taken: [risk ID / response]
+Next week's mode, priority and first slot: [mode / action / time]
+One fact to verify or help to request: [question / owner / date]</pre></div></article>
+  </div>
+  <p><strong>When the week collapses:</strong> Keep immediate obligations visible, reduce to one next action and use Minimum mode. If even that time is unavailable, use 10 minutes to handle or renegotiate the nearest critical deadline and schedule the next review. Leave missed work in the backlog until you deliberately reschedule it.</p>
+</section>
+      <section id="decisions" class="chapter">
+  <header><p class="eyebrow">Make the trade-off explicit</p><h2>Decision-making framework</h2><p>Use the brief version for a reversible choice. Use the full version when money, commitments, health, employment, or other people’s data are materially affected.</p></header>
+  <ol class="steps">
+    <li><strong>Frame the choice.</strong> Write what you must decide, by when, who owns it and what happens if you wait. Identify what the choice will displace.</li>
+    <li><strong>Apply hard limits.</strong> Set maximum time and cost, minimum safety and privacy requirements, approval needs and deadlines. Remove options that breach a hard limit. Mark any unverified limit as pending.</li>
+    <li><strong>Compare options.</strong> Include the current course and, when feasible, a small trial. Separate observed facts from assumptions. Weigh outcomes you value and record the most important unknown.</li>
+    <li><strong>Check robustness.</strong> Change the most disputed weight or score across a plausible range. If the preferred option changes, price the smallest test or piece of evidence that would resolve the difference. Recheck external rules with authoritative sources when relevant.</li>
+    <li><strong>Decide and revisit.</strong> Record the choice, rationale, downside cap, next action and review date. Set a trigger that would make you reopen the decision. If evidence arrives later, preserve the original log entry and append the update.</li>
+  </ol>
+  <div class="note"><strong>Time box.</strong> A five-minute decision needs a deadline, hard limit, small next action and review point. A consequential choice gets 30–60 minutes for the brief plus any necessary evidence-gathering. The options-and-values approach draws on a healthcare decision aid. Its use here is a general planning adaptation. <a href="#s18">[18]</a></div>
+  <h3>Worked example · Choose how to test a skill</h3>
+  <p>Illustrative only. Assume every option meets the hard limits of two hours per week, a fixed budget, and approved data use. Score each criterion from 1 to 5, where 5 is most favourable. Multiply by the decimal weight and add. Compare close scores using evidence.</p>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Weighted decision example"><table><thead><tr><th>Option</th><th>Relevant proof · 45%</th><th>Time fit · 35%</th><th>Feedback access · 20%</th><th>Weighted score</th></tr></thead><tbody>
+    <tr><td>Continue self-study</td><td>2</td><td>5</td><td>1</td><td>2.85</td></tr><tr><td>Small project pilot</td><td>5</td><td>4</td><td>3</td><td>4.25</td></tr><tr><td>Short course</td><td>3</td><td>3</td><td>4</td><td>3.20</td></tr>
+  </tbody></table></div>
+  <p>If the pilot’s time-fit score falls from 4 to 1, its total drops to 3.20 and ties the course. Confirm usable time through a one-week pilot before paying for a course or committing to a longer project.</p>
+  <div class="template"><button type="button" class="copy">Copy template</button><pre>DECISION [ID / date / owner / decision deadline]
+Choice and default if I wait: [one sentence]
+Hard limits, approvals and displaced work: [list]
+Viable options and evidence: [facts with source / assumptions]
+Criteria, weights, scores and strongest counterargument: [details]
+What would change the result: [range, test or missing evidence]
+Decision and why: [choice / rationale]
+Cost cap, first action and review date: [cap / action / date]
+Reopen if: [observable trigger]</pre></div>
+</section>
+
+<section id="dashboard" class="chapter">
+  <header><p class="eyebrow">Measure what changes decisions</p><h2>Personal KPI dashboard</h2><p>A KPI is a key performance indicator. A leading measure tracks an action you can influence. An outcome measure shows whether that action produced the result you wanted.</p></header>
+  <p>Start with one leading measure and one outcome measure per active project. Use four to six live measures in the weekly view. Add a constraint measure only if it would change what you do. Keep other measures as optional. The dashboard can live in a spreadsheet or a private table.</p>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="KPI dictionary"><table><thead><tr><th>ID / measure</th><th>Definition and unit</th><th>Cadence / source</th><th>Response to review</th></tr></thead><tbody>
+    <tr><td>P1 · Focus follow-through</td><td>Completed protected blocks ÷ planned protected blocks × 100, percent. Define a completed block by its agreed task or proof.</td><td>Weekly · calendar plus completion log</td><td>Two misses against the chosen floor prompt a time or scope change.</td></tr>
+    <tr><td>G1 · Milestones accepted</td><td>Due milestones accepted with evidence ÷ milestones due in the same period × 100, percent. Keep the month’s planned denominator and log changes.</td><td>Monthly · milestone tracker</td><td>Review overdue proof and negotiate the next milestone. Keep outcome and due-date changes visible.</td></tr>
+    <tr><td>C1 · Career proof</td><td>Count distinct deliverables or achievements accepted against the relevant criteria. A new review of the same item counts as feedback.</td><td>Monthly · evidence log or approved reviewer record</td><td>Ask for a specific feedback slot if proof is missing or lacks validation.</td></tr>
+    <tr><td>C2 · Screening conversion</td><td>Applications that reached screening ÷ applications in a dated, mature cohort × 100. Use a fixed response window and display both counts.</td><td>Monthly when job searching · application log</td><td>With a small sample, inspect fit and feedback first. Compare cohorts at the same age.</td></tr>
+    <tr><td>F1 · Monthly cash margin</td><td>Cash income received minus cash expenses and required debt payments, in your currency. Count each outflow once. Exclude transfers between your own accounts and show goal allocations separately.</td><td>Monthly · reconciled ledger or statements</td><td>A projected shortfall triggers a 30-day cash forecast and a review of obligations.</td></tr>
+    <tr><td>F2 · Reserve runway</td><td>Accessible cash designated for emergencies ÷ average monthly essential expenses, in months. Include required debt minimums in the expense base. Use a recent representative period.</td><td>Monthly · savings balance and budget</td><td>If below your chosen floor, review liquidity and the next scheduled obligations.</td></tr>
+    <tr><td>S1 · Practice consistency</td><td>Completed planned practice sessions ÷ planned sessions × 100, percent. Count each qualifying session once.</td><td>Weekly · practice log</td><td>Shorten or move the session if repeated misses show a scheduling problem.</td></tr>
+    <tr><td>S2 · Delayed performance</td><td>Rubric points earned ÷ possible points × 100 on a comparable task after a chosen delay. Store date, delay and task version.</td><td>Every 2–4 weeks · scored task or test</td><td>Redo missed components with feedback and retest on fresh items.</td></tr>
+    <tr><td>H1 · Habit follow-through</td><td>Completed agreed actions ÷ feasible cue opportunities × 100. Define exclusions up front and show both counts.</td><td>Weekly · private tally</td><td>Change the cue or shrink the routine if repeated misses point to poor fit.</td></tr>
+    <tr><td>D1 · Retrieval test</td><td>Records found within your chosen time limit ÷ records tested × 100. Record the sample and approved locations.</td><td>Monthly during a cleanup · timed lookup log</td><td>Fix the index, labels or permissions behind failed lookups.</td></tr>
+  </tbody></table></div>
+  <div class="grid two"><article class="panel"><h3>Data model</h3><p><strong>Definitions:</strong> KPI ID, outcome ID, owner, unit, direction, formula, cadence, data source, baseline/date, target/date, amber threshold and review action.</p><p><strong>Observations:</strong> KPI ID, period start/end, actual, numerator/denominator where needed, source reference, recorded date and note. Keep one reading per KPI and period. Correct with a dated note.</p></article><article class="panel"><h3>Dashboard view</h3><p>Show KPI, latest actual, target, prior comparable period, status, updated date and next action. Use text labels alongside any colours. Keep weekly, monthly and delayed measures on their own schedules.</p><p>Use <strong>On track</strong> when the target is met, <strong>Watch</strong> in the chosen tolerance band, and <strong>Act</strong> outside it. Show <strong>Unknown</strong> for missing, stale or undefined values, including zero denominators.</p></article></div>
+  <p><strong>Illustrative row.</strong> P1 has a floor of 75% and an amber range of 50% to below 75%. This week, 2 of 3 blocks were completed, yielding 66.7% and Watch. The next action is to move one block away from a recurring conflict. If no blocks were planned, show Unknown and inspect capacity at the review.</p>
+</section>
+
+<section id="automation" class="chapter">
+  <header><p class="eyebrow">Automate the repeatable work</p><h2>Automation opportunity map</h2><p>Choose one frequent, stable task with a clear manual fallback. Use your existing calendar, task manager, bank features, or approved workplace tools where they fit.</p></header>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Automation opportunity map"><table><thead><tr><th>Opportunity / priority</th><th>Trigger and output</th><th>Controls and fallback</th><th>Acceptance test</th></tr></thead><tbody>
+    <tr><td>Weekly review · Start</td><td>Weekly calendar reminder opens the review template and dashboard.</td><td>Keep reminders private. Keep one recurring event. Use a manual calendar block if the link fails.</td><td>Two successive prompts land at the chosen local time and open the right template.</td></tr>
+    <tr><td>Renewal reminders · Start</td><td>Confirmed due date creates a reminder with a link to the authoritative record.</td><td>Verify date and timezone at entry. Keep sensitive details out of notification text. Use the original due-date list as fallback.</td><td>Test one time change, one cancellation and one duplicate input.</td></tr>
+    <tr><td>Learning reviews · Start</td><td>When a practice item is logged, schedule the next recall session based on the last result.</td><td>Cap the queue at the time budget and allow manual rescheduling. Use the dated practice list if sync fails.</td><td>One item schedules once, a missed item remains visible, and the queue cap works.</td></tr>
+    <tr><td>Monthly close pack · Pilot</td><td>At month-end, open the checklist, read approved aggregate figures and create a private draft dashboard snapshot.</td><td>Reconcile figures to the ledger. Alert on missing data. Close manually if reconciliation fails.</td><td>Compare one normal and one incomplete month with the manual result.</td></tr>
+    <tr><td>Capture to tasks · Pilot</td><td>Selected notes or labelled messages produce task drafts with source links.</td><td>Limit to approved folders and accounts. Deduplicate by source ID. Review names, owners and dates before committing drafts.</td><td>Run the same input twice, try one missing due date and one out-of-scope item.</td></tr>
+    <tr><td>Career or market digest · Pilot</td><td>Weekly saved searches create a shortlist with dates, source links and relevance reasons.</td><td>Check listing freshness and duplicates. Keep external replies and applications under manual control.</td><td>Spot-check links, compare with manual search and measure review time.</td></tr>
+    <tr><td>Backup verification · Pilot</td><td>Scheduled backup records success or failure and prompts a periodic sample restore.</td><td>Use approved locations and access. Alert on failure. Keep the recovery path accessible separately.</td><td>Restore and open a representative file. Simulate a failed backup notice.</td></tr>
+    <tr><td>Money movement · Controlled</td><td>If suitable, a bank-native transfer runs after cleared income, for a pre-approved amount.</td><td>Confirm liquidity and account terms first. Use bank alerts, a balance floor and a pause control. On irregular income, consider manual approval.</td><td>Verify the amount and date against the statement. Confirm the transfer can be paused and model a low-balance cycle. <a href="#s10">[10]</a></td></tr>
+  </tbody></table></div>
+  <h3>How to decide whether it earns its keep</h3>
+  <p>Estimate monthly net minutes as <code>runs × (manual minutes − automated review minutes) − monthly upkeep</code>. Divide one-time setup minutes by positive monthly net minutes for a rough break-even. For example, four runs saving 7 minutes each with 8 minutes of upkeep yield 20 minutes per month. A 40-minute setup breaks even in about two months. Replace the estimates with observed results after the pilot.</p>
+  <p>Write the trigger, owner, inputs, allowed outputs and stop switch. Test success, missing inputs, retries and duplicates with a sample. Where practical, run alongside the manual process for two cycles. Log run date, source ID, status and exceptions. If a serious failure occurs or manual review exceeds the time saved, pause and revert. Keep sending messages, deleting records, spending money, and sharing sensitive information behind explicit controls.</p>
+</section>
+
+<section id="risks" class="chapter">
+  <header><p class="eyebrow">Prepare for disruption</p><h2>Risk register and contingency plans</h2><p>At setup, score likelihood and impact from 1 (low) to 3 (high) for the next quarter. Review the highest-impact risks first. A score of 6 or more is a suggested escalation threshold. Act on serious safety, privacy, or cash threats promptly.</p></header>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Risk register"><table><thead><tr><th>Risk / suggested owner</th><th>Trigger</th><th>Prevention</th><th>Immediate response and restart</th></tr></thead><tbody>
+    <tr><td>R1 · Overcommitment / self</td><td>Two reviews below your focus floor or a new fixed demand consumes the buffer.</td><td>Cap active projects and keep slack.</td><td>Move to Minimum mode and renegotiate one deadline. Restore a project slot after two workable weeks.</td></tr>
+    <tr><td>R2 · Income interruption or expense shock / household budget owner</td><td>A 30-day forecast falls below the chosen cash floor or a required payment is at risk.</td><td>Track due dates and reserve runway. Separate expected irregular costs from emergencies.</td><td>Update cleared balances and near-term bills. Pause discretionary spending or transfers as appropriate. Contact creditors or providers early if payment is at risk. Reassess after the near-term obligations are covered. <a href="#s10">[10]</a> <a href="#s11">[11]</a></td></tr>
+    <tr><td>R3 · Reduced health or caring capacity / self and agreed support</td><td>Illness, care demands, or relevant professional advice makes the planned load unsuitable.</td><td>Keep a reduced plan and identify critical commitments and support contacts.</td><td>Drop or hand off optional work, reschedule the review, and resume gradually when circumstances permit.</td></tr>
+    <tr><td>R4 · Career dependency or changed priorities / project owner</td><td>Approval, access, sponsorship or feedback misses the agreed date.</td><td>Set a checkpoint and define an independent test.</td><td>Confirm expectations, switch to an authorized proxy deliverable or pause. Resume when the dependency and a new date are confirmed.</td></tr>
+    <tr><td>R5 · Learning plateau / learner</td><td>Two comparable delayed tests below target or recurring errors on the same component.</td><td>Set a stable rubric, spaced practice and a feedback source.</td><td>Reduce task complexity, practice the weakest part and retest on fresh items before increasing difficulty.</td></tr>
+    <tr><td>R6 · Data loss or account lockout / account owner</td><td>Backup fails, a restore sample cannot be opened, or account access is lost.</td><td>Keep an approved backup, recovery methods and periodic sample restores.</td><td>Use the approved recovery route. For work data, report via the employer’s incident process. Resume once access and the affected records are verified. <a href="#s16">[16]</a> <a href="#s17">[17]</a></td></tr>
+    <tr><td>R7 · Automation error or oversharing / workflow owner</td><td>Duplicate action, unexpected recipient, missing output or unauthorized data access.</td><td>Use narrow permissions, test retries, review sensitive outputs and keep an activity log.</td><td>Disable the workflow, contain exposure, check scope from the logs and follow the applicable reporting process. Resume after a supervised test and a verified fix.</td></tr>
+    <tr><td>R8 · Goal loses relevance / outcome owner</td><td>Underlying assumptions change or two monthly reviews show little value from continuing.</td><td>Document why the goal matters and what would invalidate it.</td><td>Run the decision brief again, account for remaining costs, then rescope, pause or close. Reopen only when the new case is documented.</td></tr>
+  </tbody></table></div>
+  <p>Add one row per personal risk with <code>ID | owner | likelihood | impact | score | trigger | prevention | response | restart | next review | status</code>. Keep emergency contacts and sensitive account details in an appropriate private place and link to them only where access is approved.</p>
+  <div class="note"><strong>Test recovery once in Q3.</strong> Pick one plausible disruption, walk through the first 24 hours, verify the fallback with sample data or a calendar rehearsal, then fix one weakness. Log who owns the fix and when it will be retested.</div>
+</section>
+      <section id="prompts" class="chapter">
+  <header><h2>50 execution prompts</h2><p>Search by task, keyword or prompt ID. Open a prompt, copy it and replace the bracketed fields with your inputs. For sensitive material, use summaries you are allowed to share. Verify calculations, quoted facts and recommendations before acting.</p></header>
+  <div class="prompt-controls">
+    <label for="prompt-search">Search prompts<input id="prompt-search" type="search" placeholder="Try cash flow, feedback or P06" autocomplete="off"></label>
+    <label for="prompt-category">Category<select id="prompt-category"><option value="">All categories</option><option value="Annual planning">Annual planning</option><option value="Weekly execution">Weekly execution</option><option value="Decisions">Decisions</option><option value="Career">Career</option><option value="Financial planning">Financial planning</option><option value="Skill building">Skill building</option><option value="Health habits">Health habits</option><option value="Digital organization">Digital organization</option><option value="Dashboard">Dashboard</option><option value="Automation &amp; risk">Automation &amp; risk</option></select></label>
+    <button type="button" class="quiet-button" id="clear-filters">Clear filters</button>
+  </div>
+  <p id="prompt-count" class="prompt-count" role="status">50 of 50 prompts</p>
+  <div class="prompt-group" data-category="Annual planning"><h3>Annual planning</h3><details class="prompt-card" id="P01">
+  <summary><span class="prompt-id">P01</span>Annual planning interview</summary>
+  <div class="prompt-body"><p class="copy-text">Interview me to build a 2027 plan from [draft goals], [fixed obligations], [available time] and [non-negotiables]. Ask up to five questions whose answers could change what I pursue. After I answer, produce up to three outcome cards with baseline, dated target, acceptance evidence, time cost, trade-off, and first scheduled action. Keep unknowns visible and flag any capacity conflict.</p><button type="button" class="copy" aria-label="Copy prompt P01">Copy prompt</button></div>
+</details><details class="prompt-card" id="P02">
+  <summary><span class="prompt-id">P02</span>One-page annual plan</summary>
+  <div class="prompt-body"><p class="copy-text">Turn [outcomes], [baselines], [deadlines] and [capacity] into a one-page annual plan. Map each outcome to quarterly proof, one January deliverable, one leading measure and one outcome measure. Include a defer list and a reduced-capacity mode. Check the calendar arithmetic and mark any target that lacks a baseline or test.</p><button type="button" class="copy" aria-label="Copy prompt P02">Copy prompt</button></div>
+</details><details class="prompt-card" id="P03">
+  <summary><span class="prompt-id">P03</span>Prioritize the project portfolio</summary>
+  <div class="prompt-body"><p class="copy-text">Given [candidate projects], [year-end priorities], [estimated effort], [dependencies] and [weekly capacity], recommend which projects to build, maintain, defer or close. Return a table with evidence of value, time cost, displaced work and conditions for reopening. Cap active work at [project limit] and identify the assumption most likely to change the order.</p><button type="button" class="copy" aria-label="Copy prompt P03">Copy prompt</button></div>
+</details><details class="prompt-card" id="P04">
+  <summary><span class="prompt-id">P04</span>Reverse-plan a milestone</summary>
+  <div class="prompt-body"><p class="copy-text">Work backward from [deliverable], [acceptance criteria] and [deadline]. Use [availability], [dependencies] and [review lead times] to produce a dated plan with owner, proof and buffer for each milestone. Mark the latest safe date for the critical dependency and give one scope cut if that date slips.</p><button type="button" class="copy" aria-label="Copy prompt P04">Copy prompt</button></div>
+</details><details class="prompt-card" id="P05">
+  <summary><span class="prompt-id">P05</span>Quarterly reset</summary>
+  <div class="prompt-body"><p class="copy-text">Compare [quarter plan], [actuals], [evidence], [remaining cost] and [next-quarter capacity]. For each outcome, recommend continue, change, maintain, pause or stop with one reason and a proof link if available. End with a revised 90-day plan, the first scheduled action for the upcoming quarter, and any assumptions I must confirm.</p><button type="button" class="copy" aria-label="Copy prompt P05">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Weekly execution"><h3>Weekly execution</h3><details class="prompt-card" id="P06">
+  <summary><span class="prompt-id">P06</span>Plan the week from the calendar</summary>
+  <div class="prompt-body"><p class="copy-text">Use [calendar constraints], [available minutes], [monthly milestone], [task backlog] and [energy windows] to write a weekly plan. Include one must-finish result, time blocks with a specific output, maintenance, buffer and an if–then fallback. Add up every planned minute and flag overlaps or missing capacity.</p><button type="button" class="copy" aria-label="Copy prompt P06">Copy prompt</button></div>
+</details><details class="prompt-card" id="P07">
+  <summary><span class="prompt-id">P07</span>Turn vague work into a first action</summary>
+  <div class="prompt-body"><p class="copy-text">For [stalled task], [desired output], [block length] and [available materials], define the smallest useful artifact I can complete in one block. Give the first five minutes, up to three steps and a completion test. If a dependency makes the artifact infeasible, propose an independently achievable checkpoint.</p><button type="button" class="copy" aria-label="Copy prompt P07">Copy prompt</button></div>
+</details><details class="prompt-card" id="P08">
+  <summary><span class="prompt-id">P08</span>Review the week</summary>
+  <div class="prompt-body"><p class="copy-text">Compare [promises], [completed outputs], [KPI observations] and [interruptions]. Return a promised-versus-actual table, a likely cause for each major gap, one experiment for next week, one item to drop or renegotiate, and the first calendar block. Mark inferred causes and missing proof.</p><button type="button" class="copy" aria-label="Copy prompt P08">Copy prompt</button></div>
+</details><details class="prompt-card" id="P09">
+  <summary><span class="prompt-id">P09</span>Recover a disrupted week</summary>
+  <div class="prompt-body"><p class="copy-text">Given [remaining time], [due dates], [consequences of delay] and [open work], build a reduced plan for the rest of the week. Choose one critical action, one item to hand off or renegotiate, one maintenance minimum and one restart checkpoint. Draft any necessary update for my review and leave sending to me.</p><button type="button" class="copy" aria-label="Copy prompt P09">Copy prompt</button></div>
+</details><details class="prompt-card" id="P10">
+  <summary><span class="prompt-id">P10</span>Close the month</summary>
+  <div class="prompt-body"><p class="copy-text">Review [month milestones], [artifacts], [KPI records], [budget summary] and [next-month availability]. Produce a close note with evidence, missed milestones, key variances and one next deliverable per active outcome. Flag any metric that uses stale data or changed definitions. Include the first action and review date.</p><button type="button" class="copy" aria-label="Copy prompt P10">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Decisions"><h3>Decisions</h3><details class="prompt-card" id="P11">
+  <summary><span class="prompt-id">P11</span>Write a decision brief</summary>
+  <div class="prompt-body"><p class="copy-text">Frame [decision], [deadline], [options], [hard constraints] and [values]. Include continuing the current course, plus a small trial if practical. Return a one-page brief with evidence, assumptions, likely downside, reversibility, recommendation and a reopen trigger. Identify which facts need a primary source or stakeholder confirmation.</p><button type="button" class="copy" aria-label="Copy prompt P11">Copy prompt</button></div>
+</details><details class="prompt-card" id="P12">
+  <summary><span class="prompt-id">P12</span>Score and stress-test options</summary>
+  <div class="prompt-body"><p class="copy-text">Score [options] against [criteria and weights] using [evidence and assumptions]. Check that weights sum to 100%. Show the raw scores, reasons and weighted math. Vary the least certain input across [plausible range] and report when the ranking changes. If evidence is missing, show the uncertainty and the cheapest way to reduce it.</p><button type="button" class="copy" aria-label="Copy prompt P12">Copy prompt</button></div>
+</details><details class="prompt-card" id="P13">
+  <summary><span class="prompt-id">P13</span>Challenge a preferred option</summary>
+  <div class="prompt-body"><p class="copy-text">Assume I favour [option] because [reasons]. Use [alternatives], [known facts] and [constraints] to write the strongest good-faith case for a different choice. Surface one assumption driving each case, one falsifiable test and the decision implication if the test fails. Keep facts and hypotheses distinct.</p><button type="button" class="copy" aria-label="Copy prompt P13">Copy prompt</button></div>
+</details><details class="prompt-card" id="P14">
+  <summary><span class="prompt-id">P14</span>Design a small reversible trial</summary>
+  <div class="prompt-body"><p class="copy-text">Convert [uncertain decision] and [key assumption] into a trial under [time budget], [cost cap] and [permissions]. Define the activity, sample, baseline, pass/fail/inconclusive criteria and stop rule. Return a run sheet and explain how each result would affect the decision.</p><button type="button" class="copy" aria-label="Copy prompt P14">Copy prompt</button></div>
+</details><details class="prompt-card" id="P15">
+  <summary><span class="prompt-id">P15</span>Audit a decision afterward</summary>
+  <div class="prompt-body"><p class="copy-text">Compare [original decision log], [assumptions], [observed result] and [new evidence]. Identify which assumptions were supported, falsified or still untested. Separate how sound the process was from how the outcome turned out. Produce an updated decision, a dated rationale and one change for similar future decisions.</p><button type="button" class="copy" aria-label="Copy prompt P15">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Career"><h3>Career</h3><details class="prompt-card" id="P16">
+  <summary><span class="prompt-id">P16</span>Compare career paths</summary>
+  <div class="prompt-body"><p class="copy-text">Compare [target paths] for [location or remote scope] using [approved sources or postings] and [my constraints]. Return a table of duties, entry requirements, recurring skills, pay or outlook where verified, and two validation steps. If browsing, use dated primary sources and show coverage and sample sizes. Leave unsupported fields unknown.</p><button type="button" class="copy" aria-label="Copy prompt P16">Copy prompt</button></div>
+</details><details class="prompt-card" id="P17">
+  <summary><span class="prompt-id">P17</span>Plan a grow-in-place project</summary>
+  <div class="prompt-body"><p class="copy-text">Using [role scope], [team priority], [stakeholders], [time] and [permissions], propose one 90-day contribution. Draft a brief with problem, baseline, first usable deliverable, approvals, measures, reviewer and milestone dates. Specify which impact can be attributed to the project and what proof would support it.</p><button type="button" class="copy" aria-label="Copy prompt P17">Copy prompt</button></div>
+</details><details class="prompt-card" id="P18">
+  <summary><span class="prompt-id">P18</span>Build a verified achievement log</summary>
+  <div class="prompt-body"><p class="copy-text">Turn [sanitized notes], [my role] and [available evidence] into achievement records. For each, give context, action, outcome, source, date, confidence and confidentiality limits. Draft one résumé bullet only where the claim is supported. Mark estimates and ask for missing numbers without inventing them.</p><button type="button" class="copy" aria-label="Copy prompt P18">Copy prompt</button></div>
+</details><details class="prompt-card" id="P19">
+  <summary><span class="prompt-id">P19</span>Get actionable feedback</summary>
+  <div class="prompt-body"><p class="copy-text">Given [work sample summary], [rubric], [reviewer relationship] and [review window], draft a short feedback request with two observable questions and a low-effort way to respond. Also create a revision log with feedback, decision, next change and retest. Keep the message ready for my review.</p><button type="button" class="copy" aria-label="Copy prompt P19">Copy prompt</button></div>
+</details><details class="prompt-card" id="P20">
+  <summary><span class="prompt-id">P20</span>Practice an interview</summary>
+  <div class="prompt-body"><p class="copy-text">Run a mock interview for [role] using [job description], [my verified examples] and [competencies]. Ask one question at a time and wait for my answer. Then rate specificity, ownership, result and relevance on a stated rubric. Suggest one stronger structure using only facts I provided, and retry the weakest answer.</p><button type="button" class="copy" aria-label="Copy prompt P20">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Financial planning"><h3>Financial planning</h3><details class="prompt-card" id="P21">
+  <summary><span class="prompt-id">P21</span>Reconcile a monthly budget</summary>
+  <div class="prompt-body"><p class="copy-text">Using [redacted cash income], [categorized expenses], [required debt payments] and [transfer records], produce a monthly budget vs actual table and cash margin. Keep transfers and goal allocations separate, flag duplicate or missing items, and reconcile totals to [statement totals]. State any reconciliation gap before suggesting a change.</p><button type="button" class="copy" aria-label="Copy prompt P21">Copy prompt</button></div>
+</details><details class="prompt-card" id="P22">
+  <summary><span class="prompt-id">P22</span>Forecast the next 30 days</summary>
+  <div class="prompt-body"><p class="copy-text">Use [cleared balances], [expected income dates and amounts], [required bill dates], [minimum payments] and [cash floor]. Return a dated running balance with base and delayed-income cases. Mark the first date below the floor and identify which outflows are fixed, flexible or require an agreement. Label uncertain dates and amounts.</p><button type="button" class="copy" aria-label="Copy prompt P22">Copy prompt</button></div>
+</details><details class="prompt-card" id="P23">
+  <summary><span class="prompt-id">P23</span>Compare debt payoff scenarios</summary>
+  <div class="prompt-body"><p class="copy-text">Compare repayment options using [balances], [interest rates and compounding], [minimums], [fees or penalties] and [affordable extra amount]. Model highest-interest-first and lowest-balance-first if feasible, with minimums protected. Show projected interest, payoff dates and assumptions. Request missing terms and flag estimates for lender verification.</p><button type="button" class="copy" aria-label="Copy prompt P23">Copy prompt</button></div>
+</details><details class="prompt-card" id="P24">
+  <summary><span class="prompt-id">P24</span>Size a liquidity reserve</summary>
+  <div class="prompt-body"><p class="copy-text">Using [accessible cash], [essential spending], [income volatility], [dependants or support] and [known upcoming bills], calculate current runway and compare three reserve floors. Separate known irregular costs from emergencies. Show cash required and time to build each scenario. If citing Canadian guidance, confirm the current FCAC source.</p><button type="button" class="copy" aria-label="Copy prompt P24">Copy prompt</button></div>
+</details><details class="prompt-card" id="P25">
+  <summary><span class="prompt-id">P25</span>Verify a financial decision</summary>
+  <div class="prompt-body"><p class="copy-text">Create a verification checklist for [financial decision], [jurisdiction], [target date], [relevant employer or account terms] and [official sources]. List applicable eligibility, fees, liquidity, deadlines, contribution limits or risk factors where relevant. Date every verified rule, flag changes or unresolved questions, and specify what I should confirm before execution.</p><button type="button" class="copy" aria-label="Copy prompt P25">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Skill building"><h3>Skill building</h3><details class="prompt-card" id="P26">
+  <summary><span class="prompt-id">P26</span>Diagnose a skill gap</summary>
+  <div class="prompt-body"><p class="copy-text">For [skill], [target task], [baseline evidence] and [available tools], design a 20–40 minute diagnostic. Supply a task, scoring rubric, evidence to capture and a mapping from likely errors to practice topics. Keep the scoring guide available separately from the task and include a comparable retest.</p><button type="button" class="copy" aria-label="Copy prompt P26">Copy prompt</button></div>
+</details><details class="prompt-card" id="P27">
+  <summary><span class="prompt-id">P27</span>Build a spaced practice cycle</summary>
+  <div class="prompt-body"><p class="copy-text">Create a four-week practice plan for [skill], [target task], [weekly minutes] and [common errors]. Schedule closed-book recall, realistic drills and feedback. Include a delayed retest and a new-context task. Adjust the spacing using performance and check total time against my cap.</p><button type="button" class="copy" aria-label="Copy prompt P27">Copy prompt</button></div>
+</details><details class="prompt-card" id="P28">
+  <summary><span class="prompt-id">P28</span>Tutor through retrieval</summary>
+  <div class="prompt-body"><p class="copy-text">Tutor me on [topic] at [level] using [source material] and [session length]. Ask one question and wait. Give a hint after a failed attempt, then explain from the source and log the error. Finish with a short retest queue ranked by gaps. Flag any answer you cannot verify from the material.</p><button type="button" class="copy" aria-label="Copy prompt P28">Copy prompt</button></div>
+</details><details class="prompt-card" id="P29">
+  <summary><span class="prompt-id">P29</span>Grade a work sample</summary>
+  <div class="prompt-body"><p class="copy-text">Evaluate [sample] against [rubric] and [target use case]. For each criterion, cite specific evidence, assign a score, mark uncertain ratings and propose one precise improvement. Then write a fresh transfer task that tests the same skill under different conditions. Avoid adding criteria without labelling them as optional.</p><button type="button" class="copy" aria-label="Copy prompt P29">Copy prompt</button></div>
+</details><details class="prompt-card" id="P30">
+  <summary><span class="prompt-id">P30</span>Find the cause of a plateau</summary>
+  <div class="prompt-body"><p class="copy-text">Use [recent practice log], [test versions], [scores], [feedback] and [time cap]. Check for changing difficulty, weak feedback, repeated errors or too few observations. Pick one plausible bottleneck and design a one-week corrective drill with a retest and a rule for revising the hypothesis.</p><button type="button" class="copy" aria-label="Copy prompt P30">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Health habits"><h3>Health habits</h3><details class="prompt-card" id="P31">
+  <summary><span class="prompt-id">P31</span>Design one feasible habit</summary>
+  <div class="prompt-body"><p class="copy-text">Using [chosen habit], [current cue], [schedule], [relevant limits] and [time budget], draft one cue–action plan plus a smaller version for difficult days. Define eligible opportunities, a private tally and a two-week review. Adapt to constraints I provide and flag any action that requires professional advice.</p><button type="button" class="copy" aria-label="Copy prompt P31">Copy prompt</button></div>
+</details><details class="prompt-card" id="P32">
+  <summary><span class="prompt-id">P32</span>Plan around an irregular schedule</summary>
+  <div class="prompt-body"><p class="copy-text">Using [shift or travel pattern], [chosen sleep or movement routine], [available windows] and [constraints], map options for each day type. Show where the routine fits, an easy fallback, and what to record. Keep the plan focused on routines and ask me to confirm any health-dependent assumption.</p><button type="button" class="copy" aria-label="Copy prompt P32">Copy prompt</button></div>
+</details><details class="prompt-card" id="P33">
+  <summary><span class="prompt-id">P33</span>Review habit adherence</summary>
+  <div class="prompt-body"><p class="copy-text">Analyze [two-week log], [eligible cue definition], [completions] and [obstacles]. Calculate completions and opportunities, distinguish missing entries from misses, and find the strongest pattern. Suggest one change to the cue, action size or environment. Specify what outcome would tell us the change helped.</p><button type="button" class="copy" aria-label="Copy prompt P33">Copy prompt</button></div>
+</details><details class="prompt-card" id="P34">
+  <summary><span class="prompt-id">P34</span>Restart after a break</summary>
+  <div class="prompt-body"><p class="copy-text">Help me restart [habit] after [disruption], given [current capacity], [applicable advice] and [next available cue]. Write a seven-day plan with one small first action, a pause condition and a checkpoint for increasing the load. Keep the plan within the limits I supplied and avoid medical interpretation.</p><button type="button" class="copy" aria-label="Copy prompt P34">Copy prompt</button></div>
+</details><details class="prompt-card" id="P35">
+  <summary><span class="prompt-id">P35</span>Audit routine guidance</summary>
+  <div class="prompt-body"><p class="copy-text">Compare [routine proposal] with [age band or relevant population], [jurisdiction] and [official guideline or clinician guidance supplied]. Return supported elements, mismatches, items needing individual review and source dates. Distinguish public population guidance from personal targets, and leave any unresolved question open for the appropriate professional.</p><button type="button" class="copy" aria-label="Copy prompt P35">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Digital organization"><h3>Digital organization</h3><details class="prompt-card" id="P36">
+  <summary><span class="prompt-id">P36</span>Map sources of truth</summary>
+  <div class="prompt-body"><p class="copy-text">Map [tools], [file or data types], [work/personal boundaries] and [retention rules] into a table with authoritative location, allowed access, backup, and link from the task system. Identify duplicate stores and rules that need owner confirmation. Propose a small pilot before any migration.</p><button type="button" class="copy" aria-label="Copy prompt P36">Copy prompt</button></div>
+</details><details class="prompt-card" id="P37">
+  <summary><span class="prompt-id">P37</span>Triage a capture queue</summary>
+  <div class="prompt-body"><p class="copy-text">Turn [notes or message summaries] into next actions, waiting items, reference records and items for discard review using [known owners and dates] and [filing rules]. Include source, owner, date and uncertainty for each. Only assign a deadline from explicit evidence. Flag sensitive records and keep all deletion or external actions pending.</p><button type="button" class="copy" aria-label="Copy prompt P37">Copy prompt</button></div>
+</details><details class="prompt-card" id="P38">
+  <summary><span class="prompt-id">P38</span>Plan a small file migration</summary>
+  <div class="prompt-body"><p class="copy-text">For [source inventory], [approved destination], [permissions], [naming rules] and [retention constraints], write a staged migration checklist. Include sample selection, record counts, content and access verification, exceptions, rollback and sign-off. Identify cases where links or metadata require preservation.</p><button type="button" class="copy" aria-label="Copy prompt P38">Copy prompt</button></div>
+</details><details class="prompt-card" id="P39">
+  <summary><span class="prompt-id">P39</span>Test retrieval</summary>
+  <div class="prompt-body"><p class="copy-text">Using [representative file list], [approved locations] and [time threshold], design a five-item timed retrieval test. Record time, success, source and failure reason for each lookup. Produce a retest after one proposed improvement and keep the file sample comparable.</p><button type="button" class="copy" aria-label="Copy prompt P39">Copy prompt</button></div>
+</details><details class="prompt-card" id="P40">
+  <summary><span class="prompt-id">P40</span>Rehearse a restore</summary>
+  <div class="prompt-body"><p class="copy-text">Given [device or storage], [backup method], [approved recovery route] and [sample file], write a safe restore drill. Include test destination, file integrity check, access check, time to recover, expected result and cleanup. Use a separate test location and avoid requesting passwords or recovery codes.</p><button type="button" class="copy" aria-label="Copy prompt P40">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Dashboard"><h3>Dashboard</h3><details class="prompt-card" id="P41">
+  <summary><span class="prompt-id">P41</span>Design KPIs for two outcomes</summary>
+  <div class="prompt-body"><p class="copy-text">Given [outcomes], [baselines], [data sources] and [review time], define one leading and one outcome measure per outcome. Return KPI IDs, formulas, units, cadence, target, stale rule, threshold and action. Test each formula with a normal value, missing value and zero denominator where relevant.</p><button type="button" class="copy" aria-label="Copy prompt P41">Copy prompt</button></div>
+</details><details class="prompt-card" id="P42">
+  <summary><span class="prompt-id">P42</span>Audit metric quality</summary>
+  <div class="prompt-body"><p class="copy-text">Audit [metric definitions], [observations], [targets] and [source notes] for ambiguity, duplicated data, missing periods, changed denominators and weak linkage to decisions. Return a severity-ranked issue table, fix and owner. Preserve original values and show which past periods need reprocessing.</p><button type="button" class="copy" aria-label="Copy prompt P42">Copy prompt</button></div>
+</details><details class="prompt-card" id="P43">
+  <summary><span class="prompt-id">P43</span>Interpret a month of readings</summary>
+  <div class="prompt-body"><p class="copy-text">Analyze [KPI readings], [targets], [cadences] and [source dates]. Return one row per KPI with latest actual, comparable prior reading, status, caveat and action. Check freshness and sample sizes. Distinguish meaningful change, measurement noise and unavailable data.</p><button type="button" class="copy" aria-label="Copy prompt P43">Copy prompt</button></div>
+</details><details class="prompt-card" id="P44">
+  <summary><span class="prompt-id">P44</span>Create a measurement plan</summary>
+  <div class="prompt-body"><p class="copy-text">For [desired outcome], [current evidence], [tools] and [privacy limits], design a baseline and repeat measurement. Give the source, collection interval, acceptance criteria, expected variation and handling for incomplete data. Include the smallest observation set that can support the next decision.</p><button type="button" class="copy" aria-label="Copy prompt P44">Copy prompt</button></div>
+</details><details class="prompt-card" id="P45">
+  <summary><span class="prompt-id">P45</span>Retire unhelpful metrics</summary>
+  <div class="prompt-body"><p class="copy-text">Review [dashboard], [decisions made], [collection time] and [active outcomes]. Recommend keep, revise, archive or add for each metric. Tie every live metric to an owner and action. Estimate time saved, preserve the measurement history, and flag any continuity issue created by changing definitions.</p><button type="button" class="copy" aria-label="Copy prompt P45">Copy prompt</button></div>
+</details></div><div class="prompt-group" data-category="Automation &amp; risk"><h3>Automation &amp; risk</h3><details class="prompt-card" id="P46">
+  <summary><span class="prompt-id">P46</span>Rank automation candidates</summary>
+  <div class="prompt-body"><p class="copy-text">Evaluate [repeated tasks], [frequency], [manual minutes], [upkeep], [available tools] and [data restrictions]. Produce a ranked opportunity map with monthly net time, break-even, trigger, fallback and risks. Put tasks with unstable inputs or serious consequences behind a test or review. Show the arithmetic.</p><button type="button" class="copy" aria-label="Copy prompt P46">Copy prompt</button></div>
+</details><details class="prompt-card" id="P47">
+  <summary><span class="prompt-id">P47</span>Specify a pilot workflow</summary>
+  <div class="prompt-body"><p class="copy-text">Turn [manual process], [approved tools], [sample inputs], [permissions] and [desired output] into a workflow specification. Include trigger, data contract, owner, approval points, duplicate handling, failure alert, audit log and stop switch. Write tests for success, missing input, duplicate, retry and permission denial. Keep deployment pending.</p><button type="button" class="copy" aria-label="Copy prompt P47">Copy prompt</button></div>
+</details><details class="prompt-card" id="P48">
+  <summary><span class="prompt-id">P48</span>Review automation failures</summary>
+  <div class="prompt-body"><p class="copy-text">Analyze [run logs], [expected behaviour], [observed issues], [affected inputs] and [permissions]. Identify likely causes with confidence, immediate containment, the manual fallback and a verified restart test. Reconcile processed and expected records and flag possible exposure or missing evidence for review.</p><button type="button" class="copy" aria-label="Copy prompt P48">Copy prompt</button></div>
+</details><details class="prompt-card" id="P49">
+  <summary><span class="prompt-id">P49</span>Build a risk register</summary>
+  <div class="prompt-body"><p class="copy-text">Use [annual outcomes], [constraints], [dependencies] and [known failure modes] to draft a quarterly risk register. For each risk give owner, likelihood, impact, trigger, prevention, response, restart criterion and review date. Explain provisional scores and flag which ones I must validate.</p><button type="button" class="copy" aria-label="Copy prompt P49">Copy prompt</button></div>
+</details><details class="prompt-card" id="P50">
+  <summary><span class="prompt-id">P50</span>Run a contingency exercise</summary>
+  <div class="prompt-body"><p class="copy-text">Simulate [disruption] against [plan], [critical obligations], [resources] and [available support]. Give a first-24-hours timeline, responsibilities, communication drafts, fallback and restart tests. End with one gap to fix and a dated retest. Use a simulation and keep real actions pending.</p><button type="button" class="copy" aria-label="Copy prompt P50">Copy prompt</button></div>
+</details></div>
+</section>
+      <section id="evidence" class="chapter">
+  <header><p class="eyebrow">Research notes</p><h2>Evidence and sources</h2><p>The evidence supports the underlying practices to different degrees. The planning intervals, time budgets, metric thresholds, and automation pilots in this playbook are design choices to test in your circumstances.</p></header>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Research evidence and limitations"><table><thead><tr><th>Practice</th><th>What the evidence supports</th><th>How far to apply it</th></tr></thead><tbody>
+    <tr><td>Record progress and use if–then plans</td><td>A meta-analysis of 138 randomized studies found that increasing progress monitoring improved attainment on average. A separate meta-analysis found benefits from pre-planning the response to a specific situation.</td><td>Record evidence and plan for a likely obstacle. The findings span many goals and contexts, with no single review interval established here. <a href="#s01">[1]</a> <a href="#s02">[2]</a></td></tr>
+    <tr><td>Plan time and protect a few work blocks</td><td>A time-management meta-analysis reported moderate associations with job performance, academic achievement and well-being.</td><td>The underlying evidence includes correlational studies. Judge the usefulness of protected blocks by completed outputs and schedule fit. <a href="#s03">[3]</a></td></tr>
+    <tr><td>Practice career skills and get feedback</td><td>Job-search intervention studies support combining search-skill building with motivation support. A separate mentoring review found generally small favourable associations across several outcomes.</td><td>Apply job-search evidence when changing roles. For internal advancement, treat an agreed project and mentor feedback as experiments shaped by local expectations. <a href="#s04">[4]</a> <a href="#s05">[5]</a></td></tr>
+    <tr><td>Recall, space and test learning</td><td>Reviews support practice testing and distributed practice for learning and retention. The spacing that works best varies with how long you need to retain the material.</td><td>Use delayed recall and independently scored work. Test transfer separately on a new task. <a href="#s07">[7]</a> <a href="#s08">[8]</a> <a href="#s19">[19]</a></td></tr>
+    <tr><td>Build habits around a stable cue</td><td>A small real-world study using self-reports found that repeating an action in a stable context can build automaticity over time, with substantial variation by person and behaviour.</td><td>Keep the cue stable and observe the routine over time. Treat the two-week review as a fit check. Use population health guidance as context. <a href="#s13">[13]</a> <a href="#s14">[14]</a></td></tr>
+    <tr><td>Budget, preserve liquidity and compare debt terms</td><td>FCAC guidance supports tracking income and spending, building an accessible reserve, and evaluating debt repayment choices against real terms and affordability.</td><td>Use the official guidance as a starting point. Verify current rules and individual terms before a 2027 tax, benefit, investment or debt decision. <a href="#s09">[9]</a> <a href="#s10">[10]</a> <a href="#s11">[11]</a> <a href="#s12">[12]</a></td></tr>
+    <tr><td>Test information retrieval and recovery</td><td>Personal information management research distinguishes keeping, managing and reusing information. Government cyber guidance supports account protection and backups.</td><td>Pilot your structure with real lookup and restore tasks. The proposed folder and task conventions are operational choices. <a href="#s15">[15]</a> <a href="#s16">[16]</a> <a href="#s17">[17]</a></td></tr>
+  </tbody></table></div>
+  <h3>Source list</h3>
+  <ol class="sources">
+    <li id="s01">Harkin et al. (2016). <a href="https://pubmed.ncbi.nlm.nih.gov/26479070/">Does monitoring goal progress promote goal attainment?</a> Meta-analysis of experimental evidence.</li>
+    <li id="s02">Gollwitzer and Sheeran (2006). <a href="https://doi.org/10.1016/S0065-2601(06)38002-1">Implementation intentions and goal achievement.</a> Meta-analysis.</li>
+    <li id="s03">Aeon, Faber and Panaccio (2021). <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0245066">Does time management work?</a> Meta-analysis.</li>
+    <li id="s04">Liu, Huang and Wang (2014). <a href="https://pubmed.ncbi.nlm.nih.gov/24588365/">Effectiveness of job search interventions.</a> Meta-analysis.</li>
+    <li id="s05">Eby et al. (2008). <a href="https://www.sciencedirect.com/science/article/pii/S0001879107000401">Does mentoring matter?</a> Multidisciplinary meta-analysis.</li>
+    <li id="s06">Government of Canada Job Bank. <a href="https://www.jobbank.gc.ca/trend-analysis">Explore the labour market.</a> Occupation profiles, wages, and outlooks.</li>
+    <li id="s07">Dunlosky et al. (2013). <a href="https://pubmed.ncbi.nlm.nih.gov/26173288/">Improving students’ learning with effective learning techniques.</a> Research review.</li>
+    <li id="s08">Cepeda et al. (2006). <a href="https://pubmed.ncbi.nlm.nih.gov/16719566/">Distributed practice in verbal recall tasks.</a> Quantitative research synthesis.</li>
+    <li id="s09">Financial Consumer Agency of Canada. <a href="https://www.canada.ca/en/financial-consumer-agency/services/make-budget.html">Making a budget.</a> Consumer guidance.</li>
+    <li id="s10">Financial Consumer Agency of Canada. <a href="https://www.canada.ca/en/financial-consumer-agency/services/savings-investments/setting-up-emergency-funds.html">Setting up an emergency fund.</a> Consumer guidance.</li>
+    <li id="s11">Financial Consumer Agency of Canada. <a href="https://www.canada.ca/en/financial-consumer-agency/services/debt/paying-debt.html">Paying back your debt.</a> Consumer guidance.</li>
+    <li id="s12">Financial Consumer Agency of Canada. <a href="https://www.canada.ca/en/financial-consumer-agency/services/savings-investments/savings-investment-goals.html">Setting savings and investment goals.</a> Consumer guidance.</li>
+    <li id="s13">Lally et al. (2010). <a href="https://doi.org/10.1002/ejsp.674">How are habits formed?</a> Observational habit-formation study.</li>
+    <li id="s14">Canadian Society for Exercise Physiology. <a href="https://csepguidelines.ca/wp-content/uploads/2020/11/24MGCounsellingTool-Adults18-64_2-1.pdf">Canadian 24-Hour Movement Guidelines counselling tool for ages 18–64.</a> Population guidance.</li>
+    <li id="s15">Whittaker (2011). <a href="https://onlinelibrary.wiley.com/doi/10.1002/aris.2011.1440450108/abstract">Personal information management.</a> Research review.</li>
+    <li id="s16">Government of Canada Get Cyber Safe. <a href="https://www.getcybersafe.gc.ca/en/secure-your-accounts/multi-factor-authentication">Multi-factor authentication</a> and <a href="https://www.getcybersafe.gc.ca/en/secure-your-accounts/password-managers">password managers.</a> Public cyber guidance.</li>
+    <li id="s17">Canadian Centre for Cyber Security. <a href="https://www.cyber.gc.ca/en/guidance/back-and-encrypt-data">Back up and encrypt data.</a> Organizational guidance on backups and restore testing.</li>
+    <li id="s18">Ottawa Hospital Research Institute. <a href="https://decisionaid.ohri.ca/odsf.html">Ottawa Decision Support Framework.</a> Healthcare decision support.</li>
+    <li id="s19">Donoghue and Hattie (2021). <a href="https://www.frontiersin.org/journals/education/articles/10.3389/feduc.2021.581216/full">A meta-analysis of ten learning techniques.</a> Quantitative review.</li>
+  </ol>
+</section>
+      <footer class="footer"><a href="#start">Back to overview ↑</a></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script>const search = document.querySelector('#prompt-search');
+const category = document.querySelector('#prompt-category');
+const count = document.querySelector('#prompt-count');
+const groups = [...document.querySelectorAll('.prompt-group')];
+const cards = [...document.querySelectorAll('.prompt-card')];
+const searchableText = new Map(cards.map(card => [card, card.textContent.toLowerCase()]));
+const toast = document.querySelector('#toast');
+let toastTimer;
+
+function filterPrompts() {
+  const words = search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  let visible = 0;
+  for (const group of groups) {
+    const selected = !category.value || category.value === group.dataset.category;
+    let matching = 0;
+    for (const card of group.querySelectorAll('.prompt-card')) {
+      const show = selected && words.every(word => searchableText.get(card).includes(word));
+      card.hidden = !show;
+      if (show) matching++;
+    }
+    group.hidden = matching === 0;
+    visible += matching;
+  }
+  count.textContent = visible ? `${visible} of ${cards.length} prompts` : 'No prompts match. Clear the filters or try another term.';
+}
+
+function notifyCopy(message) {
+  toast.hidden = false;
+  toast.textContent = message;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.hidden = true; }, 3500);
+}
+
+async function copyText(button) {
+  const content = button.closest('.template, .prompt-body').querySelector('.copy-text, pre');
+  const value = content.textContent.trim();
+  try {
+    await navigator.clipboard.writeText(value);
+    notifyCopy('Copied to clipboard.');
+    return;
+  } catch {
+    const helper = document.createElement('textarea');
+    helper.value = value;
+    helper.setAttribute('readonly', '');
+    helper.style.cssText = 'position:fixed;left:0;top:0;opacity:0';
+    document.body.append(helper);
+    helper.select();
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch { /* Offer manual copy below. */ }
+    helper.remove();
+    button.focus();
+    if (copied) {
+      notifyCopy('Copied to clipboard.');
+      return;
+    }
+  }
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(content);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  notifyCopy('Text selected. Use your device’s copy command.');
+}
+
+search.addEventListener('input', filterPrompts);
+category.addEventListener('change', filterPrompts);
+document.querySelector('#clear-filters').addEventListener('click', () => {
+  search.value = '';
+  category.value = '';
+  filterPrompts();
+  search.focus();
+});
+for (const button of document.querySelectorAll('.copy')) {
+  button.addEventListener('click', () => copyText(button));
+}
+document.querySelector('#print').addEventListener('click', () => window.print());
+
+let printState;
+window.addEventListener('beforeprint', () => {
+  if (printState) return;
+  printState = cards.map(card => card.open);
+  for (const card of cards) card.open = true;
+});
+window.addEventListener('afterprint', () => {
+  if (!printState) return;
+  cards.forEach((card, index) => { card.open = printState[index]; });
+  printState = undefined;
+});
+
+const nav = [...document.querySelectorAll('.rail nav a')];
+function updateNav() {
+  const hash = window.location.hash || '#start';
+  for (const link of nav) {
+    if (link.hash === hash) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  }
+}
+window.addEventListener('hashchange', updateNav);
+updateNav();</script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!doctype html>
+<!-- index:
+description: Interactive Canadian 2027 personal finance planner covering cash flow, debt, registered accounts, investing, insurance, and a 12-month plan, with local save an…
+tags: canada, budgeting, retirement, planner
+ingested: 2026-11-11T13:28:47-08:00
+-->
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A Canadian personal finance planner with cash flow, debt, registered accounts and retirement calculators.">
+<title>2027 Personal Finance Planner</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink:#172e27; --muted:#4d6258; --paper:#f5f7f1; --line:#dce5d9;
+  --green:#145b46; --dark:#14372d; --mint:#dcebdd; --white:#fff; --warn:#9a442d;
+  font:16px/1.5 "Instrument Sans","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);display:grid;grid-template-columns:244px minmax(0,1fr);min-height:100vh}
+a{color:var(--green);text-underline-offset:.18em}
+button,input,select,textarea,summary{font:inherit}
+button,summary{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #599779;outline-offset:3px}
+.skip{position:absolute;left:1rem;top:-5rem;background:white;padding:.5rem;z-index:3}.skip:focus{top:1rem}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;background:var(--dark);color:#f6fff8;padding:30px 18px;display:flex;flex-direction:column}
+.brand{display:flex;gap:12px;align-items:center;padding:0 8px;font-weight:700;font-size:1.05rem}
+.brand small{display:block;font-size:.68rem;letter-spacing:.14em;color:#b7d4c1;margin-top:3px}
+.mark{display:grid;place-items:center;background:#cfe9d2;color:var(--dark);width:40px;height:40px;border-radius:12px;font-size:1.4rem}
+nav{display:grid;gap:5px;margin-top:38px}
+nav a,.guide{padding:10px 12px;border-radius:8px;color:#e0eee3;text-decoration:none;font-size:.9rem}
+nav a:hover,.guide:hover{background:#245043}nav a[aria-current=page]{background:#cfe9d2;color:#163b30;font-weight:700}
+.guide{margin-top:auto}
+.workspace{width:min(100%,1330px);margin:0 auto;padding:0 clamp(18px,4vw,60px)}
+.top{min-height:75px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+#storage,.footer,.hint{color:var(--muted);font-size:.86rem}
+.tools,.inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+button,summary,.primary,.secondary{border:1px solid #c9d8cb;border-radius:8px;padding:.55rem .85rem;color:var(--ink);background:var(--white);text-decoration:none;font-weight:650;font-size:.87rem}
+button:hover,summary:hover,.secondary:hover{background:#eaf2e8}
+.primary{color:white;background:var(--green);border-color:var(--green);display:inline-block}.primary:hover{background:#174839}
+details{position:relative}summary{list-style:none}summary::-webkit-details-marker{display:none}summary::after{content:" ▾"}
+.menu{position:absolute;right:0;top:calc(100% + 6px);background:white;border:1px solid var(--line);box-shadow:0 8px 25px #17372d20;border-radius:10px;min-width:207px;padding:6px;z-index:2}
+.menu button{display:block;width:100%;text-align:left;border:0}
+main{padding:32px 0 10px}
+h1,h2,h3,p{margin-top:0}h1{font:normal clamp(2.35rem,5vw,4.4rem)/1.03 Georgia,serif;letter-spacing:-.045em;margin-bottom:.65rem}
+h2{font-size:1.16rem;line-height:1.25;margin-bottom:.65rem}h3{font-size:.94rem;margin-bottom:.5rem}
+.intro{max-width:66ch;color:var(--muted);margin-bottom:22px}
+.hero{padding:clamp(22px,4vw,44px);background:#e5eee0;border:1px solid #d2dfcf;border-radius:20px;margin-bottom:18px}
+.hero .intro{margin-bottom:17px}
+.grid,.stats{display:grid;gap:16px;margin-bottom:16px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card,.stat{background:var(--white);border:1px solid var(--line);border-radius:13px;padding:clamp(14px,2vw,24px);min-width:0}
+.card{margin-bottom:16px}.grid>.card{margin:0}
+.stat span,.stat small{display:block;color:var(--muted);font-size:.82rem}
+.stat strong,.number{font-size:clamp(1.25rem,2.6vw,2rem);font-weight:720;letter-spacing:-.04em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.negative{color:var(--warn)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;margin:12px 0}
+.field{display:grid;align-content:start;gap:4px;min-width:0;font-size:.88rem;font-weight:600}
+.field small{color:var(--muted);font-weight:400}
+input:not([type=checkbox]):not([type=file]),select,textarea{width:100%;min-width:0;background:#fbfcfa;border:1px solid #bfcfc2;border-radius:7px;color:var(--ink);padding:.5rem .6rem}
+input[type=checkbox]{accent-color:var(--green);width:1.15rem;height:1.15rem;flex:none;margin:0}
+textarea{min-height:84px;resize:vertical}.hint:last-child{margin-bottom:0}
+.results{display:grid;gap:0;margin:9px 0}.results div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.results dd{margin:0;font-weight:650;text-align:right;overflow-wrap:anywhere}
+.bar{height:13px;display:flex;overflow:hidden;background:#edf2e9;border-radius:12px;margin:14px 0}.bar span:nth-child(1){background:#246a50}.bar span:nth-child(2){background:#80a986}.bar span:nth-child(3){background:#d8bc80}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--muted);font-size:.83rem}.legend i{width:9px;height:9px;display:inline-block;margin-right:5px;border-radius:50%;background:var(--swatch)}
+.action{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:11px 0;border-top:1px solid var(--line);align-items:start}.action small{display:block;color:var(--muted)}
+.debt-row{border-top:1px solid var(--line);padding:12px 0}.debt-row .fields{grid-template-columns:2fr repeat(3,1fr)}.danger{color:var(--warn)}
+.callout{padding:.8rem 1rem;background:#edf4eb;border-left:3px solid #7cab81;border-radius:6px}.footer{padding-bottom:16px}
+.toast{position:fixed;bottom:18px;right:18px;max-width:min(420px,calc(100% - 36px));background:var(--dark);color:white;border-radius:10px;padding:.8rem 1rem;z-index:4}
+#print-report{display:none}
+#print-report table{width:100%;border-collapse:collapse;font-size:10pt}
+#print-report th,#print-report td{text-align:left;border-bottom:1px solid #ccc;padding:.3rem;overflow-wrap:anywhere;white-space:pre-wrap}
+#print-report thead{display:table-header-group}#print-report tr{break-inside:avoid}
+@media(max-width:900px){body{grid-template-columns:190px minmax(0,1fr)}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.debt-row .fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:660px){body{display:block}.sidebar{position:static;height:auto;padding:15px}.brand{padding:0}.guide{margin-top:5px;padding-left:0}nav{display:flex;flex-wrap:wrap;margin-top:12px;gap:2px}nav a{padding:5px 8px;font-size:.8rem}.workspace{padding:0 13px}.top{min-height:62px}.top button,.top summary{padding:.42rem .55rem;font-size:.77rem}main{padding-top:20px}.grid{grid-template-columns:1fr}.card,.stat{padding:13px}}
+@media print{body{display:block;background:white}.sidebar,.top,.footer,.toast,.skip,button,.screen{display:none!important}.workspace,main{padding:0}.hero{padding:12px}.card,.stat{break-inside:avoid}.grid,.stats{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:26pt}}
+@media print{body:has(#print-report) .workspace{display:none}#print-report{display:block}}
+
+</style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+<a class="skip" href="#workspace">Skip to planner</a>
+<aside class="sidebar">
+  <div class="brand"><span class="mark" aria-hidden="true">↗</span><div>Finance Planner<small>CANADA · 2027</small></div></div>
+  <nav id="nav" aria-label="Planner sections">
+    <a href="#overview">Overview</a>
+    <a href="#budget">Cash flow &amp; reserve</a>
+    <a href="#debt">Debt &amp; mortgage</a>
+    <a href="#accounts">Registered accounts</a>
+    <a href="#future">Investing &amp; retirement</a>
+    <a href="#protection">Goals &amp; insurance</a>
+    <a href="#actions">12-month plan</a>
+  </nav>
+  <a class="guide" href="guide.html" target="_blank" rel="noopener">Read the original playbook ↗</a>
+</aside>
+<div class="workspace" id="workspace">
+  <header class="top">
+    <span id="storage" role="status">Saved on this browser</span>
+    <div class="tools">
+      <button id="save" class="quiet" type="button">Save</button>
+      <details id="data-menu"><summary>Import &amp; export</summary>
+        <div class="menu">
+          <button id="backup" type="button">Export JSON backup</button>
+          <button id="csv" type="button">Export spreadsheet CSV</button>
+          <button id="print" type="button">Print / save PDF</button>
+          <button id="restore" type="button">Import JSON backup</button>
+        </div>
+      </details>
+      <input id="import" type="file" accept=".json,application/json" hidden>
+    </div>
+  </header>
+  <main id="main"></main>
+  <p class="footer">Entries stay in this browser. Export a JSON backup to move them to another device or recover them after clearing browser data. Exported files contain your entries.</p>
+</div>
+<div id="message" class="toast" role="status" hidden></div>
+<script>
+(function (root) {
+  "use strict";
+  const fields = {
+    income:["Take-home pay", "budget"], benefits:["Recurring benefits & other net income","budget"],
+    housing:["Housing & utilities","budget"], essentials:["Food, transport & other essentials","budget"],
+    care:["Childcare & essential insurance","budget"], minimums:["Debt minimums if no debts are listed","budget"],
+    annual:["Predictable irregular bills (per year)","budget"], flex:["Flexible spending","budget"],
+    cash:["Accessible emergency savings","budget"], reserveMonths:["Target months of essentials","budget",0,36,1],
+    reserveDeposit:["Monthly reserve contribution","budget"],
+    debtExtra:["Extra debt payment per month","debt"],
+    mortgage:["Mortgage balance","debt"], amortization:["Remaining amortization (years)","debt",1,50,1],
+    currentRate:["Current mortgage rate (%)","debt",0,40], renewalRate:["Renewal scenario rate (%)","debt",0,40],
+    tfsaBase:["Unused room at end of 2026","accounts"], tfsaNew:["Verified 2027 annual room added","accounts"],
+    tfsaWithdraw:["Eligible 2026 withdrawals","accounts"], tfsaPaid:["2027 contributions so far","accounts"],
+    tfsaPlan:["Additional TFSA contribution planned","accounts"],
+    rrspRoom:["Available 2027 RRSP contribution room","accounts"], rrspPaid:["2027 contributions since room was measured","accounts"],
+    rrspPlan:["Additional RRSP contribution planned","accounts"],
+    fhsaRoom:["Available FHSA participation room","accounts",0,40000], fhsaPaid:["2027 contributions and transfers since room was measured","accounts"],
+    fhsaPlan:["Additional cash FHSA contribution planned","accounts"],
+    taxRate:["Assumed marginal tax rate (%)","accounts",0,75],
+    invested:["Current retirement savings (after-tax equivalent)","future"],
+    investMonthly:["Monthly retirement savings (after-tax equivalent)","future"],
+    years:["Years until retirement","future",0,75,1],
+    realReturn:["Annual return after inflation & fees (%)","future",-30,30],
+    retirementSpend:["Annual after-tax retirement spending","future"], pension:["Annual after-tax pension & benefits","future"],
+    draw:["Illustrative initial withdrawal rate (%)","future",0.1,20],
+    goalTarget:["Goal amount","protection"], goalSaved:["Already saved for the goal","protection"],
+    goalMonths:["Months until you need the money","protection",1,600,1],
+    lifeDebt:["Debts to cover","protection"], lifeYear:["Annual survivor support","protection"],
+    lifeYears:["Years of support","protection",0,75,1], lifeOther:["One-time costs","protection"],
+    lifeCover:["Available assets & existing cover","protection"],
+    disabilitySpend:["Monthly essential spending during disability","protection"], disabilityBenefit:["Expected net monthly disability income","protection"],
+    disabilityMonths:["Months until benefits start","protection",0,36]
+  };
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const tasks = [
+    "Set your cash-flow baseline, reserve target and verified contribution room.",
+    "Collect tax slips and review RRSP timing for your 2026 return.",
+    "Set debt payments and check any March tax instalment.",
+    "File or pay 2026 taxes by the applicable deadline.",
+    "Review investment allocation, fees and provider registration.",
+    "Review insurance and any self-employed filing or instalment deadline.",
+    "Update your budget with midyear results and current benefits.",
+    "Review dated goals, education grants and contribution room.",
+    "Run retirement and income-loss scenarios. Check any September instalment.",
+    "Review renewals, beneficiaries and estate documents.",
+    "Estimate 2027 tax and confirm your registered contribution ledger.",
+    "Confirm year-end cutoffs, any December instalment and next year’s priority."
+  ];
+  const empty = () => ({version:1, values:{}, debts:[], months:Array(12).fill(false), notes:"", goalName:"", order:"avalanche"});
+  const min = (key) => fields[key][2] ?? 0;
+  const max = (key) => fields[key][3] ?? 1000000000;
+  const within = (value, low, high) => typeof value === "number" && Number.isFinite(value) && value >= low && value <= high;
+  const valid = (key, value) => within(value, min(key), max(key)) && (fields[key][4] !== 1 || Number.isInteger(value));
+  const validDebt = (key, value) => within(value,0,key === "rate" ? 100 : 1000000000);
+
+  function normalize(data) {
+    if (!data || data.version !== 1 || !data.values || typeof data.values !== "object" || Array.isArray(data.values)
+      || !Array.isArray(data.debts) || data.debts.length > 30 || !Array.isArray(data.months) || data.months.length !== 12
+      || data.months.some(value => typeof value !== "boolean")
+      || !["avalanche","snowball"].includes(data.order) || typeof data.notes !== "string" || typeof data.goalName !== "string") {
+      throw new Error("Choose a valid version 1 planner backup.");
+    }
+    const clean = empty();
+    for (const key of Object.keys(fields)) {
+      if (!Object.hasOwn(data.values,key)) continue;
+      if (!valid(key,data.values[key])) throw new Error("Backup contains an invalid number for " + fields[key][0] + ".");
+      clean.values[key] = data.values[key];
+    }
+    clean.debts = data.debts.map(debt => {
+      if (!debt || typeof debt.name !== "string") throw new Error("Backup contains an invalid debt.");
+      const item = {name:debt.name.slice(0,80)};
+      for (const key of ["balance","rate","payment"]) {
+        if (!Object.hasOwn(debt,key)) continue;
+        if (!validDebt(key,debt[key])) throw new Error("Backup contains an invalid debt amount.");
+        item[key] = debt[key];
+      }
+      return item;
+    });
+    clean.months = data.months.slice();
+    clean.notes = data.notes.slice(0,3000);
+    clean.goalName = data.goalName.slice(0,100);
+    clean.order = data.order;
+    return clean;
+  }
+
+  function payoff(debts, extra, order) {
+    if (!debts.length) return {status:"empty"};
+    if (debts.some(item => item.balance === undefined || (item.balance > 0 && (item.rate === undefined || item.payment === undefined)))) {
+      return {status:"incomplete"};
+    }
+    const active = debts.filter(item => item.balance > 0).map(item => ({...item}));
+    const budget = active.reduce((total,item) => total + item.payment,extra);
+    let interest = 0;
+    for (let month = 1; month <= 600; month++) {
+      if (active.every(item => item.balance < 0.005)) return {status:"paid",months:month-1,interest};
+      let available = budget;
+      for (const item of active) {
+        if (item.balance < 0.005) continue;
+        const charge = item.balance * item.rate / 1200;
+        interest += charge;
+        item.balance += charge;
+        const payment = Math.min(item.balance,item.payment);
+        item.balance -= payment;
+        available -= payment;
+      }
+      const ordered = [...active].sort(order === "snowball" ? (a,b) => a.balance-b.balance : (a,b) => b.rate-a.rate);
+      for (const item of ordered) {
+        if (available <= 0) break;
+        const payment = Math.min(item.balance,available);
+        item.balance -= payment;
+        available -= payment;
+      }
+      if (active.every(item => item.balance < 0.005)) return {status:"paid",months:month,interest};
+    }
+    return {status:"limit"};
+  }
+
+  function mortgagePayment(balance, annualRate, years) {
+    const months = years * 12;
+    const rate = Math.expm1(Math.log1p(annualRate/200)/6);
+    return rate === 0 ? balance/months : balance*rate/(-Math.expm1(-months*Math.log1p(rate)));
+  }
+
+  function calculate(state) {
+    const v = state.values;
+    const get = key => v[key] ?? 0;
+    const has = (...keys) => keys.every(key => Object.hasOwn(v,key));
+    const debtBalance = state.debts.reduce((sum,d) => sum + (d.balance ?? 0),0);
+    const minimums = state.debts.some(d => (d.balance ?? 0) > 0)
+      ? state.debts.reduce((sum,d) => sum + ((d.balance ?? 0) > 0 ? d.payment ?? 0 : 0),0) : get("minimums");
+    const essentials = get("housing")+get("essentials")+get("care")+minimums;
+    const income = get("income")+get("benefits");
+    const irregular = get("annual")/12;
+    const outflow = essentials+irregular+get("flex");
+    const surplus = has("income") || has("benefits") || outflow > 0 ? income-outflow : null;
+    const reserveTarget = has("reserveMonths") && essentials > 0 ? essentials*get("reserveMonths") : null;
+    const reserveGap = reserveTarget === null ? null : Math.max(0,reserveTarget-get("cash"));
+    const reserveTime = reserveGap === 0 ? 0 : reserveGap === null || !get("reserveDeposit") ? null : Math.ceil(reserveGap/get("reserveDeposit"));
+    const currentMortgage = has("mortgage","currentRate","amortization") ? mortgagePayment(v.mortgage,v.currentRate,v.amortization) : null;
+    const renewedMortgage = has("mortgage","renewalRate","amortization") ? mortgagePayment(v.mortgage,v.renewalRate,v.amortization) : null;
+    const tfsa = has("tfsaBase","tfsaNew","tfsaWithdraw","tfsaPaid") ? v.tfsaBase+v.tfsaNew+v.tfsaWithdraw-v.tfsaPaid : null;
+    const rrsp = has("rrspRoom","rrspPaid") ? v.rrspRoom-v.rrspPaid : null;
+    const fhsa = has("fhsaRoom","fhsaPaid") ? v.fhsaRoom-v.fhsaPaid : null;
+    const afterPlan = (room,key) => room === null ? null : room-get(key);
+    const deduction = has("taxRate") && (has("rrspPlan") || has("fhsaPlan")) ? (get("rrspPlan")+get("fhsaPlan"))*v.taxRate/100 : null;
+    let projected = null;
+    if (has("invested","investMonthly","years","realReturn")) {
+      const periods = v.years*12;
+      const rate = Math.expm1(Math.log1p(v.realReturn/100)/12);
+      const growth = Math.exp(periods*Math.log1p(rate));
+      projected = v.invested*growth+v.investMonthly*(rate === 0 ? periods : Math.expm1(periods*Math.log1p(rate))/rate);
+    }
+    const retirementGap = has("retirementSpend","pension") ? Math.max(0,v.retirementSpend-v.pension) : null;
+    const capitalTarget = retirementGap === null || !has("draw") ? null : retirementGap/(v.draw/100);
+    const goalGap = has("goalTarget","goalSaved") ? Math.max(0,v.goalTarget-v.goalSaved) : null;
+    const lifeGap = ["lifeDebt","lifeYear","lifeOther","lifeCover"].some(key => has(key)) && (!get("lifeYear") || has("lifeYears"))
+      ? Math.max(0,get("lifeDebt")+get("lifeYear")*get("lifeYears")+get("lifeOther")-get("lifeCover")) : null;
+    return {income,essentials,irregular,outflow,surplus,minimums,debtBalance,reserveTarget,reserveGap,reserveTime,
+      cashMonths:essentials > 0 && has("cash") ? get("cash")/essentials : null,
+      afterTransfers:surplus === null ? null : surplus-get("reserveDeposit")-get("debtExtra"),
+      debt:payoff(state.debts,get("debtExtra"),state.order),currentMortgage,renewedMortgage,
+      mortgageChange:currentMortgage === null || renewedMortgage === null ? null : renewedMortgage-currentMortgage,
+      tfsa,rrsp,fhsa,tfsaAfter:afterPlan(tfsa,"tfsaPlan"),rrspAfter:afterPlan(rrsp,"rrspPlan"),fhsaAfter:afterPlan(fhsa,"fhsaPlan"),deduction,
+      projected,retirementGap,capitalTarget,
+      retirementShortfall:projected === null || capitalTarget === null ? null : Math.max(0,capitalTarget-projected),
+      goalGap,goalMonthly:goalGap === null || !has("goalMonths") ? null : goalGap/v.goalMonths,lifeGap,
+      disabilityGap:has("disabilitySpend","disabilityBenefit") ? Math.max(0,v.disabilitySpend-v.disabilityBenefit) : null,
+      disabilityBridge:has("disabilitySpend","disabilityMonths") ? v.disabilitySpend*v.disabilityMonths : null,
+      complete:state.months.filter(Boolean).length};
+  }
+  const api = {fields,months,tasks,empty,min,max,valid,validDebt,normalize,calculate,mortgagePayment,payoff};
+  if (typeof module === "object" && module.exports) module.exports = api;
+  else root.Planner = api;
+})(globalThis);
+
+</script>
+<script>
+"use strict";
+const P = globalThis.Planner;
+const $ = (id) => document.getElementById(id);
+const key = "canadian-finance-planner-2027-v1";
+const money = new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD",maximumFractionDigits:2});
+const number = new Intl.NumberFormat("en-CA",{maximumFractionDigits:2});
+const cash = value => value === null ? "—" : money.format(value);
+const count = value => value === null ? "—" : number.format(value);
+const escape = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+let state = P.empty();
+let storageStatus = "Ready · saves to this browser";
+try {
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    state = P.normalize(JSON.parse(saved));
+    storageStatus = "Saved on this browser";
+  }
+} catch {
+  storageStatus = "Saved data could not be opened · use Import";
+}
+$("storage").textContent = storageStatus;
+
+function persist() {
+  try {
+    localStorage.setItem(key,JSON.stringify(state));
+    $("storage").textContent = "Saved on this browser";
+    return true;
+  } catch {
+    $("storage").textContent = "Browser save unavailable · export a backup";
+    return false;
+  }
+}
+
+let messageTimer;
+function message(text) {
+  clearTimeout(messageTimer);
+  $("message").textContent = text;
+  $("message").hidden = false;
+  messageTimer = setTimeout(() => { $("message").hidden = true; },4500);
+}
+
+const field = (key) => {
+  const [label,,,,step] = P.fields[key];
+  return `<label class="field"><span>${label}</span><input type="number" inputmode="${step === 1 ? "numeric" : "decimal"}" data-field="${key}" min="${P.min(key)}" max="${P.max(key)}" step="${step ?? "any"}" value="${escape(state.values[key])}" placeholder="—"></label>`;
+};
+const fields = (...keys) => '<div class="fields">' + keys.map(field).join("") + '</div>';
+const header = (name,description) => `<h1 tabindex="-1">${name}</h1><p class="intro">${description}</p>`;
+const card = (name,body) => `<section class="card"><h2>${name}</h2>${body}</section>`;
+const results = (...pairs) => '<dl class="results">' + pairs.map(([key,label]) => `<div><dt>${label}</dt><dd data-out="${key}">—</dd></div>`).join("") + '</dl>';
+const stat = (key,label,hint) => `<section class="stat"><span>${label}</span><strong data-out="${key}">—</strong><small>${hint}</small></section>`;
+const accountSource = '<a href="guide.html#section-2027-rules-and-figures-to-verify" target="_blank" rel="noopener">Check the playbook’s rule tracker</a>';
+const views = {
+  overview: () => `<section class="hero">${header("Your 2027 money plan","Build a budget, compare your options, and track the decisions you want to make this year.")}<a class="primary" href="#budget">Open cash-flow worksheet</a></section>
+    <div class="stats">${stat("surplus","Monthly surplus","Before planned extra transfers")}${stat("cashMonths","Emergency coverage","Months of essentials")}${stat("debtBalance","Debt entered","From your payoff worksheet")}${stat("complete","Annual plan","Monthly tasks checked off")}</div>
+    <div class="grid">${card("Monthly cash flow",`<div class="bar" id="flow-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="legend"><span><i style="--swatch:#246a50"></i>Essentials</span><span><i style="--swatch:#80a986"></i>Irregular &amp; flexible</span><span><i style="--swatch:#d8bc80"></i>Surplus</span></div>
+    ${results(["income","Take-home income"],["outflow","Budgeted outflow"],["afterTransfers","After planned transfers"])}`)}
+    ${card("What to work on next",'<p id="next-step"></p><a class="secondary" href="#actions">See the 12-month plan</a>')}</div>`,
+  budget: () => header("Cash flow & reserve","Use monthly amounts except for predictable irregular bills. Enter actual take-home pay, and include housing costs only once.") +
+    '<div class="grid">' + card("Monthly budget",fields("income","benefits","housing","essentials","care","minimums","annual","flex") +
+    '<p class="hint">When you enter an outstanding debt in the payoff worksheet, its listed minimum replaces the manual debt-minimum field. Enter only non-mortgage debts there if the mortgage payment is in housing.</p>') +
+    card("Emergency reserve",fields("cash","reserveMonths","reserveDeposit") +
+    results(["reserveTarget","Reserve target"],["reserveGap","Still to save"],["reserveTime","Months to target"],["cashMonths","Months covered now"]) +
+    '<p class="hint">The estimate assumes steady monthly deposits and zero interest. The target uses essential expenses including debt minimums.</p>') + '</div>' +
+    card("Cash-flow summary",results(["income","Monthly inflows"],["minimums","Debt minimums used"],["irregular","Irregular bills per month"],["outflow","Budgeted outflow"],["surplus","Surplus before extra transfers"],["afterTransfers","Surplus after reserve and extra debt payments"])),
+  debt: () => header("Debt & mortgage","Compare fixed-payment payoff strategies and see how a rate change could affect a mortgage renewal.") +
+    card("Debt payoff worksheet",'<p class="hint">Enter a balance, annual rate and monthly minimum for each debt you want to model.</p><div id="debts">' +
+    state.debts.map((debt,index) => debtRow(debt,index)).join("") + '</div><button type="button" id="add-debt">+ Add debt</button>' +
+    '<div class="fields">' + field("debtExtra") + '<label class="field">Strategy<select id="order"><option value="avalanche">Highest rate first</option><option value="snowball">Smallest balance first</option></select></label></div>' +
+    results(["debtBalance","Total debt entered"],["payoffTime","Estimated payoff time"],["interest","Estimated interest"],["comparison","Other strategy interest"]) +
+    '<p class="hint">The estimate applies interest monthly at annual rate ÷ 12 and rolls freed payments into remaining debts. Lender fees, daily interest and variable minimums can change results.</p>') +
+    card("Mortgage renewal scenario",fields("mortgage","amortization","currentRate","renewalRate") +
+    results(["currentMortgage","Current principal & interest"],["renewedMortgage","Renewal principal & interest"],["mortgageChange","Monthly change"]) +
+    '<p class="hint">Monthly payments use Canadian nominal rates compounded semi-annually. Taxes, insurance, fees and penalties are outside this estimate.</p>'),
+  accounts: () => header("Registered accounts","Track your available room and preview contributions before moving money. Use zero when a known amount is zero.") +
+    `<p class="callout">Verify your 2027 TFSA annual amount before entering it. Use your personal room for RRSP and FHSA. ${accountSource}.</p>` +
+    '<div class="grid">' + card("TFSA",fields("tfsaBase","tfsaNew","tfsaWithdraw","tfsaPaid","tfsaPlan") +
+    '<p class="hint">Use unused room from before the new year. Include eligible 2026 withdrawals once. Ordinary 2027 withdrawals generally restore room in 2028.</p>' + results(["tfsa","Remaining room"],["tfsaAfter","Room after plan"])) +
+    card("RRSP",fields("rrspRoom","rrspPaid","rrspPlan") + results(["rrsp","Remaining room"],["rrspAfter","Room after plan"]) +
+    '<p class="hint">Use available contribution room after accounting for previously reported unused contributions. Enter only new contributions after that measurement.</p>') +
+    card("FHSA",fields("fhsaRoom","fhsaPaid","fhsaPlan") + results(["fhsa","Remaining room"],["fhsaAfter","Room after plan"]) +
+    '<p class="hint">Use verified participation room across all FHSAs. Direct RRSP transfers consume room and produce no new deduction.</p>') +
+    card("Deduction scenario",fields("taxRate") + results(["deduction","Illustrative tax reduction"]) +
+    '<p class="hint">Uses the planned RRSP and cash FHSA amounts and a flat marginal rate. Confirm deductibility and room. The estimate excludes changes to credits and benefits.</p>') + '</div>',
+  future: () => header("Investing & retirement","Compare a savings projection with a retirement income gap. Enter after-tax-equivalent savings and use today’s dollars throughout.") +
+    '<div class="grid">' + card("Savings projection",fields("invested","investMonthly","years","realReturn") +
+    results(["projected","Projected retirement savings"]) +
+    '<p class="hint">Uses a constant return after inflation and fees, with deposits at month-end. Enter your own scenario rate. Market returns vary.</p>') +
+    card("Retirement income gap",fields("retirementSpend","pension","draw") +
+    results(["retirementGap","Annual spending gap"],["capitalTarget","Illustrative capital target"],["retirementShortfall","Gap to projected savings"]) +
+    '<p class="hint">The target divides the after-tax income gap by your assumed initial withdrawal rate. This scenario does not test whether your savings can sustain withdrawals through retirement.</p>') + '</div>',
+  protection: () => header("Goals & insurance","Set a monthly savings amount for a dated goal and estimate how much of an insurance gap you may need to cover.") +
+    '<div class="grid">' + card("Dated savings goal",`<label class="field">Goal name<input id="goal-name" maxlength="100" value="${escape(state.goalName)}" placeholder="e.g. Down payment"></label>` +
+    fields("goalTarget","goalSaved","goalMonths") + results(["goalGap","Still to save"],["goalMonthly","Monthly amount needed"]) +
+    '<p class="hint">Assumes zero interest. Include closing costs if the goal is a home purchase.</p>') +
+    card("Life insurance gap",fields("lifeDebt","lifeYear","lifeYears","lifeOther","lifeCover") + results(["lifeGap","Estimated gap"]) +
+    '<p class="hint">A simple estimate of debts, one-time costs and survivor support, minus available assets and existing cover.</p>') +
+    card("Disability income gap",fields("disabilitySpend","disabilityBenefit","disabilityMonths") +
+    results(["disabilityGap","Monthly gap once benefits start"],["disabilityBridge","Cash needed during waiting period"]) +
+    '<p class="hint">Assumes no other income during the waiting period. Check actual benefit limits, tax treatment and policy terms.</p>') + '</div>',
+  actions: () => header("12-month action plan","Check off each monthly task as you complete it. Keep details or decisions in your notes.") +
+    card("2027 checklist",results(["complete","Months completed"]) + P.months.map((month,i) =>
+      `<label class="action"><input type="checkbox" data-month="${i}" ${state.months[i] ? "checked" : ""}><span><strong>${month}</strong><small>${P.tasks[i]}</small></span></label>`).join("")) +
+    card("Planning notes",`<label class="field">Notes<textarea id="notes" maxlength="3000">${escape(state.notes)}</textarea></label>`)
+};
+
+function debtRow(debt,index) {
+  const labels = {balance:"Balance",rate:"Annual rate (%)",payment:"Monthly minimum"};
+  const amounts = Object.entries(labels).map(([key,label]) =>
+    `<label class="field">${label}<input type="number" inputmode="decimal" step="any" min="0" max="${key === "rate" ? 100 : 1000000000}" data-debt="${index}" data-key="${key}" value="${escape(debt[key])}" placeholder="—"></label>`).join("");
+  return `<section class="debt-row" aria-label="Debt ${index+1}"><div class="fields"><label class="field">Debt name<input data-debt="${index}" data-key="name" maxlength="80" value="${escape(debt.name)}" placeholder="e.g. Credit card"></label>${amounts}</div><button type="button" class="danger" data-remove="${index}">Remove debt ${index+1}</button></section>`;
+}
+
+const calculations = {
+  income:"Monthly income", essentials:"Monthly essentials", minimums:"Monthly debt minimums", irregular:"Monthly irregular-bill provision",
+  outflow:"Monthly outflow", surplus:"Monthly surplus", afterTransfers:"Surplus after extra transfers",
+  reserveTarget:"Emergency reserve target", reserveGap:"Emergency reserve gap", reserveTime:"Months to reserve target", cashMonths:"Emergency months covered",
+  debtBalance:"Debt balance", payoffTime:"Debt payoff time", interest:"Debt interest", comparison:"Other strategy interest",
+  currentMortgage:"Current mortgage payment", renewedMortgage:"Renewal mortgage payment", mortgageChange:"Mortgage payment change",
+  tfsa:"TFSA room remaining", tfsaAfter:"TFSA room after plan", rrsp:"RRSP room remaining", rrspAfter:"RRSP room after plan",
+  fhsa:"FHSA room remaining", fhsaAfter:"FHSA room after plan", deduction:"Illustrative tax reduction",
+  projected:"Projected retirement savings", retirementGap:"Annual retirement income gap", capitalTarget:"Illustrative retirement capital target",
+  retirementShortfall:"Retirement capital shortfall", goalGap:"Savings goal gap", goalMonthly:"Monthly savings goal amount",
+  lifeGap:"Life insurance gap", disabilityGap:"Monthly disability income gap", disabilityBridge:"Disability cash bridge", complete:"Months completed"
+};
+
+function display(result,other) {
+  const data = Object.fromEntries(Object.keys(calculations).map(key => [key,cash(result[key] ?? null)]));
+  for (const key of ["reserveTime","cashMonths"]) data[key] = count(result[key]);
+  data.complete = result.complete + " / 12";
+  data.payoffTime = {
+    empty:"—", incomplete:"Complete the debt fields", paid:result.debt.months + " months", limit:"Over 600 months at this payment"
+  }[result.debt.status];
+  data.interest = result.debt.status === "paid" ? cash(result.debt.interest) : "—";
+  data.comparison = other.status === "paid" ? cash(other.interest) : other.status === "limit" ? "Over 600 months" : "—";
+  return data;
+}
+
+function comparison() {
+  return P.payoff(state.debts,state.values.debtExtra ?? 0,state.order === "avalanche" ? "snowball" : "avalanche");
+}
+
+function refresh() {
+  const result = P.calculate(state);
+  const values = display(result,comparison());
+  for (const node of $("main").querySelectorAll("[data-out]")) {
+    const key = node.dataset.out;
+    node.textContent = values[key];
+    node.classList.toggle("negative",typeof result[key] === "number" && result[key] < 0);
+  }
+  if ($("flow-bar")) {
+    const segments = [result.essentials,result.outflow-result.essentials,Math.max(0,result.surplus ?? 0)];
+    const total = segments.reduce((a,b) => a+b,0);
+    for (const [index,node] of Array.from($("flow-bar").children).entries()) {
+      node.style.width = (total ? 100*segments[index]/total : 0) + "%";
+    }
+    $("next-step").textContent = nextStep(result);
+  }
+}
+
+function nextStep(r) {
+  if (r.surplus === null) return "Enter your take-home pay and bills to find your monthly surplus.";
+  if (r.surplus < 0) return "Review bills, minimum payments and incoming cash to identify the monthly shortfall.";
+  if (r.afterTransfers < 0) return "Your planned extra transfers exceed this budget’s surplus. Review the amounts in Cash flow & reserve.";
+  if (r.reserveTarget === null || r.reserveGap > 0) return "Set or review your emergency reserve target and contribution. Consider the reserve alongside expensive debt.";
+  if (r.debtBalance > 0) return "Compare payoff strategies using your balances, rates and payment amounts.";
+  return "Review your next dated goal, registered contribution room or retirement gap.";
+}
+
+function render(focus = false) {
+  const requested = location.hash.slice(1);
+  const tab = Object.hasOwn(views,requested) ? requested : "overview";
+  $("main").innerHTML = views[tab]();
+  for (const link of $("nav").querySelectorAll("a")) {
+    if (link.hash === "#" + tab) link.setAttribute("aria-current","page");
+    else link.removeAttribute("aria-current");
+  }
+  if ($("order")) $("order").value = state.order;
+  refresh();
+  if (focus) {
+    $("main").querySelector("h1").focus({preventScroll:true});
+    window.scrollTo(0,0);
+  }
+}
+
+function assignNumber(input,target,key,validate) {
+  const blank = input.value === "" && !input.validity.badInput;
+  const valid = blank || validate(key,input.valueAsNumber);
+  input.setCustomValidity(valid ? "" : "Enter a number within the allowed range.");
+  if (!valid) return false;
+  if (blank) delete target[key];
+  else target[key] = input.valueAsNumber;
+  return true;
+}
+
+$("main").addEventListener("input",event => {
+  const input = event.target;
+  const data = input.dataset;
+  if (data.field) {
+    if (!assignNumber(input,state.values,data.field,P.valid)) return;
+  } else if (data.debt !== undefined) {
+    const debt = state.debts[Number(data.debt)];
+    if (data.key === "name") debt.name = input.value.slice(0,80);
+    else if (!assignNumber(input,debt,data.key,P.validDebt)) return;
+  } else if (data.month !== undefined) {
+    state.months[Number(data.month)] = input.checked;
+  } else if (input.id === "order") state.order = input.value;
+  else if (input.id === "notes") state.notes = input.value.slice(0,3000);
+  else if (input.id === "goal-name") state.goalName = input.value.slice(0,100);
+  else return;
+  persist();
+  refresh();
+});
+
+$("main").addEventListener("focusout",event => {
+  if (event.target.validity?.customError) event.target.reportValidity();
+});
+$("main").addEventListener("click",event => {
+  const {id,dataset} = event.target;
+  if (id === "add-debt") {
+    if (state.debts.length >= 30) return message("This planner supports up to 30 debts.");
+    state.debts.push({name:""});
+    persist();
+    render();
+    $("main").querySelector('[data-debt="' + (state.debts.length-1) + '"][data-key="name"]').focus();
+  } else if (dataset.remove !== undefined) {
+    state.debts.splice(Number(dataset.remove),1);
+    persist();
+    render();
+    $("add-debt").focus();
+  }
+});
+
+function summaryRows(formatted) {
+  const result = P.calculate(state);
+  const other = comparison();
+  const view = display(result,other);
+  const rows = Object.entries(P.fields).map(([key,[label,section]]) => [section,label,state.values[key] ?? ""]);
+  rows.push(["protection","Goal name",state.goalName],["debt","Payoff strategy",state.order]);
+  state.debts.forEach((debt,index) => {
+    const category = "debt " + (index+1);
+    rows.push([category,"Name",debt.name],[category,"Balance",debt.balance ?? ""],[category,"APR (%)",debt.rate ?? ""],[category,"Minimum payment",debt.payment ?? ""]);
+  });
+  const raw = {...result,payoffTime:result.debt.months ?? view.payoffTime,interest:result.debt.interest,comparison:other.interest};
+  for (const [key,label] of Object.entries(calculations)) {
+    const value = formatted ? view[key] : raw[key];
+    rows.push(["calculated",label,typeof value === "number" ? Math.round(value*100)/100 : value ?? ""]);
+  }
+  P.months.forEach((month,index) => rows.push(["action plan",month,state.months[index] ? "Complete" : "Open"]));
+  rows.push(["action plan","Planning notes",state.notes]);
+  return rows;
+}
+
+function download(content,type,name) {
+  const url = URL.createObjectURL(new Blob([content],{type}));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url),2000);
+}
+
+function csvCell(value) {
+  let str = String(value);
+  if (typeof value === "string" && /^[\s]*[=+\-@\t\r\n]/.test(str)) str = "'" + str;
+  return '"' + str.replaceAll('"','""') + '"';
+}
+
+function printPlan() {
+  const previous = $("print-report");
+  if (previous) previous.remove();
+  const report = document.createElement("section");
+  report.id = "print-report";
+  report.innerHTML = '<h1>2027 Personal Finance Plan</h1><p>CAD · Estimates depend on the inputs shown.</p><table><thead><tr><th>Section</th><th>Item</th><th>Amount or status</th></tr></thead><tbody>' +
+    summaryRows(true).filter(row => row[2] !== "" && row[2] !== "—").map(row =>
+      "<tr>" + row.map(cell => "<td>" + escape(cell) + "</td>").join("") + "</tr>").join("") + "</tbody></table>";
+  document.body.append(report);
+  window.print();
+}
+window.addEventListener("afterprint",() => $("print-report")?.remove());
+
+$("save").addEventListener("click",() => message(persist() ? "Plan saved to this browser." : "Browser save unavailable. Export a JSON backup."));
+$("backup").addEventListener("click",() => download(JSON.stringify(state,null,2),"application/json","finance-planner-2027-backup.json"));
+$("csv").addEventListener("click",() => {
+  const rows = [["Section","Item","Value"],...summaryRows(false)];
+  download("\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n"),"text/csv;charset=utf-8","finance-planner-2027.csv");
+});
+$("print").addEventListener("click",printPlan);
+$("restore").addEventListener("click",() => $("import").click());
+$("data-menu").addEventListener("click",event => {
+  if (event.target.matches("button")) $("data-menu").open = false;
+});
+$("import").addEventListener("change",async event => {
+  const file = event.target.files[0];
+  event.target.value = "";
+  if (!file) return;
+  try {
+    if (file.size > 250000) throw new Error("This file is too large for a planner backup.");
+    const imported = P.normalize(JSON.parse(await file.text()));
+    const existing = state.debts.length || Object.keys(state.values).length || state.months.some(Boolean) || state.notes || state.goalName;
+    if (existing && !window.confirm("Replace this browser’s current plan with the imported backup?")) return;
+    state = imported;
+    const saved = persist();
+    render();
+    message(saved ? "Backup imported and saved." : "Backup opened. Browser saving is unavailable.");
+  } catch (error) {
+    message(error instanceof SyntaxError ? "This file is not a valid JSON backup." : error.message);
+  }
+});
+window.addEventListener("hashchange",() => render(true));
+window.addEventListener("storage",event => {
+  if (event.key !== key || !event.newValue) return;
+  try {
+    state = P.normalize(JSON.parse(event.newValue));
+    render();
+    message("Loaded the latest save from another tab.");
+  } catch {
+    message("A save from another tab could not be opened.");
+  }
+});
+render();
+
+
+const guideSource = "\u003c!doctype html>\n\u003chtml lang=\"en-CA\">\u003chead>\u003cmeta charset=\"utf-8\">\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\u003ctitle>Canadian Personal Finance Playbook 2027\u003c/title>\n\u003cstyle>\n:root{--ink:#132926;--deep:#093d35;--accent:#0c604d;--paper:#f5f7f4;--line:#cddcd4}\n*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.64 \"DM Sans\",system-ui,sans-serif}\na{color:var(--accent);text-underline-offset:.17em}a:hover{text-decoration-thickness:2px}\na:focus-visible,.table-wrap:focus-visible{outline:3px solid #198164;outline-offset:3px}\n.skip{position:absolute;left:1rem;top:-5rem;padding:.5rem;background:white;z-index:2}.skip:focus{top:1rem}\nheader{background:var(--deep);color:white;padding:clamp(2rem,6vw,5.2rem) max(1.15rem,calc((100vw - 1260px)/2));border-bottom:6px solid #61b397}\nh1,h2{font-family:\"Instrument Serif\",Georgia,serif;font-weight:normal;line-height:1.12}\nh1{font-size:clamp(2.7rem,6.2vw,5.35rem);margin:.3rem 0 .8rem;max-width:900px}\nheader p{font-size:1.08rem;max-width:680px;margin:.4rem 0 0;color:#e0f2e8}.date{font-size:.91rem;font-weight:650;color:#c4e9da}\n.layout{max-width:1300px;margin:auto;display:grid;grid-template-columns:235px minmax(0,1fr);gap:clamp(1.4rem,4vw,4rem);padding:2.3rem 1.2rem 4rem}\nnav{position:sticky;top:1rem;align-self:start;max-height:calc(100vh - 2rem);overflow:auto;border:1px solid var(--line);background:#fff;border-radius:16px;padding:1rem}\nnav strong{display:block;margin-bottom:.45rem}nav a{display:block;padding:.22rem 0;color:var(--deep);font-size:.88rem}\nmain{min-width:0}h2{font-size:clamp(2rem,4vw,3rem);color:var(--deep);margin:2.8rem 0 .75rem;padding-top:.6rem;border-top:1px solid var(--line);scroll-margin-top:1rem}\nmain h2:first-child{margin-top:0}p{margin:.8em 0}li{margin:.32em 0}strong{font-weight:720}\n.table-wrap{overflow-x:auto;margin:1.1rem 0 1.35rem;border:1px solid var(--line);border-radius:12px;background:#fff}\ntable{border-collapse:collapse;width:100%;font-size:.91rem;line-height:1.46}\nth,td{padding:.7rem .77rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}\nth{background:#e0eee5;color:var(--deep)}td:first-child{font-weight:650;min-width:8rem}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5faf7}\n.ref{font-size:.72em;white-space:nowrap}.ref a{text-decoration:none}.sources{overflow-wrap:anywhere;padding-left:1.8rem;font-size:.91rem}\n@media(max-width:760px){.layout{grid-template-columns:minmax(0,1fr);gap:1.25rem;padding-top:1rem}nav{position:static;max-height:none}nav a{padding:.38rem 0}table{min-width:570px}}\n@media print{body{background:white;color:#000;font-size:10pt}header{background:white;color:#000;padding:0 0 1em;border-color:#444}header p,.date{color:#000}h1{font-size:28pt}.layout{display:block;padding:0}nav,.skip{display:none}h2{font-size:20pt;break-after:avoid}table{font-size:8.5pt;min-width:0}td,th{padding:.35em}.table-wrap{overflow:visible}tr{break-inside:avoid}thead{display:table-header-group}a{color:#000}}\n\u003c/style>\u003c/head>\u003cbody>\n\u003ca class=\"skip\" href=\"#content\">Skip to playbook\u003c/a>\n\u003cheader>\u003cdiv class=\"date\">Canada \u00b7 Rules checked November 11, 2026\u003c/div>\n\u003ch1>2027 Personal Finance Playbook\u003c/h1>\n\u003cp>Decide where your next dollar should go, choose accounts for your goals, and put the plan on a monthly schedule.\u003c/p>\u003c/header>\n\u003cdiv class=\"layout\">\u003cnav aria-label=\"Contents\">\u003cstrong>Contents\u003c/strong>\u003ca href=\"#section-start-with-your-next-dollar\">Start with your next dollar\u003c/a>\u003ca href=\"#section-cash-flow-and-emergency-reserves\">Cash flow and emergency reserves\u003c/a>\u003ca href=\"#section-debt-and-housing\">Debt and housing\u003c/a>\u003ca href=\"#section-account-and-tax-decisions\">Account and tax decisions\u003c/a>\u003ca href=\"#section-choose-priorities-by-household-and-goal\">Choose priorities by household and goal\u003c/a>\u003ca href=\"#section-investing-by-time-horizon\">Investing by time horizon\u003c/a>\u003ca href=\"#section-insurance-and-financial-risk\">Insurance and financial risk\u003c/a>\u003ca href=\"#section-retirement-income-and-withdrawals\">Retirement income and withdrawals\u003c/a>\u003ca href=\"#section-2027-rules-and-figures-to-verify\">2027 rules and figures to verify\u003c/a>\u003ca href=\"#section-12-month-action-plan\">12-month action plan\u003c/a>\u003ca href=\"#section-inputs-needed-for-an-individualized-plan\">Inputs needed for an individualized plan\u003c/a>\u003ca href=\"#section-sources\">Sources\u003c/a>\u003c/nav>\n\u003cmain id=\"content\">\u003ch2 id=\"section-start-with-your-next-dollar\">Start with your next dollar\u003c/h2>\n\u003col>\n\u003cli>\u003cstrong>If cash flow is negative:\u003c/strong> cover housing, food, utilities, essential transport and coverage. Make required debt payments where possible. Address arrears and contact creditors early. Review benefits and income before committing to new contributions.\u003c/li>\n\u003cli>\u003cstrong>If cash flow is positive but fragile:\u003c/strong> build a starter buffer based on a real shock, such as your largest likely deductible or one pay cycle of essential bills. Keep minimums current. Evaluate any employer match you can afford after checking vesting, fees and withdrawal restrictions.\u003c/li>\n\u003cli>\u003cstrong>If expensive debt remains:\u003c/strong> direct extra payments to the highest effective rate after minimums, unless arrears or a near-term contractual deadline changes the order. Keep enough cash to avoid borrowing again at the first setback.\u003c/li>\n\u003cli>\u003cstrong>If cash flow is stable:\u003c/strong> finish the emergency reserve and fund dated goals. Use FHSA for an eligible home goal, TFSA for flexibility or low current effective tax rates, and RRSP for retirement when the deduction or employer match makes it worthwhile. Test tax and benefit interactions before choosing.\u003c/li>\n\u003cli>\u003cstrong>If the basics are funded:\u003c/strong> invest long-term money in a diversified portfolio you can hold through a downturn. Close insurance gaps and test how the plan behaves under job loss, a mortgage reset or poor early retirement returns.\u003c/li>\n\u003c/ol>\n\u003cp>These steps are a decision framework. A benefit deadline, a grant, or a particularly valuable match can move a goal up the list if the household can still pay its bills. \u003csup class=\"ref\">\u003ca aria-label=\"Source 1\" href=\"#source-1\">[1]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 2\" href=\"#source-2\">[2]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 3\" href=\"#source-3\">[3]\u003c/a>\u003c/sup>\u003c/p>\n\u003ch2 id=\"section-cash-flow-and-emergency-reserves\">Cash flow and emergency reserves\u003c/h2>\n\u003cp>Use the last three months of transactions and a full year of irregular bills. Start with actual take-home pay and recurring benefits. For biweekly pay, multiply by 26 and divide by 12 to estimate the monthly average, then map real pay dates to bill dates. For irregular income, build the budget on a conservative low month and use stronger months to build reserves. Keep business taxes and any GST/HST collected in separate accounts from spending money. \u003csup class=\"ref\">\u003ca aria-label=\"Source 1\" href=\"#source-1\">[1]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 4\" href=\"#source-4\">[4]\u003c/a>\u003c/sup>\u003c/p>\n\u003cdiv aria-labelledby=\"section-cash-flow-and-emergency-reserves\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Monthly worksheet\u003c/th>\n\u003cth scope=\"col\">What to enter\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>Reliable inflows\u003c/td>\n\u003ctd>Take-home pay, support and recurring benefits. Count uncertain income separately.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Essential outflows\u003c/td>\n\u003ctd>Housing, food, utilities, essential transport, dependent care, minimum debt payments and core insurance.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Predictable irregular bills\u003c/td>\n\u003ctd>Annual cost divided by 12 for items such as repairs, renewals and gifts. Set aside that amount each month.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Flexible outflows\u003c/td>\n\u003ctd>Discretionary spending, with a cap you can sustain.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Available for goals\u003c/td>\n\u003ctd>Inflows minus the three spending categories above. Give each dollar a job at the next payday.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>FCAC suggests aiming for three to six months of regular expenses or income. An essential-expense target is a practical adaptation. Lean toward the higher end when one income carries the household, work is variable or benefits are limited. Stress-test a longer interruption where job replacement could take longer. Hold the first layer in accessible savings and consider cashable or staggered short guaranteed investment certificates (GICs) only for money you can wait to access. Check the institution, account category, ownership and redemption terms. CDIC covers eligible deposits, including principal and interest, up to $100,000 per insured category at each member institution. Provincial credit union schemes can differ. \u003csup class=\"ref\">\u003ca aria-label=\"Source 2\" href=\"#source-2\">[2]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 5\" href=\"#source-5\">[5]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>\u003cstrong>Worked example.\u003c/strong> Take-home income of $4,200 minus $2,800 essentials, $300 irregular-bill funding and $500 flexible spending leaves \u003cstrong>$600 a month\u003c/strong>. Three and six months of essentials are \u003cstrong>$8,400\u003c/strong> and \u003cstrong>$16,800\u003c/strong>. With $2,400 already saved and all $600 directed to the reserve, the targets take \u003cstrong>10 and 24 months\u003c/strong>, respectively, ignoring interest. If the household has a $4,000 credit card balance at 20%, it can keep its starter buffer and decide how much of the $600 to divert to debt.\u003c/p>\n\u003cp>\u003cstrong>Payday checklist:\u003c/strong> \u2610 Cover the next bills and minimums. \u2610 Transfer tax and irregular-bill money. \u2610 Fund the current priority automatically. \u2610 Check upcoming account balances so timing does not trigger overdraft.\u003c/p>\n\u003ch2 id=\"section-debt-and-housing\">Debt and housing\u003c/h2>\n\u003cp>Record each balance, annual rate, minimum, due date, collateral, renewal or promo expiry and prepayment penalty. Make minimums across debts and address arrears. With the \u003cstrong>avalanche\u003c/strong> method, direct extra money to the highest rate. With the \u003cstrong>snowball\u003c/strong> method, pay the smallest balance first if quick wins help you stick with the plan. For consolidation, compare total interest and fees over the same payoff period and check whether unsecured debt becomes secured against your home. If minimums are persistently unaffordable, contact creditors, compare reputable credit counselling, and consult a Licensed Insolvency Trustee about formal options such as a consumer proposal or bankruptcy. \u003csup class=\"ref\">\u003ca aria-label=\"Source 3\" href=\"#source-3\">[3]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 6\" href=\"#source-6\">[6]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 7\" href=\"#source-7\">[7]\u003c/a>\u003c/sup>\u003c/p>\n\u003cdiv aria-labelledby=\"section-debt-and-housing\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Worked example\u003c/th>\n\u003cth scope=\"col\">Calculation\u003c/th>\n\u003cth scope=\"col\">Decision\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>Two debts\u003c/td>\n\u003ctd>$1,000 extra against a 20% card cuts the next month\u2019s interest by about $16.67. Against an 8% line of credit, about $6.67. Assumes monthly interest at annual rate \u00f7 12 and otherwise equal timing.\u003c/td>\n\u003ctd>The card saves about $10 more in the first month.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Mortgage renewal\u003c/td>\n\u003ctd>$400,000 with 20 years remaining costs about $2,417 monthly at 4%, or $2,849 at 6%. Canadian nominal rates compounded semi-annually, monthly payments, principal and interest only.\u003c/td>\n\u003ctd>Test whether roughly $432 more per month fits. Ask about lender fees, amortization, prepayment rights and qualification.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Extra principal or savings\u003c/td>\n\u003ctd>A penalty-free prepayment at 4.5% on non-deductible debt can be compared with a taxable interest rate of 4.5% \u00f7 (1 \u2212 30%) = 6.43% under a flat 30% marginal tax assumption.\u003c/td>\n\u003ctd>Preserve needed liquidity and confirm the mortgage terms. Investment returns carry risk and may vary.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>For renewals, start comparing offers several months ahead. Confirm whether a switch qualifies for applicable straight-switch treatment with the receiving lender, and compare fees and contractual terms. For a purchase, budget closing costs, taxes, insurance, maintenance and, where applicable, condo or strata fees. Keep closing funds and the post-closing cash buffer separate. \u003csup class=\"ref\">\u003ca aria-label=\"Source 8\" href=\"#source-8\">[8]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 9\" href=\"#source-9\">[9]\u003c/a>\u003c/sup>\u003c/p>\n\u003ch2 id=\"section-account-and-tax-decisions\">Account and tax decisions\u003c/h2>\n\u003cp>Choose the account for its tax treatment and access rules, then choose the holdings for the goal. A TFSA, RRSP or FHSA may hold cash or investments depending on the provider. An account label alone does not determine investment risk.\u003c/p>\n\u003cdiv aria-labelledby=\"section-account-and-tax-decisions\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Account\u003c/th>\n\u003cth scope=\"col\">Contributions and room\u003c/th>\n\u003cth scope=\"col\">Withdrawals and best fit\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>\u003cstrong>TFSA\u003c/strong> \u00b7 Tax-Free Savings Account\u003c/td>\n\u003ctd>No deduction. Unused room carries forward. Track deposits across providers using your records, since CRA figures can lag. Room depends on age and Canadian residence.\u003c/td>\n\u003ctd>Generally tax-free. Withdrawals return as room on January 1 of the next year. Use issuer-to-issuer transfers to move accounts. Flexible goals and retirement top-ups. Excess amounts generally attract 1% per month.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>\u003cstrong>RRSP\u003c/strong> \u00b7 Registered Retirement Savings Plan\u003c/td>\n\u003ctd>Deductible up to the personal limit when claimed. New room generally starts with the lesser of 18% of prior-year earned income and the annual ceiling, adjusted for pension items. Unused room can carry forward. Check the Notice of Assessment and previously reported undeducted contributions.\u003c/td>\n\u003ctd>Ordinary withdrawals are taxable and generally use up the room permanently. Withholding is a prepayment. Useful for an employer match or when the effective deduction rate exceeds the expected effective withdrawal rate.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>\u003cstrong>FHSA\u003c/strong> \u00b7 First Home Savings Account\u003c/td>\n\u003ctd>$8,000 initial room when the first account opens, $40,000 lifetime limit and up to $8,000 of unused participation room carried forward. Eligible cash contributions are generally deductible. Direct RRSP transfers use FHSA room and give no new deduction.\u003c/td>\n\u003ctd>Qualifying first-home withdrawals are tax-free with no repayment. Other withdrawals are generally taxable. An eligible direct transfer to your RRSP or RRIF generally uses no RRSP room.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>\u003cstrong>Taxable account\u003c/strong>\u003c/td>\n\u003ctd>No registered contribution ceiling or deduction. Track adjusted cost base (ACB), the tax cost used to calculate a gain, in Canadian dollars across relevant holdings.\u003c/td>\n\u003ctd>Interest, dividends and realized gains have different tax treatment. Useful after suitable registered room is used or when registered access rules do not fit.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>FHSA eligibility to open and to withdraw has distinct first-time-buyer tests. Check Canadian residency, age, prior homes and any spouse or partner history that applies. The FHSA deadline is based on the earliest of the 15th anniversary year, the year you turn 71, or the year after your first qualifying withdrawal. FHSA contributions for a deduction follow the calendar year. An RRSP deduction can generally include eligible contributions made in the first 60 days of the following year. \u003csup class=\"ref\">\u003ca aria-label=\"Source 10\" href=\"#source-10\">[10]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 11\" href=\"#source-11\">[11]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 12\" href=\"#source-12\">[12]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 13\" href=\"#source-13\">[13]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 14\" href=\"#source-14\">[14]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 15\" href=\"#source-15\">[15]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 16\" href=\"#source-16\">[16]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 17\" href=\"#source-17\">[17]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>The \u003cstrong>Home Buyers\u2019 Plan (HBP)\u003c/strong> permits up to $60,000 per eligible person from RRSPs. You can combine it with an FHSA withdrawal for the same home if you meet both sets of conditions. CRA currently shows a fifth-year repayment start for first withdrawals made in 2022\u20132028. A first withdrawal in 2027 therefore starts repayment in \u003cstrong>2032\u003c/strong>. A $30,000 withdrawal initially implies \u003cstrong>$2,000 a year\u003c/strong> over 15 years, subject to CRA\u2019s statement and any early repayment. A missed required amount is generally included in income. \u003csup class=\"ref\">\u003ca aria-label=\"Source 18\" href=\"#source-18\">[18]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 19\" href=\"#source-19\">[19]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>\u003cstrong>Worked TFSA vs. RRSP example.\u003c/strong> Start with a $3,000 after-tax budget and a 40% effective deduction rate. A $5,000 RRSP contribution costs $3,000 after a $2,000 tax saving if the full deduction is usable and you can fund the contribution or arrange payroll relief. If both accounts grow 50%, the TFSA ends at \u003cstrong>$4,500\u003c/strong>. The RRSP reaches $7,500 before tax and leaves \u003cstrong>$5,625\u003c/strong> at a 25% withdrawal rate, \u003cstrong>$4,500\u003c/strong> at 40%, or \u003cstrong>$3,750\u003c/strong> at 50%. Growth and rates are hypothetical. Compare full tax and benefit outcomes across brackets and years. \u003csup class=\"ref\">\u003ca aria-label=\"Source 13\" href=\"#source-13\">[13]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 15\" href=\"#source-15\">[15]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>\u003cstrong>Worked FHSA example.\u003c/strong> An eligible person contributes $8,000 in 2027 and can deduct it at a constant 30% marginal rate, for about \u003cstrong>$2,400\u003c/strong> in tax savings. If the account earns $240, a qualifying withdrawal provides \u003cstrong>$8,240\u003c/strong> for the home. The $2,400 tax saving is separate and can be saved if cash flow allows. Check eligibility and leave time for paperwork and access to the funds. \u003csup class=\"ref\">\u003ca aria-label=\"Source 14\" href=\"#source-14\">[14]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>\u003cstrong>Worked taxable example.\u003c/strong> Suppose a resident earns $400 of fully taxable interest and realizes a $2,000 net capital gain after selling costs. Under a one-half inclusion assumption and a flat 30% marginal rate, estimated tax is $120 on interest plus $300 on the gain, or \u003cstrong>$420\u003c/strong>, before credits or benefit effects. Recheck the inclusion rate and the treatment of the transaction in the year of sale. For funds, track reinvested taxable distributions and return of capital in your ACB records. Check the superficial-loss rules before selling and repurchasing for a tax loss. \u003csup class=\"ref\">\u003ca aria-label=\"Source 20\" href=\"#source-20\">[20]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 21\" href=\"#source-21\">[21]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>File annually and check the benefit effect of a deduction or taxable withdrawal. Use the relevant federal and provincial rules and your combined \u003cstrong>marginal rate\u003c/strong>, the tax on the next dollar, with any changes in income-tested benefits. Canada Child Benefit (CCB) uses adjusted family net income. CRA says the Canada Groceries and Essentials Benefit (CGEB) replaced the GST/HST credit in July 2026. Compare current and future rates with benefit estimates when deciding whether to claim or carry forward an eligible deduction. \u003csup class=\"ref\">\u003ca aria-label=\"Source 22\" href=\"#source-22\">[22]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 23\" href=\"#source-23\">[23]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 24\" href=\"#source-24\">[24]\u003c/a>\u003c/sup>\u003c/p>\n\u003ch2 id=\"section-choose-priorities-by-household-and-goal\">Choose priorities by household and goal\u003c/h2>\n\u003cp>The amounts below describe hypothetical households. A gross salary threshold alone cannot determine priorities because housing costs, dependants, benefits, debt, and province can change the outcome.\u003c/p>\n\u003cdiv aria-labelledby=\"section-choose-priorities-by-household-and-goal\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Situation\u003c/th>\n\u003cth scope=\"col\">Where to focus\u003c/th>\n\u003cth scope=\"col\">What could change the order\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>Low income or little room after essentials\u003c/td>\n\u003ctd>File to access eligible benefits, stabilize bills and build a starter reserve. Consider a TFSA for accessible savings if there is room.\u003c/td>\n\u003ctd>Evaluate a feasible match and benefit effects. Check eligibility for the Canada Workers Benefit, CGEB and provincial support.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Moderate income with steady surplus\u003c/td>\n\u003ctd>Compare FHSA for an eligible home purchase, an employer match, and TFSA/RRSP for the remaining goals.\u003c/td>\n\u003ctd>Use estimated effective rates today and at withdrawal. Child benefits can make a deduction more valuable than the headline bracket suggests.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>High income or an unusually strong earnings year\u003c/td>\n\u003ctd>Compare RRSP deduction timing, fill suitable registered room and use a taxable account for additional investing when needed.\u003c/td>\n\u003ctd>A substantial pension or high future income may raise withdrawal rates. Model tax on concentrated assets before selling.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Single earner or irregular income\u003c/td>\n\u003ctd>Hold a larger liquidity buffer if an interruption would threaten essential bills. Review disability coverage and tax reserves.\u003c/td>\n\u003ctd>A strong pension, stable second income or accessible savings may change the reserve target.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Couple or family with dependants\u003c/td>\n\u003ctd>Make one household budget and track each person\u2019s registered room. Review life and disability coverage, CCB and education savings.\u003c/td>\n\u003ctd>Employer benefits, parental leave and childcare can change cash flow. Each eligible partner can open their own FHSA.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>First-time buyer with a fixed purchase date\u003c/td>\n\u003ctd>Calculate down payment, closing costs and cash needed after closing. Compare eligible FHSA and TFSA savings with HBP cash flow.\u003c/td>\n\u003ctd>A purchase delay, ownership history, lender requirements or an HBP repayment obligation may change the plan.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Family saving for education or disability\u003c/td>\n\u003ctd>Compare RESP grants and RDSP grants or bonds with the household\u2019s immediate needs.\u003c/td>\n\u003ctd>Basic CESG generally adds 20% up to $500 annually per eligible beneficiary, subject to carryforward, age rules and a $7,200 lifetime cap. Check the Canada Learning Bond if eligible and RDSP grant or bond repayment rules before withdrawing.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Near retirement or expecting low retirement income\u003c/td>\n\u003ctd>Estimate CPP/QPP, OAS and GIS, then compare withdrawal plans using after-tax income and benefits.\u003c/td>\n\u003ctd>GIS eligibility, a pension bridge ending or survivor income can change the best year to draw registered funds.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>Sources and eligibility details. \u003csup class=\"ref\">\u003ca aria-label=\"Source 25\" href=\"#source-25\">[25]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 23\" href=\"#source-23\">[23]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 14\" href=\"#source-14\">[14]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 26\" href=\"#source-26\">[26]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 27\" href=\"#source-27\">[27]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 28\" href=\"#source-28\">[28]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 29\" href=\"#source-29\">[29]\u003c/a>\u003c/sup>\u003c/p>\n\u003ch2 id=\"section-investing-by-time-horizon\">Investing by time horizon\u003c/h2>\n\u003cdiv aria-labelledby=\"section-investing-by-time-horizon\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">When you need the money\u003c/th>\n\u003cth scope=\"col\">Approach to compare\u003c/th>\n\u003cth scope=\"col\">Main risk to manage\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>Within about three years, with a firm date\u003c/td>\n\u003ctd>Accessible insured savings, or eligible GICs that mature before the goal.\u003c/td>\n\u003ctd>A market decline, withdrawal restriction or maturity after the due date.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Roughly three to seven years\u003c/td>\n\u003ctd>Keep any required amount in deposits or other holdings appropriate for the deadline. Consider diversified investments for money whose spending date or amount can move.\u003c/td>\n\u003ctd>Stocks can fall sharply and bond funds can lose value. A flexible date matters.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Longer than seven years\u003c/td>\n\u003ctd>Compare a broad mix of Canadian and global equities, high-quality bonds and cash. A diversified all-in-one fund, managed portfolio or adviser-supported portfolio may fit.\u003c/td>\n\u003ctd>Concentration, high costs, selling during a downturn and choosing more risk than the household can absorb.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>Set the allocation by \u003cstrong>risk capacity\u003c/strong> (how much loss your finances can absorb) and \u003cstrong>risk tolerance\u003c/strong> (how much volatility you can live with). Use the more restrictive result. Write down the goal, target allocation, contribution schedule, and annual review or rebalancing rule. Use new contributions to rebalance where practical, and consider taxes or fees before selling. Compare fund expenses, advice fees, commissions and currency costs. Verify adviser registration and scope. CDIC insures eligible deposits. CIPF coverage can apply to eligible property missing after a member firm\u2019s insolvency. Market declines are outside CIPF protection. \u003csup class=\"ref\">\u003ca aria-label=\"Source 30\" href=\"#source-30\">[30]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 31\" href=\"#source-31\">[31]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 5\" href=\"#source-5\">[5]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 32\" href=\"#source-32\">[32]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>\u003cstrong>Worked fee example.\u003c/strong> A $50,000 lump sum growing for 20 years at an assumed 5% gross annual return reaches about \u003cstrong>$126,488\u003c/strong> at a 0.25% annual fee or \u003cstrong>$94,792\u003c/strong> at a 1.75% fee. The difference is roughly \u003cstrong>$31,696\u003c/strong>. This illustration subtracts the fee from the annual return and assumes constant returns, no contributions, no taxes and no inflation. It isolates fee drag, the amount costs reduce growth. It is a projection under assumptions.\u003c/p>\n\u003cp>\u003cstrong>Before buying checklist:\u003c/strong> \u2610 Verify time horizon, acceptable loss and liquidity. \u2610 Read the fee and risk disclosure. \u2610 Check existing employer, home and portfolio concentration. \u2610 Verify the provider and applicable deposit or investor protection. \u2610 Confirm the contribution and withdrawal rules.\u003c/p>\n\u003ch2 id=\"section-insurance-and-financial-risk\">Insurance and financial risk\u003c/h2>\n\u003cp>Start with losses the household could not absorb. Compare employer and private coverage together. Read exclusions, deductibles, waiting periods, benefit caps, tax treatment, portability and the claims procedure. Review coverage after a move, new dependant, mortgage, job change or separation. Insurance and estate requirements vary by province. \u003csup class=\"ref\">\u003ca aria-label=\"Source 33\" href=\"#source-33\">[33]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 34\" href=\"#source-34\">[34]\u003c/a>\u003c/sup>\u003c/p>\n\u003cdiv aria-labelledby=\"section-insurance-and-financial-risk\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Risk\u003c/th>\n\u003cth scope=\"col\">What to check\u003c/th>\n\u003cth scope=\"col\">How to size the gap\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>Death of an income earner or caregiver\u003c/td>\n\u003ctd>Existing group and individual life insurance, beneficiaries, conversion and term expiry.\u003c/td>\n\u003ctd>Add debts, childcare, income replacement and one-time costs. Subtract available assets and coverage. Compare term insurance for time-limited needs.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Illness or disability reduces income\u003c/td>\n\u003ctd>Employer short- and long-term disability, EI or other eligible coverage, waiting period, definition of disability, offsets, exclusions and taxable benefits.\u003c/td>\n\u003ctd>Subtract expected net benefit from essential spending. Estimate how long cash would bridge the waiting period.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Home, belongings or liability loss\u003c/td>\n\u003ctd>Tenant, condo or home insurance, replacement cost, personal liability, deductibles, and exclusions or endorsements for water, earthquake and other relevant risks.\u003c/td>\n\u003ctd>Match policy terms to location and property exposure. Include strata deductibles where relevant.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Financial fraud and account access\u003c/td>\n\u003ctd>Use unique passwords and multi-factor authentication. Turn on alerts. Confirm payment requests through a known number. Review credit reports and dispute unfamiliar entries promptly.\u003c/td>\n\u003ctd>Document contact numbers and recovery steps in a secure place. Verify investment registration before sending money.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Incapacity or death administration\u003c/td>\n\u003ctd>Will, appropriate powers of attorney or provincial equivalents, and beneficiary and successor-holder designations where available.\u003c/td>\n\u003ctd>Identify who can act, which bills must continue and where documents are kept. Get province-specific advice for complex families or assets.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>\u003cstrong>Worked life-cover estimate.\u003c/strong> Suppose a family wants $300,000 to reduce debts, $40,000 a year for eight years of support and $30,000 for one-time costs, with $150,000 of accessible assets or existing coverage. The simple gap is \u003cstrong>$500,000\u003c/strong>. That estimate ignores inflation, investment returns, taxes and benefit changes. Check term length, survivor income and whether existing coverage ends with employment. \u003csup class=\"ref\">\u003ca aria-label=\"Source 34\" href=\"#source-34\">[34]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 35\" href=\"#source-35\">[35]\u003c/a>\u003c/sup>\u003c/p>\n\u003cdiv aria-labelledby=\"section-insurance-and-financial-risk\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Stress test\u003c/th>\n\u003cth scope=\"col\">Recalculate\u003c/th>\n\u003cth scope=\"col\">If the plan falls short\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>Lose an income for six months\u003c/td>\n\u003ctd>Months of essential bills covered after confirmed net benefits.\u003c/td>\n\u003ctd>Reduce discretionary outflows, build more accessible cash and check benefit eligibility.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Mortgage renews 2 percentage points higher\u003c/td>\n\u003ctd>Required payment, then remaining monthly surplus.\u003c/td>\n\u003ctd>Compare renewal options early and check when prepayment is permitted.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Stocks fall 30% when you need cash\u003c/td>\n\u003ctd>Cash available without selling, and the portfolio\u2019s dollar loss.\u003c/td>\n\u003ctd>Reduce dependence on stock sales for fixed near-term spending.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Inflation rises or retirement lasts longer\u003c/td>\n\u003ctd>After-tax spending gap using higher expenses and a later planning age.\u003c/td>\n\u003ctd>Compare flexible spending, pension start dates and other income sources.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003ch2 id=\"section-retirement-income-and-withdrawals\">Retirement income and withdrawals\u003c/h2>\n\u003col>\n\u003cli>Estimate essential and flexible spending in today\u2019s dollars. Include housing, taxes, irregular costs and health or care expenses.\u003c/li>\n\u003cli>Get personal CPP or QPP estimates, employer pension statements and OAS eligibility. Confirm inflation adjustments, bridge benefits, survivor terms and the timing of payments. Run single-survivor cash flow for couples.\u003c/li>\n\u003cli>Compare benefit start dates and account withdrawals year by year. CPP can begin from 60 to 70. Compared with age 65, the monthly adjustment is \u22120.6% per month before 65, up to 36%, or +0.7% per month after 65, up to 42%. Qu\u00e9bec\u2019s QPP has separate rules and can increase through age 72. OAS can start at 65 and rises 0.6% per month if deferred, up to 36% at age 70. While OAS is deferred you cannot receive GIS. Check OAS residency, OAS recovery tax and GIS income tests before choosing.\u003c/li>\n\u003cli>Compare drawing from TFSA, taxable accounts and RRSP/RRIF in different years. Early taxable withdrawals can sometimes smooth taxes. They can also affect benefits. An RRSP generally must mature by December 31 of the year you turn 71, with options including transferring to a RRIF, buying an eligible annuity or taking a taxable withdrawal. RRIF minimum withdrawals generally start the following year.\u003c/li>\n\u003cli>Test poor returns early in retirement, higher inflation, and living to 95 or beyond. Early losses matter when withdrawals force you to sell assets at lower prices. Compare several spending paths before committing.\u003c/li>\n\u003c/ol>\n\u003cp>Use the Canadian Retirement Income Calculator and OAS Benefits Estimator for starting estimates, then model household taxes and income-tested benefits. \u003csup class=\"ref\">\u003ca aria-label=\"Source 36\" href=\"#source-36\">[36]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 37\" href=\"#source-37\">[37]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 38\" href=\"#source-38\">[38]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 39\" href=\"#source-39\">[39]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 40\" href=\"#source-40\">[40]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 29\" href=\"#source-29\">[29]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 15\" href=\"#source-15\">[15]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 41\" href=\"#source-41\">[41]\u003c/a>\u003c/sup>\u003c/p>\n\u003cp>\u003cstrong>Worked retirement example.\u003c/strong> At $48,000 annual after-tax spending and $30,000 net pension and public benefits, savings must provide \u003cstrong>$18,000 a year\u003c/strong>. From $450,000 of after-tax-equivalent assets, that is \u003cstrong>4% in the first year\u003c/strong>. A 20% drop before withdrawals would reduce assets to $360,000 and raise the same draw to \u003cstrong>5%\u003c/strong>. For an ordinary RRSP withdrawal at a flat 25% effective rate, $18,000 net instead requires \u003cstrong>$24,000 gross\u003c/strong>. This is a stress test. A sustainable draw depends on longevity, investment returns, fees, inflation, taxes and spending flexibility.\u003c/p>\n\u003ch2 id=\"section-2027-rules-and-figures-to-verify\">2027 rules and figures to verify\u003c/h2>\n\u003cp>\u003cstrong>Evidence checked November 11, 2026.\u003c/strong> Published figures come from official sources. Examples in this playbook use illustrative rates, costs and returns. They are scenarios, with no projected 2027 TFSA limit, income brackets, or market return.\u003c/p>\n\u003cdiv aria-labelledby=\"section-2027-rules-and-figures-to-verify\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Topic\u003c/th>\n\u003cth scope=\"col\">Status at the evidence date\u003c/th>\n\u003cth scope=\"col\">What to do\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>RRSP ceiling\u003c/td>\n\u003ctd>\u003cstrong>Published for 2027:\u003c/strong> $35,390, up from $33,810 for 2026. Your personal limit depends on your earnings and pension adjustments.\u003c/td>\n\u003ctd>Check your 2026 Notice of Assessment or Reassessment and contributions already made. \u003csup class=\"ref\">\u003ca aria-label=\"Source 42\" href=\"#source-42\">[42]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 13\" href=\"#source-13\">[13]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>TFSA annual limit\u003c/td>\n\u003ctd>\u003cstrong>2027 figure unverified:\u003c/strong> CRA\u2019s table reviewed lists $7,000 for 2026 and ends there.\u003c/td>\n\u003ctd>Check CRA\u2019s updated table before relying on new room. Include unused prior room and eligible 2026 withdrawals, and reconcile all providers. \u003csup class=\"ref\">\u003ca aria-label=\"Source 42\" href=\"#source-42\">[42]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 10\" href=\"#source-10\">[10]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Income tax brackets and credits\u003c/td>\n\u003ctd>\u003cstrong>2027 federal figures unverified in the CRA rate table reviewed.\u003c/strong> Provinces set their own rules. B.C., for example, says it paused bracket indexation for 2027\u20132030.\u003c/td>\n\u003ctd>Look up 2027 federal and provincial brackets, basic personal amounts and applicable credits. Use 2026 rules for 2026 income. \u003csup class=\"ref\">\u003ca aria-label=\"Source 22\" href=\"#source-22\">[22]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 43\" href=\"#source-43\">[43]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>CPP and EI\u003c/td>\n\u003ctd>\u003cstrong>Published for 2027:\u003c/strong> CPP pensionable-earnings ceilings of $76,700 and $87,400. The first-tier employee CPP rate is 5.75% above the $3,500 exemption, up to the first ceiling. EI maximum insurable earnings are $70,800. Employee EI is 1.64% outside Quebec and 1.29% in Quebec.\u003c/td>\n\u003ctd>Update the take-home-pay budget. In Quebec use QPP, Quebec EI and Quebec Parental Insurance Plan rules where applicable. \u003csup class=\"ref\">\u003ca aria-label=\"Source 42\" href=\"#source-42\">[42]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 44\" href=\"#source-44\">[44]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 45\" href=\"#source-45\">[45]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 46\" href=\"#source-46\">[46]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Home Buyers\u2019 Plan\u003c/td>\n\u003ctd>\u003cstrong>CRA guidance:\u003c/strong> fifth-year repayment start for first withdrawals from 2022 through 2028. A 2027 first withdrawal points to 2032.\u003c/td>\n\u003ctd>Verify eligibility, the withdrawal date, and the repayment amount in CRA records before relying on it. \u003csup class=\"ref\">\u003ca aria-label=\"Source 18\" href=\"#source-18\">[18]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 19\" href=\"#source-19\">[19]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Federal filing and balance-due date\u003c/td>\n\u003ctd>\u003cstrong>Budget 2026 proposal:\u003c/strong> May 15 for individuals starting with the \u003cstrong>2027 tax year\u003c/strong>, normally filed in \u003cstrong>2028\u003c/strong>. Enactment was unverified at the evidence date.\u003c/td>\n\u003ctd>Use CRA\u2019s published 2027 filing-season deadlines for 2026 returns. Check legislation and CRA before filing 2027 returns. \u003csup class=\"ref\">\u003ca aria-label=\"Source 47\" href=\"#source-47\">[47]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 4\" href=\"#source-4\">[4]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 48\" href=\"#source-48\">[48]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Tax instalments\u003c/td>\n\u003ctd>\u003cstrong>2027 dates published\u003c/strong> for affected taxpayers. Budget 2026 proposes higher thresholds and a single annual option for certain business earners starting in \u003cstrong>2028\u003c/strong>.\u003c/td>\n\u003ctd>Follow applicable 2027 dates and your CRA instructions. Quebec residents should also check provincial obligations. \u003csup class=\"ref\">\u003ca aria-label=\"Source 47\" href=\"#source-47\">[47]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 4\" href=\"#source-4\">[4]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Benefits\u003c/td>\n\u003ctd>\u003cstrong>Annual or quarterly updates:\u003c/strong> CCB, CGEB, GIS and OAS payment amounts or eligibility thresholds can change.\u003c/td>\n\u003ctd>Run current federal and provincial estimators using family income, age, residency and other eligibility inputs. \u003csup class=\"ref\">\u003ca aria-label=\"Source 24\" href=\"#source-24\">[24]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 49\" href=\"#source-49\">[49]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 23\" href=\"#source-23\">[23]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 29\" href=\"#source-29\">[29]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Capital gains\u003c/td>\n\u003ctd>\u003cstrong>Current law reviewed:\u003c/strong> section 38 generally applies a one-half inclusion rate, subject to exceptions. A proposed change, special exemption or transaction-specific rule can change the calculation.\u003c/td>\n\u003ctd>Recheck the current statute and CRA instructions before a significant sale. Keep cost and sale records. \u003csup class=\"ref\">\u003ca aria-label=\"Source 21\" href=\"#source-21\">[21]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 20\" href=\"#source-20\">[20]\u003c/a>\u003c/sup>\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003ch2 id=\"section-12-month-action-plan\">12-month action plan\u003c/h2>\n\u003cdiv aria-labelledby=\"section-12-month-action-plan\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Month\u003c/th>\n\u003cth scope=\"col\">Action\u003c/th>\n\u003cth scope=\"col\">Record when complete\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>January\u003c/td>\n\u003ctd>Pull statements, calculate net worth and essential spending, verify 2027 room and set payday transfers.\u003c/td>\n\u003ctd>Starting net worth, monthly surplus, reserve target and next priority.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>February\u003c/td>\n\u003ctd>Review 2026 slips as they arrive and compare any RRSP contribution for the 2026 return with cash needs and your personal limit.\u003c/td>\n\u003ctd>Intended contribution and deduction year. Confirm the CRA deadline before sending funds.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>March\u003c/td>\n\u003ctd>Update debt rates and minimums. Set a payment schedule. If tax instalments apply, check the March 15 due date.\u003c/td>\n\u003ctd>Target payoff date, required instalment and current balance.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>April\u003c/td>\n\u003ctd>File the 2026 return by April 30 for most filers and pay any balance due by April 30 in the usual case, including most self-employed filers.\u003c/td>\n\u003ctd>Return and payment confirmations, refund or balance allocation.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>May\u003c/td>\n\u003ctd>Compare investments and fees. Verify your institution or adviser and write down the portfolio rules.\u003c/td>\n\u003ctd>Allocation, all-in cost estimate and review date.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>June\u003c/td>\n\u003ctd>Check the June 15 filing deadline for eligible self-employed 2026 filers and the June 15 instalment date if applicable. Review insurance.\u003c/td>\n\u003ctd>Coverage gaps, renewal dates and proof of filing or payment.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>July\u003c/td>\n\u003ctd>Update the budget with current benefits, household changes and midyear actuals. Check your monthly reserve progress.\u003c/td>\n\u003ctd>Revised monthly surplus and benefit estimates.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>August\u003c/td>\n\u003ctd>Update home, education or other dated goals. Check contribution room and grant eligibility.\u003c/td>\n\u003ctd>Target cost, deadline and monthly amount for each goal.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>September\u003c/td>\n\u003ctd>Get pension and public-benefit estimates. Model retirement or a major income interruption. Check the September 15 instalment date if applicable.\u003c/td>\n\u003ctd>After-tax retirement gap and reserve shortfall under stress.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>October\u003c/td>\n\u003ctd>Check renewals and major bills due in the next six months. Review beneficiaries, wills and powers of attorney.\u003c/td>\n\u003ctd>Renewal quotes or dates and any estate documents to update.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>November\u003c/td>\n\u003ctd>Estimate 2027 taxable income and benefits. Compare timing of deductions, gains or withdrawals.\u003c/td>\n\u003ctd>Tax estimate, updated contribution ledger and decisions to execute.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>December\u003c/td>\n\u003ctd>If applicable, check the December 15 instalment. Confirm issuer cutoffs for calendar-year TFSA and FHSA transactions. Review results and set 2028 priorities.\u003c/td>\n\u003ctd>Year-end account and debt balances, room records and next year\u2019s first action.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>Tax dates refer to the \u003cstrong>2027 calendar year\u003c/strong>. April and June filing dates above apply to the \u003cstrong>2026 tax return\u003c/strong>. Check exceptions and applicable provincial filing or instalment requirements. \u003csup class=\"ref\">\u003ca aria-label=\"Source 48\" href=\"#source-48\">[48]\u003c/a>\u003c/sup> \u003csup class=\"ref\">\u003ca aria-label=\"Source 4\" href=\"#source-4\">[4]\u003c/a>\u003c/sup>\u003c/p>\n\u003ch2 id=\"section-inputs-needed-for-an-individualized-plan\">Inputs needed for an individualized plan\u003c/h2>\n\u003cdiv aria-labelledby=\"section-inputs-needed-for-an-individualized-plan\" class=\"table-wrap\" role=\"region\" tabindex=\"0\">\u003ctable>\n\u003cthead>\n\u003ctr>\n\u003cth scope=\"col\">Input\u003c/th>\n\u003cth scope=\"col\">Why it changes the recommendation\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n\u003ctd>Province or territory, tax residency history and expected moves\u003c/td>\n\u003ctd>Changes rates, benefits, account eligibility and potentially cross-border treatment.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Ages, marital or common-law status, dependants and caregiving\u003c/td>\n\u003ctd>Determines benefit eligibility, household risk, home-buyer tests and planning horizon.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Gross and net income by person, sources, variability, expected changes and current benefits\u003c/td>\n\u003ctd>Sets spending capacity, marginal tax rates, potential benefit reductions and tax timing.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Essential, irregular and optional expenses\u003c/td>\n\u003ctd>Sizes emergency reserves and tests whether planned contributions are sustainable.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Debts, balances, rates, payment terms, renewal dates and penalties\u003c/td>\n\u003ctd>Determines payoff order, refinancing economics and liquidity risk.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Assets by account, holdings, fees, taxable cost base, available room, and undeducted contributions\u003c/td>\n\u003ctd>Determines account capacity, investment concentration and taxes on sales or withdrawals.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Employer match, pension and insurance terms, CPP/QPP estimates and OAS residency years\u003c/td>\n\u003ctd>Changes contribution priority, income protection, benefit start dates and retirement funding.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Homeownership history, target date and expected cost\u003c/td>\n\u003ctd>Tests FHSA/HBP eligibility and determines how much of the down payment must stay liquid.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Other goals, target dates, minimum amounts and flexibility\u003c/td>\n\u003ctd>Determines funding order and the appropriate holdings for each goal.\u003c/td>\n\u003c/tr>\n\u003ctr>\n\u003ctd>Risk tolerance, loss capacity and ability to stick to a plan in a downturn\u003c/td>\n\u003ctd>Sets an investment mix the household can afford and maintain.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>Rounded figures are enough for a first pass. Keep Social Insurance Numbers, account numbers, passwords and full statements out of a planning intake. Before implementing a personalized plan, verify contribution room, tax calculations, benefit eligibility and contract terms against your records.\u003c/p>\n\u003ch2 id=\"section-sources\">Sources\u003c/h2>\n\u003cp>Official government, regulator and investor-protection references used in this playbook.\u003c/p>\n\u003col class=\"sources\">\u003cli id=\"source-1\">\u003ca href=\"https://www.canada.ca/en/financial-consumer-agency/services/make-budget.html\">Making a budget - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-2\">\u003ca href=\"https://www.canada.ca/en/financial-consumer-agency/services/savings-investments/setting-up-emergency-funds.html\">Setting up an emergency fund - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-3\">\u003ca href=\"https://www.canada.ca/en/financial-consumer-agency/services/debt/paying-debt.html\">Paying back your debt - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-4\">\u003ca href=\"https://www.canada.ca/en/services/taxes/resources-for-small-and-medium-businesses/2026-tax-deadlines-canadian-businesses-self-employed-individuals.html\">2027 Tax deadlines for Canadian businesses and self-employed individuals - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-5\">\u003ca href=\"https://www.cdic.ca/depositors/whats-covered/?via=basics\">What&#x27;s covered \u2014 CDIC\u003c/a>\u003c/li>\u003cli id=\"source-6\">\u003ca href=\"https://www.canada.ca/en/financial-consumer-agency/services/debt/debt-help.html\">Getting help from a credit counsellor - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-7\">\u003ca href=\"https://ised-isde.canada.ca/site/office-superintendent-bankruptcy/en/you-owe-money/compare-debt-solutions\">Compare debt solutions\u003c/a>\u003c/li>\u003cli id=\"source-8\">\u003ca href=\"https://www.canada.ca/en/financial-consumer-agency/services/mortgages/renew-mortgage.html\">Renewing your mortgage - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-9\">\u003ca href=\"https://www.canada.ca/en/department-finance/news/2024/12/straight-switches-and-portfolio-insurance.html\">\u201cStraight Switches\u201d and portfolio insurance - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-10\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/contributing/calculate-room.html\">Calculate your TFSA contribution room - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-11\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/withdraw.html\">Withdrawing from a TFSA - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-12\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/owing-tax.html\">Owing tax on a TFSA - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-13\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/contributing-a-rrsp-prpp/contributions-affect-your-rrsp-prpp-deduction-limit.html\">How contributions affect your RRSP deduction limit - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-14\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html\">First Home Savings Account (FHSA) - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-15\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/t4040/rrsps-other-registered-plans-retirement.html\">RRSPs and Other Registered Plans for Retirement - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-16\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account/closing-your-fhsa.html\">Closing your FHSA - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-17\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account/tax-deductions-fhsa-contributions.html\">Tax deductions for FHSA contributions - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-18\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-home-buyers-plan.html\">The Home Buyers&#x27; Plan - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-19\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/what-home-buyers-plan/repay-funds-withdrawn-rrsp-s-under-home-buyers-plan.html\">How to repay the amounts withdrawn from your RRSPs under the HBP - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-20\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/t4037/capital-gains.html\">Capital Gains \u2013 2025 - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-21\">\u003ca href=\"https://laws-lois.justice.gc.ca/eng/acts/I-3.3/section-38.html?wbdisable=true\">Justice Canada \u00b7 Income Tax Act, section 38\u003c/a>\u003c/li>\u003cli id=\"source-22\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/tax-rates-brackets/current-year.html\">Current year tax rates and income brackets (2026) - Personal income tax - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-23\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/child-family-benefits/canada-child-benefit/get-payments.html\">Keep getting your payments - Canada child benefit (CCB) - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-24\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/child-family-benefits/canada-groceries-essentials-benefit.html\">Canada Groceries and Essentials Benefit (CGEB) - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-25\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/child-family-benefits.html\">Overview of child and family benefits - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-26\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/registered-education-savings-plans-resps/canada-education-savings-programs-cesp/canada-education-savings-grant-cesg.html\">Canada Education Savings Grant (CESG) - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-27\">\u003ca href=\"https://www.canada.ca/en/services/benefits/education/education-savings.html\">Registered Education Savings Plans and related benefits - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-28\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/registered-disability-savings-plan-rdsp/canada-disability-savings-grant-canada-disability-savings-bond.html\">Canada disability savings grant and Canada disability savings bond - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-29\">\u003ca href=\"https://estimateursv-oasestimator.digital.service.canada.ca/\">Old Age Security Benefits Estimator - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-30\">\u003ca href=\"https://www.getsmarteraboutmoney.ca/\">Ontario Securities Commission \u00b7 Get Smarter About Money\u003c/a>\u003c/li>\u003cli id=\"source-31\">\u003ca href=\"https://www.ciro.ca/office-investor/investing-basics/selecting-advisor\">Selecting an Advisor | Canadian Investment Regulatory Organization\u003c/a>\u003c/li>\u003cli id=\"source-32\">\u003ca href=\"https://www.cipf.ca/cipf-coverage/about-cipf-coverage\">About CIPF Coverage\u003c/a>\u003c/li>\u003cli id=\"source-33\">\u003ca href=\"https://www.canada.ca/en/financial-consumer-agency/services/insurance/disability.html\">Disability insurance - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-34\">\u003ca href=\"https://www.canada.ca/content/dam/fcac-acfc/documents/services/your-financial-toolkit/pdf-guides/en/insurance.pdf\">Financial Consumer Agency of Canada \u00b7 Insurance toolkit\u003c/a>\u003c/li>\u003cli id=\"source-35\">\u003ca href=\"https://www.canada.ca/en/financial-consumer-agency/services/credit-reports-score/check-errors.html\">Checking your credit report for errors and fraud - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-36\">\u003ca href=\"https://www.canada.ca/en/services/benefits/publicpensions/cpp/retirement-income-calculator.html\">Canadian Retirement Income Calculator - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-37\">\u003ca href=\"https://www.canada.ca/en/services/benefits/publicpensions/cpp/when-start.html\">When to start your retirement pension - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-38\">\u003ca href=\"https://www.retraitequebec.gouv.qc.ca/en/citizens/retirement-planning/applying-your-retirement-pension/retirement-pension-quebec-pension-plan\">The retirement pension under the Qu\u00e9bec Pension Plan - Retraite Qu\u00e9bec\u003c/a>\u003c/li>\u003cli id=\"source-39\">\u003ca href=\"https://www.canada.ca/en/services/benefits/publicpensions/old-age-security/when-start.html\">Old Age Security - When to start your retirement pension - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-40\">\u003ca href=\"https://www.canada.ca/en/services/benefits/publicpensions/old-age-security/eligibility.html\">Old Age Security - Do you qualify - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-41\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/registered-retirement-income-fund-rrif/receiving-income-a-rrif.html\">Receiving income from a RRIF - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-42\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/registered-plans-administrators/pspa/mp-rrsp-dpsp-tfsa-limits-ympe.html?lang=en\">MP, DB, RRSP, DPSP, ALDA, TFSA limits, YMPE and the YAMPE - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-43\">\u003ca href=\"https://www2.gov.bc.ca/gov/content/taxes/income-taxes/personal/tax-rates\">Government of British Columbia \u00b7 Personal income tax rates\u003c/a>\u003c/li>\u003cli id=\"source-44\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/payroll-deductions-contributions/canada-pension-plan-cpp/cpp-contribution-rates-maximums-exemptions.html\">CPP contribution rates, maximums and exemptions \u2013 Calculate payroll deductions and contributions - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-45\">\u003ca href=\"https://www.canada.ca/en/employment-social-development/programs/ei/ei-list/ei-employers/premium-reduction-program/2027-maximum-insurable-earnings.html\">Employment Insurance - Important notice about maximum insurable earnings for 2027 - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-46\">\u003ca href=\"https://www.retraitequebec.gouv.qc.ca/en/programs/quebec-pension-plan/quebec-pension-plan-figures\">Qu\u00e9bec Pension Plan Figures - Retraite Qu\u00e9bec\u003c/a>\u003c/li>\u003cli id=\"source-47\">\u003ca href=\"https://budget.canada.ca/2026/report-rapport/tm-mf-en.html\">Tax measures: Supplementary information | Budget 2026\u003c/a>\u003c/li>\u003cli id=\"source-48\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/important-dates-individuals.html\">Due dates and payment dates - Personal income tax - Canada.ca\u003c/a>\u003c/li>\u003cli id=\"source-49\">\u003ca href=\"https://www.canada.ca/en/revenue-agency/services/child-family-benefits/benefit-payment-dates.html\">Payment dates for CRA administered benefits and credits - Canada.ca\u003c/a>\u003c/li>\u003c/ol>\u003c/main>\u003c/div>\u003c/body>\u003c/html>\n";
+document.addEventListener("click", event => {
+  const link = event.target.closest('a[href^="guide.html"]');
+  if (!link) return;
+  event.preventDefault();
+  const url = URL.createObjectURL(new Blob([guideSource], {type:"text/html;charset=utf-8"}));
+  const anchor = document.createElement("a");
+  anchor.href = url + link.hash;
+  anchor.target = "_blank";
+  anchor.rel = "noopener";
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+});
+
+</script>
+</body>
+</html>
