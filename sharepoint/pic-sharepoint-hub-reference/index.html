@@ -504,6 +504,11 @@ mark{background:#FFEBA8;color:inherit;padding:0 1px}
     </div>
     <p class="kv dim">Job limits: a source package producing more than 100 destination errors is blocked, and every valid file in that package is blocked with it. Keep under 5,000 queued jobs. Background migration is throttled harder during weekday daytime hours. Single move operations: max 100 GB / 30,000 files / 15 GB per file.</p>
 
+    <h3>Bulk migration file</h3>
+    <p>To queue several folders at once, give SPMT a CSV with one task per row. Microsoft documents six columns, in this order, and its example has no header row: <code>Source</code>, <code>Source DocLib</code>, <code>Source SubFolder</code>, <code>Target Web</code>, <code>Target DocLib</code>, <code>Target SubFolder</code>. Leave the second and third empty for a file share.</p>
+    <p class="kv dim">Example row: <code>\\fileserver\operations\Forecast,,,https://tenant.sharepoint.com/sites/PIC/,Documents,Forecast</code></p>
+    <p>Authorship survives only for accounts SPMT can resolve. Map on-premises accounts to Entra sign-in names in a two-column user-mapping file before the first wave. <span class="chip caution">Unverified</span> Unmapped files are reported to take the migrating account as their author, so test one folder first.</p>
+
     <h3>Waves and cutover</h3>
     <ol>
       <li>Pilot one process area. Validate metadata, versions, and permissions before scaling.</li>

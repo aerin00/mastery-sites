@@ -1160,13 +1160,24 @@ const REF = [
    ['E Review / challenge','Biggest weakness each; no fake peace','Gate weaknesses → rebuttal → FINAL']
  ]},
 
-{id:'r-modes', title:'Four group modes',
+{id:'r-modes', title:'Six group modes',
  head:['Mode','Workflow','No-writes?'],
  rows:[
    ['Decision Room','Evidence → disagreement → decision','Yes, until a later execution send'],
    ['Build Council','Research → scope → feasibility → implementation plan','Yes — plan, do not patch'],
    ['Incident Room','Symptoms → hypotheses → tests → diagnosis','Tests may run; production writes stay gated'],
-   ['Review Board','Proposal → adversarial critique → revision','Yes until revision is approved']
+   ['Review Board','Proposal → adversarial critique → revision','Yes until revision is approved'],
+   ['Project Re-entry','State → blockers → next action. Use when returning to a repo or project after time away','Yes — report state, act in a later send'],
+   ['Automation Council','Manual → existing tool → light automation → custom build. Use before creating another maintenance burden','Yes — recommend, do not build']
+ ]},
+
+{id:'r-gate', title:'Gate prompts, one gate per send',
+ note:'The source runbook wrote both gates into one send. A send caps at 3 rounds, so each gate here is its own send.',
+ head:['Send','Text to paste'],
+ rows:[
+   ['1 — Evidence gate','@default Investigate whether we should build [THING]. GATE 1 — EVIDENCE: ask @x-research for evidence. State PASS / FAIL, the evidence, and why the next phase is or is not justified. If evidence is weak, stop with NO-GO. Do not start feasibility in this send.'],
+   ['2 — Feasibility gate (only after a PASS)','@default GATE 2 — FEASIBILITY: the evidence gate passed. Ask @coder whether a minimal implementation of [THING] is feasible. State PASS / FAIL, the evidence, and why the next phase is or is not justified. If feasibility is poor, stop with NO-GO.'],
+   ['3 — Recommendation (only after both pass)','@default Both gates passed. Recommend the minimal implementation of [THING]. Finish with Decision, Evidence, Risks, Next action, Verification. Then stop.']
  ]},
 
 {id:'r-tools', title:'Handoff primitives compared',

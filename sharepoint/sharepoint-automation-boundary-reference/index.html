@@ -1143,6 +1143,15 @@ if(greater(div(sub(ticks(utcNow()), ticks(item()?['InvoiceDate'])), 864000000000
 </code></pre>
       <div class="stopnote" style="margin-top:.6rem"><strong>Not the menu item below it.</strong> <code>Integrate &gt; Power Apps &gt; Create an app</code> builds a standalone canvas app and is outside the boundary.</div>
       <p>The form opens in Power Apps Studio with a <code>SharePointIntegration</code> control exposing <code>OnNew</code>, <code>OnEdit</code>, <code>OnView</code>, <code>OnSave</code> and <code>OnCancel</code>. Use <code>RequestHide()</code> to close the panel programmatically.</p>
+      <p>The formulas Power Apps generates for a single form named <code>SharePointForm1</code>. Keep this shape when you rename or add forms:</p>
+<pre><code>SharePointIntegration.OnNew      NewForm(SharePointForm1)
+SharePointIntegration.OnEdit     EditForm(SharePointForm1)
+SharePointIntegration.OnView     ViewForm(SharePointForm1)
+SharePointIntegration.OnSave     SubmitForm(SharePointForm1)
+SharePointIntegration.OnCancel   ResetForm(SharePointForm1)
+SharePointForm1.OnSuccess        ResetForm(SharePointForm1); RequestHide()
+</code></pre>
+      <div class="stopnote" style="margin-top:.6rem"><strong>Close the panel in OnSuccess, never straight after SubmitForm.</strong> <code>SubmitForm()</code> does not wait for the save. A <code>RequestHide()</code> placed after it in <code>OnSave</code> can close the panel before the item is written, and the edit is lost.</div>
 <pre><code>File  >  Save  >  Publish to SharePoint
 </code></pre>
       <p><strong>The one rule that keeps it in boundary:</strong> add no second data source. The moment the form connects to anything other than its own list, it leaves the exception. Note also that unlike a Lists form, a customised form requires the user to have access to the list.</p>

@@ -1032,7 +1032,21 @@ const REF = [
        ['enabled_tools','Allow-list'],
        ['disabled_tools','Deny-list, applied after enabled_tools'],
        ['default_tools_approval_mode','Server-wide: auto / prompt / approve'],
-       ['tools.&lt;tool&gt;.approval_mode','Per-tool override']]}
+       ['tools.&lt;tool&gt;.approval_mode','Per-tool override']]},
+{id:'r7', title:'Command rules (.rules files)', note:'Rules decide which commands may run outside the sandbox. They are written in Starlark, are marked experimental, and load at startup. Checked against the official Rules page on 12 Nov 2026.',
+ head:['Item','What it does'],
+ rows:[['Where rules live','~/.codex/rules/*.rules for the user layer; &lt;repo&gt;/.codex/rules/ only when the project is trusted. Restart Codex after editing.'],
+       ['prefix_rule(pattern=[...])','Matches a command by its leading arguments. An element can be a list of alternatives, e.g. ["gh","pr",["view","list"]].'],
+       ['decision = "allow"','Run outside the sandbox without prompting. This is the default.'],
+       ['decision = "prompt"','Ask before each matching command.'],
+       ['decision = "forbidden"','Block without asking. Put the alternative in justification.'],
+       ['When several rules match','The most restrictive wins: forbidden &gt; prompt &gt; allow.'],
+       ['match / not_match','Example commands checked when the file loads, so a wrong pattern fails early.'],
+       ['bash -lc "a &amp;&amp; b"','A plain chain joined by &amp;&amp;, ||, ; or | is split and each command is judged separately, so an allowed git add cannot carry an rm -rf with it.'],
+       ['Scripts with redirection, $(...), variables, wildcards or control flow','Not split. The whole bash -lc invocation is judged as one command.'],
+       ['codex execpolicy check --pretty --rules FILE -- CMD','Prints the strictest decision and the rules that matched, without running CMD.'],
+       ['Allow-listing a command in the TUI','Writes a prefix_rule to ~/.codex/rules/default.rules.']],
+ foot:'Example: prefix_rule(pattern=["git","push"], decision="forbidden", justification="Push by hand after review."). Source: learn.chatgpt.com/docs/agent-configuration/rules'}
 ];
 
 const AUDIT = {

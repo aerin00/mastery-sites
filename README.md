@@ -179,7 +179,7 @@ Its `INGESTED` constant is fixed and must not change; the visible "Data refreshe
 The production site is deployed by **Cloudflare Workers Builds** from `origin/main`. Every site folder becomes a path:
 
 - https://mastery-sites.stenguye.workers.dev/ → the generated homepage
-- https://mastery-sites.stenguye.workers.dev/hermes/bot-mode-mastery/ → that site
+- https://mastery-sites.stenguye.workers.dev/hermes/bot-mode-handoff/ → that site
 - https://mastery-sites.stenguye.workers.dev/sharepoint/ipc-scoped-flow/ → that site
 
 Regenerate and commit the root index before pushing. Check the GitHub commit's `Workers Builds: mastery-sites` result and verify the live homepage and changed site paths before considering deployment complete. Build settings are managed outside this repository; this workflow does not change them.
