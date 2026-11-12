@@ -99,7 +99,6 @@ class PlanCacheTests(unittest.TestCase):
             def dry_run(llm):
                 out = io.StringIO()
                 with mock.patch.object(p, 'ROOT', root), mock.patch.object(p, 'INBOX', root / 'inbox'), \
-                     mock.patch.object(p, 'PLANS', root / 'inbox' / '.plans.json'), \
                      mock.patch.object(p, 'CATEGORY_DOTS', {'shared': '#000'}), \
                      mock.patch.dict(p.os.environ, {'OPENROUTER_API_KEY': 'k'}), \
                      mock.patch.object(p, 'llm_plan', llm), \

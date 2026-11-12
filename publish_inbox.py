@@ -38,7 +38,7 @@ from import_site import SLUG_RE, TITLE_RE, existing_fingerprints, fingerprint
 
 ROOT = Path(__file__).resolve().parent
 INBOX = ROOT / "inbox"
-PLANS = INBOX / ".plans.json"  # page fingerprint -> plan, so the real run repeats the dry run
+PLANS_NAME = ".plans.json"  # in INBOX: page fingerprint -> plan, so the real run repeats the dry run
 LIVE_BASE = "https://mastery-sites.stenguye.workers.dev"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_MODEL = "~anthropic/claude-haiku-latest"
@@ -209,7 +209,8 @@ def main():
     deployed = existing_fingerprints(ROOT)
     model = os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
     key = os.environ.get("OPENROUTER_API_KEY", "")
-    cache, kept = load_plans(PLANS), {}
+    plans_file = INBOX / PLANS_NAME  # resolved here so it always follows INBOX
+    cache, kept = load_plans(plans_file), {}
     plans, skipped = [], []
     for src in sources:
         text = src.read_text(encoding="utf-8")
@@ -235,7 +236,7 @@ def main():
         taken.add(f"{plan['category']}/{plan['slug']}")
         plans.append((src, text, plan))
 
-    PLANS.write_text(json.dumps(kept, indent=1), encoding="utf-8")
+    plans_file.write_text(json.dumps(kept, indent=1), encoding="utf-8")
     for src, text, p in plans:
         print(f"\n{src.name}\n  -> {p['category']}/{p['slug']}\n  {p['description']}\n  tags: {', '.join(p['tags']) or '-'}")
     for src, reason in skipped:
