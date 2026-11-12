@@ -148,6 +148,27 @@ Hermes watches a Windows folder tree through <code>/mnt/c</code>. A zero-token p
   <div class="card"><div class="n">4</div><h4>Second-model review</h4><p>Different model, narrow rubric. Weakest: still a probabilistic judge.</p></div>
 </div>
 
+<h3>Three results, not two</h3>
+<table>
+<tr><th>Result</th><th>Meaning</th></tr>
+<tr><td><b>PASS</b></td><td>All required checks passed on the delivered version.</td></tr>
+<tr><td><b>FAIL</b></td><td>A required check ran and found a defect.</td></tr>
+<tr><td><b>BLOCKED</b></td><td>A required check could not run. State exactly why, and the smallest action that would unblock it.</td></tr>
+</table>
+<div class="callout bad"><b>Missing evidence is not a pass</b>An unavailable browser, a missing source or a broken test environment means the result is not fully verified. After an edit, rerun the affected checks: old evidence does not verify new work.</div>
+
+<h3>Define "done" before the agent builds</h3>
+<p>A check must be able to fail. "Review carefully" gives the agent no stopping condition. The same rule holds outside office files:</p>
+<table>
+<tr><th>Task</th><th>Weak "done"</th><th>Checkable "done"</th></tr>
+<tr><td>Fix a bug</td><td>The code looks correct.</td><td>Reproduce the failure, apply the fix, rerun the same scenario successfully.</td></tr>
+<tr><td>Create an SOP</td><td>The document is complete.</td><td>Trace instructions to sources, flag missing decisions, inspect rendered pages.</td></tr>
+<tr><td>Research a tool</td><td>Several sources agree.</td><td>Read original documentation, record version and date, separate documented support from local availability.</td></tr>
+<tr><td>Build a task board</td><td>Cards appear.</td><td>Create and move a card, reload, confirm its saved state.</td></tr>
+<tr><td>Redesign a screen</td><td>It looks modern.</td><td>Inspect screenshots at agreed sizes and test the controls.</td></tr>
+</table>
+<p>A completion report holds the result location, the version tested, the checks actually run, their actual outcomes, where the evidence is, and anything left untested. Judge the pipeline by your review minutes and the defects found after handoff, not by the number of finished tasks.</p>
+
 <!-- ============================ 2 ============================ -->
 <h2 id="rules">2. Seven safety rules</h2>
 <ol class="steps">

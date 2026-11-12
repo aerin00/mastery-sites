@@ -1529,6 +1529,20 @@ const TREES = [
   ['Retrieval returns twenty chunks','Set a token budget and enforce top-k','Every irrelevant chunk is attention spent on noise'],
   ['Top-5 is three copies of one paragraph','Stop sliding-window chunking','Overlap gives one source three chances to rank'],
   ['One long note swamps every result','Chunk at H2 and split the note','Whole-note retrieval scales badly with note length']
+]},
+{title:'How should an agent change the vault?', rows:[
+  ['Learn or inspect a workflow','Read-only practice vault','Establish citations and boundaries before any mutation'],
+  ['Suggest links, tags, or summaries','Draft into an inbox or review state','Candidates require human acceptance before promotion'],
+  ['Repeat a stable manual capture step','Bounded automation','Name the target, provenance, approval point, and recovery route'],
+  ['Change many notes or settings','Stop and make a manifest','Bulk work needs explicit scope and reversible verification'],
+  ['The client recipe is unfamiliar (Codex, a desktop client)','Read that client&#39;s current official docs','Agent clients and community servers do not share one command model. The commands in this guide are Claude Code&#39;s']
+]},
+{title:'A result is weak. What failed?', rows:[
+  ['The required note was absent','Capture failure','Create or recover the authoritative source note'],
+  ['The note exists but search missed it','Structure or index failure','Check title, headings, properties, and index freshness'],
+  ['The result names a nearby but wrong note','Ranking or query failure','Inspect the evaluation case before adding complexity'],
+  ['The answer has no source trail','Evidence failure','Do not promote it until the supporting path is restored'],
+  ['Automation made an unexpected write','Boundary failure','Stop, inspect the target and logs, then restore before retrying']
 ]}
 ];
 
@@ -1647,7 +1661,25 @@ const REF = [
   ['Dataview, latest release','0.5.70','7 Apr 2025'],
   ['Smart Connections','4.5.3','4 Jun 2026'],
   ['<code>obsidian-mcp</code> on npm','2.0.1','14 Aug 2026']],
- foot:'Read on 21 August 2026 from obsidian.md/changelog, blog.modelcontextprotocol.io, the GitHub releases API, and the npm registry.'}
+ foot:'Read on 21 August 2026 from obsidian.md/changelog, blog.modelcontextprotocol.io, the GitHub releases API, and the npm registry.'},
+{id:'r9', title:'Integration boundary card', note:'Fill this in before enabling a new agent or MCP connection. It applies to any client: Claude Code, Codex, or a desktop app.',
+ head:['Field','Question'],
+ rows:[
+  ['Read scope','Which folders, notes, or resources may it inspect?'],
+  ['Write scope','Which exact targets may it change, if any?'],
+  ['Approval','What requires human confirmation?'],
+  ['Provenance','How will generated material be labeled?'],
+  ['Recovery','How do you undo or rebuild the affected artifacts?'],
+  ['Verification date','When were the client-specific instructions tested?']],
+ foot:'Carried over from the retired Codex Vault Circuit site.'},
+{id:'r10', title:'Currency classes', note:'How often to re-check a claim depends on what kind of claim it is. Do not let volatile facts pass as durable ones.',
+ head:['Class','Examples','Review cadence'],
+ rows:[
+  ['Stable concept','Markdown, provenance, read boundary','Yearly, or when the concept changes'],
+  ['Operational recipe','CLI or client configuration','Before use, and after relevant changelog changes'],
+  ['Volatile ecosystem fact','Plugin version, pricing, compatibility','Before publication or recommendation'],
+  ['Unverified secondary claim','Community benchmark or package detail','Mark inline until a primary source confirms it']],
+ foot:'Carried over from the retired Codex Vault Circuit site.'}
 ];
 
 const AUDIT = {
