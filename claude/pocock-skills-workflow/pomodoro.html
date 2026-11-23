@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pomodoro Walkthrough — Matt Pocock’s Skills (v1.3.1)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F6F4EE;
+      --surface: #FFFFFF;
+      --surface-recessed: #EFECE4;
+      --surface-code: #FAF8F3;
+      --ink: #181715;
+      --ink-2: #55514A;
+      --ink-3: #868076;
+      --hairline: #E4DFD4;
+      --hairline-strong: #CEC7B8;
+
+      --spine: #0D6E64;
+      --spine-tint: rgba(13, 110, 100, 0.075);
+      --spine-border: rgba(13, 110, 100, 0.30);
+
+      --reset: #C25E12;
+      --reset-tint: rgba(194, 94, 18, 0.085);
+      --reset-border: rgba(194, 94, 18, 0.35);
+
+      --detour: #7C4DDB;
+      --detour-tint: rgba(124, 77, 219, 0.08);
+      --detour-border: rgba(124, 77, 219, 0.30);
+
+      --ok: #157A42;
+      --ok-bg: #E2F6EB;
+      --err: #B42318;
+      --err-bg: #FEE4E2;
+
+      --shadow-card: 0 1px 2px rgba(24, 23, 21, 0.04), 0 4px 12px rgba(24, 23, 21, 0.03);
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="obsidian"] {
+      --bg: #0F1114;
+      --surface: #171A1F;
+      --surface-recessed: #13161B;
+      --surface-code: #12151A;
+      --ink: #F0EDE6;
+      --ink-2: #A6A198;
+      --ink-3: #706C65;
+      --hairline: #252A32;
+      --hairline-strong: #373E49;
+
+      --spine: #2DD4BF;
+      --spine-tint: rgba(45, 212, 191, 0.08);
+      --spine-border: rgba(45, 212, 191, 0.30);
+
+      --reset: #F59E0B;
+      --reset-tint: rgba(245, 158, 11, 0.11);
+      --reset-border: rgba(245, 158, 11, 0.35);
+
+      --detour: #A78BFA;
+      --detour-tint: rgba(167, 139, 250, 0.11);
+      --detour-border: rgba(167, 139, 250, 0.35);
+
+      --ok: #4ADE80;
+      --ok-bg: rgba(74, 222, 128, 0.14);
+      --err: #F87171;
+      --err-bg: rgba(248, 113, 113, 0.14);
+
+      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    code, pre { font-family: var(--font-mono); }
+
+    /* Top Bar */
+    .topbar {
+      position: sticky;
+      top: 33px;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.7rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .brand h1 em { font-style: italic; color: var(--spine); }
+
+    .brand-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--ink-3);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.79rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .btn:hover {
+      border-color: var(--hairline-strong);
+      color: var(--ink);
+    }
+
+    .btn.primary {
+      background: var(--spine);
+      border-color: var(--spine);
+      color: #FFFFFF;
+    }
+
+    [data-theme="obsidian"] .btn.primary { color: #0F1114; font-weight: 600; }
+
+    .btn.primary:hover { filter: brightness(1.06); }
+
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Main 2-Column Layout */
+    .shell {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 28px 64px;
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* Left Sticky Rail */
+    .rail {
+      position: sticky;
+      top: 109px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rail-card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 14px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .rail-title {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Timeline List */
+    .step-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .step-btn {
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--r-sm);
+      padding: 7px 9px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink-2);
+      transition: all 130ms ease;
+    }
+
+    .step-btn:hover {
+      background: var(--surface-recessed);
+      color: var(--ink);
+    }
+
+    .step-btn.active {
+      background: var(--spine-tint);
+      border-color: var(--spine-border);
+      color: var(--ink);
+    }
+
+    .step-btn.is-reset.active {
+      background: var(--reset-tint);
+      border-color: var(--reset-border);
+    }
+
+    .s-num {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      width: 24px;
+      color: var(--ink-3);
+      flex-shrink: 0;
+    }
+
+    .step-btn.active .s-num { color: var(--spine); }
+    .step-btn.is-reset .s-num { color: var(--reset); }
+
+    .s-label {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .step-btn.active .s-label { font-weight: 600; }
+
+    .s-phase {
+      margin-left: auto;
+      font-size: 0.65rem;
+      color: var(--ink-3);
+      flex-shrink: 0;
+    }
+
+    /* Live Context Window Meter */
+    .ctx-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .ctx-tokens {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .ctx-session {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--spine);
+      background: var(--spine-tint);
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .ctx-session.fresh {
+      color: var(--reset);
+      background: var(--reset-tint);
+    }
+
+    .ctx-bar-bg {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-recessed);
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .ctx-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--spine);
+      transition: width 350ms cubic-bezier(0.22, 1, 0.36, 1), background 250ms ease;
+    }
+
+    .ctx-caption {
+      font-size: 0.74rem;
+      color: var(--ink-3);
+      line-height: 1.4;
+    }
+
+    /* Repo File Tree */
+    .file-tree {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ft-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 3px 6px;
+      border-radius: 5px;
+      color: var(--ink-2);
+    }
+
+    .ft-item.added {
+      background: var(--ok-bg);
+      color: var(--ok);
+      font-weight: 600;
+    }
+
+    .ft-item.updated {
+      background: var(--spine-tint);
+      color: var(--spine);
+      font-weight: 600;
+    }
+
+    /* Right Stage */
+    .stage {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .stage-head {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-recessed) 40%, var(--surface));
+    }
+
+    .stage-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--spine-tint);
+      color: var(--spine);
+      border: 1px solid var(--spine-border);
+    }
+
+    .pill.reset {
+      background: var(--reset-tint);
+      color: var(--reset);
+      border-color: var(--reset-border);
+    }
+
+    .stage-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .stage-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    .cmd-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline-strong);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .cmd-copy:hover { border-color: var(--spine); color: var(--spine); }
+
+    .stage-why {
+      margin-top: 8px;
+      font-size: 0.92rem;
+      color: var(--ink-2);
+      max-width: 760px;
+    }
+
+    .stage-body {
+      padding: 24px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Two-pane Prompt + Artifact Grid */
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pane {
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .pane-head {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--surface-recessed);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pane-body {
+      padding: 14px 16px;
+      font-size: 0.84rem;
+      color: var(--ink-2);
+    }
+
+    /* Chat Bubbles inside Transcript Pane */
+    .chat {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .msg {
+      padding: 10px 12px;
+      border-radius: var(--r-sm);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .msg.user {
+      background: var(--spine-tint);
+      border: 1px solid var(--spine-border);
+      color: var(--ink);
+    }
+
+    .msg.agent {
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      color: var(--ink-2);
+    }
+
+    .msg-role {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+      color: var(--ink-3);
+    }
+
+    .msg.user .msg-role { color: var(--spine); }
+
+    /* Code / Markdown Artifact Block */
+    .code-block {
+      background: var(--surface-code);
+      padding: 14px 16px;
+      font-size: 0.76rem;
+      line-height: 1.55;
+      color: var(--ink);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .code-dim { color: var(--ink-3); }
+    .code-add { color: var(--ok); font-weight: 500; }
+    .code-del { color: var(--err); }
+    .code-hl  { color: var(--spine); font-weight: 600; }
+
+    /* Non-Happy Path Detour Accordion */
+    .detour-box {
+      border: 1px dashed var(--detour-border);
+      background: var(--detour-tint);
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+
+    .detour-toggle {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: inherit;
+      color: var(--ink);
+    }
+
+    .detour-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .detour-badge {
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--detour);
+      background: var(--surface);
+      border: 1px solid var(--detour-border);
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .detour-content {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px dashed var(--detour-border);
+      padding-top: 14px;
+    }
+
+    .detour-box.open .detour-content { display: block; }
+
+    /* Mode Switch inside Step 04 (Single vs Parallel) */
+    .mode-switch {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .mode-btn {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: var(--surface);
+      color: var(--spine);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    /* Parallel DAG Visual */
+    .dag-board {
+      display: grid;
+      grid-template-columns: 1fr auto 1.25fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 16px;
+      background: var(--surface-recessed);
+      border-radius: var(--r-md);
+      border: 1px solid var(--hairline);
+    }
+
+    .dag-node {
+      background: var(--surface);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      font-size: 0.77rem;
+    }
+
+    .dag-node.parallel {
+      border-color: var(--spine-border);
+      background: var(--surface);
+    }
+
+    .dag-node b {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      color: var(--spine);
+      margin-bottom: 3px;
+    }
+
+    .dag-meta {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--ink-3);
+      margin-top: 5px;
+    }
+
+    /* Context Reset Interstitial Banner */
+    .reset-callout {
+      border: 1.5px dashed var(--reset-border);
+      background: var(--reset-tint);
+      border-radius: var(--r-md);
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .reset-callout h3 {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 400;
+      color: var(--reset);
+    }
+
+    /* Live Mini Pomodoro Widget (The Finished Result!) */
+    .pomo-widget {
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .pomo-ring-wrap {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .pomo-svg {
+      width: 84px;
+      height: 84px;
+      transform: rotate(-90deg);
+    }
+
+    .pomo-track {
+      fill: none;
+      stroke: var(--hairline-strong);
+      stroke-width: 6;
+    }
+
+    .pomo-prog {
+      fill: none;
+      stroke: var(--spine);
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 250ms linear;
+    }
+
+    .pomo-time {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .pomo-state {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--spine);
+      margin-top: 4px;
+    }
+
+    .pomo-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Stage Footer Navigation */
+    .stage-foot {
+      padding: 16px 28px;
+      border-top: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-recessed) 40%, var(--surface));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .step-counter {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--ink-3);
+    }
+
+    @media (max-width: 1020px) {
+      .shell { grid-template-columns: 1fr; }
+      .rail { position: static; }
+      .split-grid { grid-template-columns: 1fr; }
+      .dag-board { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner, .shell { padding-left: 16px; padding-right: 16px; }
+      .stage-head, .stage-body, .stage-foot { padding-left: 18px; padding-right: 18px; }
+    }
+  </style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>Worked Example: <em>Pomodoro App</em></h1>
+        <span class="brand-tag">End-to-end optimal workflow · v1.3.1</span>
+      </div>
+      <div class="top-actions">
+        <a class="btn" href="index.html">Workflow Atlas</a>
+        <a class="btn" href="paths.html">Happy vs. Other</a>
+        <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <!-- LEFT RAIL: STEPPER + CONTEXT TELEMETRY + LIVE REPO FILES -->
+    <aside class="rail">
+      <div class="rail-card">
+        <div class="rail-title">
+          <span>Walkthrough Steps</span>
+          <span>← / → keys</span>
+        </div>
+        <nav class="step-nav" id="stepNav" aria-label="Walkthrough steps"></nav>
+      </div>
+
+      <div class="rail-card">
+        <div class="rail-title">
+          <span>Context Window</span>
+          <span id="ctxLimit">Limit: ~125k</span>
+        </div>
+        <div class="ctx-row">
+          <span class="ctx-tokens" id="ctxTokens">14k</span>
+          <span class="ctx-session" id="ctxSession">Session #1</span>
+        </div>
+        <div class="ctx-bar-bg">
+          <div class="ctx-bar-fill" id="ctxBar" style="width: 11%;"></div>
+        </div>
+        <p class="ctx-caption" id="ctxCaption"></p>
+      </div>
+
+      <div class="rail-card">
+        <div class="rail-title">
+          <span>Repo Artifacts</span>
+          <span id="fileCount">0 files</span>
+        </div>
+        <div class="file-tree" id="fileTree"></div>
+      </div>
+    </aside>
+
+    <!-- RIGHT STAGE: ACTIVE STEP CONTENT -->
+    <article class="stage" id="stage">
+      <div class="stage-head">
+        <div class="stage-kicker" id="sKicker"></div>
+        <div class="stage-title-row">
+          <h2 class="stage-title" id="sTitle"></h2>
+          <button class="cmd-copy" id="sCmdCopy" type="button"></button>
+        </div>
+        <p class="stage-why" id="sWhy"></p>
+      </div>
+
+      <div class="stage-body" id="sBody"></div>
+
+      <div class="stage-foot">
+        <button id="prevBtn" class="btn" type="button">← Previous</button>
+        <span class="step-counter" id="stepCounter">Step 1 of 9</span>
+        <button id="nextBtn" class="btn primary" type="button">Next Step →</button>
+      </div>
+    </article>
+  </main>
+
+  <script>
+    const STEPS = [
+      {
+        num: '00',
+        navLabel: '/setup-matt-pocock-skills',
+        phase: 'Setup',
+        phaseTag: 'One-Time Prerequisite',
+        cmd: '/setup-matt-pocock-skills',
+        title: 'Wire up the repo once',
+        why: 'Before building anything, run this once so every downstream skill knows where your tickets live, what triage labels you use, and where GLOSSARY.md & ADRs reside.',
+        tokens: 14,
+        session: 'Setup Session',
+        freshBadge: false,
+        ctxCaption: 'Standalone one-time session. Clear this window as soon as docs/agents/ is written.',
+        files: [
+          { path: 'docs/agents/issue-tracker.md', state: 'added' },
+          { path: 'docs/agents/domain.md', state: 'added' },
+          { path: 'GLOSSARY.md', state: 'added' },
+          { path: 'docs/adr/', state: 'added' },
+          { path: 'AGENTS.md', state: 'updated' }
+        ],
+        renderBody: () => `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Prompt &amp; Agent Interaction</span><span>Session #0</span></div>
+              <div class="pane-body">
+                <div class="chat">
+                  <div class="msg user">
+                    <div class="msg-role">You</div>
+                    <code>/setup-matt-pocock-skills</code> — New Vite + TypeScript repo for a local-first Pomodoro timer app.
+                  </div>
+                  <div class="msg agent">
+                    <div class="msg-role">Agent</div>
+                    Scanned git remote (GitHub) and <code>package.json</code>. Three quick questions:<br/>
+                    1. Track tickets in <strong>GitHub Issues</strong> (<code>gh</code>) or local <code>.scratch/</code>?<br/>
+                    2. Single <code>GLOSSARY.md</code> at root (since this isn’t a monorepo)?<br/>
+                    3. Create standard triage labels (<code>ready-for-agent</code>, <code>needs-info</code>)?
+                  </div>
+                  <div class="msg user">
+                    <div class="msg-role">You</div>
+                    Local <code>.scratch/issues/</code> for this solo demo, root <code>GLOSSARY.md</code>, yes to standard labels.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pane">
+              <div class="pane-head"><span>Created on Disk</span><span>docs/agents/issue-tracker.md</span></div>
+              <pre class="code-block"><span class="code-hl"># Issue Tracker Configuration</span>
+Backend: local markdown (.scratch/issues/)
+ID Format: T1, T2, T3...
+Labels: needs-triage, needs-info,
+        ready-for-agent, ready-for-human
+
+<span class="code-hl"># Domain Documentation</span>
+Glossary: GLOSSARY.md
+ADRs: docs/adr/NNN-&lt;slug&gt;.md
+
+<span class="code-dim">→ Pointer block appended to AGENTS.md</span></pre>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '01',
+        navLabel: '/grill-with-docs',
+        phase: 'Plan',
+        phaseTag: 'Phase I · Plan (Unbroken Window)',
+        cmd: '/grill-with-docs',
+        title: 'Interrogate the Pomodoro design before writing code',
+        why: 'Instead of letting the agent blindly code a buggy setInterval() timer, /grill-with-docs forces you through every edge case and updates GLOSSARY.md & ADRs live.',
+        tokens: 24,
+        session: 'Planning Window',
+        freshBadge: false,
+        ctxCaption: 'Start of the unbroken planning window. Stay in this exact thread through /to-spec and /to-tickets.',
+        files: [
+          { path: 'docs/agents/issue-tracker.md', state: '' },
+          { path: 'GLOSSARY.md', state: 'updated' },
+          { path: 'docs/adr/001-wall-clock-timer.md', state: 'added' },
+          { path: 'AGENTS.md', state: '' }
+        ],
+        renderBody: () => `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Relentless Interview</span><span>Background: /grilling + /domain-modeling</span></div>
+              <div class="pane-body">
+                <div class="chat">
+                  <div class="msg user">
+                    <div class="msg-role">You</div>
+                    <code>/grill-with-docs</code> I want a clean Pomodoro web app: 25m focus, 5m short break, 15m long break every 4 cycles, sound alert, and survives page refresh.
+                  </div>
+                  <div class="msg agent">
+                    <div class="msg-role">Agent</div>
+                    Before we spec anything, 4 branches to resolve:<br/>
+                    <strong>1. Background tab throttling:</strong> Browsers throttle <code>setInterval</code> to 1/min in background tabs. Store an absolute <code>endsAt</code> wall-clock timestamp instead of decrementing seconds?<br/>
+                    <strong>2. Pause semantics:</strong> On pause, freeze <code>remainingMs</code> and recompute <code>endsAt</code> on resume?<br/>
+                    <strong>3. Reload after expiry:</strong> If the tab was closed for 2 hours, land on <code>00:00</code> waiting for user action, or auto-start the break?<br/>
+                    <strong>4. Audio autoplay:</strong> Synthesize a Web Audio chime unlocked on the Start click (zero external MP3 assets)?
+                  </div>
+                  <div class="msg user">
+                    <div class="msg-role">You</div>
+                    1. Yes, wall-clock <code>endsAt</code>. 2. Yes. 3. Land on <code>00:00</code> (never auto-start unattended). 4. Web Audio chime, muted toggle included.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pane">
+              <div class="pane-head"><span>Updated Live on Disk</span><span>GLOSSARY.md + ADR-001</span></div>
+              <pre class="code-block"><span class="code-hl">## GLOSSARY.md (Domain Language)</span>
+- <span class="code-add">Interval</span>: One timed block (Focus 25m,
+  Short Break 5m, or Long Break 15m).
+- <span class="code-add">Cycle</span>: 4 completed Focus Intervals,
+  after which a Long Break triggers.
+- <span class="code-add">Session State</span>: idle | running | paused
+  | completed.
+
+<span class="code-hl">## docs/adr/001-wall-clock-timer.md</span>
+Decision: Compute remainingMs as
+  <span class="code-add">Math.max(0, endsAt - now())</span>
+with injectable clock function for
+deterministic unit tests. Never rely on
+tick-count accumulation.</pre>
+            </div>
+          </div>
+
+          <div class="detour-box" id="detour-grill">
+            <button class="detour-toggle" type="button" onclick="this.parentElement.classList.toggle('open')">
+              <span class="detour-title">
+                <span class="detour-badge">Non-Happy Path Detour</span>
+                What if the agent over-complicates things, or you need to feel the ring UI?
+              </span>
+              <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--detour);">Expand ▾</span>
+            </button>
+            <div class="detour-content">
+              <div class="split-grid">
+                <div class="pane">
+                  <div class="pane-head"><span>Clarity Brake</span><span>/wait-what</span></div>
+                  <div class="pane-body">
+                    If the agent suggests a <em>"SharedArrayBuffer Web Worker ring-buffer state machine"</em>, type <code>/wait-what</code>. It immediately drops jargon and re-pitches in plain English using your <code>GLOSSARY.md</code> terms (<em>Interval</em>, <em>Cycle</em>).
+                  </div>
+                </div>
+                <div class="pane">
+                  <div class="pane-head"><span>Shaping Detour → returns to 02</span><span>/prototype + /handoff</span></div>
+                  <div class="pane-body">
+                    Unsure whether the progress ring should deplete clockwise or show cycle dots underneath? Run <code>/prototype</code> for a 1-file throwaway HTML mockup, decide by clicking it, then run <code>/handoff</code> to bring the settled choice straight into <code>/to-spec</code>.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '02',
+        navLabel: '/to-spec',
+        phase: 'Plan',
+        phaseTag: 'Phase I · Plan (Same Window)',
+        cmd: '/to-spec',
+        title: 'Lock settled decisions into a crisp engineering spec',
+        why: 'Staying in the exact same context window preserves every nuance from /grill-with-docs while distilling the conversation into a clean, verifiable contract.',
+        tokens: 41,
+        session: 'Planning Window',
+        freshBadge: false,
+        ctxCaption: 'Same context window (41k / 125k). All grilling decisions are still warm and accurate.',
+        files: [
+          { path: 'GLOSSARY.md', state: '' },
+          { path: 'docs/adr/001-wall-clock-timer.md', state: '' },
+          { path: 'docs/specs/pomodoro-timer.md', state: 'added' }
+        ],
+        renderBody: () => `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Prompt</span><span>Same Window</span></div>
+              <div class="pane-body">
+                <div class="chat">
+                  <div class="msg user">
+                    <div class="msg-role">You</div>
+                    <code>/to-spec</code> Everything is settled. Write the spec for our Pomodoro timer app.
+                  </div>
+                  <div class="msg agent">
+                    <div class="msg-role">Agent</div>
+                    Written to <code>docs/specs/pomodoro-timer.md</code>. Uses the exact terms from <code>GLOSSARY.md</code>, enforces the deep-module seam for the timer engine (<code>clock: () =&gt; number</code>), and explicitly lists non-goals (no accounts, no cloud sync, no auto-start on expired reload).
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pane">
+              <div class="pane-head"><span>Artifact</span><span>docs/specs/pomodoro-timer.md</span></div>
+              <pre class="code-block"><span class="code-hl"># Spec: Local-First Pomodoro Timer</span>
+
+## Module Seams (/codebase-design)
+1. <span class="code-add">timerEngine</span> (pure TS, injectable clock)
+   - start(), pause(), resume(), reset(),
+     skip(), tick(now)
+   - Cycle logic: Focus×4 → Long Break
+2. <span class="code-add">TimerRingUI</span> (SVG ring + controls +
+   document.title countdown)
+3. <span class="code-add">soundNotifier</span> (Web Audio chime + mute)
+4. <span class="code-add">storageAdapter</span> (localStorage JSON,
+   safe clamp on expired reload)
+
+## Acceptance Criteria
+- Survives 20-minute tab sleep with 0 drift
+- Reloading after endsAt lands in 'completed'
+- 100% engine coverage via fake clock tests</pre>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '03',
+        navLabel: '/to-tickets',
+        phase: 'Plan',
+        phaseTag: 'Phase I · Plan (Final Planning Step)',
+        cmd: '/to-tickets',
+        title: 'Slice the spec into a blocker-aware ticket DAG',
+        why: 'Small, vertical tracer-bullet tickets with explicit dependencies let you execute cleanly—and unlock parallel subagents in /implement-spec.',
+        tokens: 58,
+        session: 'Planning Window',
+        freshBadge: false,
+        ctxCaption: 'Planning complete at 58k tokens! All knowledge is now persisted in markdown files & tickets.',
+        files: [
+          { path: 'docs/specs/pomodoro-timer.md', state: '' },
+          { path: '.scratch/issues/T1-timer-engine.md', state: 'added' },
+          { path: '.scratch/issues/T2-ring-ui.md', state: 'added' },
+          { path: '.scratch/issues/T3-audio-alerts.md', state: 'added' },
+          { path: '.scratch/issues/T4-persistence.md', state: 'added' }
+        ],
+        renderBody: () => `
+          <div class="pane">
+            <div class="pane-head"><span>Generated Ticket Dependency Graph</span><span>.scratch/issues/T1..T4</span></div>
+            <div class="pane-body">
+              <div class="dag-board">
+                <div class="dag-node">
+                  <b>T1 · Pure Timer Engine</b>
+                  Wall-clock state machine (<code>endsAt</code>, 4-cycle rule, injectable clock) + full unit tests.
+                  <div class="dag-meta">blockedBy: none · ready-for-agent</div>
+                </div>
+                <span style="color:var(--ink-3); text-align:center;">→</span>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <div class="dag-node parallel">
+                    <b>T2 · Timer Ring UI &amp; Tab Title</b>
+                    SVG progress ring, Start/Pause/Reset controls, cycle dots, keyboard spacebar.
+                    <div class="dag-meta">blockedBy: [T1] · parallelizable ⚡</div>
+                  </div>
+                  <div class="dag-node parallel">
+                    <b>T3 · Web Audio Chime &amp; Mute</b>
+                    Zero-asset Web Audio chime unlocked on user gesture + mute toggle.
+                    <div class="dag-meta">blockedBy: [T1] · parallelizable ⚡</div>
+                  </div>
+                </div>
+                <span style="color:var(--ink-3); text-align:center;">→</span>
+                <div class="dag-node">
+                  <b>T4 · Persistence &amp; Tab-Sleep Sync</b>
+                  <code>localStorage</code> snapshot + <code>visibilitychange</code> resync + expired reload clamp.
+                  <div class="dag-meta">blockedBy: [T2, T3]</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '✂',
+        navLabel: 'Clear Context Window',
+        phase: 'Reset',
+        phaseTag: 'Context Hygiene Checkpoint',
+        isReset: true,
+        cmd: '/clear',
+        title: 'Clear the planning window before writing code',
+        why: 'This is the single highest-leverage habit in the workflow. Your spec, glossary, ADR, and tickets are safely on disk—carrying 58k tokens of brainstorming chat into implementation only degrades code quality.',
+        tokens: 0,
+        session: 'Fresh Window',
+        freshBadge: true,
+        ctxCaption: 'Context reset to 0k! The next agent reads only the crisp artifacts on disk—zero stale brainstorming.',
+        files: [
+          { path: 'GLOSSARY.md', state: '' },
+          { path: 'docs/adr/001-wall-clock-timer.md', state: '' },
+          { path: 'docs/specs/pomodoro-timer.md', state: '' },
+          { path: '.scratch/issues/T1..T4.md', state: '' }
+        ],
+        renderBody: () => `
+          <div class="reset-callout">
+            <h3>Why clear instead of continuing or compacting?</h3>
+            <p style="font-size:0.88rem; color:var(--ink-2);">
+              During grilling, you explored rejected ideas (like <code>setInterval</code> counters or auto-starting breaks). If those stay in your context window—or get vaguely summarized by auto-compaction—coding agents frequently hallucinate rejected paths back into the code.
+            </p>
+            <div class="split-grid" style="margin-top:6px;">
+              <div class="pane">
+                <div class="pane-head"><span>What Survives on Disk</span><span>Source of Truth</span></div>
+                <div class="pane-body">
+                  <code>GLOSSARY.md</code> (exact terms) · <code>ADR-001</code> (wall-clock decision) · <code>pomodoro-timer.md</code> (module seams) · <code>T1..T4</code> (scoped acceptance criteria).
+                </div>
+              </div>
+              <div class="pane">
+                <div class="pane-head"><span>What Gets Dropped</span><span>Zero Value Noise</span></div>
+                <div class="pane-body">
+                  58k tokens of exploratory back-and-forth, rejected alternatives, and intermediate tool outputs. Next step starts razor-sharp at <strong>0k</strong>.
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '04',
+        navLabel: '/implement vs /implement-spec',
+        phase: 'Build',
+        phaseTag: 'Phase II · Build (Execution Fork)',
+        cmd: '/implement-spec docs/specs/pomodoro-timer.md',
+        title: 'Build via TDD — single ticket or parallel worktrees',
+        why: 'Choose tight human-in-the-loop control with /implement (one ticket per fresh session), or let v1.3’s /implement-spec execute the entire ticket DAG concurrently in isolated git worktrees.',
+        tokens: 21,
+        session: 'Fresh Worktree(s)',
+        freshBadge: true,
+        ctxCaption: 'Each ticket executes in its own ~18–22k fresh window with /tdd red → green → refactor.',
+        files: [
+          { path: 'src/timer/engine.ts', state: 'added' },
+          { path: 'src/timer/engine.test.ts', state: 'added' },
+          { path: 'src/ui/TimerRing.tsx', state: 'added' },
+          { path: 'src/audio/chime.ts', state: 'added' },
+          { path: 'src/storage/persist.ts', state: 'added' }
+        ],
+        renderBody: (buildMode) => `
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <span style="font-size:0.84rem; color:var(--ink-2);">Compare both execution tracks on our 4 Pomodoro tickets:</span>
+            <div class="mode-switch">
+              <button class="mode-btn ${buildMode === 'parallel' ? 'active' : ''}" type="button" onclick="setBuildMode('parallel')">4B · /implement-spec (Parallel)</button>
+              <button class="mode-btn ${buildMode === 'single' ? 'active' : ''}" type="button" onclick="setBuildMode('single')">4A · /implement (Single Ticket)</button>
+            </div>
+          </div>
+
+          ${buildMode === 'parallel' ? `
+            <div class="split-grid">
+              <div class="pane">
+                <div class="pane-head"><span>Orchestrator Run</span><span>/implement-spec (v1.3)</span></div>
+                <pre class="code-block"><span class="code-hl">$ /implement-spec docs/specs/pomodoro-timer.md</span>
+
+[Wave 1] Unblocked: T1
+  ↳ spawn fresh subagent in worktree wt-t1
+  ↳ /tdd: 9 failing tests → engine.ts → 9/9 green
+  ↳ merged wt-t1 → feat/pomodoro-timer
+
+[Wave 2] Unblocked: <span class="code-add">T2, T3 (running in parallel!)</span>
+  ↳ spawn fresh subagent in wt-t2 (TimerRing UI)
+  ↳ spawn fresh subagent in wt-t3 (Web Audio chime)
+  ↳ both green → merged into feat/pomodoro-timer
+
+[Wave 3] Unblocked: T4
+  ↳ spawn fresh subagent in wt-t4 (localStorage)
+  ↳ all 24 tests passing ✓</pre>
+              </div>
+              <div class="pane">
+                <div class="pane-head"><span>Why Parallel Worktrees Win Here</span><span>Fresh Context Per Agent</span></div>
+                <div class="pane-body" style="display:flex; flex-direction:column; gap:10px;">
+                  <p>Because <code>/to-tickets</code> sliced clean module seams, <strong>T2 (UI)</strong> and <strong>T3 (Audio)</strong> touch completely different files and build simultaneously without stepping on each other.</p>
+                  <p>Every subagent starts in a <strong>brand-new ~0k context window</strong> (v1.3 behavior), reads only its ticket + <code>GLOSSARY.md</code>, runs <code>/tdd</code>, and exits cleanly.</p>
+                  <p style="font-family:var(--font-mono); font-size:0.75rem; color:var(--spine);">Peak per-agent context: ~21k tokens (never drifts).</p>
+                </div>
+              </div>
+            </div>
+          ` : `
+            <div class="split-grid">
+              <div class="pane">
+                <div class="pane-head"><span>Single-Ticket Loop</span><span>/implement T1 (drives /tdd)</span></div>
+                <pre class="code-block"><span class="code-hl">$ /implement T1</span>
+
+<span class="code-del">[RED]</span> src/timer/engine.test.ts
+  ✗ computes remainingMs from injected clock
+  ✗ freezes remainingMs on pause &amp; restores
+  ✗ triggers Long Break after 4 Focus Intervals
+
+<span class="code-add">[GREEN]</span> src/timer/engine.ts
+  ✓ minimal pure-function state transitions
+  ✓ 9/9 behavioral tests passing (12ms)
+
+<span class="code-hl">[REFACTOR]</span> Extracted nextInterval() helper
+[REVIEW] Mini /code-review pass clean ✓
+<span class="code-dim">→ Clear context, then run /implement T2</span></pre>
+              </div>
+              <div class="pane">
+                <div class="pane-head"><span>When to Prefer /implement</span><span>Tight Human Control</span></div>
+                <div class="pane-body" style="display:flex; flex-direction:column; gap:10px;">
+                  <p>Use <code>/implement</code> one ticket at a time when you want to inspect every commit, steer UI aesthetics interactively, or work through a single ticket created by <code>/triage</code> or <code>/diagnosing-bugs</code>.</p>
+                  <p>Rule: <strong>clear your chat window between T1, T2, T3, and T4</strong> so each slice gets a fresh context.</p>
+                </div>
+              </div>
+            </div>
+          `}
+        `
+      },
+      {
+        num: '05',
+        navLabel: '/code-review',
+        phase: 'Verify',
+        phaseTag: 'Phase II · Verify (With Rework Loop)',
+        cmd: '/code-review',
+        title: 'Catch subtle bugs with parallel multi-axis review',
+        why: 'Even with passing unit tests, /code-review dispatches fresh-context review subagents checking spec compliance, architectural seams, and edge cases.',
+        tokens: 22,
+        session: 'Review Subagents',
+        freshBadge: true,
+        ctxCaption: 'Fresh review subagents compare the full git diff directly against docs/specs/pomodoro-timer.md.',
+        files: [
+          { path: 'src/storage/persist.ts', state: 'updated' },
+          { path: 'src/storage/persist.test.ts', state: 'updated' }
+        ],
+        renderBody: () => `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Review Findings (Non-Happy Catch!)</span><span>Axis: Spec Compliance</span></div>
+              <pre class="code-block"><span class="code-del">[BLOCKING · Spec Violation]</span>
+File: src/storage/persist.ts:34
+When laptop sleeps past endsAt and wakes up
+via visibilitychange, tick() transitions to
+'completed' — <span class="code-del">AND fires the audio chime even
+if the session expired 3 hours ago.</span>
+
+Spec says: "Reloading/waking long after
+expiry lands silently on 00:00."
+
+<span class="code-hl">→ Gate: Review clean? NO → Rework in /implement</span></pre>
+            </div>
+
+            <div class="pane">
+              <div class="pane-head"><span>Rework Loop Fix</span><span>Back to /implement → Clean ✓</span></div>
+              <pre class="code-block"><span class="code-hl">// Added regression test first (/tdd)</span>
+it('does not chime when waking &gt;60s past expiry', () =&gt; {
+  const s = hydrateState(saved, now + 3_600_000);
+  expect(s.status).toBe('completed');
+  expect(chimeSpy).not.toHaveBeenCalled();
+});
+
+<span class="code-add">+ const expiredLongAgo = now - saved.endsAt &gt; 60_000;</span>
+<span class="code-add">+ return { ...completedState, silent: expiredLongAgo };</span>
+
+[Re-run /code-review] All 3 axes clean ✓</pre>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '06',
+        navLabel: '/pr + Shipped Demo',
+        phase: 'Ship',
+        phaseTag: 'Phase II · Ship (v1.3 New)',
+        cmd: '/pr',
+        title: 'Open a bottom-up, evidence-first Pull Request',
+        why: 'AI makes writing code cheap, so human review is the new bottleneck. /pr puts verification proof, blast radius, and rollback right at the top—not a wall of boilerplate.',
+        tokens: 29,
+        session: 'Ship Session',
+        freshBadge: false,
+        ctxCaption: 'Reads the clean diff, test output, and spec to craft a high-signal PR for teammates.',
+        files: [
+          { path: 'PR #14 · feat/pomodoro-timer', state: 'added' }
+        ],
+        renderBody: () => `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Generated PR Description</span><span>/pr (v1.3)</span></div>
+              <pre class="code-block"><span class="code-hl">## Proof</span>
+- 25/25 unit &amp; clock-drift tests pass (<code>vitest run</code>)
+- Verified tab-sleep &amp; reload recovery manually
+- Zero external audio/network dependencies
+
+<span class="code-hl">## Blast Radius &amp; Risk</span>
+- Isolated to new <code>src/timer/</code>, <code>src/ui/</code>,
+  <code>src/audio/</code>, <code>src/storage/</code> modules.
+- Uses <code>localStorage</code> key <code>pomo.v1</code> (versioned).
+
+<span class="code-hl">## Rollback</span>
+- Single revert commit; no DB migrations.
+
+<span class="code-hl">## Decisions</span>
+- See <code>docs/adr/001-wall-clock-timer.md</code></pre>
+            </div>
+
+            <div class="pane">
+              <div class="pane-head"><span>Live Result · Try the Built App!</span><span>Wall-Clock ADR-001 Engine</span></div>
+              <div class="pane-body" style="display:flex; flex-direction:column; gap:14px;">
+                <p style="font-size:0.8rem; color:var(--ink-3);">This working mini widget uses the exact <code>endsAt - Date.now()</code> seam and 4-cycle logic we just built:</p>
+                <div class="pomo-widget">
+                  <div class="pomo-ring-wrap">
+                    <svg class="pomo-svg" viewBox="0 0 84 84">
+                      <circle class="pomo-track" cx="42" cy="42" r="36"></circle>
+                      <circle class="pomo-prog" id="pomoArc" cx="42" cy="42" r="36" stroke-dasharray="226.2" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div>
+                      <div class="pomo-time" id="pomoTime">25:00</div>
+                      <div class="pomo-state" id="pomoState">FOCUS · CYCLE 1/4</div>
+                    </div>
+                  </div>
+                  <div class="pomo-controls">
+                    <button class="btn primary" id="pomoStart" type="button">Start</button>
+                    <button class="btn" id="pomoReset" type="button">Reset</button>
+                    <button class="btn" id="pomoFast" type="button" title="Toggle 5-second demo interval">5s Demo</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '07',
+        navLabel: '/retro',
+        phase: 'Loop',
+        phaseTag: 'Post-Ship Loop (v1.3 New)',
+        cmd: '/retro',
+        title: 'Turn session friction into compounding repo leverage',
+        why: 'Run /retro before closing the session. It spots where the agent wasted tokens or made preventable mistakes and upgrades AGENTS.md or lint rules so the next feature ships even faster.',
+        tokens: 34,
+        session: 'Ship Session (End)',
+        freshBadge: false,
+        ctxCaption: 'Run right before clearing so session friction is still visible. Then clear and celebrate!',
+        files: [
+          { path: 'AGENTS.md', state: 'updated' },
+          { path: 'eslint.config.js', state: 'updated' }
+        ],
+        renderBody: () => `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Retro Findings</span><span>/retro (v1.3)</span></div>
+              <div class="pane-body">
+                <div class="chat">
+                  <div class="msg agent">
+                    <div class="msg-role">Agent Audit</div>
+                    Found two avoidable friction points during this build:<br/><br/>
+                    <strong>1. Test runner confusion (4 wasted tool calls):</strong> Subagent T3 tried <code>npm test</code> (which launched watch mode) instead of <code>pnpm vitest run</code>.<br/>
+                    <strong>2. Direct <code>Date.now()</code> usage:</strong> Caught during review in <code>persist.ts</code> instead of using the injectable clock seam.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pane">
+              <div class="pane-head"><span>Durable Upgrade Applied</span><span>AGENTS.md (via /writing-for-agents)</span></div>
+              <pre class="code-block"><span class="code-hl">## Testing &amp; Guardrails</span>
+<span class="code-add">+ Always run single-shot tests with:</span>
+<span class="code-add">+   pnpm vitest run</span>
+<span class="code-add">+ Never run \`npm test\` (watch mode hangs agents).</span>
+<span class="code-add">+</span>
+<span class="code-add">+ Time-dependent code MUST accept an injected</span>
+<span class="code-add">+ \`now: () =&gt; number\` parameter (see ADR-001).</span>
+
+<span class="code-dim">→ Next feature starts smarter from turn 1.</span></pre>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let activeIdx = 0;
+    let buildMode = 'parallel';
+
+    // Mini working Pomodoro timer state (wall-clock endsAt per ADR-001!)
+    const pomo = {
+      fastMode: false,
+      phase: 'focus', // focus | short | long
+      cycle: 1,
+      status: 'idle', // idle | running | paused | completed
+      totalMs: 25 * 60 * 1000,
+      remainingMs: 25 * 60 * 1000,
+      endsAt: null,
+      raf: null
+    };
+
+    function playChime() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(660, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.46);
+      } catch (e) {}
+    }
+
+    function pomoDuration(phase) {
+      if (pomo.fastMode) return phase === 'focus' ? 5000 : 3000;
+      return phase === 'focus' ? 25 * 60 * 1000 : phase === 'long' ? 15 * 60 * 1000 : 5 * 60 * 1000;
+    }
+
+    function updatePomoDOM() {
+      const tEl = document.getElementById('pomoTime');
+      const sEl = document.getElementById('pomoState');
+      const arc = document.getElementById('pomoArc');
+      const startBtn = document.getElementById('pomoStart');
+      const fastBtn = document.getElementById('pomoFast');
+      if (!tEl) return;
+
+      const ms = pomo.status === 'running' ? Math.max(0, pomo.endsAt - Date.now()) : pomo.remainingMs;
+      const secs = Math.ceil(ms / 1000);
+      const mm = String(Math.floor(secs / 60)).padStart(2, '0');
+      const ss = String(secs % 60).padStart(2, '0');
+      tEl.textContent = `${mm}:${ss}`;
+
+      const labelMap = { focus: 'FOCUS', short: 'SHORT BREAK', long: 'LONG BREAK' };
+      const st = pomo.status === 'completed' ? 'COMPLETED · CLICK START' : `${labelMap[pomo.phase]} · CYCLE ${pomo.cycle}/4`;
+      sEl.textContent = st;
+
+      const circ = 226.2;
+      const ratio = pomo.totalMs > 0 ? ms / pomo.totalMs : 0;
+      arc.setAttribute('stroke-dashoffset', String(circ * (1 - ratio)));
+
+      startBtn.textContent = pomo.status === 'running' ? 'Pause' : pomo.status === 'completed' ? 'Next' : 'Start';
+      fastBtn.classList.toggle('primary', pomo.fastMode);
+    }
+
+    function tickPomo() {
+      if (pomo.status !== 'running') return;
+      const left = Math.max(0, pomo.endsAt - Date.now());
+      if (left <= 0) {
+        pomo.remainingMs = 0;
+        pomo.status = 'completed';
+        playChime();
+        updatePomoDOM();
+        return;
+      }
+      updatePomoDOM();
+      pomo.raf = requestAnimationFrame(tickPomo);
+    }
+
+    function bindPomo() {
+      const startBtn = document.getElementById('pomoStart');
+      const resetBtn = document.getElementById('pomoReset');
+      const fastBtn = document.getElementById('pomoFast');
+      if (!startBtn) return;
+
+      startBtn.onclick = () => {
+        if (pomo.status === 'running') {
+          pomo.remainingMs = Math.max(0, pomo.endsAt - Date.now());
+          pomo.status = 'paused';
+          cancelAnimationFrame(pomo.raf);
+        } else if (pomo.status === 'completed') {
+          if (pomo.phase === 'focus') {
+            pomo.phase = pomo.cycle >= 4 ? 'long' : 'short';
+          } else {
+            pomo.cycle = pomo.phase === 'long' ? 1 : pomo.cycle + 1;
+            pomo.phase = 'focus';
+          }
+          pomo.totalMs = pomoDuration(pomo.phase);
+          pomo.remainingMs = pomo.totalMs;
+          pomo.endsAt = Date.now() + pomo.remainingMs;
+          pomo.status = 'running';
+          tickPomo();
+        } else {
+          pomo.endsAt = Date.now() + pomo.remainingMs;
+          pomo.status = 'running';
+          tickPomo();
+        }
+        updatePomoDOM();
+      };
+
+      resetBtn.onclick = () => {
+        cancelAnimationFrame(pomo.raf);
+        pomo.phase = 'focus';
+        pomo.cycle = 1;
+        pomo.status = 'idle';
+        pomo.totalMs = pomoDuration('focus');
+        pomo.remainingMs = pomo.totalMs;
+        updatePomoDOM();
+      };
+
+      fastBtn.onclick = () => {
+        cancelAnimationFrame(pomo.raf);
+        pomo.fastMode = !pomo.fastMode;
+        pomo.phase = 'focus';
+        pomo.cycle = 1;
+        pomo.status = 'idle';
+        pomo.totalMs = pomoDuration('focus');
+        pomo.remainingMs = pomo.totalMs;
+        updatePomoDOM();
+      };
+
+      updatePomoDOM();
+    }
+
+    window.setBuildMode = function(mode) {
+      buildMode = mode;
+      renderStep();
+    };
+
+    function buildNav() {
+      const nav = document.getElementById('stepNav');
+      nav.innerHTML = '';
+      STEPS.forEach((s, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'step-btn' + (s.isReset ? ' is-reset' : '') + (i === activeIdx ? ' active' : '');
+        b.innerHTML = `
+          <span class="s-num">${s.num}</span>
+          <span class="s-label">${s.navLabel}</span>
+          <span class="s-phase">${s.phase}</span>
+        `;
+        b.onclick = () => { activeIdx = i; renderStep(); };
+        nav.appendChild(b);
+      });
+    }
+
+    function renderStep() {
+      const s = STEPS[activeIdx];
+      buildNav();
+
+      // Context telemetry
+      document.getElementById('ctxTokens').textContent = s.tokens === 0 ? '0k' : `~${s.tokens}k`;
+      const sess = document.getElementById('ctxSession');
+      sess.textContent = s.session;
+      sess.classList.toggle('fresh', Boolean(s.freshBadge));
+
+      const pct = Math.min(100, Math.round((s.tokens / 125) * 100));
+      const bar = document.getElementById('ctxBar');
+      bar.style.width = `${Math.max(s.tokens === 0 ? 0 : 6, pct)}%`;
+      bar.style.background = s.freshBadge ? 'var(--reset)' : 'var(--spine)';
+      document.getElementById('ctxCaption').textContent = s.ctxCaption;
+
+      // File tree
+      document.getElementById('fileCount').textContent = `${s.files.length} active`;
+      document.getElementById('fileTree').innerHTML = s.files.map(f => `
+        <div class="ft-item ${f.state}">
+          <span>${f.path}</span>
+          <span>${f.state === 'added' ? '+ new' : f.state === 'updated' ? 'Δ edit' : ''}</span>
+        </div>
+      `).join('');
+
+      // Stage header
+      document.getElementById('sKicker').innerHTML = `
+        <span class="pill ${s.isReset ? 'reset' : ''}">${s.phaseTag}</span>
+      `;
+      document.getElementById('sTitle').textContent = s.title;
+      const copyBtn = document.getElementById('sCmdCopy');
+      copyBtn.textContent = `${s.cmd}  ⧉`;
+      copyBtn.onclick = () => {
+        navigator.clipboard?.writeText(s.cmd).catch(() => {});
+        copyBtn.textContent = `${s.cmd}  ✓`;
+        setTimeout(() => (copyBtn.textContent = `${s.cmd}  ⧉`), 1300);
+      };
+      document.getElementById('sWhy').textContent = s.why;
+
+      // Stage body
+      document.getElementById('sBody').innerHTML = s.renderBody(buildMode);
+      bindPomo();
+
+      // Footer nav
+      document.getElementById('prevBtn').disabled = activeIdx === 0;
+      document.getElementById('nextBtn').disabled = activeIdx === STEPS.length - 1;
+      document.getElementById('stepCounter').textContent = `Step ${activeIdx + 1} of ${STEPS.length}`;
+    }
+
+    document.getElementById('prevBtn').onclick = () => {
+      if (activeIdx > 0) { activeIdx--; renderStep(); }
+    };
+    document.getElementById('nextBtn').onclick = () => {
+      if (activeIdx < STEPS.length - 1) { activeIdx++; renderStep(); }
+    };
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' && activeIdx < STEPS.length - 1) { activeIdx++; renderStep(); }
+      else if (e.key === 'ArrowLeft' && activeIdx > 0) { activeIdx--; renderStep(); }
+    });
+
+    // Synced Paper / Obsidian Theme
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeText').textContent = t === 'obsidian' ? 'Paper' : 'Obsidian';
+      try { localStorage.setItem('pocock-atlas-theme', t); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem('pocock-atlas-theme'); } catch (e) { return null; } })();
+    setTheme(savedTheme || 'paper');
+    document.getElementById('themeBtn').onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      setTheme(cur === 'obsidian' ? 'paper' : 'obsidian');
+    };
+
+    renderStep();
+  </script>
+</body>
+</html>

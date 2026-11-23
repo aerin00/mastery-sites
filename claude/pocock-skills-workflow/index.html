@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<!-- index:
+description: Matt Pocock's 27-skill AI coding workflow (v1.3.1): horizontal happy-path atlas, interactive happy-vs-other paths playbook, and end-to-end Pomodoro walkthrough.
+tags: skills, workflow, claude-code, tdd, reference
+ingested: 2026-11-23T16:01:00-07:00
+-->
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Matt Pocock’s Skills — Workflow Atlas (v1.3.1)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Calm Editorial Paper Palette */
+      --bg: #F6F4EE;
+      --surface: #FFFFFF;
+      --surface-recessed: #EFECE4;
+      --surface-hover: #FAF9F6;
+      --ink: #181715;
+      --ink-2: #57534C;
+      --ink-3: #868076;
+      --hairline: #E4DFD4;
+      --hairline-strong: #CEC7B8;
+
+      /* Disciplined Accent Hierarchy */
+      --spine: #0D6E64;
+      --spine-tint: rgba(13, 110, 100, 0.065);
+      --spine-border: rgba(13, 110, 100, 0.28);
+
+      --reset: #C25E12;
+      --reset-tint: rgba(194, 94, 18, 0.08);
+      --reset-border: rgba(194, 94, 18, 0.35);
+
+      /* Muted secondary lane markers */
+      --dot-shaping: #7C4DDB;
+      --dot-upkeep: #C94038;
+      --dot-helpers: #2573A7;
+      --dot-setup: #3B5CCC;
+      --dot-router: #B8740B;
+      --dot-ref: #6B665C;
+
+      /* Diff markers */
+      --diff-new: #147A42;
+      --diff-new-bg: #E2F6EB;
+      --diff-upd: #9E620A;
+      --diff-upd-bg: #FEF1D2;
+      --diff-rem: #B42318;
+      --diff-rem-bg: #FEE4E2;
+
+      --shadow-card: 0 1px 2px rgba(24, 23, 21, 0.04), 0 4px 12px rgba(24, 23, 21, 0.03);
+      --shadow-hover: 0 4px 16px rgba(24, 23, 21, 0.08), 0 1px 3px rgba(24, 23, 21, 0.05);
+      --shadow-drawer: -12px 0 40px rgba(24, 23, 21, 0.14);
+
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="obsidian"] {
+      --bg: #0F1114;
+      --surface: #171A1F;
+      --surface-recessed: #13161B;
+      --surface-hover: #1D2128;
+      --ink: #F0EDE6;
+      --ink-2: #A6A198;
+      --ink-3: #706C65;
+      --hairline: #252A32;
+      --hairline-strong: #373E49;
+
+      --spine: #2DD4BF;
+      --spine-tint: rgba(45, 212, 191, 0.075);
+      --spine-border: rgba(45, 212, 191, 0.28);
+
+      --reset: #F59E0B;
+      --reset-tint: rgba(245, 158, 11, 0.10);
+      --reset-border: rgba(245, 158, 11, 0.35);
+
+      --dot-shaping: #A78BFA;
+      --dot-upkeep: #FB7185;
+      --dot-helpers: #38BDF8;
+      --dot-setup: #818CF8;
+      --dot-router: #FBBF24;
+      --dot-ref: #9CA3AF;
+
+      --diff-new: #4ADE80;
+      --diff-new-bg: rgba(74, 222, 128, 0.15);
+      --diff-upd: #FACC15;
+      --diff-upd-bg: rgba(250, 204, 21, 0.15);
+      --diff-rem: #F87171;
+      --diff-rem-bg: rgba(248, 113, 113, 0.15);
+
+      --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.28);
+      --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
+      --shadow-drawer: -16px 0 48px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+    }
+
+    /* ================= COMPACT TOP BAR ================= */
+    .topbar {
+      position: sticky;
+      top: 33px;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      line-height: 1;
+    }
+
+    .brand h1 em {
+      font-style: italic;
+      color: var(--spine);
+    }
+
+    .ver-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Segmented View Switch (Full Map | Happy Path) */
+    .segmented {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 2px;
+    }
+
+    .seg-btn {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 11px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .seg-btn:hover { color: var(--ink); }
+
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box input {
+      width: 190px;
+      padding: 6px 28px 6px 28px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      outline: none;
+      transition: width 180ms ease, border-color 150ms ease;
+    }
+
+    .search-box input:focus {
+      width: 240px;
+      border-color: var(--spine);
+    }
+
+    .search-box .s-ico {
+      position: absolute;
+      left: 9px;
+      color: var(--ink-3);
+      font-size: 0.82rem;
+      pointer-events: none;
+    }
+
+    .search-box .s-kbd {
+      position: absolute;
+      right: 7px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--ink-3);
+      border: 1px solid var(--hairline);
+      padding: 0 4px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .ctrl-btn:hover {
+      border-color: var(--hairline-strong);
+      color: var(--ink);
+    }
+
+    .ctrl-btn.active {
+      background: var(--spine-tint);
+      border-color: var(--spine-border);
+      color: var(--spine);
+      font-weight: 600;
+    }
+
+    /* ================= PAGE SHELL ================= */
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 22px 28px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Diff Drawer Banner (only visible when v1.3 Diff is ON) */
+    .diff-banner {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-left: 3px solid var(--diff-new);
+      border-radius: var(--r-md);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .diff-banner.visible { display: block; }
+
+    .diff-banner-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .diff-banner-head strong {
+      font-size: 0.85rem;
+    }
+
+    .diff-banner-head span {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--ink-3);
+    }
+
+    .diff-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .diff-pill {
+      background: var(--surface-recessed);
+      border-radius: var(--r-sm);
+      padding: 9px 12px;
+      font-size: 0.79rem;
+      color: var(--ink-2);
+    }
+
+    .diff-pill b {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 3px;
+    }
+
+    /* ================= TIER 1: HAPPY PATH HERO ================= */
+    .hero-panel {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    /* Pre-step entry strip (Setup + Router) */
+    .entry-strip {
+      background: var(--surface-recessed);
+      border-bottom: 1px solid var(--hairline);
+      padding: 10px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .entry-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .entry-prompt {
+      font-size: 0.76rem;
+      color: var(--ink-3);
+      font-weight: 500;
+    }
+
+    .entry-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--hairline-strong);
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 0.77rem;
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .entry-chip:hover {
+      border-color: var(--spine);
+      box-shadow: var(--shadow-card);
+      transform: translateY(-1px);
+    }
+
+    .entry-chip.selected,
+    .entry-chip.lit {
+      border-color: var(--spine);
+      background: var(--spine-tint);
+    }
+
+    .entry-chip.related-glow {
+      border-color: var(--spine-border);
+      box-shadow: 0 0 0 2px var(--spine-tint);
+    }
+
+    .entry-chip.dimmed { opacity: 0.25; }
+
+    .entry-chip code {
+      font-weight: 600;
+      font-size: 0.76rem;
+    }
+
+    .entry-chip .chip-sub {
+      color: var(--ink-3);
+      font-size: 0.73rem;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Main Horizontal Spine Canvas */
+    .spine-body {
+      padding: 22px 22px 20px;
+    }
+
+    .spine-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-eyebrow h2 {
+      font-family: var(--font-serif);
+      font-size: 1.55rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .eyebrow-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--spine-tint);
+      color: var(--spine);
+      border: 1px solid var(--spine-border);
+    }
+
+    .spine-hint {
+      font-size: 0.8rem;
+      color: var(--ink-3);
+    }
+
+    /* Horizontal 2-Phase Pipeline Grid */
+    .pipeline {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) auto minmax(0, 4.1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .phase-box {
+      border-radius: var(--r-md);
+      padding: 14px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .phase-plan {
+      background: var(--spine-tint);
+      border: 1px solid var(--spine-border);
+    }
+
+    .phase-build {
+      background: color-mix(in srgb, var(--surface-recessed) 55%, var(--surface));
+      border: 1px solid var(--hairline);
+    }
+
+    .phase-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .phase-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--spine);
+    }
+
+    .phase-build .phase-label { color: var(--ink-2); }
+
+    .phase-rule {
+      font-size: 0.72rem;
+      color: var(--ink-3);
+    }
+
+    /* Step Row inside each Phase */
+    .steps-row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .step-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-3);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .phase-plan .step-arrow { color: var(--spine); opacity: 0.65; }
+
+    /* Vertical Context Reset Divider */
+    .clear-barrier {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 4px 2px;
+      user-select: none;
+    }
+
+    .clear-line {
+      flex: 1;
+      width: 0;
+      border-left: 2px dashed var(--reset-border);
+      min-height: 24px;
+    }
+
+    .clear-pill {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--reset);
+      background: var(--reset-tint);
+      border: 1px solid var(--reset-border);
+      padding: 10px 5px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* Spine Skill Cards (Primary Visual Weight) */
+    .spine-card {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+      font-family: inherit;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 12px 12px 11px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease, opacity 180ms ease;
+    }
+
+    .spine-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--spine);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .spine-card.selected,
+    .spine-card.lit {
+      border-color: var(--spine);
+      box-shadow: 0 0 0 2px var(--spine-tint), var(--shadow-hover);
+    }
+
+    .spine-card.related-glow {
+      border-color: var(--spine-border);
+      box-shadow: 0 0 0 2px var(--spine-tint);
+    }
+
+    .spine-card.dimmed { opacity: 0.22; }
+
+    .spine-card.optional-step {
+      border-style: dashed;
+      background: color-mix(in srgb, var(--surface) 75%, var(--bg));
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      color: var(--spine);
+      letter-spacing: 0.04em;
+    }
+
+    .card-cmd {
+      font-family: var(--font-mono);
+      font-size: 0.81rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-top: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    .card-desc {
+      font-size: 0.76rem;
+      color: var(--ink-2);
+      line-height: 1.38;
+      margin-top: 4px;
+    }
+
+    .card-foot {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--ink-3);
+      padding-top: 6px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    /* Fork Stack (4A /implement + 4B /implement-spec) */
+    .fork-col {
+      flex: 1.25;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .fork-col .spine-card {
+      padding: 9px 11px;
+      gap: 4px;
+    }
+
+    .fork-or {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--ink-3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: -3px 0;
+    }
+
+    /* Diff Badges (consistent: visible ONLY when Diff Mode is ON) */
+    .diff-badge {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 0.59rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    body.diff-on .diff-badge { display: inline-block; }
+
+    .diff-badge.b-new { background: var(--diff-new-bg); color: var(--diff-new); }
+    .diff-badge.b-upd { background: var(--diff-upd-bg); color: var(--diff-upd); }
+
+    /* Journey Tracer Footer inside Hero */
+    .journey-strip {
+      border-top: 1px solid var(--hairline);
+      padding: 11px 22px;
+      background: color-mix(in srgb, var(--surface-recessed) 45%, var(--surface));
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .journey-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .journey-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      margin-right: 4px;
+    }
+
+    .j-chip {
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .j-chip:hover {
+      border-color: var(--hairline-strong);
+      color: var(--ink);
+    }
+
+    .j-chip.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .journey-detail {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 8px;
+      border-top: 1px dashed var(--hairline-strong);
+      font-size: 0.81rem;
+      color: var(--ink-2);
+    }
+
+    .journey-detail.visible { display: flex; }
+
+    .journey-path {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-bottom: 3px;
+    }
+
+    .jp-btn {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 5px;
+      border: 1px solid var(--spine-border);
+      background: var(--spine-tint);
+      color: var(--spine);
+      cursor: pointer;
+    }
+
+    .jp-btn:hover { background: var(--spine); color: #FFFFFF; }
+    [data-theme="obsidian"] .jp-btn:hover { color: #0F1114; }
+
+    /* ================= TIER 2: NON-HAPPY PATHS (INTENT-GROUPED) ================= */
+    .secondary-section {
+      transition: opacity 200ms ease;
+    }
+
+    body.happy-only .secondary-section {
+      display: none;
+    }
+
+    .tier-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tier-header h2 {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 400;
+    }
+
+    .tier-header p {
+      font-size: 0.82rem;
+      color: var(--ink-3);
+    }
+
+    .detour-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .detour-col {
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .col-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .col-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .col-sub {
+      font-size: 0.76rem;
+      color: var(--ink-3);
+      margin-top: 2px;
+    }
+
+    .plug-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: var(--ink-3);
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      padding: 2px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Calm Secondary Skill Rows */
+    .calm-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .calm-card {
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, opacity 180ms ease;
+    }
+
+    .calm-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--hairline-strong);
+      box-shadow: var(--shadow-card);
+    }
+
+    .calm-card.selected,
+    .calm-card.lit {
+      border-color: var(--spine);
+      box-shadow: 0 0 0 2px var(--spine-tint);
+    }
+
+    .calm-card.related-glow {
+      border-color: var(--spine-border);
+      background: var(--surface-hover);
+    }
+
+    .calm-card.dimmed { opacity: 0.22; }
+
+    .calm-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .calm-cmd {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .calm-desc {
+      font-size: 0.77rem;
+      color: var(--ink-2);
+      line-height: 1.38;
+    }
+
+    /* ================= TIER 3: BEDROCK + CONTEXT HYGIENE ================= */
+    .foundation-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .foundation-card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .bedrock-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .bedrock-list .calm-card {
+      background: var(--surface-recessed);
+    }
+
+    .hygiene-rules {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .h-rule {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.81rem;
+      color: var(--ink-2);
+    }
+
+    .h-num {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--reset-tint);
+      color: var(--reset);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .h-rule strong { color: var(--ink); }
+
+    .meter-wrap {
+      background: var(--surface-recessed);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+    }
+
+    .meter-labels {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      color: var(--ink-3);
+      margin-bottom: 6px;
+    }
+
+    .meter-bar {
+      height: 7px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--spine) 0%, var(--spine) 58%, var(--reset) 80%, var(--dot-upkeep) 100%);
+    }
+
+    /* Footer / Experimental Strip */
+    .footer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 14px;
+      border-top: 1px solid var(--hairline);
+      font-size: 0.77rem;
+      color: var(--ink-3);
+    }
+
+    .beta-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 1px dashed var(--hairline-strong);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.77rem;
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .beta-pill-btn:hover {
+      border-color: var(--dot-shaping);
+      color: var(--ink);
+    }
+
+    .beta-tag {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--dot-shaping);
+      letter-spacing: 0.05em;
+    }
+
+    /* ================= SLIDE-OVER FIELD CARD DRAWER ================= */
+    .scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 17, 20, 0.36);
+      backdrop-filter: blur(2px);
+      z-index: 70;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .scrim.open { opacity: 1; pointer-events: auto; }
+
+    .drawer {
+      position: fixed;
+      top: 45px;
+      right: 12px;
+      bottom: 12px;
+      width: min(440px, calc(100vw - 24px));
+      background: var(--surface);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-drawer);
+      z-index: 80;
+      transform: translateX(calc(100% + 24px));
+      transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-head {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--hairline);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .drawer-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--spine);
+      margin-bottom: 4px;
+    }
+
+    .drawer-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .drawer-cmd {
+      font-family: var(--font-mono);
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .drawer-body {
+      padding: 18px 22px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .d-sec h4 {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-3);
+      margin-bottom: 5px;
+    }
+
+    .d-sec p {
+      font-size: 0.87rem;
+      color: var(--ink-2);
+      line-height: 1.55;
+    }
+
+    .d-io {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .d-io-box {
+      background: var(--surface-recessed);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      font-size: 0.79rem;
+      color: var(--ink-2);
+    }
+
+    .d-io-box b {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-3);
+      margin-bottom: 3px;
+    }
+
+    .d-delta {
+      background: var(--diff-new-bg);
+      color: var(--diff-new);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .d-jumps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .d-jump {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 500;
+      padding: 5px 9px;
+      border-radius: 6px;
+      border: 1px solid var(--hairline-strong);
+      background: var(--surface-recessed);
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+
+    .d-jump:hover {
+      border-color: var(--spine);
+      color: var(--spine);
+      background: var(--spine-tint);
+    }
+
+    /* ================= RESPONSIVE ================= */
+    @media (max-width: 1220px) {
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+      .clear-barrier {
+        flex-direction: row;
+        padding: 4px 0;
+      }
+      .clear-line {
+        width: auto;
+        height: 0;
+        border-left: none;
+        border-top: 2px dashed var(--reset-border);
+        min-height: 0;
+      }
+      .clear-pill {
+        writing-mode: horizontal-tb;
+        transform: none;
+        padding: 4px 12px;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .detour-grid,
+      .foundation-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .steps-row {
+        flex-direction: column;
+      }
+      .step-arrow {
+        transform: rotate(90deg);
+        padding: 2px 0;
+      }
+      .bedrock-list {
+        grid-template-columns: 1fr;
+      }
+      .topbar-inner, .page {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+  </style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+  <!-- COMPACT SINGLE-ROW HEADER -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>Matt Pocock’s <em>Skills</em></h1>
+        <span class="ver-tag">v1.3.1 · 27 Core</span>
+      </div>
+      <div class="controls">
+        <div class="segmented" role="group" aria-label="View density">
+          <button id="viewFull" class="seg-btn active" type="button">Full Map</button>
+          <button id="viewHappy" class="seg-btn" type="button">Happy Path</button>
+        </div>
+        <div class="search-box">
+          <span class="s-ico">⌕</span>
+          <input id="searchInput" type="text" placeholder="Filter skills..." aria-label="Filter skills" />
+          <span class="s-kbd">/</span>
+        </div>
+        <button id="diffBtn" class="ctrl-btn" type="button" title="Highlight additions, renames, and removals since Aug 15">
+          v1.3 Diff
+        </button>
+        <a class="ctrl-btn" href="paths.html" style="text-decoration:none;" title="Interactive Happy Path vs. Other Paths recovery playbook">
+          Happy vs. Other
+        </a>
+        <a class="ctrl-btn" href="pomodoro.html" style="text-decoration:none;" title="See a real end-to-end Pomodoro app built with this workflow">
+          Pomodoro Demo →
+        </a>
+        <button id="themeBtn" class="ctrl-btn" type="button" title="Toggle Paper / Obsidian theme">
+          <span id="themeText">Obsidian</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- OPTIONAL v1.3 DIFF SUMMARY -->
+    <section class="diff-banner" id="diffBanner" aria-label="Changes since August 15 map">
+      <div class="diff-banner-head">
+        <strong>What changed from the Aug 15 map (25) to v1.3.1 (27 core)</strong>
+        <span>+3 graduated · −1 removed · 11 doc renames</span>
+      </div>
+      <div class="diff-items">
+        <div class="diff-pill">
+          <b style="color:var(--diff-new)">+3 New Core Skills</b>
+          <code>/implement-spec</code> (parallel git worktree subagents), <code>/pr</code> (reviewable PRs), and <code>/retro</code> (session audits).
+        </div>
+        <div class="diff-pill">
+          <b style="color:var(--diff-rem)">−1 Retired</b>
+          <code>/resolving-merge-conflicts</code> removed in v1.3.0; conflict resolution is now handled natively inline.
+        </div>
+        <div class="diff-pill">
+          <b style="color:var(--diff-upd)">CONTEXT.md → GLOSSARY.md</b>
+          Renamed across 11 skills (<code>GLOSSARY.md</code> &amp; <code>GLOSSARY-MAP.md</code>). Subagents enforce fresh contexts; <code>/ask-matt</code> reads live <code>SKILL.md</code>.
+        </div>
+        <div class="diff-pill">
+          <b style="color:var(--dot-shaping)">Experimental Track</b>
+          <code>/chief-of-staff</code> evolves in <code>in-progress/</code> with a commit-cited LLM wiki for multi-session coordination.
+        </div>
+      </div>
+    </section>
+
+    <!-- TIER 1: HAPPY PATH HERO (ABOVE THE FOLD) -->
+    <section class="hero-panel" aria-label="The Happy Path">
+      <!-- Pre-step Entry Rail -->
+      <div class="entry-strip">
+        <div class="entry-group">
+          <span class="entry-prompt">Before you start:</span>
+          <span data-slot="entry-setup"></span>
+          <span data-slot="entry-router"></span>
+        </div>
+        <span class="entry-prompt">Click any skill for inputs, outputs &amp; copy</span>
+      </div>
+
+      <!-- Horizontal 2-Phase Spine -->
+      <div class="spine-body">
+        <div class="spine-header">
+          <div class="section-eyebrow">
+            <h2>The Happy Path</h2>
+            <span class="eyebrow-tag">Idea → Shipped</span>
+          </div>
+          <span class="spine-hint">Plan in one continuous thread, clear context, then build fresh.</span>
+        </div>
+
+        <div class="pipeline">
+          <!-- PHASE 1: PLAN -->
+          <div class="phase-box phase-plan">
+            <div class="phase-head">
+              <span class="phase-label">Phase I · Plan</span>
+              <span class="phase-rule">One unbroken context window</span>
+            </div>
+            <div class="steps-row">
+              <div data-slot="s-01" style="flex:1; display:flex;"></div>
+              <span class="step-arrow" aria-hidden="true">→</span>
+              <div data-slot="s-02" style="flex:1; display:flex;"></div>
+              <span class="step-arrow" aria-hidden="true">→</span>
+              <div data-slot="s-03" style="flex:1; display:flex;"></div>
+            </div>
+          </div>
+
+          <!-- CONTEXT RESET BARRIER -->
+          <div class="clear-barrier" title="Clear your chat window after tickets are created">
+            <div class="clear-line"></div>
+            <span class="clear-pill">✂ Clear Context</span>
+            <div class="clear-line"></div>
+          </div>
+
+          <!-- PHASE 2: BUILD & SHIP -->
+          <div class="phase-box phase-build">
+            <div class="phase-head">
+              <span class="phase-label">Phase II · Build &amp; Ship</span>
+              <span class="phase-rule">Fresh context window per ticket or worktree subagent</span>
+            </div>
+            <div class="steps-row">
+              <div class="fork-col">
+                <div data-slot="s-04a" style="display:flex;"></div>
+                <div class="fork-or">or full spec</div>
+                <div data-slot="s-04b" style="display:flex;"></div>
+              </div>
+              <span class="step-arrow" aria-hidden="true">→</span>
+              <div data-slot="s-05" style="flex:1; display:flex;"></div>
+              <span class="step-arrow" aria-hidden="true">→</span>
+              <div data-slot="s-06" style="flex:1; display:flex;"></div>
+              <span class="step-arrow" aria-hidden="true">→</span>
+              <div data-slot="s-07" style="flex:1; display:flex;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calm Interactive Journey Strip -->
+      <div class="journey-strip">
+        <div class="journey-row">
+          <span class="journey-label">Trace:</span>
+          <div id="journeyChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+        </div>
+        <div class="journey-detail" id="journeyDetail">
+          <div>
+            <div class="journey-path" id="journeyPath"></div>
+            <div id="journeyNote"></div>
+          </div>
+          <button id="clearJourney" class="ctrl-btn" type="button" style="padding:4px 10px; font-size:0.74rem;">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIER 2: NON-HAPPY PATHS (ORGANIZED BY INTENT) -->
+    <section class="secondary-section" aria-label="Non-Happy Paths">
+      <div class="tier-header">
+        <h2>When Things Aren’t Straightforward</h2>
+        <p>Non-happy-path detours, upkeep on-ramps, and recovery helpers — grouped by what’s happening right now.</p>
+      </div>
+
+      <div class="detour-grid">
+        <!-- Col A: Shaping -->
+        <div class="detour-col">
+          <div class="col-head">
+            <div>
+              <div class="col-title"><span class="dot" style="background:var(--dot-shaping)"></span>Idea Is Too Big or Foggy</div>
+              <div class="col-sub">Branch after <code>01</code> when talking isn’t enough.</div>
+            </div>
+            <span class="plug-tag">↩ back to 02</span>
+          </div>
+          <div class="calm-list" data-slot="shaping"></div>
+        </div>
+
+        <!-- Col B: Upkeep -->
+        <div class="detour-col">
+          <div class="col-head">
+            <div>
+              <div class="col-title"><span class="dot" style="background:var(--dot-upkeep)"></span>Work Comes In or Breaks</div>
+              <div class="col-sub">External issues, nasty bugs, debt &amp; manual setup.</div>
+            </div>
+            <span class="plug-tag">↳ joins 04</span>
+          </div>
+          <div class="calm-list" data-slot="upkeep"></div>
+        </div>
+
+        <!-- Col C: Helpers & Recovery -->
+        <div class="detour-col">
+          <div class="col-head">
+            <div>
+              <div class="col-title"><span class="dot" style="background:var(--dot-helpers)"></span>Recovery &amp; Anytime Helpers</div>
+              <div class="col-sub">No fixed sequence — invoke whenever useful.</div>
+            </div>
+            <span class="plug-tag">anytime</span>
+          </div>
+          <div class="calm-list" data-slot="helpers"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIER 3: REFERENCE BEDROCK & CONTEXT HYGIENE -->
+    <section class="foundation-grid" aria-label="Reference bedrock and context hygiene">
+      <div class="foundation-card secondary-section">
+        <div>
+          <div class="col-head" style="border-bottom:none; padding-bottom:0; margin-bottom:10px;">
+            <div>
+              <div class="col-title"><span class="dot" style="background:var(--dot-ref)"></span>Reference Bedrock — Underneath Everything</div>
+              <div class="col-sub">4 model-invoked disciplines that power the workflow automatically. You can also call <code>/tdd</code> directly.</div>
+            </div>
+          </div>
+          <div class="bedrock-list" data-slot="reference"></div>
+        </div>
+      </div>
+
+      <div class="foundation-card">
+        <div>
+          <div class="col-head" style="border-bottom:none; padding-bottom:0; margin-bottom:12px;">
+            <div>
+              <div class="col-title"><span class="dot" style="background:var(--reset)"></span>Context Window Hygiene</div>
+              <div class="col-sub">The three habits that keep agent quality sharp.</div>
+            </div>
+          </div>
+          <div class="hygiene-rules">
+            <div class="h-rule">
+              <span class="h-num">1</span>
+              <div><strong>Plan unbroken:</strong> Keep <code>/grill-with-docs → /to-spec → /to-tickets</code> in one window.</div>
+            </div>
+            <div class="h-rule">
+              <span class="h-num">2</span>
+              <div><strong>Build fresh:</strong> Start each <code>/implement</code> clean (<code>/implement-spec</code> isolates subagents automatically).</div>
+            </div>
+            <div class="h-rule">
+              <span class="h-num">3</span>
+              <div><strong>Clear, don’t compact:</strong> Past ~100–125k tokens, run <code>/handoff</code> and open a fresh session.</div>
+            </div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-labels">
+            <span>0k · Fresh</span>
+            <span>60k · Peak</span>
+            <span style="color:var(--reset); font-weight:600;">100–125k · /handoff + clear</span>
+          </div>
+          <div class="meter-bar" role="img" aria-label="Context window health meter"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIET FOOTER + BETA SKILL -->
+    <footer class="footer-bar">
+      <div>
+        Install: <code>npx skills@latest add mattpocock/skills</code> · <code>claude plugin install mattpocock-skills@claude-plugins-official</code>
+      </div>
+      <div data-slot="beta"></div>
+    </footer>
+  </main>
+
+  <!-- FIELD CARD INSPECTOR DRAWER -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Skill inspector">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-kicker" id="dKicker">LANE</div>
+        <div class="drawer-title-row">
+          <span class="drawer-cmd" id="dCmd">/skill</span>
+          <button id="dCopy" class="ctrl-btn" type="button" style="padding:3px 8px; font-size:0.7rem;">Copy</button>
+        </div>
+      </div>
+      <button id="dClose" class="ctrl-btn" type="button" style="padding:4px 9px;" aria-label="Close">✕</button>
+    </div>
+    <div class="drawer-body" id="dBody"></div>
+  </aside>
+
+  <script>
+    const SKILLS = [
+      // Pre-step Entry Rail (2)
+      {
+        id: 'setup-matt-pocock-skills', cmd: '/setup-matt-pocock-skills', slot: 'entry-setup', kind: 'entry',
+        entryPrompt: 'New repo?', entrySub: 'once per repo', dot: 'var(--dot-setup)', laneLabel: 'Setup · Once per Repo',
+        short: 'Configure issue tracker, triage labels & GLOSSARY.md → docs/agents/',
+        invocation: 'User-invoked', status: 'updated',
+        v13Note: 'Updated in v1.3: scaffolds GLOSSARY.md / GLOSSARY-MAP.md instead of CONTEXT.md.',
+        what: 'Inspects your repo (git remotes, structure, monorepo markers) and interactively writes durable Markdown conventions so every downstream skill knows your issue tracker and domain docs layout.',
+        when: 'Run once per repository before using the engineering spine.',
+        inputs: 'Repo layout & tracker preference (GitHub, GitLab, local .scratch/, or custom prose)',
+        outputs: 'docs/agents/, GLOSSARY.md (or GLOSSARY-MAP.md), docs/adr/, updated AGENTS.md / CLAUDE.md',
+        context: 'Run once in a standalone session, then clear.',
+        related: ['ask-matt', 'grill-with-docs', 'triage']
+      },
+      {
+        id: 'ask-matt', cmd: '/ask-matt', slot: 'entry-router', kind: 'entry',
+        entryPrompt: 'Lost?', entrySub: 'picks your skill', dot: 'var(--dot-router)', laneLabel: 'Router · Meta-Skill',
+        short: 'Describe your situation → recommends the exact skill or sequence',
+        invocation: 'User-invoked', status: 'updated',
+        v13Note: 'Updated in v1.3: reads each skill’s live SKILL.md before routing rather than relying on short summaries.',
+        what: 'Acts as an intelligent map across all 27 skills. Rather than jumping straight into code, it reads your situation and prescribes the exact skill sequence and human decision checkpoints.',
+        when: 'Anytime you’re unsure where to begin or which detour fits.',
+        inputs: 'Plain-English description of your goal or roadblock',
+        outputs: 'Exact recommended skill or sequence',
+        context: 'Lightweight; invoke at the start of any session.',
+        related: ['setup-matt-pocock-skills', 'grill-with-docs', 'wayfinder', 'triage']
+      },
+
+      // Happy Path Horizontal Spine (8)
+      {
+        id: 'grill-with-docs', cmd: '/grill-with-docs', slot: 's-01', kind: 'spine', step: '01',
+        laneLabel: 'Happy Path · Plan',
+        short: 'Relentless design interview; updates GLOSSARY.md & ADRs live.',
+        foot: 'GLOSSARY.md · ADRs',
+        invocation: 'User-invoked', status: 'updated',
+        v13Note: 'Updated in v1.3: maintains ubiquitous language in GLOSSARY.md (renamed from CONTEXT.md) alongside docs/adr/.',
+        what: 'Interrogates you down every branch of a design tree before writing code, checking assumptions against the codebase and recording settled terms and architectural choices on disk.',
+        when: 'First step for every feature or meaningful change inside a configured repo.',
+        inputs: 'Feature idea, codebase, GLOSSARY.md, docs/adr/',
+        outputs: 'Updated GLOSSARY.md, new ADRs, settled design decisions',
+        context: 'Starts the unbroken planning window (keep open through /to-spec and /to-tickets).',
+        related: ['grill-me', 'wayfinder', 'research', 'prototype', 'to-spec', 'domain-modeling', 'grilling']
+      },
+      {
+        id: 'to-spec', cmd: '/to-spec', slot: 's-02', kind: 'spine', step: '02',
+        laneLabel: 'Happy Path · Plan',
+        short: 'Turns the grilled thread into a crisp written spec.',
+        foot: 'Written spec',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Distills all decisions, edge cases, and constraints from grilling (plus any shaping detours) into an unambiguous engineering specification.',
+        when: 'Immediately after /grill-with-docs, or after returning from /wayfinder, /research, or /prototype.',
+        inputs: 'Grilled conversation + shaping outputs',
+        outputs: 'Written engineering specification',
+        context: 'Stay in the same unbroken context window as /grill-with-docs.',
+        related: ['grill-with-docs', 'to-tickets', 'wayfinder', 'research', 'prototype']
+      },
+      {
+        id: 'to-tickets', cmd: '/to-tickets', slot: 's-03', kind: 'spine', step: '03',
+        laneLabel: 'Happy Path · Plan',
+        short: 'Slices spec into small tracer-bullet tickets with blockers.',
+        foot: 'Ticket DAG',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Breaks the spec into thin, vertical, independently verifiable tracer-bullet tickets with explicit dependency edges so execution can run sequentially or in parallel.',
+        when: 'Right after /to-spec is finalized.',
+        inputs: 'Written spec + tracker config from docs/agents/',
+        outputs: 'Dependency-ordered tickets in GitHub, GitLab, or local tracker',
+        context: 'Final step of planning — clear context after tickets are created.',
+        related: ['to-spec', 'implement', 'implement-spec']
+      },
+      {
+        id: 'implement', cmd: '/implement', slot: 's-04a', kind: 'spine', step: '4A · Single',
+        laneLabel: 'Happy Path · Build',
+        short: '1 ticket · fresh window · drives /tdd · ends with review.',
+        foot: '',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Builds a single ready ticket test-first using /tdd on your current branch, verifies acceptance criteria, and closes with a /code-review pass.',
+        when: 'When you want tight, single-slice control over a ticket or upkeep item.',
+        inputs: 'One ready ticket + clean context window',
+        outputs: 'Tested commits + review pass',
+        context: 'Always launch in a FRESH context window.',
+        related: ['to-tickets', 'implement-spec', 'tdd', 'code-review', 'triage', 'diagnosing-bugs']
+      },
+      {
+        id: 'implement-spec', cmd: '/implement-spec', slot: 's-04b', kind: 'spine', step: '4B · Parallel',
+        laneLabel: 'Happy Path · Build',
+        short: 'Whole spec DAG via parallel worktree subagents.',
+        foot: '',
+        invocation: 'User-invoked · Orchestrator', status: 'new',
+        v13Note: 'NEW in v1.3: graduated from in-progress/. Reads spec tickets as a DAG, dispatches fresh-context subagents in isolated git worktrees for unblocked slices, merges branches, and verifies.',
+        what: 'Executes an entire multi-ticket spec in one coordinated run by dispatching fresh-context subagents in parallel git worktrees for every unblocked slice, then integrating and reviewing.',
+        when: 'When a spec is cleanly sliced into independent tickets and you want parallel velocity.',
+        inputs: 'Spec + dependency-linked tickets from /to-tickets',
+        outputs: 'Integrated feature branch with all tickets implemented & reviewed',
+        context: 'Start fresh; each subagent automatically runs in its own isolated context.',
+        related: ['to-tickets', 'implement', 'code-review', 'pr']
+      },
+      {
+        id: 'code-review', cmd: '/code-review', slot: 's-05', kind: 'spine', step: '05',
+        laneLabel: 'Happy Path · Verify',
+        short: 'Parallel multi-axis audit vs. spec & repo standards.',
+        foot: '↺ rework → 04 if dirty',
+        invocation: 'User- or skill-invoked', status: 'updated',
+        v13Note: 'Updated in v1.3: dispatches fresh-context review subagents across multiple axes (spec fidelity, architecture, smells).',
+        what: 'Reviews the full slice across parallel axes—checking spec compliance, architectural seams, and code smells. If findings appear, loop back to /implement before opening a PR.',
+        when: 'Automatically at the end of /implement, or manually across a full slice before /pr.',
+        inputs: 'Branch diff, spec, coding standards',
+        outputs: 'Pass/rework findings',
+        context: 'Uses fresh-context review subagents for unbiased signal.',
+        related: ['implement', 'implement-spec', 'pr', 'codebase-design']
+      },
+      {
+        id: 'pr', cmd: '/pr', slot: 's-06', kind: 'spine', step: '06 · Ship',
+        laneLabel: 'Happy Path · Ship',
+        short: 'Bottom-up PR: proof, blast radius, risk & rollback.',
+        foot: 'Ready to merge',
+        invocation: 'User-invoked', status: 'new',
+        v13Note: 'NEW in v1.3: graduated from in-progress/ to eliminate human review bottlenecks.',
+        what: 'Crafts high-signal pull request descriptions structured for fast human review—leading with concrete verification evidence, blast radius, migration risk, and rollback strategy.',
+        when: 'Once /code-review is clean and you are ready for human review.',
+        inputs: 'Clean branch diff, test output, spec context',
+        outputs: 'Evidence-first Pull Request description',
+        context: 'Final step on the feature branch.',
+        related: ['code-review', 'retro']
+      },
+      {
+        id: 'retro', cmd: '/retro', slot: 's-07', kind: 'spine', step: '07 · Optional', optional: true,
+        laneLabel: 'Post-Ship Loop',
+        short: 'Audits session friction → upgrades AGENTS.md & lint rules.',
+        foot: 'Compounds repo quality',
+        invocation: 'User-invoked · Self-improvement', status: 'new',
+        v13Note: 'NEW in v1.3: graduated from in-progress/. Turns bumpy sessions into compounding repo guardrails.',
+        what: 'Reviews a completed session to spot wasted tokens, file-finding friction, and avoidable mistakes—then proposes concrete steering fixes (AGENTS.md updates, lint rules, helper scripts).',
+        when: 'After shipping a feature or finishing a rocky session, before clearing context.',
+        inputs: 'Session history + repo steering docs',
+        outputs: 'Proposed AGENTS.md, linter, or guardrail upgrades',
+        context: 'Run BEFORE clearing the session while friction is visible.',
+        related: ['pr', 'writing-for-agents', 'improve-codebase-architecture']
+      },
+
+      // Non-Happy Path Col A: Shaping Detours (3)
+      {
+        id: 'wayfinder', cmd: '/wayfinder', slot: 'shaping', kind: 'calm',
+        laneLabel: 'Shaping Detour · Returns to 02',
+        short: 'Breaks sprawling, ambiguous goals into a map of decision tickets.',
+        invocation: 'User-invoked', status: 'updated',
+        v13Note: 'Updated in v1.3: dispatches fresh-context subagents for exploration.',
+        what: 'Carves oversized, foggy initiatives into an explicit map of decision tickets so unknowns are resolved methodically before committing to a spec.',
+        when: 'When an idea is too big or cloudy for a single /grill-with-docs session.',
+        inputs: 'High-level goal + codebase',
+        outputs: 'Map of decision tickets & milestones',
+        context: 'Standalone shaping session; bring settled choices back to /to-spec.',
+        related: ['grill-with-docs', 'research', 'prototype', 'to-spec']
+      },
+      {
+        id: 'research', cmd: '/research', slot: 'shaping', kind: 'calm',
+        laneLabel: 'Shaping Detour · Returns to 02',
+        short: 'Investigates primary sources (docs, RFCs, code) → cited Markdown brief.',
+        invocation: 'User-invoked · Delegated', status: 'stable',
+        what: 'Reads authoritative primary sources rather than guessing, traces every claim back to its origin, and writes a cited Markdown report directly into your repo.',
+        when: 'When an external technical fact is blocking a design choice.',
+        inputs: 'Focused technical question',
+        outputs: 'Cited Markdown brief in repo',
+        context: 'Delegated so heavy reading doesn’t bloat your planning window.',
+        related: ['wayfinder', 'grill-with-docs', 'to-spec']
+      },
+      {
+        id: 'prototype', cmd: '/prototype', slot: 'shaping', kind: 'calm',
+        laneLabel: 'Shaping Detour · Returns to 02',
+        short: 'Builds throwaway runnable HTML/UI to validate feel; bridge via /handoff.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Rapidly scaffolds a disposable interactive prototype to test UX flows, layout ergonomics, or state toggles before investing in production code.',
+        when: 'When prose can’t settle a UI or interaction question—you need to click it live.',
+        inputs: 'Design hypothesis or UX question',
+        outputs: 'Disposable runnable prototype + /handoff summary',
+        context: 'Isolated from production code; bridge conclusions back with /handoff.',
+        related: ['grill-with-docs', 'handoff', 'to-spec']
+      },
+
+      // Non-Happy Path Col B: Upkeep & Debugging (4)
+      {
+        id: 'triage', cmd: '/triage', slot: 'upkeep', kind: 'calm',
+        laneLabel: 'Upkeep On-Ramp · Joins 04',
+        short: 'Turns incoming bug reports & requests into ready-for-agent tickets.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Walks external issues and PRs through a compact label state machine (needs-triage → needs-info / ready-for-agent / ready-for-human / wontfix) with human confirmation.',
+        when: 'Working through a backlog of user bug reports or team feature requests.',
+        inputs: 'Raw issues + triage labels from docs/agents/',
+        outputs: 'Structured, ready-for-agent tickets for /implement',
+        context: 'Standalone upkeep session.',
+        related: ['setup-matt-pocock-skills', 'diagnosing-bugs', 'implement']
+      },
+      {
+        id: 'diagnosing-bugs', cmd: '/diagnosing-bugs', slot: 'upkeep', kind: 'calm',
+        laneLabel: 'Upkeep On-Ramp · Joins 04',
+        short: 'Forces a red-repro command first → minimizes, fixes & regression-tests.',
+        invocation: 'User-invoked · 6-phase loop', status: 'stable',
+        what: 'Prevents guesswork debugging: requires a single deterministic command that fails on the exact bug, then minimizes, hypothesizes, instruments, fixes, and locks in a regression test.',
+        when: 'Tackling hard bugs, flaky failures, or performance regressions.',
+        inputs: 'Bug report or failing symptom',
+        outputs: 'Verified fix + deterministic regression test',
+        context: 'Fresh focused session.',
+        related: ['triage', 'tdd', 'implement', 'codebase-design']
+      },
+      {
+        id: 'improve-codebase-architecture', cmd: '/improve-codebase-architecture', slot: 'upkeep', kind: 'calm',
+        laneLabel: 'Upkeep On-Ramp · Joins 04',
+        short: 'Audits coupling & shallow modules → visual debt report & refactor plan.',
+        invocation: 'User-invoked', status: 'updated',
+        v13Note: 'Updated in v1.3: informed by GLOSSARY.md domain boundaries.',
+        what: 'Evaluates module boundaries, coupling, and architectural seams against /codebase-design principles, surfacing high-leverage refactoring candidates.',
+        when: 'Periodically during maintenance, or when features start feeling brittle to change.',
+        inputs: 'Codebase + GLOSSARY.md + docs/adr/',
+        outputs: 'Architecture report & refactor tickets',
+        context: 'Standalone analysis session.',
+        related: ['codebase-design', 'retro', 'implement']
+      },
+      {
+        id: 'wizard', cmd: '/wizard', slot: 'upkeep', kind: 'calm',
+        laneLabel: 'Upkeep Utility',
+        short: 'Turns human-only setup steps (keys, dashboards) into an interactive CLI script.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Generates an interactive terminal wizard walking a human through tasks agents cannot perform alone (OAuth consoles, CI secrets, manual migrations) and saving values cleanly to .env or secret stores.',
+        when: 'Onboarding developers, configuring third-party credentials, or running manual A→B transitions.',
+        inputs: 'Manual procedure or secret inventory',
+        outputs: 'Executable interactive shell wizard',
+        context: 'Standalone utility session.',
+        related: ['setup-matt-pocock-skills']
+      },
+
+      // Non-Happy Path Col C: Recovery & Anytime Helpers (6)
+      {
+        id: 'grill-me', cmd: '/grill-me', slot: 'helpers', kind: 'calm',
+        laneLabel: 'Anytime Helper · Swaps in for 01',
+        short: 'No repo yet — same relentless interview, writes nothing to disk.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Runs the full adversarial design-tree interview completely statelessly—no repository setup required and zero files written.',
+        when: 'Greenfield brainstorming or standing in for Step 01 before a repo exists.',
+        inputs: 'Any rough idea, draft, or decision',
+        outputs: 'Clarified decisions in conversation',
+        context: 'Swaps in for /grill-with-docs when there is no repo.',
+        related: ['grill-with-docs', 'grilling', 'to-spec']
+      },
+      {
+        id: 'handoff', cmd: '/handoff', slot: 'helpers', kind: 'calm',
+        laneLabel: 'Recovery Helper · Context Reset',
+        short: 'Compresses active thread into a crisp handoff doc before clearing context.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Distills settled decisions, tried dead ends, and exact next steps into a self-contained handoff document so a fresh context window or another agent picks up cleanly.',
+        when: 'Past ~100–125k tokens, ending a session, switching agents, or bridging /prototype to /to-spec.',
+        inputs: 'Active session history',
+        outputs: 'Self-contained handoff document',
+        context: 'Always run this BEFORE clearing context instead of auto-compacting.',
+        related: ['prototype', 'implement', 'retro']
+      },
+      {
+        id: 'wait-what', cmd: '/wait-what', slot: 'helpers', kind: 'calm',
+        laneLabel: 'Recovery Helper · Clarity Brake',
+        short: 'Agent got dense or confusing → plain English in your GLOSSARY.md terms.',
+        invocation: 'User-invoked · 3-line brake', status: 'updated',
+        v13Note: 'Updated in v1.3: explicitly re-pitches answers using your project’s GLOSSARY.md vocabulary.',
+        what: 'An instant clarity reset. Stops the agent cold and forces a concise, plain-English restatement anchored in your domain glossary.',
+        when: 'The exact moment an agent’s reply feels verbose, jargony, or off-track.',
+        inputs: 'Previous confusing turn + GLOSSARY.md',
+        outputs: 'Plain-English restatement',
+        context: 'Invoke inline in any active thread.',
+        related: ['domain-modeling', 'teach']
+      },
+      {
+        id: 'to-questionnaire', cmd: '/to-questionnaire', slot: 'helpers', kind: 'calm',
+        laneLabel: 'Anytime Helper · Async',
+        short: 'Turns questions only a colleague/SME can answer into an async Markdown form.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Interviews you about the recipient and exact decisions needed, then produces a clean Markdown questionnaire (to-questionnaire-<slug>.md) to send asynchronously.',
+        when: 'Blocked on product, legal, or domain questions outside the codebase.',
+        inputs: 'Open questions + recipient context',
+        outputs: 'to-questionnaire-<slug>.md',
+        context: 'Anytime during grilling or shaping.',
+        related: ['grill-with-docs', 'wayfinder']
+      },
+      {
+        id: 'writing-for-agents', cmd: '/writing-for-agents', slot: 'helpers', kind: 'calm',
+        laneLabel: 'Anytime Helper · Meta',
+        short: 'Authors lean SKILL.md, AGENTS.md & prompts optimized for context load.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Canonical playbook for writing agent-consumed documents. Cuts redundant fluff models already know to minimize Context Load and Cognitive Load.',
+        when: 'Creating custom skills, tightening AGENTS.md after /retro, or documenting repo rules.',
+        inputs: 'Draft skill, AGENTS.md, or prompt',
+        outputs: 'Lean, high-signal agent documentation',
+        context: 'Pairs directly with /retro.',
+        related: ['retro', 'setup-matt-pocock-skills']
+      },
+      {
+        id: 'teach', cmd: '/teach', slot: 'helpers', kind: 'calm',
+        laneLabel: 'Anytime Helper · Learning',
+        short: 'Stateful, multi-session interactive tutor for mastering a topic or subsystem.',
+        invocation: 'User-invoked', status: 'stable',
+        what: 'Builds a persistent learning workspace that teaches you a concept, library, or codebase area step-by-step across sessions with exercises and comprehension checks.',
+        when: 'When you want genuine mastery instead of delegating blindly.',
+        inputs: 'Topic or unfamiliar codebase area',
+        outputs: 'Persistent curriculum & lesson progress',
+        context: 'Designed to span sessions cleanly.',
+        related: ['wait-what', 'research']
+      },
+
+      // Reference Bedrock (4)
+      {
+        id: 'grilling', cmd: '/grilling', slot: 'reference', kind: 'calm',
+        laneLabel: 'Reference Bedrock · Model-Invoked',
+        short: 'Adversarial interview engine powering /grill-with-docs & /grill-me.',
+        invocation: 'Model-invoked', status: 'stable',
+        what: 'Core interviewing discipline that probes edge cases recursively down every design branch and resists premature coding.',
+        when: 'Loaded automatically by /grill-with-docs and /grill-me.',
+        inputs: 'Active design conversation',
+        outputs: 'Branch-resolving questions',
+        context: 'Reference layer underneath planning skills.',
+        related: ['grill-with-docs', 'grill-me']
+      },
+      {
+        id: 'domain-modeling', cmd: '/domain-modeling', slot: 'reference', kind: 'calm',
+        laneLabel: 'Reference Bedrock · Model-Invoked',
+        short: 'Guards ubiquitous language, GLOSSARY.md & hard-to-reverse ADRs.',
+        invocation: 'Model-invoked', status: 'updated',
+        v13Note: 'Updated in v1.3: writes domain vocabulary directly into GLOSSARY.md.',
+        what: 'Stress-tests domain terminology during planning—interrupting when terms clash or stay vague, updating GLOSSARY.md inline, and flagging ADRs.',
+        when: 'Active underneath /grill-with-docs and architecture discussions.',
+        inputs: 'Domain terms, GLOSSARY.md, proposals',
+        outputs: 'Consistent ubiquitous language & ADRs',
+        context: 'Reference layer.',
+        related: ['grill-with-docs', 'wait-what', 'codebase-design']
+      },
+      {
+        id: 'codebase-design', cmd: '/codebase-design', slot: 'reference', kind: 'calm',
+        laneLabel: 'Reference Bedrock · Model-Invoked',
+        short: 'Deep modules: rich behavior behind small, testable interfaces at seams.',
+        invocation: 'Model-invoked', status: 'stable',
+        what: 'Shared architectural vocabulary advocating deep modules—hiding complexity behind narrow, clean, testable seams.',
+        when: 'Guides /to-spec, /implement, /code-review, and /improve-codebase-architecture.',
+        inputs: 'Module boundaries & interfaces',
+        outputs: 'Maintainable, testable seams',
+        context: 'Reference layer.',
+        related: ['improve-codebase-architecture', 'code-review', 'tdd']
+      },
+      {
+        id: 'tdd', cmd: '/tdd', slot: 'reference', kind: 'calm',
+        laneLabel: 'Reference Bedrock · Model- or User-Invoked',
+        short: 'Red-green-refactor loop; driven by /implement or invoked directly.',
+        invocation: 'Model- or user-invoked', status: 'stable',
+        what: 'Enforces strict test-driven development: failing behavioral test first, minimal passing code, then refactor.',
+        when: 'Driven inside /implement and /implement-spec, or call /tdd directly anytime.',
+        inputs: 'Acceptance criteria or bug repro',
+        outputs: 'Behavioral tests + clean implementation',
+        context: 'Reference layer (also user-invokable).',
+        related: ['implement', 'implement-spec', 'diagnosing-bugs']
+      },
+
+      // Experimental Beta (1)
+      {
+        id: 'chief-of-staff', cmd: '/chief-of-staff', slot: 'beta', kind: 'beta',
+        laneLabel: 'Experimental · in-progress/',
+        short: 'Long-horizon coordinator with commit-cited LLM wiki & subagent delegation.',
+        invocation: 'Experimental · in-progress/', status: 'beta',
+        v13Note: 'Lives outside the 27-skill core plugin under in-progress/: maintains a dated, commit-cited markdown wiki (index.md + topic pages), delegates tasks to fresh subagents, and triggers periodic /retro runs.',
+        what: 'High-level coordinator agent for multi-task, long-running goals. Keeps its own window thin by maintaining structured project memory and delegating heavy execution to background subagents.',
+        when: 'Experimenting with semi-autonomous multi-session project orchestration.',
+        inputs: 'Overarching project goal + repo state',
+        outputs: 'Commit-cited LLM wiki, delegated runs, periodic retros',
+        context: 'Coordinator stays thin; all implementation runs in fresh subagents.',
+        related: ['implement-spec', 'retro', 'handoff']
+      }
+    ];
+
+    const JOURNEYS = [
+      {
+        id: 'happy-parallel',
+        label: 'Ship a Feature Fast',
+        skills: ['grill-with-docs', 'to-spec', 'to-tickets', 'implement-spec', 'code-review', 'pr', 'retro'],
+        note: 'Keep 01 → 02 → 03 in one window, clear context, dispatch parallel worktrees with /implement-spec, then land via /code-review → /pr → /retro.'
+      },
+      {
+        id: 'new-repo',
+        label: 'New Repo',
+        skills: ['setup-matt-pocock-skills', 'grill-with-docs', 'to-spec', 'to-tickets', 'implement'],
+        note: 'Run /setup-matt-pocock-skills once to wire docs/agents/ and GLOSSARY.md, then enter the Happy Path.'
+      },
+      {
+        id: 'foggy',
+        label: 'Big, Foggy Idea',
+        skills: ['grill-with-docs', 'wayfinder', 'research', 'prototype', 'handoff', 'to-spec'],
+        note: 'Branch after 01 into Shaping (/wayfinder, /research, or /prototype + /handoff), then return straight to 02 /to-spec.'
+      },
+      {
+        id: 'bug',
+        label: 'Incoming Issue / Hard Bug',
+        skills: ['triage', 'diagnosing-bugs', 'tdd', 'implement', 'code-review', 'pr'],
+        note: 'Shape external reports with /triage, isolate deterministically with /diagnosing-bugs + /tdd, build via /implement, and open /pr.'
+      },
+      {
+        id: 'context',
+        label: 'Context > 100k',
+        skills: ['handoff', 'retro', 'writing-for-agents'],
+        note: 'Never auto-compact. Compress state cleanly with /handoff, optionally capture friction with /retro, then start a fresh window.'
+      },
+      {
+        id: 'stuck',
+        label: 'Stuck / Agent Confusing',
+        skills: ['ask-matt', 'wait-what'],
+        note: 'Ask /ask-matt to pick your exact skill sequence; if an agent turn gets dense or off-track, hit /wait-what for a plain-English reset.'
+      }
+    ];
+
+    const state = {
+      happyOnly: false,
+      journey: null,
+      search: '',
+      diffOn: false,
+      selected: null,
+      hovered: null
+    };
+
+    const byId = Object.fromEntries(SKILLS.map(s => [s.id, s]));
+
+    function diffBadgeHtml(s) {
+      if (s.status === 'new') return '<span class="diff-badge b-new">+ new</span>';
+      if (s.status === 'updated') return '<span class="diff-badge b-upd">Δ upd</span>';
+      return '';
+    }
+
+    function bindCardEvents(el, s) {
+      el.dataset.skillId = s.id;
+      el.addEventListener('click', () => openDrawer(s.id));
+      el.addEventListener('mouseenter', () => {
+        state.hovered = s.id;
+        updateHoverGlow();
+      });
+      el.addEventListener('mouseleave', () => {
+        if (state.hovered === s.id) {
+          state.hovered = null;
+          updateHoverGlow();
+        }
+      });
+    }
+
+    function mountSkills() {
+      SKILLS.forEach(s => {
+        const slot = document.querySelector(`[data-slot="${s.slot}"]`);
+        if (!slot) return;
+
+        if (s.kind === 'entry') {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'entry-chip';
+          btn.innerHTML = `
+            <span class="dot" style="background:${s.dot}"></span>
+            <span class="chip-sub">${s.entryPrompt}</span>
+            <code>${s.cmd}</code>
+            ${diffBadgeHtml(s)}
+          `;
+          bindCardEvents(btn, s);
+          slot.appendChild(btn);
+        } else if (s.kind === 'spine') {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'spine-card' + (s.optional ? ' optional-step' : '');
+          btn.innerHTML = `
+            <div>
+              <div class="card-top">
+                <span class="step-num">${s.step}</span>
+                ${diffBadgeHtml(s)}
+              </div>
+              <div class="card-cmd">${s.cmd}</div>
+              <div class="card-desc">${s.short}</div>
+            </div>
+            ${s.foot ? `<div class="card-foot"><span>${s.foot}</span></div>` : ''}
+          `;
+          bindCardEvents(btn, s);
+          slot.appendChild(btn);
+        } else if (s.kind === 'calm') {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'calm-card';
+          btn.innerHTML = `
+            <div class="calm-top">
+              <span class="calm-cmd">${s.cmd}</span>
+              ${diffBadgeHtml(s)}
+            </div>
+            <div class="calm-desc">${s.short}</div>
+          `;
+          bindCardEvents(btn, s);
+          slot.appendChild(btn);
+        } else if (s.kind === 'beta') {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'beta-pill-btn';
+          btn.innerHTML = `
+            <span class="beta-tag">in-progress</span>
+            <code>${s.cmd}</code>
+            <span>Long-horizon wiki coordinator</span>
+          `;
+          bindCardEvents(btn, s);
+          slot.appendChild(btn);
+        }
+      });
+    }
+
+    function mountJourneys() {
+      const wrap = document.getElementById('journeyChips');
+      JOURNEYS.forEach(j => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'j-chip';
+        b.dataset.journey = j.id;
+        b.textContent = j.label;
+        b.addEventListener('click', () => {
+          state.journey = state.journey === j.id ? null : j.id;
+          // If user picks a journey with non-happy skills while in Happy Path mode, gently reveal Full Map
+          if (state.journey && state.happyOnly) {
+            const jObj = JOURNEYS.find(x => x.id === state.journey);
+            if (jObj && jObj.skills.some(id => byId[id].kind !== 'spine')) {
+              state.happyOnly = false;
+            }
+          }
+          render();
+        });
+        wrap.appendChild(b);
+      });
+    }
+
+    // Calm hover glow: never dims the page on accidental mouse pass-through
+    function updateHoverGlow() {
+      const h = state.hovered ? byId[state.hovered] : null;
+      const rel = h ? new Set(h.related || []) : null;
+      document.querySelectorAll('[data-skill-id]').forEach(el => {
+        el.classList.toggle('related-glow', Boolean(rel && rel.has(el.dataset.skillId)));
+      });
+    }
+
+    function render() {
+      const q = state.search.trim().toLowerCase();
+      const activeJ = JOURNEYS.find(j => j.id === state.journey);
+
+      // View toggle
+      document.body.classList.toggle('happy-only', state.happyOnly);
+      document.getElementById('viewFull').classList.toggle('active', !state.happyOnly);
+      document.getElementById('viewHappy').classList.toggle('active', state.happyOnly);
+
+      // Diff toggle
+      document.body.classList.toggle('diff-on', state.diffOn);
+      document.getElementById('diffBtn').classList.toggle('active', state.diffOn);
+      document.getElementById('diffBanner').classList.toggle('visible', state.diffOn);
+
+      // Journey strip
+      document.querySelectorAll('.j-chip').forEach(ch => {
+        ch.classList.toggle('active', ch.dataset.journey === state.journey);
+      });
+      const detail = document.getElementById('journeyDetail');
+      if (activeJ) {
+        detail.classList.add('visible');
+        document.getElementById('journeyNote').textContent = activeJ.note;
+        document.getElementById('journeyPath').innerHTML = activeJ.skills
+          .map(id => `<button type="button" class="jp-btn" data-open="${id}">${byId[id].cmd}</button>`)
+          .join('<span style="color:var(--ink-3); font-size:0.75rem;">→</span>');
+        document.querySelectorAll('[data-open]').forEach(b => {
+          b.addEventListener('click', () => openDrawer(b.dataset.open));
+        });
+      } else {
+        detail.classList.remove('visible');
+      }
+
+      // Explicit filtering / highlighting (Search or Journey only — never on hover)
+      document.querySelectorAll('[data-skill-id]').forEach(el => {
+        const s = byId[el.dataset.skillId];
+        const hay = `${s.cmd} ${s.short} ${s.what} ${s.inputs} ${s.outputs} ${s.laneLabel}`.toLowerCase();
+        const matchQ = !q || hay.includes(q);
+        const matchJ = !activeJ || activeJ.skills.includes(s.id);
+
+        const lit = (q && matchQ) || (activeJ && matchJ);
+        const dim = (q && !matchQ) || (activeJ && !matchJ);
+
+        el.classList.toggle('lit', Boolean(lit));
+        el.classList.toggle('dimmed', Boolean(dim));
+        el.classList.toggle('selected', state.selected === s.id);
+      });
+    }
+
+    function openDrawer(id) {
+      const s = byId[id];
+      if (!s) return;
+      state.selected = id;
+      render();
+
+      document.getElementById('dKicker').textContent = `${s.laneLabel} · ${s.invocation}`;
+      document.getElementById('dCmd').textContent = s.cmd;
+
+      const copyBtn = document.getElementById('dCopy');
+      copyBtn.textContent = 'Copy';
+      copyBtn.onclick = () => {
+        navigator.clipboard?.writeText(s.cmd).catch(() => {});
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(() => (copyBtn.textContent = 'Copy'), 1400);
+      };
+
+      const jumps = (s.related || [])
+        .map(rid => byId[rid])
+        .filter(Boolean)
+        .map(r => `<button type="button" class="d-jump" data-jump="${r.id}">${r.cmd}</button>`)
+        .join('');
+
+      document.getElementById('dBody').innerHTML = `
+        ${s.v13Note ? `<div class="d-delta">${s.v13Note}</div>` : ''}
+        <div class="d-sec">
+          <h4>What It Does</h4>
+          <p>${s.what}</p>
+        </div>
+        <div class="d-sec">
+          <h4>When to Reach for It</h4>
+          <p>${s.when}</p>
+        </div>
+        <div class="d-io">
+          <div class="d-io-box"><b>Inputs</b>${s.inputs}</div>
+          <div class="d-io-box"><b>Outputs</b>${s.outputs}</div>
+        </div>
+        <div class="d-sec">
+          <h4>Context Window Rule</h4>
+          <p>${s.context}</p>
+        </div>
+        ${jumps ? `
+          <div class="d-sec">
+            <h4>Connected Skills</h4>
+            <div class="d-jumps">${jumps}</div>
+          </div>
+        ` : ''}
+      `;
+
+      document.querySelectorAll('[data-jump]').forEach(b => {
+        b.addEventListener('click', () => openDrawer(b.dataset.jump));
+      });
+
+      document.getElementById('scrim').classList.add('open');
+      const d = document.getElementById('drawer');
+      d.classList.add('open');
+      d.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDrawer() {
+      state.selected = null;
+      document.getElementById('scrim').classList.remove('open');
+      const d = document.getElementById('drawer');
+      d.classList.remove('open');
+      d.setAttribute('aria-hidden', 'true');
+      render();
+    }
+
+    // Mount & Bind
+    mountSkills();
+    mountJourneys();
+
+    document.getElementById('viewFull').addEventListener('click', () => {
+      state.happyOnly = false;
+      render();
+    });
+    document.getElementById('viewHappy').addEventListener('click', () => {
+      state.happyOnly = true;
+      state.journey = null;
+      render();
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', e => {
+      state.search = e.target.value;
+      if (state.search && state.happyOnly) state.happyOnly = false;
+      render();
+    });
+
+    document.getElementById('diffBtn').addEventListener('click', () => {
+      state.diffOn = !state.diffOn;
+      render();
+    });
+
+    document.getElementById('clearJourney').addEventListener('click', () => {
+      state.journey = null;
+      render();
+    });
+
+    document.getElementById('dClose').addEventListener('click', closeDrawer);
+    document.getElementById('scrim').addEventListener('click', closeDrawer);
+
+    // Theme Switch (synced with companion walkthrough)
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeText').textContent = t === 'obsidian' ? 'Paper' : 'Obsidian';
+      try { localStorage.setItem('pocock-atlas-theme', t); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem('pocock-atlas-theme'); } catch (e) { return null; } })();
+    setTheme(savedTheme || 'paper');
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      setTheme(cur === 'obsidian' ? 'paper' : 'obsidian');
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeDrawer();
+      else if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

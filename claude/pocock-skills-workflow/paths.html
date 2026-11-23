@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Path vs. Other Paths — Matt Pocock’s Skills (v1.3.1)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F6F4EE;
+      --surface: #FFFFFF;
+      --surface-recessed: #EFECE4;
+      --surface-code: #FAF8F3;
+      --ink: #181715;
+      --ink-2: #55514A;
+      --ink-3: #868076;
+      --hairline: #E4DFD4;
+      --hairline-strong: #CEC7B8;
+
+      --spine: #0D6E64;
+      --spine-tint: rgba(13, 110, 100, 0.075);
+      --spine-border: rgba(13, 110, 100, 0.30);
+
+      --reset: #C25E12;
+      --reset-tint: rgba(194, 94, 18, 0.085);
+      --reset-border: rgba(194, 94, 18, 0.35);
+
+      --other: #7C4DDB;
+      --other-tint: rgba(124, 77, 219, 0.08);
+      --other-border: rgba(124, 77, 219, 0.32);
+
+      --upkeep: #C94038;
+      --upkeep-tint: rgba(201, 64, 56, 0.08);
+      --upkeep-border: rgba(201, 64, 56, 0.32);
+
+      --trap: #B42318;
+      --trap-bg: #FEE4E2;
+      --ok: #157A42;
+      --ok-bg: #E2F6EB;
+
+      --shadow-card: 0 1px 2px rgba(24, 23, 21, 0.04), 0 4px 12px rgba(24, 23, 21, 0.03);
+      --shadow-hover: 0 4px 14px rgba(24, 23, 21, 0.08);
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="obsidian"] {
+      --bg: #0F1114;
+      --surface: #171A1F;
+      --surface-recessed: #13161B;
+      --surface-code: #12151A;
+      --ink: #F0EDE6;
+      --ink-2: #A6A198;
+      --ink-3: #706C65;
+      --hairline: #252A32;
+      --hairline-strong: #373E49;
+
+      --spine: #2DD4BF;
+      --spine-tint: rgba(45, 212, 191, 0.08);
+      --spine-border: rgba(45, 212, 191, 0.30);
+
+      --reset: #F59E0B;
+      --reset-tint: rgba(245, 158, 11, 0.11);
+      --reset-border: rgba(245, 158, 11, 0.35);
+
+      --other: #A78BFA;
+      --other-tint: rgba(167, 139, 250, 0.11);
+      --other-border: rgba(167, 139, 250, 0.35);
+
+      --upkeep: #FB7185;
+      --upkeep-tint: rgba(251, 113, 133, 0.11);
+      --upkeep-border: rgba(251, 113, 133, 0.35);
+
+      --trap: #F87171;
+      --trap-bg: rgba(248, 113, 113, 0.14);
+      --ok: #4ADE80;
+      --ok-bg: rgba(74, 222, 128, 0.14);
+
+      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.28);
+      --shadow-hover: 0 8px 22px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    code, pre { font-family: var(--font-mono); font-size: 0.88em; }
+
+    /* Shared Top Bar & Site Navigation */
+    .topbar {
+      position: sticky;
+      top: 33px;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand { display: flex; align-items: baseline; gap: 12px; }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.7rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .brand h1 em { font-style: italic; color: var(--spine); }
+
+    .site-nav {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .nav-link {
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink-2);
+      transition: all 140ms ease;
+    }
+
+    .nav-link:hover { color: var(--ink); }
+
+    .nav-link.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .btn:hover { border-color: var(--hairline-strong); color: var(--ink); }
+
+    /* Main Layout */
+    .page {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 24px 28px 68px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* ================= INTERACTIVE PATH VISUALIZER ================= */
+    .viz-panel {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .viz-head {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .viz-head h2 {
+      font-family: var(--font-serif);
+      font-size: 1.7rem;
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    .viz-head p {
+      font-size: 0.84rem;
+      color: var(--ink-3);
+      margin-top: 3px;
+    }
+
+    .mode-pills {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .mode-pill {
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+
+    .mode-pill.active-happy { background: var(--spine); color: #FFFFFF; font-weight: 600; }
+    [data-theme="obsidian"] .mode-pill.active-happy { color: #0F1114; }
+    .mode-pill.active-other { background: var(--other); color: #FFFFFF; font-weight: 600; }
+    [data-theme="obsidian"] .mode-pill.active-other { color: #0F1114; }
+
+    /* Live Spine Rail */
+    .rail-stage {
+      padding: 22px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .spine-track {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .node {
+      flex: 1;
+      min-width: 118px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 10px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 200ms ease;
+    }
+
+    .node.active-happy { border-color: var(--spine-border); background: var(--spine-tint); }
+    .node.bypassed { opacity: 0.28; border-style: dashed; }
+    .node.anchor-out { border-color: var(--other); box-shadow: 0 0 0 2px var(--other-tint); }
+    .node.anchor-in  { border-color: var(--spine); box-shadow: 0 0 0 2px var(--spine-tint); }
+
+    .node-num {
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: var(--spine);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .node-cmd {
+      font-family: var(--font-mono);
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .node-sub { font-size: 0.71rem; color: var(--ink-3); line-height: 1.3; }
+
+    .node-tag {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .tag-out  { background: var(--other-tint); color: var(--other); }
+    .tag-in   { background: var(--spine-tint); color: var(--spine); }
+    .tag-swap { background: var(--reset-tint); color: var(--reset); }
+
+    .rail-sep { display: flex; align-items: center; color: var(--ink-3); font-size: 0.85rem; flex-shrink: 0; }
+
+    .rail-clear { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 4px; flex-shrink: 0; }
+    .rail-clear span {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--reset);
+      background: var(--reset-tint);
+      border: 1px dashed var(--reset-border);
+      padding: 8px 4px;
+      border-radius: 999px;
+    }
+
+    /* Active Detour Loop Ribbon */
+    .detour-ribbon {
+      display: none;
+      border-radius: var(--r-md);
+      padding: 16px 18px;
+      border: 1.5px solid var(--other-border);
+      background: var(--other-tint);
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .detour-ribbon.visible { display: flex; }
+    .detour-ribbon.tone-upkeep { border-color: var(--upkeep-border); background: var(--upkeep-tint); }
+    .detour-ribbon.tone-reset  { border-color: var(--reset-border);  background: var(--reset-tint); }
+
+    .detour-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .detour-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--other);
+    }
+
+    .detour-ribbon.tone-upkeep .detour-kicker { color: var(--upkeep); }
+    .detour-ribbon.tone-reset  .detour-kicker { color: var(--reset); }
+
+    .detour-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .df-chip {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      border: 1px solid var(--hairline-strong);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .df-chip:hover { border-color: var(--spine); color: var(--spine); }
+
+    .df-rejoin {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--spine);
+      color: #FFFFFF;
+    }
+
+    [data-theme="obsidian"] .df-rejoin { color: #0F1114; }
+
+    .compare-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .cmp-box {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 13px 15px;
+      font-size: 0.83rem;
+      color: var(--ink-2);
+    }
+
+    .cmp-box h4 {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cmp-box.trap h4 { color: var(--trap); }
+    .cmp-box.optimal h4 { color: var(--ok); }
+
+    .example-strip {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-left: 3px solid var(--spine);
+      border-radius: var(--r-sm);
+      padding: 12px 15px;
+      font-size: 0.82rem;
+      color: var(--ink-2);
+    }
+
+    .example-strip b {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--spine);
+      margin-bottom: 4px;
+    }
+
+    /* Happy Path Summary Card */
+    .happy-summary {
+      background: var(--spine-tint);
+      border: 1px solid var(--spine-border);
+      border-radius: var(--r-md);
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .happy-summary.hidden { display: none; }
+
+    .hs-col h4 {
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--spine);
+      margin-bottom: 4px;
+    }
+
+    .hs-col p { font-size: 0.82rem; color: var(--ink-2); }
+
+    /* ================= REAL-WORLD E2E PLAYTHROUGHS (HAPPY VS OTHER) ================= */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+    }
+
+    .section-head p { font-size: 0.84rem; color: var(--ink-3); }
+
+    .e2e-shell {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .e2e-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--hairline);
+      background: var(--surface-recessed);
+    }
+
+    .e2e-tab {
+      text-align: left;
+      font-family: inherit;
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--hairline);
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background 150ms ease;
+    }
+
+    .e2e-tab:last-child { border-right: none; }
+    .e2e-tab:hover { background: color-mix(in srgb, var(--surface) 60%, transparent); }
+
+    .e2e-tab.active {
+      background: var(--surface);
+      box-shadow: inset 0 3px 0 var(--tab-color, var(--spine));
+    }
+
+    .e2e-tab-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--tab-color, var(--spine));
+    }
+
+    .e2e-tab-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .e2e-tab-sub {
+      font-size: 0.76rem;
+      color: var(--ink-3);
+    }
+
+    .e2e-body {
+      padding: 22px 24px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .e2e-meta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      border-radius: var(--r-sm);
+      background: var(--surface-recessed);
+      font-size: 0.82rem;
+      color: var(--ink-2);
+    }
+
+    .e2e-stats {
+      display: flex;
+      gap: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-3);
+      flex-wrap: wrap;
+    }
+
+    .e2e-stats strong { color: var(--ink); }
+
+    /* Step-by-Step E2E Timeline */
+    .e2e-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .e2e-step {
+      display: grid;
+      grid-template-columns: 165px minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      align-items: start;
+    }
+
+    .e2e-step.step-detour {
+      border-color: var(--other-border);
+      background: color-mix(in srgb, var(--other-tint) 60%, var(--surface));
+    }
+
+    .e2e-step.step-upkeep {
+      border-color: var(--upkeep-border);
+      background: color-mix(in srgb, var(--upkeep-tint) 60%, var(--surface));
+    }
+
+    .e2e-step.step-reset {
+      border-style: dashed;
+      border-color: var(--reset-border);
+      background: var(--reset-tint);
+      grid-template-columns: 165px 1fr;
+    }
+
+    .es-left {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .es-cmd {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .es-badge {
+      display: inline-block;
+      width: fit-content;
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--spine-tint);
+      color: var(--spine);
+    }
+
+    .step-detour .es-badge { background: var(--other-tint); color: var(--other); }
+    .step-upkeep .es-badge { background: var(--upkeep-tint); color: var(--upkeep); }
+    .step-reset  .es-badge { background: var(--surface); color: var(--reset); }
+
+    .es-tok {
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      color: var(--ink-3);
+    }
+
+    .es-prompt, .es-result {
+      font-size: 0.81rem;
+      color: var(--ink-2);
+      line-height: 1.48;
+    }
+
+    .es-col-label {
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    .es-code {
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: var(--surface-code);
+      border: 1px solid var(--hairline);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+
+    /* ================= SCENARIO SELECTOR ================= */
+    .cat-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+
+    .cat-btn {
+      font-size: 0.77rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    .cat-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    .sc-card {
+      text-align: left;
+      font-family: inherit;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 15px 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: var(--shadow-card);
+      transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    .sc-card:hover { transform: translateY(-2px); border-color: var(--hairline-strong); box-shadow: var(--shadow-hover); }
+    .sc-card.active { border-color: var(--other); box-shadow: 0 0 0 2px var(--other-tint), var(--shadow-hover); }
+    .sc-card.active.tone-upkeep { border-color: var(--upkeep); box-shadow: 0 0 0 2px var(--upkeep-tint), var(--shadow-hover); }
+    .sc-card.active.tone-reset  { border-color: var(--reset);  box-shadow: 0 0 0 2px var(--reset-tint),  var(--shadow-hover); }
+
+    .sc-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .sc-cat { font-family: var(--font-mono); font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); }
+    .sc-rejoin { font-family: var(--font-mono); font-size: 0.64rem; color: var(--spine); background: var(--spine-tint); padding: 2px 7px; border-radius: 999px; }
+    .sc-q { font-size: 0.91rem; font-weight: 600; color: var(--ink); line-height: 1.35; }
+    .sc-skills { display: flex; flex-wrap: wrap; gap: 5px; }
+    .sc-skills code { font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 5px; background: var(--surface-recessed); color: var(--ink); }
+
+    /* ================= COMPARISON MATRIX ================= */
+    .matrix-card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+
+    .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .matrix-table th, .matrix-table td { padding: 13px 18px; text-align: left; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+    .matrix-table th { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; background: var(--surface-recessed); color: var(--ink-2); }
+    .matrix-table tr:last-child td { border-bottom: none; }
+    .matrix-table td:first-child { font-weight: 600; color: var(--ink); width: 190px; }
+    .matrix-table td { color: var(--ink-2); }
+
+    @media (max-width: 980px) {
+      .e2e-tabs { grid-template-columns: 1fr; }
+      .e2e-tab { border-right: none; border-bottom: 1px solid var(--hairline); }
+      .e2e-step, .e2e-step.step-reset { grid-template-columns: 1fr; }
+      .compare-split, .happy-summary { grid-template-columns: 1fr; }
+      .topbar-inner, .page { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>Happy Path <em>vs.</em> Other Paths</h1>
+      </div>
+      <nav class="site-nav" aria-label="Companion pages">
+        <a class="nav-link" href="index.html">Workflow Atlas</a>
+        <a class="nav-link active" href="paths.html">Happy vs. Other Paths</a>
+        <a class="nav-link" href="pomodoro.html">Pomodoro Demo</a>
+      </nav>
+      <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- 1. INTERACTIVE PATH SIMULATOR -->
+    <section class="viz-panel" aria-label="Live Happy Path and Detour Simulator">
+      <div class="viz-head">
+        <div>
+          <h2 id="vizTitle">The Happy Path — Straight Through</h2>
+          <p id="vizSubtitle">Every step stays on the golden rail. Click any "Other Path" card below to see its branch, trap, recovery, and real Pomodoro example.</p>
+        </div>
+        <div class="mode-pills">
+          <button id="btnHappy" class="mode-pill active-happy" type="button">Happy Path</button>
+          <button id="btnOther" class="mode-pill" type="button">Other Paths (12)</button>
+        </div>
+      </div>
+
+      <div class="rail-stage">
+        <div class="spine-track" id="spineTrack"></div>
+
+        <div class="happy-summary" id="happySummary">
+          <div class="hs-col">
+            <h4>1 · Plan Unbroken (01 → 03)</h4>
+            <p>Keep <code>/grill-with-docs → /to-spec → /to-tickets</code> inside one window so every design trade-off carries forward cleanly.</p>
+          </div>
+          <div class="hs-col">
+            <h4>2 · Clear, Then Build Fresh (04)</h4>
+            <p>Reset context to 0k. Build one ticket at a time (<code>/implement</code>) or launch parallel git worktrees (<code>/implement-spec</code>).</p>
+          </div>
+          <div class="hs-col">
+            <h4>3 · Verify, Ship &amp; Compound (05 → 07)</h4>
+            <p>Run multi-axis <code>/code-review</code>, open an evidence-first <code>/pr</code>, and harden <code>AGENTS.md</code> via <code>/retro</code>.</p>
+          </div>
+        </div>
+
+        <div class="detour-ribbon" id="detourRibbon">
+          <div class="detour-top">
+            <span class="detour-kicker" id="dKicker">DETOUR</span>
+            <button id="resetHappy" class="btn" type="button" style="padding:4px 10px; font-size:0.74rem;">↩ Back to Happy Path</button>
+          </div>
+          <div class="detour-flow" id="dFlow"></div>
+          <div class="compare-split">
+            <div class="cmp-box trap">
+              <h4>✕ The Trap (Staying Stubbornly on the Happy Path)</h4>
+              <p id="dTrap"></p>
+            </div>
+            <div class="cmp-box optimal">
+              <h4>✓ The Optimal Recovery Move</h4>
+              <p id="dOptimal"></p>
+            </div>
+          </div>
+          <div class="example-strip">
+            <b>Real Pomodoro Example</b>
+            <span id="dExample"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. REAL-WORLD E2E PLAYTHROUGHS: HAPPY PATH VS. MESSY OTHER PATHS -->
+    <section aria-label="Real-World End-to-End Playthroughs">
+      <div class="section-head">
+        <h2>Real-World E2E Playthroughs (Same Pomodoro App)</h2>
+        <p>Compare a clean Happy Path feature against two messy real-world Other Paths — exact prompts, token counts, detours, and outcomes.</p>
+      </div>
+
+      <div class="e2e-shell">
+        <div class="e2e-tabs" id="e2eTabs"></div>
+        <div class="e2e-body" id="e2eBody"></div>
+      </div>
+    </section>
+
+    <!-- 3. INTERACTIVE "WHAT JUST HAPPENED?" 12-SCENARIO PICKER -->
+    <section aria-label="Non-Happy Path Scenarios">
+      <div class="section-head">
+        <h2>All 12 Other Paths — Pick What’s Happening</h2>
+        <p>Click any situation to light up its exact detour and real Pomodoro example in the simulator above.</p>
+      </div>
+
+      <div class="cat-filters" id="catFilters"></div>
+      <div class="scenario-grid" id="scenarioGrid"></div>
+    </section>
+
+    <!-- 4. AT-A-GLANCE COMPARISON MATRIX -->
+    <section aria-label="Happy Path vs Other Paths Comparison">
+      <div class="section-head">
+        <h2>Happy Path vs. Other Paths — At a Glance</h2>
+        <p>How entry points, context-window discipline, and convergence differ.</p>
+      </div>
+
+      <div class="matrix-card">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>The Happy Path</th>
+              <th>The Other Paths (Detours &amp; On-Ramps)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>When it applies</td>
+              <td>Clear feature scope inside an already-configured repo.</td>
+              <td>Foggy idea, external bug report, failing review, context &gt; 100k, or agent confusion.</td>
+            </tr>
+            <tr>
+              <td>Entry point</td>
+              <td><code>01 /grill-with-docs</code> (after one-time <code>/setup-matt-pocock-skills</code>).</td>
+              <td><code>/ask-matt</code> (unsure), <code>/triage</code> or <code>/diagnosing-bugs</code> (external/bugs), or branching out of Step <code>01</code>.</td>
+            </tr>
+            <tr>
+              <td>Context window rule</td>
+              <td>One unbroken window for <code>01 → 03</code>, then <strong>✂ Clear</strong> for every execution run.</td>
+              <td>Isolate detours in their own window; bridge learnings with <code>/handoff</code> + clear (never auto-compact past ~100–125k).</td>
+            </tr>
+            <tr>
+              <td>Convergence</td>
+              <td><code>/code-review</code> → <code>/pr</code> → <strong>SHIPPED</strong> → optional <code>/retro</code>.</td>
+              <td>Always converges back onto the Happy Path: Shaping returns to <code>02 /to-spec</code>; Upkeep &amp; Rework join <code>04 /implement</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SPINE_NODES = [
+      { id: '01', cmd: '/grill-with-docs', sub: 'Interview → GLOSSARY & ADRs' },
+      { id: '02', cmd: '/to-spec',         sub: 'Written engineering spec' },
+      { id: '03', cmd: '/to-tickets',      sub: 'Blocker-ordered slices' },
+      { id: 'CLEAR', isClear: true },
+      { id: '04', cmd: '/implement · -spec', sub: 'Single TDD or parallel DAG' },
+      { id: '05', cmd: '/code-review',     sub: 'Multi-axis audit' },
+      { id: '06', cmd: '/pr',              sub: 'Proof, blast radius, rollback' },
+      { id: '07', cmd: '/retro',           sub: 'Upgrade AGENTS.md (opt.)' }
+    ];
+
+    const E2E_CASES = [
+      {
+        id: 'e2e-happy',
+        kicker: 'Happy Path E2E',
+        color: 'var(--spine)',
+        title: 'Add Keyboard Shortcuts',
+        sub: 'Clear feature · straight 01 → 07 with zero detours',
+        summary: 'Goal: Add Space (Start/Pause), R (Reset), and M (Mute) to the Pomodoro app, ignoring keystrokes when typing in future inputs.',
+        stats: '<strong>2</strong> sessions · Peak <strong>38k</strong> tokens · <strong>0</strong> detours · <strong>1</strong> clean pass',
+        steps: [
+          {
+            cmd: '/grill-with-docs', badge: '01 · Plan', tok: '18k · Window #1', type: 'happy',
+            prompt: '"/grill-with-docs Add Space (start/pause), R (reset), and M (mute) shortcuts to the Pomodoro timer."',
+            result: 'Resolves 3 crisp edge cases in 60 seconds: ignore events when focus is inside inputs/buttons, prevent Space from scrolling the page, and show a subtle shortcut legend below the ring.',
+            code: 'GLOSSARY.md += "Shortcut Guard: ignore keydown when target is editable or focused button."'
+          },
+          {
+            cmd: '/to-spec → /to-tickets', badge: '02–03 · Same Window', tok: '38k · Window #1', type: 'happy',
+            prompt: '"/to-spec" then "/to-tickets"',
+            result: 'Writes docs/specs/keyboard-shortcuts.md and slices 2 small tracer-bullet tickets (T1: pure shortcut handler + unit tests; T2: wire into TimerRing + subtle legend).',
+            code: 'T1 (unblocked) → T2 (blockedBy: T1)'
+          },
+          {
+            cmd: '✂ /clear', badge: 'Context Reset', tok: '0k · Fresh Window #2', type: 'reset',
+            prompt: 'Clear the 38k planning chat now that the spec and tickets are written to disk.',
+            result: 'Implementation starts razor-sharp at 0k with zero leftover brainstorming chatter.'
+          },
+          {
+            cmd: '/implement T1 & T2', badge: '04 · Build (/tdd)', tok: '16k · Fresh Window', type: 'happy',
+            prompt: '"/implement T1" (clear) → "/implement T2"',
+            result: 'Writes failing behavioral tests first (Space toggles running, Space inside <input> is ignored, R resets to 25:00), implements minimal handler, passes 11/11 tests.',
+            code: '✓ src/ui/shortcuts.test.ts (11 passed, 8ms)'
+          },
+          {
+            cmd: '/code-review → /pr', badge: '05–06 · Verify & Ship', tok: '21k · Fresh Window', type: 'happy',
+            prompt: '"/code-review" (clean on first try!) → "/pr"',
+            result: 'Multi-axis review passes with 0 blocking issues. /pr outputs a 12-line evidence-first PR (test proof, zero blast radius outside src/ui/, single-commit rollback). Shipped!'
+          }
+        ]
+      },
+      {
+        id: 'e2e-bug',
+        kicker: 'Other Path E2E #1 · Upkeep + Rework',
+        color: 'var(--upkeep)',
+        title: 'iOS Safari Lock-Screen Freeze Bug',
+        sub: 'Skips 01–03 via /triage + /diagnosing-bugs · hits 05→04 Rework Loop',
+        summary: 'Goal: A real user files Issue #42 — "Timer stops updating when I unlock my iPhone after 10 minutes, then plays the chime 2 hours late."',
+        stats: '<strong>3</strong> fresh windows · Bypasses <strong>01–03</strong> · <strong>1</strong> rework loop · Guardrail added',
+        steps: [
+          {
+            cmd: '/triage #42', badge: 'Upkeep On-Ramp', tok: '12k · Triage Window', type: 'upkeep',
+            prompt: '"/triage Issue #42 — user says timer freezes on iOS Safari lock screen."',
+            result: 'Skips 01–03 completely! Structures the vague report into a crisp reproduction brief, checks GLOSSARY.md terms, and asks confirmation before labeling ready-for-agent.',
+            code: 'Label: needs-triage → ready-for-agent (Issue #42)'
+          },
+          {
+            cmd: '/diagnosing-bugs #42', badge: '6-Phase Debug', tok: '24k · Fresh Window', type: 'upkeep',
+            prompt: '"/diagnosing-bugs #42 — isolate the Safari unlock freeze and late chime."',
+            result: 'Refuses to guess! First builds a single deterministic failing test simulating bfcache / pageshow after 7,200s sleep. Pinpoints root cause: listener only hooked visibilitychange, missing iOS Safari pageshow.',
+            code: 'RED: vitest run src/storage/persist.test.ts → 1 failed (expected resync on pageshow)'
+          },
+          {
+            cmd: '/implement (Fix + /tdd)', badge: '04 · Joins Spine', tok: '19k · Fresh Window', type: 'happy',
+            prompt: 'Adds pageshow handler + unit test; tests go green.',
+            result: 'Joins the Happy Path at Step 04. All 26 unit tests pass.'
+          },
+          {
+            cmd: '/code-review → ↺ Rework', badge: '05 → 04 Rework Loop', tok: '22k · Review Subagents', type: 'detour',
+            prompt: '"/code-review" runs parallel spec & edge-case review subagents.',
+            result: 'NON-HAPPY CATCH! Review flags a subtle memory leak: pageshow listener was registered without cleanup on component unmount, causing duplicate chimes after navigating.',
+            code: 'Review clean? NO → Loop back to 04 /implement → add unmount cleanup test → fix → re-review CLEAN ✓'
+          },
+          {
+            cmd: '/pr → /retro', badge: '06–07 · Ship & Harden', tok: '27k · Ship Window', type: 'happy',
+            prompt: '"/pr" opens an evidence-first bugfix PR. Then "/retro" audits the session.',
+            result: '/retro adds a permanent guardrail to AGENTS.md so future browser event listeners always ship with an unmount leak test.',
+            code: 'AGENTS.md += "All window/document event listeners MUST include an unmount cleanup test."'
+          }
+        ]
+      },
+      {
+        id: 'e2e-foggy',
+        kicker: 'Other Path E2E #2 · Shaping + 112k Rescue',
+        color: 'var(--other)',
+        title: 'Foggy "Team Study Rooms" Feature',
+        sub: '/wait-what brake → /wayfinder + /research + /prototype → /handoff at 112k → /implement-spec',
+        summary: 'Goal: Product asks for "shared Pomodoro study rooms so friends can focus together" — huge scope, zero technical decisions settled yet.',
+        stats: '<strong>4</strong> detours · Saved from <strong>112k</strong> bloat · Rejoined at <strong>02</strong> · Shipped via <strong>/implement-spec</strong>',
+        steps: [
+          {
+            cmd: '/grill-with-docs → /wait-what', badge: '01 + Clarity Brake', tok: '34k · Window #1', type: 'detour',
+            prompt: 'During /grill-with-docs, the agent pitches an "event-sourced CRDT presence mesh with Raft leader election." You type: "/wait-what"',
+            result: 'The 3-line brake halts the jargon immediately and re-pitches in plain English: "One host starts a Focus Interval; guests just read endsAt over SSE."',
+            code: 'GLOSSARY.md += "Study Room: shared endsAt clock owned by 1 Host, observed by N Guests."'
+          },
+          {
+            cmd: '/wayfinder + /research', badge: 'Shaping Detour', tok: '78k · Window #1', type: 'detour',
+            prompt: 'Too many unknowns left! Run "/wayfinder" to map 3 decision tickets, then "/research" to compare SSE vs. WebSockets on Cloudflare Workers.',
+            result: 'Produces a cited primary-source brief (docs/research/room-transport.md) proving plain SSE + REST handles 100-guest rooms with 80% less code than WebSockets.',
+            code: 'Decision Tickets settled: D1 Transport (SSE), D2 Auth (6-char room code), D3 TTL (2h idle)'
+          },
+          {
+            cmd: '/prototype (Throwaway UI)', badge: 'Shaping Detour', tok: '112k · Danger Zone!', type: 'detour',
+            prompt: 'Unsure how 6 guest avatars look around the Pomodoro ring → run "/prototype" for a clickable 1-file HTML mockup.',
+            result: 'You click around, realize avatars around the ring feel cluttered, and pick a clean pill strip underneath instead. Notice context just hit 112k tokens!'
+          },
+          {
+            cmd: '/handoff + ✂ /clear', badge: 'Context Rescue (112k → 0k)', tok: '0k · Fresh Window #2', type: 'reset',
+            prompt: 'Context passed 100k — DO NOT auto-compact! Run "/handoff" to distill all settled decisions from Wayfinder, Research, and Prototype, then clear.',
+            result: 'Bridges cleanly into a brand-new 0k window carrying only the final decisions—dropping 112k of exploration and throwaway HTML.'
+          },
+          {
+            cmd: '/to-spec → /to-tickets → ✂', badge: 'Rejoins 02 → 03', tok: '36k · Window #2', type: 'happy',
+            prompt: 'Paste handoff summary → "/to-spec" → "/to-tickets" → clear context.',
+            result: 'Rejoins the Happy Path cleanly at Step 02! Produces 5 blocker-ordered tickets (R1 room schema → R2 SSE endpoint & R3 guest pill UI in parallel → R4 host transfer → R5 E2E sync test).'
+          },
+          {
+            cmd: '/implement-spec → /code-review → /pr', badge: '04B Parallel → Shipped', tok: '21k / subagent', type: 'happy',
+            prompt: '"/implement-spec docs/specs/study-rooms.md" → "/code-review" → "/pr"',
+            result: 'Dispatches fresh-context worktree subagents in parallel for R2 + R3, merges cleanly, passes multi-axis review, and lands an evidence-first PR!'
+          }
+        ]
+      }
+    ];
+
+    const OTHER_PATHS = [
+      {
+        id: 'foggy-big',
+        cat: 'Shaping',
+        tone: 'other',
+        q: 'The idea is too big or foggy to grill in one go',
+        skills: ['/wayfinder', '/research', '/prototype', '/handoff'],
+        branchOut: '01', rejoinAt: '02', bypass: [],
+        rejoinLabel: '↩ Returns to 02 /to-spec',
+        kicker: 'Shaping Detour · Branches after 01',
+        trap: 'Forcing a sprawling, vague project straight into /to-spec produces a bloated spec full of hidden assumptions that explode mid-build.',
+        optimal: 'Run /wayfinder for decision tickets, /research for cited primary-source facts, or /prototype for a clickable throwaway HTML test (bridge via /handoff). Bring settled choices straight to 02 /to-spec.',
+        example: 'Building "Team Study Rooms" for our Pomodoro app: /wayfinder splits into 3 decision tickets, /research proves SSE beats WebSockets for read-only guests, /prototype tests avatar placement, and /handoff carries only the winning layout into /to-spec.'
+      },
+      {
+        id: 'no-repo',
+        cat: 'Shaping',
+        tone: 'other',
+        q: 'No repository exists yet (greenfield idea)',
+        skills: ['/grill-me', '/setup-matt-pocock-skills'],
+        branchOut: '01', rejoinAt: '02', bypass: [], swapStep: '01',
+        rejoinLabel: '⇄ Swaps in for 01',
+        kicker: 'Stateless Swap-In · Replaces Step 01',
+        trap: 'Running /grill-with-docs without a configured repo tries to read/write docs/agents/ and GLOSSARY.md that don’t exist yet.',
+        optimal: 'Start with /grill-me (same relentless interview, writes zero files). Once the idea is worth building, initialize the repo, run /setup-matt-pocock-skills once, and proceed to 02 /to-spec.',
+        example: 'Before creating the Pomodoro git repo, you run /grill-me over coffee to decide local-first vs. mobile PWA vs. Electron—zero throwaway folders created until the architecture is locked.'
+      },
+      {
+        id: 'sme-blocked',
+        cat: 'Shaping',
+        tone: 'other',
+        q: 'Blocked on a question only a colleague or SME knows',
+        skills: ['/to-questionnaire'],
+        branchOut: '01', rejoinAt: '02', bypass: [],
+        rejoinLabel: '↩ Resumes at 02 /to-spec',
+        kicker: 'Async Detour · Pauses Planning',
+        trap: 'Guessing business rules, privacy constraints, or design preferences mid-grilling bakes wrong assumptions into your spec.',
+        optimal: 'Run /to-questionnaire to generate a crisp async Markdown form (to-questionnaire-<slug>.md). Send it to your teammate, then feed their answers straight into /to-spec.',
+        example: 'Adding team analytics to the Pomodoro app raises privacy questions ("Should managers see individual pause counts?"). /to-questionnaire generates a 5-question async doc for Legal/Product so you don’t guess.'
+      },
+      {
+        id: 'incoming-triage',
+        cat: 'Upkeep & Bugs',
+        tone: 'upkeep',
+        q: 'Work came from outside (bug reports or user requests)',
+        skills: ['/triage', '/implement', '/pr'],
+        branchOut: null, rejoinAt: '04', bypass: ['01', '02', '03'],
+        rejoinLabel: '↳ Skips 01–03 · Joins 04',
+        kicker: 'External On-Ramp · Bypasses Planning',
+        trap: 'Handing a raw, ambiguous GitHub issue directly to /implement causes the agent to guess reproduction steps and scope.',
+        optimal: 'Run /triage to walk incoming issues through the label state machine (needs-triage → needs-info / ready-for-agent). Once crisp and confirmed, jump straight into 04 /implement.',
+        example: 'Issue #42 arrives ("timer breaks on my iPhone"). /triage structures OS/browser details, confirms expected behavior against GLOSSARY.md, applies ready-for-agent, and hands off cleanly.'
+      },
+      {
+        id: 'nasty-bug',
+        cat: 'Upkeep & Bugs',
+        tone: 'upkeep',
+        q: 'Hit a nasty, stubborn bug or performance regression',
+        skills: ['/diagnosing-bugs', '/tdd', '/pr'],
+        branchOut: null, rejoinAt: '05', bypass: ['01', '02', '03'],
+        rejoinLabel: '↳ Fixes & joins 05 /code-review',
+        kicker: '6-Phase Debugging Track · Bypasses 01–03',
+        trap: 'Letting an agent theorize and shotgun-edit code without a deterministic failing repro burns context and introduces regressions.',
+        optimal: 'Run /diagnosing-bugs in a fresh window: forces a single red-repro command first, minimizes, instruments, fixes, and locks in a regression test (/tdd), then ships via 05 /code-review → 06 /pr.',
+        example: 'Pomodoro timer freezes on iOS Safari unlock: /diagnosing-bugs refuses to edit src/ until vitest reproduces a 2-hour pageshow wake-up failure deterministically, then fixes and locks in the test.'
+      },
+      {
+        id: 'review-dirty',
+        cat: 'Recovery',
+        tone: 'reset',
+        q: '/code-review caught blocking issues or spec drift',
+        skills: ['/implement', '/tdd', '/code-review'],
+        branchOut: '05', rejoinAt: '04', bypass: ['01', '02', '03'],
+        rejoinLabel: '↺ Loops 05 → 04 → 05',
+        kicker: 'Rework Loop · Review Gate = No',
+        trap: 'Hand-patching review findings hastily without adding a regression test often leaves subtle edge cases broken.',
+        optimal: 'Loop back from 05 to 04 /implement: write a failing test for the caught edge case (/tdd), fix cleanly, and re-run 05 /code-review until all axes pass before opening 06 /pr.',
+        example: '/code-review catches that our Safari pageshow listener wasn’t cleaned up on unmount, risking double chimes. Loops back to /implement, adds unmount leak test, fixes, and re-passes review.'
+      },
+      {
+        id: 'context-full',
+        cat: 'Recovery',
+        tone: 'reset',
+        q: 'Context window passed ~100–125k tokens (or switching agents)',
+        skills: ['/handoff', '/retro'],
+        branchOut: '03', rejoinAt: '04', bypass: [],
+        rejoinLabel: '✂ Compress & Clear',
+        kicker: 'Context Rescue · Never Auto-Compact',
+        trap: 'Relying on auto-compaction past 125k tokens blurs architectural constraints and makes the agent forget earlier decisions.',
+        optimal: 'Run /handoff to distill settled choices, dead ends, and exact next steps into a crisp handoff doc (optionally run /retro first), then clear and resume in a fresh 0k window.',
+        example: 'After /wayfinder + /research + /prototype on Team Study Rooms, context hits 112k. /handoff outputs a tight 40-line brief so a fresh 0k session writes /to-spec with zero drift.'
+      },
+      {
+        id: 'agent-confusing',
+        cat: 'Recovery',
+        tone: 'reset',
+        q: 'Agent reply got dense, over-engineered, or confusing',
+        skills: ['/wait-what'],
+        branchOut: '01', rejoinAt: '01', bypass: [],
+        rejoinLabel: '⚡ Inline Clarity Brake',
+        kicker: 'Inline Reset · Use at Any Step',
+        trap: 'Nodding along to a jargon-heavy agent proposal leads to over-engineered abstractions you don’t actually want to maintain.',
+        optimal: 'Type /wait-what immediately. The 3-line brake forces the agent to stop and re-explain its proposal in plain English using your GLOSSARY.md vocabulary.',
+        example: 'Agent proposes a "CRDT event-sourced presence mesh" for Pomodoro rooms. One /wait-what turns it into: "Host owns endsAt; guests listen over plain SSE."'
+      },
+      {
+        id: 'arch-debt',
+        cat: 'Upkeep & Bugs',
+        tone: 'upkeep',
+        q: 'Codebase feels brittle, coupled, or hard to change',
+        skills: ['/improve-codebase-architecture', '/codebase-design', '/implement'],
+        branchOut: null, rejoinAt: '04', bypass: ['01', '02', '03'],
+        rejoinLabel: '↳ Generates tickets → 04',
+        kicker: 'Architecture Hygiene · Upkeep Track',
+        trap: 'Stacking new features onto shallow, tangled modules slows every future agent run and increases review failures.',
+        optimal: 'Run /improve-codebase-architecture to audit seams against /codebase-design & GLOSSARY.md, generate concrete refactor tickets, and execute them cleanly through 04 /implement.',
+        example: 'TimerRing.tsx grew to 600 lines mixing audio, storage, and SVG math. /improve-codebase-architecture flags the shallow seams and cuts 2 refactor tickets to restore deep modules.'
+      },
+      {
+        id: 'human-setup',
+        cat: 'Upkeep & Bugs',
+        tone: 'upkeep',
+        q: 'Manual steps an agent cannot do (dashboards, OAuth keys, secrets)',
+        skills: ['/wizard'],
+        branchOut: null, rejoinAt: '04', bypass: ['01', '02', '03'],
+        rejoinLabel: '⚡ Generates CLI script',
+        kicker: 'Human-in-the-Loop Utility',
+        trap: 'Writing fragile prose docs for manual console/secret setup leads to typos, missing env vars, and painful onboarding.',
+        optimal: 'Run /wizard to generate an interactive bash/CLI walkthrough script that prompts the human step-by-step and writes captured values cleanly to .env or secret managers.',
+        example: 'Deploying Team Study Rooms needs a Cloudflare API token and KV namespace ID. /wizard creates scripts/setup-cf.sh that guides you through the dashboard and writes .dev.vars safely.'
+      },
+      {
+        id: 'totally-lost',
+        cat: 'Recovery',
+        tone: 'reset',
+        q: 'Not sure which skill (or sequence) fits your situation',
+        skills: ['/ask-matt'],
+        branchOut: null, rejoinAt: '01', bypass: [],
+        rejoinLabel: '→ Dispatches anywhere',
+        kicker: 'Meta-Router · Reads Live SKILL.md',
+        trap: 'Guessing a random skill or dumping a raw prompt without structure loses the guardrails that make the suite work.',
+        optimal: 'Run /ask-matt and describe your situation in plain English. It reads live SKILL.md files and returns the exact skill or sequence to invoke next.',
+        example: '"/ask-matt I have 4 user bug reports and a half-baked idea for study rooms" → routes you to /triage first (isolated), then /wayfinder for the rooms idea.'
+      },
+      {
+        id: 'learn-topic',
+        cat: 'Anytime',
+        tone: 'other',
+        q: 'Want to deeply learn a subsystem instead of delegating it',
+        skills: ['/teach', '/writing-for-agents'],
+        branchOut: null, rejoinAt: '01', bypass: ['01', '02', '03', '04', '05', '06', '07'],
+        rejoinLabel: '⚡ Side Quest · Multi-Session',
+        kicker: 'Learning & Meta Track',
+        trap: 'Delegating an unfamiliar area blindly leaves you unable to review the resulting /pr or catch subtle domain bugs.',
+        optimal: 'Run /teach for a stateful, multi-session interactive tutorial with exercises. And whenever authoring custom skills or tightening AGENTS.md after /retro, pair with /writing-for-agents.',
+        example: 'Before building the Pomodoro chime, run "/teach Web Audio API oscillator envelopes & browser autoplay unlock rules" to build genuine intuition in 15 minutes.'
+      }
+    ];
+
+    const state = {
+      activePathId: null,
+      category: 'All',
+      activeE2E: 'e2e-happy'
+    };
+
+    const categories = ['All', 'Shaping', 'Upkeep & Bugs', 'Recovery', 'Anytime'];
+
+    function renderSpine() {
+      const wrap = document.getElementById('spineTrack');
+      const active = OTHER_PATHS.find(p => p.id === state.activePathId);
+
+      wrap.innerHTML = SPINE_NODES.map((n, idx) => {
+        if (n.isClear) return `<div class="rail-clear"><span>✂ CLEAR</span></div>`;
+
+        let cls = 'node';
+        let tag = '';
+        if (!active) {
+          cls += ' active-happy';
+        } else {
+          const isBypass = active.bypass.includes(n.id);
+          const isOut = active.branchOut === n.id;
+          const isIn = active.rejoinAt === n.id;
+          const isSwap = active.swapStep === n.id;
+          if (isBypass) cls += ' bypassed';
+          else if (isOut && isIn) { cls += ' anchor-out'; tag = '<span class="node-tag tag-out">inline</span>'; }
+          else if (isSwap) { cls += ' anchor-out'; tag = '<span class="node-tag tag-swap">swapped</span>'; }
+          else if (isOut) { cls += ' anchor-out'; tag = '<span class="node-tag tag-out">branch</span>'; }
+          else if (isIn)  { cls += ' anchor-in';  tag = '<span class="node-tag tag-in">rejoin</span>'; }
+          else cls += ' active-happy';
+        }
+
+        const sep = idx < SPINE_NODES.length - 1 && !SPINE_NODES[idx + 1].isClear
+          ? `<span class="rail-sep">→</span>` : '';
+
+        return `
+          <div class="${cls}">
+            <div class="node-num"><span>${n.id}</span>${tag}</div>
+            <div class="node-cmd">${n.cmd}</div>
+            <div class="node-sub">${n.sub}</div>
+          </div>
+          ${sep}
+        `;
+      }).join('');
+    }
+
+    function renderHeaderAndPanel() {
+      const active = OTHER_PATHS.find(p => p.id === state.activePathId);
+      document.getElementById('btnHappy').className = 'mode-pill' + (!active ? ' active-happy' : '');
+      document.getElementById('btnOther').className = 'mode-pill' + (active ? ' active-other' : '');
+
+      const hSum = document.getElementById('happySummary');
+      const ribbon = document.getElementById('detourRibbon');
+
+      if (!active) {
+        document.getElementById('vizTitle').textContent = 'The Happy Path — Straight Through';
+        document.getElementById('vizSubtitle').textContent = 'Every step stays on the golden rail. Click any "Other Path" card below to see its branch, trap, recovery, and real Pomodoro example.';
+        hSum.classList.remove('hidden');
+        ribbon.className = 'detour-ribbon';
+      } else {
+        document.getElementById('vizTitle').textContent = `Other Path: ${active.q}`;
+        document.getElementById('vizSubtitle').textContent = 'Dashed steps are bypassed; highlighted stations show your exact branch and re-entry points.';
+        hSum.classList.add('hidden');
+
+        ribbon.className = `detour-ribbon visible tone-${active.tone}`;
+        document.getElementById('dKicker').textContent = active.kicker;
+        document.getElementById('dFlow').innerHTML =
+          active.skills.map(cmd => `<button type="button" class="df-chip" data-copy="${cmd}" title="Click to copy">${cmd}</button>`).join('<span style="color:var(--ink-3)">→</span>') +
+          `<span class="df-rejoin">${active.rejoinLabel}</span>`;
+        document.getElementById('dTrap').textContent = active.trap;
+        document.getElementById('dOptimal').textContent = active.optimal;
+        document.getElementById('dExample').textContent = active.example;
+
+        document.querySelectorAll('[data-copy]').forEach(b => {
+          b.onclick = () => {
+            const cmd = b.dataset.copy;
+            navigator.clipboard?.writeText(cmd).catch(() => {});
+            b.textContent = `${cmd} ✓`;
+            setTimeout(() => (b.textContent = cmd), 1200);
+          };
+        });
+      }
+    }
+
+    function renderE2E() {
+      const tabsEl = document.getElementById('e2eTabs');
+      tabsEl.innerHTML = E2E_CASES.map(c => `
+        <button type="button" class="e2e-tab ${state.activeE2E === c.id ? 'active' : ''}" style="--tab-color:${c.color}" data-e2e="${c.id}">
+          <span class="e2e-tab-kicker">${c.kicker}</span>
+          <span class="e2e-tab-title">${c.title}</span>
+          <span class="e2e-tab-sub">${c.sub}</span>
+        </button>
+      `).join('');
+
+      tabsEl.querySelectorAll('[data-e2e]').forEach(b => {
+        b.onclick = () => { state.activeE2E = b.dataset.e2e; renderE2E(); };
+      });
+
+      const cur = E2E_CASES.find(c => c.id === state.activeE2E);
+      document.getElementById('e2eBody').innerHTML = `
+        <div class="e2e-meta-bar">
+          <div>${cur.summary}</div>
+          <div class="e2e-stats">${cur.stats}</div>
+        </div>
+        <div class="e2e-timeline">
+          ${cur.steps.map(st => {
+            const stepCls = st.type === 'detour' ? 'step-detour' : st.type === 'upkeep' ? 'step-upkeep' : st.type === 'reset' ? 'step-reset' : '';
+            if (st.type === 'reset') {
+              return `
+                <div class="e2e-step step-reset">
+                  <div class="es-left">
+                    <span class="es-cmd">${st.cmd}</span>
+                    <span class="es-badge">${st.badge}</span>
+                    <span class="es-tok">${st.tok}</span>
+                  </div>
+                  <div class="es-result">
+                    <div class="es-col-label">Context Hygiene Action</div>
+                    <strong>${st.prompt}</strong> — ${st.result}
+                  </div>
+                </div>
+              `;
+            }
+            return `
+              <div class="e2e-step ${stepCls}">
+                <div class="es-left">
+                  <span class="es-cmd">${st.cmd}</span>
+                  <span class="es-badge">${st.badge}</span>
+                  <span class="es-tok">${st.tok}</span>
+                </div>
+                <div class="es-prompt">
+                  <div class="es-col-label">What You Trigger</div>
+                  ${st.prompt}
+                </div>
+                <div class="es-result">
+                  <div class="es-col-label">What Happens &amp; Artifact</div>
+                  ${st.result}
+                  ${st.code ? `<div class="es-code">${st.code}</div>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderFiltersAndCards() {
+      const cf = document.getElementById('catFilters');
+      cf.innerHTML = categories.map(c => `
+        <button type="button" class="cat-btn ${state.category === c ? 'active' : ''}" data-cat="${c}">${c}</button>
+      `).join('');
+      cf.querySelectorAll('[data-cat]').forEach(b => {
+        b.onclick = () => { state.category = b.dataset.cat; renderFiltersAndCards(); };
+      });
+
+      const list = state.category === 'All' ? OTHER_PATHS : OTHER_PATHS.filter(p => p.cat === state.category);
+      const grid = document.getElementById('scenarioGrid');
+      grid.innerHTML = list.map(p => `
+        <button type="button" class="sc-card tone-${p.tone} ${state.activePathId === p.id ? 'active' : ''}" data-pid="${p.id}">
+          <div>
+            <div class="sc-top">
+              <span class="sc-cat">${p.cat}</span>
+              <span class="sc-rejoin">${p.rejoinLabel}</span>
+            </div>
+            <div class="sc-q" style="margin-top:6px;">${p.q}</div>
+          </div>
+          <div class="sc-skills">${p.skills.map(s => `<code>${s}</code>`).join('')}</div>
+        </button>
+      `).join('');
+
+      grid.querySelectorAll('[data-pid]').forEach(b => {
+        b.onclick = () => {
+          state.activePathId = state.activePathId === b.dataset.pid ? null : b.dataset.pid;
+          renderAll();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+      });
+    }
+
+    function renderAll() {
+      renderSpine();
+      renderHeaderAndPanel();
+      renderE2E();
+      renderFiltersAndCards();
+    }
+
+    document.getElementById('btnHappy').onclick = () => { state.activePathId = null; renderAll(); };
+    document.getElementById('btnOther').onclick = () => {
+      if (!state.activePathId) state.activePathId = OTHER_PATHS[0].id;
+      renderAll();
+    };
+    document.getElementById('resetHappy').onclick = () => { state.activePathId = null; renderAll(); };
+
+    // Synced Paper / Obsidian Theme
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeText').textContent = t === 'obsidian' ? 'Paper' : 'Obsidian';
+      try { localStorage.setItem('pocock-atlas-theme', t); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem('pocock-atlas-theme'); } catch (e) { return null; } })();
+    setTheme(savedTheme || 'paper');
+    document.getElementById('themeBtn').onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      setTheme(cur === 'obsidian' ? 'paper' : 'obsidian');
+    };
+
+    renderAll();
+  </script>
+</body>
+</html>
