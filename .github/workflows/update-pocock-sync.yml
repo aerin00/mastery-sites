@@ -1,0 +1,48 @@
+name: Check mattpocock/skills upstream sync
+
+# Weekly check comparing github.com/mattpocock/skills against the mapped skills
+# in claude/pocock-skills-workflow/index.html, writing sync-status.json.
+
+on:
+  schedule:
+    - cron: "0 15 * * 1" # Mondays 08:00 America/Vancouver
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-pocock-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Refresh sync-status.json from mattpocock/skills
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python update_pocock_sync.py
+
+      - name: Tests
+        run: |
+          python -m unittest discover -s tests -v
+          node tests/test_index.cjs index.html
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add claude/pocock-skills-workflow/sync-status.json
+            git commit -m "chore: refresh claude/pocock-skills-workflow sync-status ($(date -u +%F))"
+            git push
+          fi

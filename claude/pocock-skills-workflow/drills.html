@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ask-Matt Drills — Matt Pocock’s Skills (v1.3.2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F6F4EE;
+      --surface: #FFFFFF;
+      --surface-recessed: #EFECE4;
+      --ink: #181715;
+      --ink-2: #55514A;
+      --ink-3: #868076;
+      --hairline: #E4DFD4;
+      --hairline-strong: #CEC7B8;
+
+      --spine: #0D6E64;
+      --spine-tint: rgba(13, 110, 100, 0.075);
+      --spine-border: rgba(13, 110, 100, 0.30);
+
+      --reset: #C25E12;
+      --reset-tint: rgba(194, 94, 18, 0.085);
+
+      --ok: #157A42;
+      --ok-bg: #E2F6EB;
+      --ok-bd: rgba(21, 122, 66, 0.38);
+      --err: #B42318;
+      --err-bg: #FEE4E2;
+      --err-bd: rgba(180, 35, 24, 0.38);
+
+      --shadow-card: 0 1px 2px rgba(24, 23, 21, 0.04), 0 4px 12px rgba(24, 23, 21, 0.03);
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="obsidian"] {
+      --bg: #0F1114;
+      --surface: #171A1F;
+      --surface-recessed: #13161B;
+      --ink: #F0EDE6;
+      --ink-2: #A6A198;
+      --ink-3: #706C65;
+      --hairline: #252A32;
+      --hairline-strong: #373E49;
+
+      --spine: #2DD4BF;
+      --spine-tint: rgba(45, 212, 191, 0.08);
+      --spine-border: rgba(45, 212, 191, 0.30);
+
+      --reset: #F59E0B;
+      --reset-tint: rgba(245, 158, 11, 0.11);
+
+      --ok: #4ADE80;
+      --ok-bg: rgba(74, 222, 128, 0.14);
+      --ok-bd: rgba(74, 222, 128, 0.42);
+      --err: #F87171;
+      --err-bg: rgba(248, 113, 113, 0.14);
+      --err-bd: rgba(248, 113, 113, 0.42);
+
+      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    code { font-family: var(--font-mono); font-size: 0.88em; }
+
+    /* Shared Top Bar */
+    .topbar {
+      position: sticky;
+      top: 33px;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .brand h1 em { font-style: italic; color: var(--spine); }
+
+    .site-nav {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 2px;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      font-size: 0.77rem;
+      font-weight: 500;
+      padding: 5px 11px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink-2);
+      transition: all 140ms ease;
+    }
+
+    .nav-link:hover { color: var(--ink); }
+    .nav-link.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .btn:hover { border-color: var(--hairline-strong); color: var(--ink); }
+
+    .btn.primary {
+      background: var(--spine);
+      border-color: var(--spine);
+      color: #FFFFFF;
+    }
+
+    [data-theme="obsidian"] .btn.primary { color: #0F1114; font-weight: 600; }
+
+    /* Page Container */
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 26px 24px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Telemetry Strip */
+    .hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .f-chip {
+      font-size: 0.76rem;
+      font-weight: 500;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--hairline);
+      background: var(--surface-recessed);
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    .f-chip.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .stats {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--ink-3);
+    }
+
+    .stats strong { color: var(--ink); }
+
+    /* Progress Bar */
+    .prog-track {
+      height: 5px;
+      border-radius: 999px;
+      background: var(--surface-recessed);
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--spine);
+      transition: width 260ms ease;
+    }
+
+    /* Drill Card */
+    .drill-card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .drill-head {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-recessed) 40%, var(--surface));
+    }
+
+    .drill-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      color: var(--ink-3);
+    }
+
+    .cat-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--spine-tint);
+      color: var(--spine);
+      border: 1px solid var(--spine-border);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .scenario-text {
+      font-family: var(--font-serif);
+      font-size: clamp(1.45rem, 2.5vw, 1.85rem);
+      font-weight: 400;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+
+    .scenario-context {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--ink-2);
+    }
+
+    .drill-body {
+      padding: 22px 28px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .opt-btn {
+      text-align: left;
+      font-family: inherit;
+      background: var(--surface);
+      border: 1.5px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 14px 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: all 140ms ease;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--spine);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .opt-btn:disabled { cursor: default; }
+
+    .opt-btn.correct {
+      background: var(--ok-bg);
+      border-color: var(--ok-bd);
+    }
+
+    .opt-btn.wrong {
+      background: var(--err-bg);
+      border-color: var(--err-bd);
+    }
+
+    .opt-btn.faded { opacity: 0.45; }
+
+    .opt-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .opt-key {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      width: 21px;
+      height: 21px;
+      border-radius: 5px;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline-strong);
+      color: var(--ink-3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .opt-cmd {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .opt-hint {
+      font-size: 0.78rem;
+      color: var(--ink-2);
+      padding-left: 29px;
+    }
+
+    /* Feedback Box */
+    .feedback {
+      display: none;
+      border-radius: var(--r-md);
+      padding: 16px 18px;
+      border: 1px solid var(--hairline);
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feedback.visible { display: flex; }
+    .feedback.is-ok  { background: var(--ok-bg);  border-color: var(--ok-bd); }
+    .feedback.is-err { background: var(--err-bg); border-color: var(--err-bd); }
+
+    .fb-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .feedback.is-ok  .fb-head { color: var(--ok); }
+    .feedback.is-err .fb-head { color: var(--err); }
+
+    .fb-body {
+      font-size: 0.86rem;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .fb-trap {
+      font-size: 0.8rem;
+      color: var(--ink-2);
+      padding-top: 8px;
+      border-top: 1px dashed var(--hairline-strong);
+    }
+
+    .drill-foot {
+      padding: 14px 28px;
+      border-top: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-recessed) 40%, var(--surface));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .kbd-hint {
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+      color: var(--ink-3);
+    }
+
+    /* Summary View */
+    .summary-box {
+      padding: 36px 28px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .summary-score {
+      font-family: var(--font-serif);
+      font-size: 3.4rem;
+      line-height: 1;
+      color: var(--spine);
+    }
+
+    .missed-list {
+      width: 100%;
+      max-width: 680px;
+      text-align: left;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .missed-item {
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 10px 14px;
+      font-size: 0.81rem;
+      color: var(--ink-2);
+    }
+
+    .missed-item strong { color: var(--ink); display: block; margin-bottom: 2px; }
+
+    @media (max-width: 720px) {
+      .options-grid { grid-template-columns: 1fr; }
+      .topbar-inner, .page { padding-left: 16px; padding-right: 16px; }
+      .drill-head, .drill-body, .drill-foot { padding-left: 18px; padding-right: 18px; }
+    }
+  </style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>What Would <em>/ask-matt</em> Say?</h1>
+      </div>
+      <nav class="site-nav" aria-label="Companion pages">
+        <a class="nav-link" href="index.html">Workflow Atlas</a>
+        <a class="nav-link" href="paths.html">Happy vs. Other</a>
+        <a class="nav-link" href="pomodoro.html">Pomodoro Demo</a>
+        <a class="nav-link" href="legacy.html">Legacy Rescue</a>
+        <a class="nav-link active" href="drills.html">Ask-Matt Drills</a>
+      </nav>
+      <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hud">
+      <div class="filters" id="catFilters"></div>
+      <div class="stats">
+        <span>Score: <strong id="stScore">0/0</strong></span>
+        <span>Streak: <strong id="stStreak">0</strong></span>
+        <button id="sprintBtn" class="btn" type="button" style="padding:4px 9px; font-size:0.72rem;">Shuffle 8-Card Sprint</button>
+      </div>
+    </section>
+
+    <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+    <article class="drill-card" id="drillCard"></article>
+  </main>
+
+  <script>
+    const DRILLS = [
+      {
+        id: 'd1', cat: 'Context & Recovery',
+        q: 'You are mid-planning at 114k tokens after exploring prototypes. The agent is starting to forget earlier constraints.',
+        ctx: 'Auto-compaction is about to trigger on the next turn.',
+        opts: [
+          { cmd: '/handoff → ✂ /clear', hint: 'Compress state into a handoff doc, then open a fresh 0k window', ok: true },
+          { cmd: 'Let auto-compact run', hint: 'Keep the same session going after the harness summarizes', ok: false },
+          { cmd: '/to-tickets immediately', hint: 'Rush tickets out before tokens run out', ok: false },
+          { cmd: '/retro', hint: 'Audit friction and continue in the same thread', ok: false }
+        ],
+        why: 'Past ~100–125k tokens, clear rather than compact. /handoff distills settled decisions and exact next steps so a brand-new 0k window continues without blurred constraints.',
+        trap: 'Auto-compaction silently drops subtle edge-case decisions and often resurrects rejected design ideas.'
+      },
+      {
+        id: 'd2', cat: 'Shaping & Planning',
+        q: 'Mid-way through /grill-with-docs, the agent pitches a 4-paragraph "event-sourced CRDT actor mesh" that makes no sense.',
+        ctx: 'You just wanted a simple shared timer state.',
+        opts: [
+          { cmd: '/wait-what', hint: '3-line brake: plain English anchored in your GLOSSARY.md', ok: true },
+          { cmd: '/research', hint: 'Investigate CRDT primary sources', ok: false },
+          { cmd: '/clear and start over', hint: 'Discard the whole grilling session', ok: false },
+          { cmd: '/code-review', hint: 'Review the architecture proposal', ok: false }
+        ],
+        why: '/wait-what is built for the exact second an agent gets dense, jargony, or over-engineered. It forces a crisp plain-English restatement using your GLOSSARY.md terms.',
+        trap: 'Nodding along to confusing architecture proposals locks over-engineering into your spec before you write a single line of code.'
+      },
+      {
+        id: 'd3', cat: 'Build & Ship',
+        q: 'You just finished /to-tickets on a clean 5-ticket feature where T2, T3, and T4 touch independent modules after T1.',
+        ctx: 'You are still in the 58k-token planning window.',
+        opts: [
+          { cmd: '✂ /clear → /implement-spec', hint: 'Fresh window; dispatches parallel worktree subagents across the DAG', ok: true },
+          { cmd: '/implement-spec in same window', hint: 'Keep the 58k planning context so the orchestrator remembers', ok: false },
+          { cmd: '/wayfinder', hint: 'Map out the ticket graph', ok: false },
+          { cmd: '/implement T1..T5 in one thread', hint: 'Build all 5 sequentially without clearing', ok: false }
+        ],
+        why: 'Always clear context after /to-tickets, then run /implement-spec (v1.3) to execute unblocked slices concurrently in isolated fresh-context git worktrees.',
+        trap: 'Keeping the planning chat or stacking multiple tickets in one window bloats context and degrades code quality.'
+      },
+      {
+        id: 'd4', cat: 'Bugs & Upkeep',
+        q: 'A customer reports an intermittent double-charge bug in your legacy billing webhook handler. You have no idea why.',
+        ctx: 'The agent is eager to start editing src/billing.ts right away.',
+        opts: [
+          { cmd: '/diagnosing-bugs', hint: 'Force a single deterministic red-repro command before any theorizing', ok: true },
+          { cmd: '/grill-with-docs', hint: 'Interview through a new billing design', ok: false },
+          { cmd: '/implement', hint: 'Jump straight into patching the webhook handler', ok: false },
+          { cmd: '/improve-codebase-architecture', hint: 'Audit billing module coupling first', ok: false }
+        ],
+        why: '/diagnosing-bugs enforces a 6-phase loop: build a single deterministic red-repro command first, minimize it, hypothesize, instrument, fix, and lock in a regression test.',
+        trap: 'Letting agents shotgun-edit code on a vague bug report wastes context and creates false-positive "fixes" with no regression guard.'
+      },
+      {
+        id: 'd5', cat: 'Shaping & Planning',
+        q: 'You have a brand-new product idea over coffee, but you have NOT created a git repository yet.',
+        ctx: 'You want the agent to poke holes in your idea before scaffolding anything.',
+        opts: [
+          { cmd: '/grill-me', hint: 'Stateless interview — writes nothing to disk', ok: true },
+          { cmd: '/grill-with-docs', hint: 'Stateful interview updating GLOSSARY.md & ADRs', ok: false },
+          { cmd: '/setup-matt-pocock-skills', hint: 'Configure docs/agents/ right now', ok: false },
+          { cmd: '/to-spec', hint: 'Write the engineering spec directly', ok: false }
+        ],
+        why: '/grill-me swaps in for Step 01 when no repo exists yet—same relentless /grilling interview engine, completely stateless.',
+        trap: '/grill-with-docs expects a configured repository with GLOSSARY.md and docs/adr/.'
+      },
+      {
+        id: 'd6', cat: 'Shaping & Planning',
+        q: 'During grilling, a big architectural decision hinges on whether Cloudflare Workers supports streaming SSE cleanly over 10 minutes.',
+        ctx: 'You don’t want the LLM guessing from stale training weights.',
+        opts: [
+          { cmd: '/research', hint: 'Delegated investigation citing primary docs/specs into a Markdown brief', ok: true },
+          { cmd: '/prototype', hint: 'Build throwaway HTML UI', ok: false },
+          { cmd: '/teach', hint: 'Start a multi-session tutorial', ok: false },
+          { cmd: '/wait-what', hint: 'Ask for plain English', ok: false }
+        ],
+        why: '/research reads authoritative primary sources (official docs, source code, RFCs) and writes a cited Markdown report into the repo without bloating your planning window.',
+        trap: 'Accepting LLM assumptions about third-party platform limits leads to painful rewrites mid-implementation.'
+      },
+      {
+        id: 'd7', cat: 'Shaping & Planning',
+        q: 'Your team asks for "AI-powered workspace analytics" — huge, vague scope with 8 unresolved product and technical questions.',
+        ctx: 'Too sprawling for one /grill-with-docs session.',
+        opts: [
+          { cmd: '/wayfinder', hint: 'Break foggy macro scope into a map of decision tickets', ok: true },
+          { cmd: '/to-tickets', hint: 'Cut implementation tickets immediately', ok: false },
+          { cmd: '/triage', hint: 'Apply issue-tracker labels', ok: false },
+          { cmd: '/implement-spec', hint: 'Dispatch parallel subagents', ok: false }
+        ],
+        why: '/wayfinder turns oversized, foggy initiatives into a navigable map of explicit decision tickets that settle unknowns before you return to /to-spec.',
+        trap: 'Trying to spec an unshaped mega-project in one shot produces vague tickets that stall during execution.'
+      },
+      {
+        id: 'd8', cat: 'Shaping & Planning',
+        q: 'During /grill-with-docs, you hit a compliance question ("Can managers see individual pause counts?") that only Legal/Product can answer.',
+        ctx: 'They are offline in another timezone.',
+        opts: [
+          { cmd: '/to-questionnaire', hint: 'Generate a clean async Markdown form for the SME', ok: true },
+          { cmd: '/research', hint: 'Search primary sources online', ok: false },
+          { cmd: '/handoff', hint: 'Write an agent handoff prompt', ok: false },
+          { cmd: '/wizard', hint: 'Generate a bash CLI prompt script', ok: false }
+        ],
+        why: '/to-questionnaire interviews you about who you are asking and what decisions you need back, then produces a structured Markdown questionnaire (to-questionnaire-<slug>.md).',
+        trap: 'Guessing stakeholder or policy decisions mid-grilling bakes wrong business rules into the spec.'
+      },
+      {
+        id: 'd9', cat: 'Bugs & Upkeep',
+        q: '12 raw GitHub issues came in from external users overnight — a mix of duplicates, missing repro steps, and valid feature ideas.',
+        ctx: 'You want clean, agent-ready work without letting the agent blindly close or code everything.',
+        opts: [
+          { cmd: '/triage', hint: 'Label state machine (needs-info / ready-for-agent) with human confirmation', ok: true },
+          { cmd: '/to-tickets', hint: 'Slice a spec into tickets', ok: false },
+          { cmd: '/diagnosing-bugs', hint: 'Debug all 12 right away', ok: false },
+          { cmd: '/implement-spec', hint: 'Run parallel subagents on the issues', ok: false }
+        ],
+        why: '/triage is the dedicated on-ramp for external issues—guiding them through your docs/agents/ triage taxonomy into crisp ready-for-agent briefs before joining /implement.',
+        trap: 'Feeding raw, ambiguous user reports straight into /implement guarantees guesswork and wasted tokens.'
+      },
+      {
+        id: 'd10', cat: 'Build & Ship',
+        q: 'Your feature branch passes all tests and /code-review is clean. Teammates are slow to review big AI-generated diffs.',
+        ctx: 'You want human reviewers to approve with confidence in 2 minutes.',
+        opts: [
+          { cmd: '/pr', hint: 'Bottom-up PR: concrete proof, blast radius, migration risk & rollback', ok: true },
+          { cmd: '/handoff', hint: 'Write a session handoff document', ok: false },
+          { cmd: '/to-spec', hint: 'Attach the full planning spec as the PR body', ok: false },
+          { cmd: '/writing-for-agents', hint: 'Optimize the PR body for LLMs', ok: false }
+        ],
+        why: '/pr (graduated in v1.3) structures PR bodies specifically for fast human review—leading with concrete verification proof, blast radius, and rollback options.',
+        trap: 'Walls of AI-generated changelog prose slow reviewers down and hide real migration risks.'
+      },
+      {
+        id: 'd11', cat: 'Build & Ship',
+        q: 'You just shipped a tricky feature, but noticed the agent kept running `npm test` (hanging in watch mode) and struggled to find DB migrations.',
+        ctx: 'The session is still open and you are about to clear the window.',
+        opts: [
+          { cmd: '/retro (then /writing-for-agents)', hint: 'Audit session friction before clearing and upgrade AGENTS.md / guardrails', ok: true },
+          { cmd: '✂ /clear immediately', hint: 'Close the window and move on to the next ticket', ok: false },
+          { cmd: '/code-review', hint: 'Re-review the shipped code', ok: false },
+          { cmd: '/setup-matt-pocock-skills', hint: 'Re-run repo setup from scratch', ok: false }
+        ],
+        why: 'Run /retro BEFORE clearing while friction is visible. It spots wasted tool calls and proposes lean AGENTS.md / lint-rule upgrades so every future session runs smoother.',
+        trap: 'Clearing without capturing repeated environment friction means paying the exact same token tax on every future feature.'
+      },
+      {
+        id: 'd12', cat: 'Bugs & Upkeep',
+        q: 'Every new developer (or deploy) has to click through Stripe’s dashboard, copy 3 webhook secrets, and populate `.env.local`.',
+        ctx: 'Agents cannot log into the Stripe dashboard for humans.',
+        opts: [
+          { cmd: '/wizard', hint: 'Generate an interactive CLI walkthrough script that saves secrets cleanly', ok: true },
+          { cmd: '/setup-matt-pocock-skills', hint: 'Configure agent docs', ok: false },
+          { cmd: '/prototype', hint: 'Build an HTML mockup of Stripe', ok: false },
+          { cmd: '/teach', hint: 'Build a Stripe tutorial', ok: false }
+        ],
+        why: '/wizard converts human-only setup procedures (dashboards, OAuth keys, CI secrets) into an interactive terminal script that prompts step-by-step and writes .env cleanly.',
+        trap: 'Static prose onboarding checklists go stale and invite copy-paste typos in environment variables.'
+      },
+      {
+        id: 'd13', cat: 'Build & Ship',
+        q: 'Your /code-review pass flags a real memory leak: an event listener isn’t cleaned up on unmount.',
+        ctx: 'All existing unit tests were green.',
+        opts: [
+          { cmd: 'Loop back to /implement (with /tdd)', hint: 'Write a failing leak test first, fix cleanly, then re-run /code-review', ok: true },
+          { cmd: 'Mention it in /pr as a follow-up', hint: 'Ship now and fix later', ok: false },
+          { cmd: 'Go back to /grill-with-docs', hint: 'Re-interview the entire feature', ok: false },
+          { cmd: 'Run /retro', hint: 'Document the leak in AGENTS.md without fixing', ok: false }
+        ],
+        why: 'When the "Review clean?" gate says No, loop back to /implement: lock in a failing behavioral test (/tdd), fix the leak, and re-verify with /code-review before /pr.',
+        trap: 'Hand-patching review feedback without a regression test lets subtle leaks creep right back in.'
+      },
+      {
+        id: 'd14', cat: 'Shaping & Planning',
+        q: 'You cannot tell from prose alone whether a circular timer ring with cycle dots underneath feels cramped on mobile.',
+        ctx: 'You don’t want to wire production React components just to test layout feel.',
+        opts: [
+          { cmd: '/prototype → /handoff → /to-spec', hint: 'Throwaway runnable HTML to feel it live, then bridge conclusions back', ok: true },
+          { cmd: '/implement T2 directly', hint: 'Build the real component and refactor if ugly', ok: false },
+          { cmd: '/research', hint: 'Read UX articles about timer rings', ok: false },
+          { cmd: '/wayfinder', hint: 'Create decision tickets about CSS', ok: false }
+        ],
+        why: '/prototype builds a fast disposable HTML mockup so you can click and judge feel in 2 minutes, then /handoff bridges only the winning decision back to /to-spec.',
+        trap: 'Debating visual ergonomics in prose wastes rounds; building it in production code first creates sunk-cost clutter.'
+      },
+      {
+        id: 'd15', cat: 'Bugs & Upkeep',
+        q: 'A 1,400-line `billing.ts` god-file makes every tiny change fragile and hard to unit test.',
+        ctx: 'No specific bug right now—just growing architectural drag.',
+        opts: [
+          { cmd: '/improve-codebase-architecture', hint: 'Audit shallow modules against /codebase-design & GLOSSARY.md → refactor tickets', ok: true },
+          { cmd: '/diagnosing-bugs', hint: 'Run the 6-phase bug loop', ok: false },
+          { cmd: '/implement-spec', hint: 'Ask subagents to rewrite billing.ts', ok: false },
+          { cmd: '/triage', hint: 'Label the file as tech debt', ok: false }
+        ],
+        why: '/improve-codebase-architecture evaluates coupling and shallow abstractions against deep-module principles and GLOSSARY.md, producing a clear report and scoped refactor tickets.',
+        trap: 'Telling an agent "refactor billing.ts" with no seam plan usually creates cosmetic shuffles or breaks callers.'
+      },
+      {
+        id: 'd16', cat: 'Context & Recovery',
+        q: 'You are staring at a brand-new legacy repo with 4 urgent tasks and genuinely have no idea which skill sequence to start with.',
+        ctx: 'Don’t guess.',
+        opts: [
+          { cmd: '/ask-matt', hint: 'Describe your situation — reads live SKILL.md files and prescribes the exact sequence', ok: true },
+          { cmd: '/grill-with-docs', hint: 'Start grilling immediately', ok: false },
+          { cmd: '/teach', hint: 'Start a tutorial on the repo', ok: false },
+          { cmd: '/implement', hint: 'Start coding the most urgent task', ok: false }
+        ],
+        why: '/ask-matt is the repo’s live meta-router (updated in v1.3 to read actual SKILL.md files) — it tells you the exact order of skills and human checkpoints before you spend tokens.',
+        trap: 'Jumping straight into an arbitrary skill skips setup or picks the wrong lane.'
+      }
+    ];
+
+    const CATS = ['All', 'Context & Recovery', 'Shaping & Planning', 'Build & Ship', 'Bugs & Upkeep'];
+
+    const state = {
+      cat: 'All',
+      deck: [...DRILLS],
+      idx: 0,
+      answered: null,
+      score: 0,
+      total: 0,
+      streak: 0,
+      missed: []
+    };
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function startDeck(items) {
+      state.deck = items.map(d => ({ ...d, opts: shuffle(d.opts) }));
+      state.idx = 0;
+      state.answered = null;
+      state.score = 0;
+      state.total = 0;
+      state.streak = 0;
+      state.missed = [];
+      render();
+    }
+
+    function pickOption(optIdx) {
+      if (state.answered !== null) return;
+      const cur = state.deck[state.idx];
+      const chosen = cur.opts[optIdx];
+      state.answered = optIdx;
+      state.total++;
+      if (chosen.ok) {
+        state.score++;
+        state.streak++;
+      } else {
+        state.streak = 0;
+        const right = cur.opts.find(o => o.ok);
+        state.missed.push({ q: cur.q, right: right.cmd, why: cur.why });
+      }
+      render();
+    }
+
+    function nextCard() {
+      if (state.idx < state.deck.length) {
+        state.idx++;
+        state.answered = null;
+        render();
+      }
+    }
+
+    function renderFilters() {
+      const wrap = document.getElementById('catFilters');
+      wrap.innerHTML = CATS.map(c => `
+        <button type="button" class="f-chip ${state.cat === c ? 'active' : ''}" data-cat="${c}">${c}</button>
+      `).join('');
+      wrap.querySelectorAll('[data-cat]').forEach(b => {
+        b.onclick = () => {
+          state.cat = b.dataset.cat;
+          const items = state.cat === 'All' ? DRILLS : DRILLS.filter(d => d.cat === state.cat);
+          startDeck(items);
+        };
+      });
+    }
+
+    function render() {
+      renderFilters();
+      document.getElementById('stScore').textContent = `${state.score}/${state.total}`;
+      document.getElementById('stStreak').textContent = `${state.streak}`;
+
+      const pct = state.deck.length ? Math.round((Math.min(state.idx, state.deck.length) / state.deck.length) * 100) : 0;
+      document.getElementById('progFill').style.width = `${pct}%`;
+
+      const card = document.getElementById('drillCard');
+      if (state.idx >= state.deck.length) {
+        const acc = state.total ? Math.round((state.score / state.total) * 100) : 0;
+        card.innerHTML = `
+          <div class="summary-box">
+            <span class="cat-pill">Drill Complete</span>
+            <div class="summary-score">${acc}%</div>
+            <p style="color:var(--ink-2); font-size:0.95rem;">You routed <strong>${state.score} of ${state.total}</strong> engineering scenarios accurately.</p>
+            ${state.missed.length ? `
+              <div class="missed-list">
+                <div style="font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase; color:var(--ink-3);">Review Missed Cards (${state.missed.length})</div>
+                ${state.missed.map(m => `
+                  <div class="missed-item">
+                    <strong>${m.right}</strong>
+                    <div>${m.q}</div>
+                    <div style="margin-top:4px; color:var(--ink-3);">${m.why}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : `<p style="color:var(--ok); font-weight:600;">Flawless run — you’ve internalized the v1.3 workflow.</p>`}
+            <div style="display:flex; gap:10px; margin-top:8px;">
+              <button class="btn primary" type="button" id="restartBtn">Run Again (Shuffled)</button>
+              <a class="btn" href="index.html" style="text-decoration:none;">Return to Atlas</a>
+            </div>
+          </div>
+        `;
+        document.getElementById('restartBtn').onclick = () => startDeck(shuffle(state.deck));
+        return;
+      }
+
+      const cur = state.deck[state.idx];
+      const answered = state.answered !== null;
+      const chosenOk = answered && cur.opts[state.answered].ok;
+
+      card.innerHTML = `
+        <div class="drill-head">
+          <div class="drill-meta">
+            <span class="cat-pill">${cur.cat}</span>
+            <span>Card ${state.idx + 1} of ${state.deck.length}</span>
+          </div>
+          <h2 class="scenario-text">${cur.q}</h2>
+          <p class="scenario-context">${cur.ctx}</p>
+        </div>
+
+        <div class="drill-body">
+          <div class="options-grid">
+            ${cur.opts.map((o, i) => {
+              let cls = 'opt-btn';
+              if (answered) {
+                if (o.ok) cls += ' correct';
+                else if (i === state.answered) cls += ' wrong';
+                else cls += ' faded';
+              }
+              return `
+                <button type="button" class="${cls}" data-opt="${i}" ${answered ? 'disabled' : ''}>
+                  <div class="opt-top">
+                    <span class="opt-key">${i + 1}</span>
+                    <span class="opt-cmd">${o.cmd}</span>
+                  </div>
+                  <div class="opt-hint">${o.hint}</div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="feedback ${answered ? 'visible' : ''} ${chosenOk ? 'is-ok' : 'is-err'}">
+            <div class="fb-head">
+              <span>${chosenOk ? '✓ Spot On' : '✕ Not Quite — Watch Out for the Trap'}</span>
+              <span>Optimal: ${cur.opts.find(o => o.ok).cmd}</span>
+            </div>
+            <div class="fb-body">${cur.why}</div>
+            <div class="fb-trap"><strong>The Trap:</strong> ${cur.trap}</div>
+          </div>
+        </div>
+
+        <div class="drill-foot">
+          <span class="kbd-hint">Keys: <code>1–4</code> pick · <code>Enter</code> or <code>→</code> next</span>
+          <button type="button" class="btn primary" id="nextBtn" ${!answered ? 'disabled' : ''}>
+            ${state.idx === state.deck.length - 1 ? 'See Results →' : 'Next Scenario →'}
+          </button>
+        </div>
+      `;
+
+      card.querySelectorAll('[data-opt]').forEach(b => {
+        b.onclick = () => pickOption(Number(b.dataset.opt));
+      });
+      document.getElementById('nextBtn').onclick = nextCard;
+    }
+
+    document.getElementById('sprintBtn').onclick = () => {
+      state.cat = 'All';
+      startDeck(shuffle(DRILLS).slice(0, 8));
+    };
+
+    document.addEventListener('keydown', e => {
+      if (state.idx >= state.deck.length) return;
+      if (['1', '2', '3', '4'].includes(e.key) && state.answered === null) {
+        pickOption(Number(e.key) - 1);
+      } else if ((e.key === 'Enter' || e.key === 'ArrowRight') && state.answered !== null) {
+        e.preventDefault();
+        nextCard();
+      }
+    });
+
+    // Synced Paper / Obsidian Theme
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeText').textContent = t === 'obsidian' ? 'Paper' : 'Obsidian';
+      try { localStorage.setItem('pocock-atlas-theme', t); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem('pocock-atlas-theme'); } catch (e) { return null; } })();
+    setTheme(savedTheme || 'paper');
+    document.getElementById('themeBtn').onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      setTheme(cur === 'obsidian' ? 'paper' : 'obsidian');
+    };
+
+    startDeck(DRILLS);
+  </script>
+</body>
+</html>

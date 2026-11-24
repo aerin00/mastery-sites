@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legacy Rescue Walkthrough — Matt Pocock’s Skills (v1.3.2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F6F4EE;
+      --surface: #FFFFFF;
+      --surface-recessed: #EFECE4;
+      --surface-code: #FAF8F3;
+      --ink: #181715;
+      --ink-2: #55514A;
+      --ink-3: #868076;
+      --hairline: #E4DFD4;
+      --hairline-strong: #CEC7B8;
+
+      --spine: #0D6E64;
+      --spine-tint: rgba(13, 110, 100, 0.075);
+      --spine-border: rgba(13, 110, 100, 0.30);
+
+      --upkeep: #C94038;
+      --upkeep-tint: rgba(201, 64, 56, 0.08);
+      --upkeep-border: rgba(201, 64, 56, 0.32);
+
+      --reset: #C25E12;
+      --reset-tint: rgba(194, 94, 18, 0.085);
+      --reset-border: rgba(194, 94, 18, 0.35);
+
+      --ok: #157A42;
+      --ok-bg: #E2F6EB;
+      --err: #B42318;
+      --err-bg: #FEE4E2;
+
+      --shadow-card: 0 1px 2px rgba(24, 23, 21, 0.04), 0 4px 12px rgba(24, 23, 21, 0.03);
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="obsidian"] {
+      --bg: #0F1114;
+      --surface: #171A1F;
+      --surface-recessed: #13161B;
+      --surface-code: #12151A;
+      --ink: #F0EDE6;
+      --ink-2: #A6A198;
+      --ink-3: #706C65;
+      --hairline: #252A32;
+      --hairline-strong: #373E49;
+
+      --spine: #2DD4BF;
+      --spine-tint: rgba(45, 212, 191, 0.08);
+      --spine-border: rgba(45, 212, 191, 0.30);
+
+      --upkeep: #FB7185;
+      --upkeep-tint: rgba(251, 113, 133, 0.11);
+      --upkeep-border: rgba(251, 113, 133, 0.35);
+
+      --reset: #F59E0B;
+      --reset-tint: rgba(245, 158, 11, 0.11);
+      --reset-border: rgba(245, 158, 11, 0.35);
+
+      --ok: #4ADE80;
+      --ok-bg: rgba(74, 222, 128, 0.14);
+      --err: #F87171;
+      --err-bg: rgba(248, 113, 113, 0.14);
+
+      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    code, pre { font-family: var(--font-mono); }
+
+    /* Shared Top Bar */
+    .topbar {
+      position: sticky;
+      top: 33px;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .brand h1 em { font-style: italic; color: var(--upkeep); }
+
+    .site-nav {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 2px;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      font-size: 0.77rem;
+      font-weight: 500;
+      padding: 5px 11px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink-2);
+      transition: all 140ms ease;
+    }
+
+    .nav-link:hover { color: var(--ink); }
+    .nav-link.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .btn:hover { border-color: var(--hairline-strong); color: var(--ink); }
+    .btn.primary { background: var(--upkeep); border-color: var(--upkeep); color: #FFFFFF; }
+    [data-theme="obsidian"] .btn.primary { color: #0F1114; font-weight: 600; }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Shell */
+    .shell {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 24px 28px 68px;
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .rail {
+      position: sticky;
+      top: 109px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rail-card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 14px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .rail-title {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-3);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .step-nav { display: flex; flex-direction: column; gap: 3px; }
+
+    .step-btn {
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--r-sm);
+      padding: 7px 9px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink-2);
+      transition: all 130ms ease;
+    }
+
+    .step-btn:hover { background: var(--surface-recessed); color: var(--ink); }
+    .step-btn.active { background: var(--upkeep-tint); border-color: var(--upkeep-border); color: var(--ink); }
+    .step-btn.is-spine.active { background: var(--spine-tint); border-color: var(--spine-border); }
+    .step-btn.is-reset.active { background: var(--reset-tint); border-color: var(--reset-border); }
+
+    .s-num { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; width: 22px; color: var(--ink-3); flex-shrink: 0; }
+    .step-btn.active .s-num { color: var(--upkeep); }
+    .step-btn.is-spine.active .s-num { color: var(--spine); }
+    .step-btn.is-reset.active .s-num { color: var(--reset); }
+
+    .s-label { font-family: var(--font-mono); font-size: 0.74rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .step-btn.active .s-label { font-weight: 600; }
+
+    .health-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .health-stat {
+      background: var(--surface-recessed);
+      border-radius: var(--r-sm);
+      padding: 8px 10px;
+    }
+
+    .health-stat span {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    .health-stat strong {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .health-stat strong.good { color: var(--ok); }
+    .health-stat strong.bad  { color: var(--err); }
+
+    /* Stage */
+    .stage {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .stage-head {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-recessed) 40%, var(--surface));
+    }
+
+    .pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--upkeep-tint);
+      color: var(--upkeep);
+      border: 1px solid var(--upkeep-border);
+      margin-bottom: 8px;
+    }
+
+    .pill.spine { background: var(--spine-tint); color: var(--spine); border-color: var(--spine-border); }
+    .pill.reset { background: var(--reset-tint); color: var(--reset); border-color: var(--reset-border); }
+
+    .stage-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .stage-title {
+      font-family: var(--font-serif);
+      font-size: 1.95rem;
+      font-weight: 400;
+      line-height: 1.12;
+    }
+
+    .cmd-copy {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline-strong);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .cmd-copy:hover { border-color: var(--spine); color: var(--spine); }
+
+    .stage-why { margin-top: 8px; font-size: 0.91rem; color: var(--ink-2); max-width: 780px; }
+
+    .stage-body {
+      padding: 24px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pane {
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .pane-head {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--surface-recessed);
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-2);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .pane-body { padding: 14px 16px; font-size: 0.84rem; color: var(--ink-2); }
+
+    .code-block {
+      background: var(--surface-code);
+      padding: 14px 16px;
+      font-size: 0.75rem;
+      line-height: 1.55;
+      color: var(--ink);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .c-hl  { color: var(--spine); font-weight: 600; }
+    .c-add { color: var(--ok); font-weight: 500; }
+    .c-del { color: var(--err); }
+    .c-dim { color: var(--ink-3); }
+
+    .callout {
+      border-radius: var(--r-md);
+      padding: 14px 16px;
+      border: 1px solid var(--spine-border);
+      background: var(--spine-tint);
+      font-size: 0.83rem;
+      color: var(--ink-2);
+    }
+
+    .callout strong { color: var(--ink); }
+
+    .stage-foot {
+      padding: 16px 28px;
+      border-top: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-recessed) 40%, var(--surface));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .step-counter { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-3); }
+
+    @media (max-width: 1020px) {
+      .shell { grid-template-columns: 1fr; }
+      .rail { position: static; }
+      .split-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner, .shell { padding-left: 16px; padding-right: 16px; }
+      .stage-head, .stage-body, .stage-foot { padding-left: 18px; padding-right: 18px; }
+    }
+  </style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>Brownfield Rescue: <em>Legacy Billing Service</em></h1>
+      </div>
+      <nav class="site-nav" aria-label="Companion pages">
+        <a class="nav-link" href="index.html">Workflow Atlas</a>
+        <a class="nav-link" href="paths.html">Happy vs. Other</a>
+        <a class="nav-link" href="pomodoro.html">Pomodoro Demo</a>
+        <a class="nav-link active" href="legacy.html">Legacy Rescue</a>
+        <a class="nav-link" href="drills.html">Ask-Matt Drills</a>
+      </nav>
+      <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <aside class="rail">
+      <div class="rail-card">
+        <div class="rail-title">
+          <span>Rescue Chapters</span>
+          <span>← / → keys</span>
+        </div>
+        <nav class="step-nav" id="stepNav"></nav>
+      </div>
+
+      <div class="rail-card">
+        <div class="rail-title">
+          <span>Service Health</span>
+          <span id="ctxTag">Window</span>
+        </div>
+        <div class="health-grid" id="healthGrid"></div>
+      </div>
+
+      <div class="rail-card" style="font-size:0.78rem; color:var(--ink-2);">
+        <div class="rail-title"><span>Why This Walkthrough?</span></div>
+        The Pomodoro demo shows greenfield perfection. This shows how Matt’s <strong>Upkeep &amp; Debugging</strong> skills rescue a tangled, money-handling legacy monorepo without breaking production.
+      </div>
+    </aside>
+
+    <article class="stage">
+      <div class="stage-head">
+        <span class="pill" id="sPill">UPKEEP</span>
+        <div class="stage-title-row">
+          <h2 class="stage-title" id="sTitle"></h2>
+          <button class="cmd-copy" id="sCmd" type="button"></button>
+        </div>
+        <p class="stage-why" id="sWhy"></p>
+      </div>
+
+      <div class="stage-body" id="sBody"></div>
+
+      <div class="stage-foot">
+        <button id="prevBtn" class="btn" type="button">← Previous</button>
+        <span class="step-counter" id="stepCounter"></span>
+        <button id="nextBtn" class="btn primary" type="button">Next Chapter →</button>
+      </div>
+    </article>
+  </main>
+
+  <script>
+    const CHAPTERS = [
+      {
+        num: '00', nav: '/setup (Monorepo)', tone: 'upkeep',
+        pill: 'One-Time Setup · Brownfield Monorepo',
+        cmd: '/setup-matt-pocock-skills',
+        title: 'Map bounded contexts with GLOSSARY-MAP.md',
+        why: 'Legacy monorepos fail when "Account" means three different things across packages. In v1.3, setup detects monorepos and scaffolds GLOSSARY-MAP.md instead of a single noisy file.',
+        ctx: 'Setup · 16k',
+        health: [
+          { k: 'God-file size', v: '1,420 LOC', cls: 'bad' },
+          { k: 'Webhook tests', v: '0 tests', cls: 'bad' },
+          { k: 'Open incidents', v: '3 raw', cls: 'bad' },
+          { k: 'Agent docs', v: 'Wired ✓', cls: 'good' }
+        ],
+        body: `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Monorepo Detection</span><span>docs/agents/domain.md</span></div>
+              <pre class="code-block"><span class="c-hl"># GLOSSARY-MAP.md (v1.3 Monorepo Layout)</span>
+- packages/billing/GLOSSARY.md
+    Owns: Invoice, Charge, IdempotencyKey, WebhookEvent
+- packages/auth/GLOSSARY.md
+    Owns: Tenant, Member, Session
+- packages/web/GLOSSARY.md
+    Owns: Workspace, Seat
+
+<span class="c-add">+ Issue tracker: GitHub Issues (gh)</span>
+<span class="c-add">+ Triage labels synced to repo</span></pre>
+            </div>
+            <div class="pane">
+              <div class="pane-head"><span>Why This Pays Off Immediately</span><span>Context Load Control</span></div>
+              <div class="pane-body">
+                When debugging billing later, agents load <strong>only</strong> <code>packages/billing/GLOSSARY.md</code>—never wasting context tokens on unrelated auth or frontend terminology.
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '01', nav: '/triage (3 Escalations)', tone: 'upkeep',
+        pill: 'Upkeep On-Ramp · Bypasses 01–03',
+        cmd: '/triage',
+        title: 'Sort messy customer escalations before touching code',
+        why: 'Three urgent issues hit Monday morning. /triage prevents agents from blindly coding on half-baked reports by routing each through your label state machine with human sign-off.',
+        ctx: 'Triage · 19k',
+        health: [
+          { k: 'God-file size', v: '1,420 LOC', cls: 'bad' },
+          { k: 'Webhook tests', v: '0 tests', cls: 'bad' },
+          { k: 'Open incidents', v: '1 ready', cls: '' },
+          { k: 'Triage state', v: 'Clean ✓', cls: 'good' }
+        ],
+        body: `
+          <div class="pane">
+            <div class="pane-head"><span>Triage State Machine Output</span><span>Confirmed before applying</span></div>
+            <pre class="code-block"><span class="c-del">#811 "Customer charged twice on Stripe retry"</span>
+  → Clear logs + Stripe event IDs attached
+  → Label: <span class="c-add">ready-for-agent</span> (route to /diagnosing-bugs)
+
+<span class="c-hl">#812 "Invoice PDF looks slightly off on Safari"</span>
+  → Missing screenshot &amp; Safari version
+  → Label: needs-info (drafted polite follow-up comment)
+
+<span class="c-dim">#813 "Refund customer #9921 manually right now"</span>
+  → Requires Stripe dashboard access (no code change)
+  → Label: ready-for-human</pre>
+          </div>
+          <div class="callout">
+            <strong>Notice:</strong> We bypassed <code>/grill-with-docs → /to-spec → /to-tickets</code> completely. Incoming production bugs enter directly via Upkeep.
+          </div>
+        `
+      },
+      {
+        num: '02', nav: '/diagnosing-bugs #811', tone: 'upkeep',
+        pill: '6-Phase Bug Loop · Fresh Window',
+        cmd: '/diagnosing-bugs #811',
+        title: 'Build a deterministic red repro & expose the missing seam',
+        why: 'On money-handling code, guessing is lethal. /diagnosing-bugs refuses to edit production logic until a single command reliably reproduces the double-charge race condition.',
+        ctx: 'Debug · 26k',
+        health: [
+          { k: 'God-file size', v: '1,420 LOC', cls: 'bad' },
+          { k: 'Webhook tests', v: '1 RED repro', cls: '' },
+          { k: 'Root cause', v: 'Confirmed ✓', cls: 'good' },
+          { k: 'Missing seam', v: 'Logged', cls: '' }
+        ],
+        body: `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Phase 1–3: Reproduce &amp; Instrument</span><span>Zero Guessing</span></div>
+              <pre class="code-block"><span class="c-hl">$ pnpm --filter billing test webhook-race.test.ts</span>
+
+<span class="c-del">FAIL</span> Concurrent duplicate invoice.paid webhooks:
+  Expected charges created: 1
+  Received charges created: <span class="c-del">2</span>
+
+<span class="c-hl">Root Cause Confirmed:</span>
+  billing.ts:412 does SELECT then INSERT outside a
+  unique constraint on stripe_event_id. Two parallel
+  retries both see 0 rows and both charge the card.</pre>
+            </div>
+            <div class="pane">
+              <div class="pane-head"><span>Missing Seam Recorded</span><span>Feeds Architecture Step</span></div>
+              <div class="pane-body">
+                Because <code>billing.ts</code> mixes raw Express req/res parsing, Stripe SDK calls, and SQL queries inside one 1,420-line file, testing required mocking 6 globals. <code>/diagnosing-bugs</code> explicitly logs a <strong>missing seam</strong>—signaling that a focused architecture cleanup is overdue.
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '03', nav: '/improve-codebase-architecture', tone: 'upkeep',
+        pill: 'Architecture Audit · Deep Modules',
+        cmd: '/improve-codebase-architecture',
+        title: 'Carve a clean deep-module seam out of the 1,420-line god-file',
+        why: 'Rather than rewriting the whole repo, /improve-codebase-architecture uses /codebase-design + GLOSSARY.md to propose the smallest high-leverage seam that makes billing testable.',
+        ctx: 'Audit · 31k',
+        health: [
+          { k: 'Target seam', v: 'processWebhook', cls: 'good' },
+          { k: 'Refactor scope', v: '2 tickets', cls: 'good' },
+          { k: 'Big-bang risk', v: 'Avoided ✓', cls: 'good' },
+          { k: 'GLOSSARY align', v: '100%', cls: 'good' }
+        ],
+        body: `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Visual Seam Proposal</span><span>Deep Module Extraction</span></div>
+              <pre class="code-block"><span class="c-del">BEFORE (Shallow tangled god-file):</span>
+  expressRoute → billing.ts (1,420 LOC)
+    ├── signature check
+    ├── raw SQL SELECT + INSERT
+    ├── Stripe SDK charge
+    └── SendGrid receipt email
+
+<span class="c-add">AFTER (Narrow testable seam):</span>
+  expressRoute → <span class="c-hl">processWebhookEvent(event, ledgerRepo)</span>
+    └── LedgerRepo enforces DB UNIQUE(stripe_event_id)
+        and returns { status: 'applied' | 'duplicate' }</pre>
+            </div>
+            <div class="pane">
+              <div class="pane-head"><span>Scoped Refactor Tickets</span><span>No Boiling the Ocean</span></div>
+              <pre class="code-block">T1: Add UNIQUE(stripe_event_id) migration +
+    LedgerRepo.recordEventIfNew() seam
+T2: Route webhook handler through
+    processWebhookEvent() &amp; turn #811 repro GREEN
+
+<span class="c-dim">Remaining 1,200 LOC of billing.ts left untouched
+until actually needed.</span></pre>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '04', nav: '/wizard (Stripe Secrets)', tone: 'upkeep',
+        pill: 'Human-Only Setup · CLI Script',
+        cmd: '/wizard',
+        title: 'Automate manual Stripe test-webhook setup for the team',
+        why: 'Testing the fix locally requires a Stripe CLI signing secret (`whsec_...`) that an agent cannot fetch for you. /wizard generates an interactive script so every engineer can verify locally in 60 seconds.',
+        ctx: 'Utility · 11k',
+        health: [
+          { k: 'Manual steps', v: 'Scripted ✓', cls: 'good' },
+          { k: 'Secret leaks', v: '0 (.gitignore)', cls: 'good' },
+          { k: 'Onboarding', v: '1 command', cls: 'good' },
+          { k: 'Ready to code', v: 'Yes ✓', cls: 'good' }
+        ],
+        body: `
+          <div class="pane">
+            <div class="pane-head"><span>Generated Interactive Wizard</span><span>scripts/setup-stripe-local.sh</span></div>
+            <pre class="code-block"><span class="c-hl">$ ./scripts/setup-stripe-local.sh</span>
+[1/3] Checking stripe CLI login... ✓
+[2/3] Paste your local webhook signing secret (whsec_...): ********
+      → Validated prefix &amp; saved to packages/billing/.env.local
+[3/3] Firing test duplicate invoice.paid pair to localhost:4000...
+      → Confirmed .env.local is gitignored ✓</pre>
+          </div>
+        `
+      },
+      {
+        num: '✂', nav: 'Clear Context → /implement', tone: 'reset',
+        pill: 'Context Reset + Why Track 4A Beats 4B Here',
+        cmd: '/clear → /implement T1',
+        title: 'Clear context & use single-ticket /implement on risky money code',
+        why: 'On a greenfield UI, /implement-spec parallel worktrees shine. On a legacy database migration touching customer credit cards, tight single-ticket /implement gives you human inspection at every commit.',
+        ctx: 'Fresh · 18k',
+        health: [
+          { k: 'Context tokens', v: '18k (Fresh)', cls: 'good' },
+          { k: 'Migration test', v: 'PASS ✓', cls: 'good' },
+          { k: 'Race repro', v: 'GREEN ✓', cls: 'good' },
+          { k: 'Parallel risk', v: '0 (Serial)', cls: 'good' }
+        ],
+        body: `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Track 4A · /implement (Serial /tdd)</span><span>Joins Happy Path</span></div>
+              <pre class="code-block"><span class="c-hl">$ /implement T1</span>  (fresh window)
+  + migration 20261123_unique_stripe_event.sql
+  + LedgerRepo.recordEventIfNew() ON CONFLICT DO NOTHING
+  ✓ 8/8 Postgres integration tests pass
+
+<span class="c-dim">--- ✂ /clear ---</span>
+
+<span class="c-hl">$ /implement T2</span>  (fresh window)
+  + processWebhookEvent() seam extracted
+  ✓ #811 concurrent duplicate webhook test now GREEN ✓</pre>
+            </div>
+            <div class="pane">
+              <div class="pane-head"><span>Rule of Thumb: 4A vs 4B</span><span>Decision Heuristic</span></div>
+              <div class="pane-body">
+                Use <strong>4B <code>/implement-spec</code></strong> when tickets are cleanly parallel and low-blast-radius.<br/><br/>
+                Use <strong>4A <code>/implement</code></strong> when changes touch migrations, auth, billing, or tightly coupled legacy seams where you want to review every single slice before starting the next.
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '06', nav: '/code-review (Rework!)', tone: 'spine',
+        pill: 'Phase II · Verify + Rework Loop',
+        cmd: '/code-review',
+        title: 'Catch a production table-lock hazard before merge',
+        why: 'Unit tests passed against an empty local database, but multi-axis /code-review checks production migration safety and forces a rework loop before shipping.',
+        ctx: 'Review · 21k',
+        health: [
+          { k: 'Prod table lock', v: 'CAUGHT ✓', cls: 'good' },
+          { k: 'Rework loop', v: '05 → 04 → 05', cls: '' },
+          { k: 'All 3 axes', v: 'CLEAN ✓', cls: 'good' },
+          { k: 'Ready for PR', v: 'Yes ✓', cls: 'good' }
+        ],
+        body: `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Blocking Review Finding</span><span>Axis: Production Safety</span></div>
+              <pre class="code-block"><span class="c-del">[BLOCKING · Zero-Downtime Violation]</span>
+migration 20261123_unique_stripe_event.sql:
+  <span class="c-del">ALTER TABLE webhook_events ADD UNIQUE (stripe_event_id);</span>
+
+On a 14M-row production table, this takes an
+ACCESS EXCLUSIVE lock and halts live checkouts!</pre>
+            </div>
+            <div class="pane">
+              <div class="pane-head"><span>Rework Loop Fix (/implement)</span><span>Safe Index Pattern</span></div>
+              <pre class="code-block"><span class="c-add">+ CREATE UNIQUE INDEX CONCURRENTLY</span>
+<span class="c-add">+   idx_webhook_events_stripe_id</span>
+<span class="c-add">+   ON webhook_events (stripe_event_id);</span>
+
+[Re-run /code-review] Zero-downtime check CLEAN ✓</pre>
+            </div>
+          </div>
+        `
+      },
+      {
+        num: '07', nav: '/pr + /retro', tone: 'spine',
+        pill: 'Ship & Compound (v1.3)',
+        cmd: '/pr → /retro',
+        title: 'Ship with an explicit rollback plan & harden AGENTS.md',
+        why: '/pr surfaces the exact migration risk and rollback SQL for reviewers; /retro permanently encodes the CONCURRENTLY index rule so no future agent ever proposes a locking migration again.',
+        ctx: 'Ship + Retro · 28k',
+        health: [
+          { k: 'Double charges', v: '0 (Fixed ✓)', cls: 'good' },
+          { k: 'Lock risk', v: 'None ✓', cls: 'good' },
+          { k: 'Rollback SQL', v: 'In PR ✓', cls: 'good' },
+          { k: 'AGENTS.md', v: 'Hardened ✓', cls: 'good' }
+        ],
+        body: `
+          <div class="split-grid">
+            <div class="pane">
+              <div class="pane-head"><span>Bottom-Up PR Body</span><span>/pr (v1.3)</span></div>
+              <pre class="code-block"><span class="c-hl">## Proof</span>
+- Concurrent duplicate webhook repro (#811) now GREEN
+- Verified via ./scripts/setup-stripe-local.sh
+
+<span class="c-hl">## Migration &amp; Blast Radius</span>
+- Uses CREATE UNIQUE INDEX CONCURRENTLY (non-blocking)
+- Scoped strictly to webhook ingestion path
+
+<span class="c-hl">## Rollback</span>
+- Revert commit + DROP INDEX CONCURRENTLY idx_webhook_events_stripe_id;</pre>
+            </div>
+            <div class="pane">
+              <div class="pane-head"><span>Compounding Repo Rule</span><span>/retro + /writing-for-agents</span></div>
+              <pre class="code-block"><span class="c-hl">## packages/billing/AGENTS.md</span>
+<span class="c-add">+ Postgres migrations on webhook_events or charges</span>
+<span class="c-add">+ MUST use CREATE INDEX CONCURRENTLY — never bare</span>
+<span class="c-add">+ ADD CONSTRAINT / ADD UNIQUE on hot tables.</span>
+<span class="c-add">+</span>
+<span class="c-add">+ Route all new webhook handlers through the</span>
+<span class="c-add">+ processWebhookEvent() seam with an injected repo.</span></pre>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let idx = 0;
+
+    function render() {
+      const c = CHAPTERS[idx];
+      const nav = document.getElementById('stepNav');
+      nav.innerHTML = CHAPTERS.map((ch, i) => `
+        <button type="button" class="step-btn ${ch.tone === 'spine' ? 'is-spine' : ch.tone === 'reset' ? 'is-reset' : ''} ${i === idx ? 'active' : ''}" data-i="${i}">
+          <span class="s-num">${ch.num}</span>
+          <span class="s-label">${ch.nav}</span>
+        </button>
+      `).join('');
+      nav.querySelectorAll('[data-i]').forEach(b => {
+        b.onclick = () => { idx = Number(b.dataset.i); render(); };
+      });
+
+      document.getElementById('ctxTag').textContent = c.ctx;
+      document.getElementById('healthGrid').innerHTML = c.health.map(h => `
+        <div class="health-stat">
+          <span>${h.k}</span>
+          <strong class="${h.cls}">${h.v}</strong>
+        </div>
+      `).join('');
+
+      const pill = document.getElementById('sPill');
+      pill.textContent = c.pill;
+      pill.className = 'pill ' + (c.tone === 'spine' ? 'spine' : c.tone === 'reset' ? 'reset' : '');
+
+      document.getElementById('sTitle').textContent = c.title;
+      const cmdBtn = document.getElementById('sCmd');
+      cmdBtn.textContent = `${c.cmd}  ⧉`;
+      cmdBtn.onclick = () => {
+        navigator.clipboard?.writeText(c.cmd).catch(() => {});
+        cmdBtn.textContent = `${c.cmd}  ✓`;
+        setTimeout(() => (cmdBtn.textContent = `${c.cmd}  ⧉`), 1300);
+      };
+      document.getElementById('sWhy').textContent = c.why;
+      document.getElementById('sBody').innerHTML = c.body;
+
+      document.getElementById('prevBtn').disabled = idx === 0;
+      document.getElementById('nextBtn').disabled = idx === CHAPTERS.length - 1;
+      document.getElementById('stepCounter').textContent = `Chapter ${idx + 1} of ${CHAPTERS.length}`;
+    }
+
+    document.getElementById('prevBtn').onclick = () => { if (idx > 0) { idx--; render(); } };
+    document.getElementById('nextBtn').onclick = () => { if (idx < CHAPTERS.length - 1) { idx++; render(); } };
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' && idx < CHAPTERS.length - 1) { idx++; render(); }
+      else if (e.key === 'ArrowLeft' && idx > 0) { idx--; render(); }
+    });
+
+    // Synced Paper / Obsidian Theme
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeText').textContent = t === 'obsidian' ? 'Paper' : 'Obsidian';
+      try { localStorage.setItem('pocock-atlas-theme', t); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem('pocock-atlas-theme'); } catch (e) { return null; } })();
+    setTheme(savedTheme || 'paper');
+    document.getElementById('themeBtn').onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      setTheme(cur === 'obsidian' ? 'paper' : 'obsidian');
+    };
+
+    render();
+  </script>
+</body>
+</html>

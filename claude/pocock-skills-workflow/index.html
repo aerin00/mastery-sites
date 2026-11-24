@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- index:
-description: Matt Pocock's 27-skill AI coding workflow (v1.3.1): horizontal happy-path atlas, interactive happy-vs-other paths playbook, and end-to-end Pomodoro walkthrough.
+description: Matt Pocock's 27-skill AI coding workflow (v1.3.2): horizontal happy-path atlas, happy-vs-other playbook, greenfield Pomodoro & brownfield Legacy Rescue walkthroughs, Ask-Matt drills, and live upstream sync.
 tags: skills, workflow, claude-code, tdd, reference
 pinned: true
 ingested: 2026-11-23T16:01:00-07:00
@@ -1251,6 +1251,34 @@ ingested: 2026-11-23T16:01:00-07:00
         padding-right: 16px;
       }
     }
+
+    .sync-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--spine-border);
+      background: var(--spine-tint);
+      color: var(--spine);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+    .sync-pill:hover { filter: brightness(1.05); }
+    .sync-pill.drift {
+      border-color: var(--reset-border);
+      background: var(--reset-tint);
+      color: var(--reset);
+    }
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
   </style>
 </head>
 <body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
@@ -1261,7 +1289,9 @@ ingested: 2026-11-23T16:01:00-07:00
     <div class="topbar-inner">
       <div class="brand">
         <h1>Matt Pocock’s <em>Skills</em></h1>
-        <span class="ver-tag">v1.3.1 · 27 Core</span>
+        <button id="syncPill" class="sync-pill" type="button" title="Inspect live sync status against github.com/mattpocock/skills">
+          <span class="sync-dot"></span><span id="syncPillText">v1.3.2 · 27/27 Synced</span>
+        </button>
       </div>
       <div class="controls">
         <div class="segmented" role="group" aria-label="View density">
@@ -1276,12 +1306,10 @@ ingested: 2026-11-23T16:01:00-07:00
         <button id="diffBtn" class="ctrl-btn" type="button" title="Highlight additions, renames, and removals since Aug 15">
           v1.3 Diff
         </button>
-        <a class="ctrl-btn" href="paths.html" style="text-decoration:none;" title="Interactive Happy Path vs. Other Paths recovery playbook">
-          Happy vs. Other
-        </a>
-        <a class="ctrl-btn" href="pomodoro.html" style="text-decoration:none;" title="See a real end-to-end Pomodoro app built with this workflow">
-          Pomodoro Demo →
-        </a>
+        <a class="ctrl-btn" href="paths.html" style="text-decoration:none;">Happy vs. Other</a>
+        <a class="ctrl-btn" href="pomodoro.html" style="text-decoration:none;">Pomodoro</a>
+        <a class="ctrl-btn" href="legacy.html" style="text-decoration:none;">Legacy Rescue</a>
+        <a class="ctrl-btn" href="drills.html" style="text-decoration:none;">Drills</a>
         <button id="themeBtn" class="ctrl-btn" type="button" title="Toggle Paper / Obsidian theme">
           <span id="themeText">Obsidian</span>
         </button>
@@ -2228,6 +2256,85 @@ ingested: 2026-11-23T16:01:00-07:00
         searchInput.focus();
       }
     });
+
+    // Live Upstream Sync Inspector (reads sync-status.json refreshed weekly by GitHub Actions)
+    let syncData = {
+      repo: 'mattpocock/skills',
+      repo_url: 'https://github.com/mattpocock/skills',
+      release_tag: 'v1.3.2',
+      release_published: '2026-10-29T10:27:41Z',
+      checked_at: '2026-11-23T22:40:00Z',
+      in_sync: true,
+      mapped_count: 27,
+      upstream_core_count: 27,
+      added_upstream: [],
+      removed_upstream: [],
+      categories: {
+        in_progress: ['chief-of-staff', 'claude-handoff', 'loop-me', 'setup-ts-deep-modules', 'software-factory', 'writing-beats', 'writing-fragments', 'writing-shape'],
+        misc: ['git-guardrails-claude-code', 'migrate-to-shoehorn', 'scaffold-exercises', 'setup-pre-commit']
+      }
+    };
+
+    function updateSyncPill(data) {
+      const pill = document.getElementById('syncPill');
+      const txt = document.getElementById('syncPillText');
+      if (!pill || !txt) return;
+      pill.classList.toggle('drift', !data.in_sync);
+      if (data.in_sync) {
+        txt.textContent = `${data.release_tag} · ${data.mapped_count}/${data.upstream_core_count} Synced`;
+      } else {
+        txt.textContent = `${data.release_tag} · Drift (+${data.added_upstream.length}/-${data.removed_upstream.length})`;
+      }
+    }
+
+    function openSyncDrawer() {
+      const d = syncData;
+      state.selected = null;
+      render();
+      document.getElementById('dKicker').textContent = `Upstream Sync · ${d.repo}`;
+      document.getElementById('dCmd').textContent = `${d.release_tag} ${d.in_sync ? '(In Sync)' : '(Drift Detected)'}`;
+      const copyBtn = document.getElementById('dCopy');
+      copyBtn.textContent = 'Open Repo';
+      copyBtn.onclick = () => window.open(d.repo_url, '_blank', 'noopener');
+
+      const checkedDate = (d.checked_at || '').slice(0, 10);
+      const wipList = (d.categories?.in_progress || []).map(x => `<span class="d-jump">/${x}</span>`).join('');
+      const miscList = (d.categories?.misc || []).map(x => `<span class="d-jump">/${x}</span>`).join('');
+
+      document.getElementById('dBody').innerHTML = `
+        <div class="d-delta" style="${d.in_sync ? '' : 'background:var(--reset-tint); color:var(--reset);'}">
+          ${d.in_sync
+            ? `All ${d.mapped_count} core skills (20 engineering + 7 productivity) match upstream ${d.repo}@main.`
+            : `Drift detected vs. upstream! Added: ${d.added_upstream.join(', ') || 'none'} · Removed: ${d.removed_upstream.join(', ') || 'none'}`}
+        </div>
+        <div class="d-io">
+          <div class="d-io-box"><b>Latest Release</b>${d.release_tag} (${(d.release_published || '').slice(0, 10)})</div>
+          <div class="d-io-box"><b>Last Checked</b>${checkedDate} (weekly GH Action)</div>
+        </div>
+        <div class="d-sec">
+          <h4>Experimental · skills/in-progress/ (${(d.categories?.in_progress || []).length})</h4>
+          <p style="margin-bottom:8px;">Active beta skills incubating outside the 27-skill core plugin:</p>
+          <div class="d-jumps">${wipList}</div>
+        </div>
+        <div class="d-sec">
+          <h4>Utilities · skills/misc/ (${(d.categories?.misc || []).length})</h4>
+          <p style="margin-bottom:8px;">Standalone setup &amp; guardrail helpers in the upstream repo:</p>
+          <div class="d-jumps">${miscList}</div>
+        </div>
+      `;
+
+      document.getElementById('scrim').classList.add('open');
+      const drawer = document.getElementById('drawer');
+      drawer.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+    }
+
+    document.getElementById('syncPill').addEventListener('click', openSyncDrawer);
+    updateSyncPill(syncData);
+    fetch('./sync-status.json')
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => { if (data && data.release_tag) { syncData = data; updateSyncPill(syncData); } })
+      .catch(() => {});
 
     render();
   </script>

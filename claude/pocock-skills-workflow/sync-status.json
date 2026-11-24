@@ -1,0 +1,61 @@
+{
+  "repo": "mattpocock/skills",
+  "repo_url": "https://github.com/mattpocock/skills",
+  "release_tag": "v1.3.2",
+  "release_published": "2026-10-29T10:27:41Z",
+  "checked_at": "2026-11-24T05:46:00Z",
+  "in_sync": true,
+  "mapped_count": 27,
+  "upstream_core_count": 27,
+  "added_upstream": [],
+  "removed_upstream": [],
+  "categories": {
+    "engineering": [
+      "ask-matt",
+      "code-review",
+      "codebase-design",
+      "diagnosing-bugs",
+      "domain-modeling",
+      "grill-with-docs",
+      "implement",
+      "implement-spec",
+      "improve-codebase-architecture",
+      "pr",
+      "prototype",
+      "research",
+      "retro",
+      "setup-matt-pocock-skills",
+      "tdd",
+      "to-spec",
+      "to-tickets",
+      "triage",
+      "wayfinder",
+      "wizard"
+    ],
+    "productivity": [
+      "grill-me",
+      "grilling",
+      "handoff",
+      "teach",
+      "to-questionnaire",
+      "wait-what",
+      "writing-for-agents"
+    ],
+    "in_progress": [
+      "chief-of-staff",
+      "claude-handoff",
+      "loop-me",
+      "setup-ts-deep-modules",
+      "software-factory",
+      "writing-beats",
+      "writing-fragments",
+      "writing-shape"
+    ],
+    "misc": [
+      "git-guardrails-claude-code",
+      "migrate-to-shoehorn",
+      "scaffold-exercises",
+      "setup-pre-commit"
+    ]
+  }
+}
