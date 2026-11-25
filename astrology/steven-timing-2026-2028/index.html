@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<!-- index:
+ingested: 2026-11-24T21:55:00-07:00
+description: Condensed multi-clock timing guide for Steven (Nov 2026 to Jul 2028): Modern transits, Hellenistic time lords, convergences, conflicts, and commute-ready playbook.
+tags: astrology, timing, steven
+pinned: false
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steven's Timing Guide (2026–2028) — Multi-Clock Playbook</title>
+<meta name="description" content="Synthesized timing guide for Steven (Nov 2026 – Jul 2028) combining Modern outer-planet transits, Hellenistic Zodiacal Releasing & Profections, and Chani overlays.">
+<style>
+:root{
+  --bg:#F6F4EF;
+  --surface:#FFFFFF;
+  --shade:#EFECE4;
+  --ink:#17202A;
+  --ink-soft:#4D5B69;
+  --ink-faint:#758390;
+  --rule:#DDD7CB;
+  --rule-soft:#EAE5DC;
+
+  --indigo:#2B3E7E;
+  --indigo-bg:#EEF1FA;
+  --plum:#6A3D7A;
+  --plum-bg:#F4EEF7;
+  --teal:#0E6B5E;
+  --teal-bg:#EBF6F3;
+  --amber:#9A5B13;
+  --amber-bg:#FBF4E7;
+  --crimson:#943640;
+  --crimson-bg:#FAEEF0;
+
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:10px;
+}
+
+body.dark{
+  --bg:#12161D;
+  --surface:#1A202B;
+  --shade:#222A37;
+  --ink:#EAEFF5;
+  --ink-soft:#A9B5C4;
+  --ink-faint:#7E8B9B;
+  --rule:#2D3748;
+  --rule-soft:#252E3D;
+
+  --indigo:#93AEFF;
+  --indigo-bg:#1D2742;
+  --plum:#D6A6E8;
+  --plum-bg:#2D2038;
+  --teal:#5FD1BE;
+  --teal-bg:#162E2B;
+  --amber:#F0BA6B;
+  --amber-bg:#332717;
+  --crimson:#F08C96;
+  --crimson-bg:#361C20;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.65;
+  transition:background .2s,color .2s;
+}
+
+/* ---------- sticky sub-nav ---------- */
+.subnav{
+  position:sticky;
+  top:33px;
+  z-index:50;
+  background:color-mix(in srgb,var(--surface) 94%,transparent);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);
+}
+.subnav-in{
+  max-width:760px;
+  margin:0 auto;
+  padding:.5rem 1rem;
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.subnav-in::-webkit-scrollbar{display:none}
+.subnav a{
+  font-family:var(--sans);
+  font-size:.78rem;
+  font-weight:600;
+  color:var(--ink-soft);
+  text-decoration:none;
+  padding:.3rem .62rem;
+  border-radius:999px;
+  white-space:nowrap;
+  border:1px solid transparent;
+}
+.subnav a:hover{color:var(--ink);background:var(--shade)}
+.subnav a.active{color:var(--indigo);background:var(--indigo-bg);border-color:color-mix(in srgb,var(--indigo) 25%,transparent)}
+.theme-btn{
+  margin-left:auto;
+  flex-shrink:0;
+  font-family:var(--sans);
+  font-size:.75rem;
+  font-weight:600;
+  color:var(--ink-soft);
+  background:var(--shade);
+  border:1px solid var(--rule);
+  border-radius:999px;
+  padding:.28rem .65rem;
+  cursor:pointer;
+}
+.theme-btn:hover{color:var(--ink)}
+
+/* ---------- main column ---------- */
+.page{
+  max-width:760px;
+  margin:0 auto;
+  padding:2rem 1.15rem 5rem;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  padding-bottom:1.75rem;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:2.2rem;
+}
+.kicker{
+  font-family:var(--sans);
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--indigo);
+  margin:0 0 .5rem;
+}
+h1{
+  font-size:clamp(1.85rem,5vw,2.6rem);
+  line-height:1.12;
+  letter-spacing:-.015em;
+  margin:0 0 .75rem;
+  font-weight:700;
+}
+.lede{
+  font-size:1.06rem;
+  color:var(--ink-soft);
+  margin:0 0 1.25rem;
+  max-width:58ch;
+}
+.now-strip{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-left:4px solid var(--teal);
+  border-radius:var(--radius);
+  padding:.9rem 1.05rem;
+  font-family:var(--sans);
+  font-size:.88rem;
+  line-height:1.5;
+}
+.now-strip strong{color:var(--teal)}
+.meta-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  margin-top:1rem;
+}
+.pill{
+  font-family:var(--sans);
+  font-size:.74rem;
+  font-weight:600;
+  padding:.22rem .58rem;
+  border-radius:999px;
+  background:var(--shade);
+  color:var(--ink-soft);
+  border:1px solid var(--rule-soft);
+}
+.pill.indigo{background:var(--indigo-bg);color:var(--indigo);border-color:transparent}
+.pill.plum{background:var(--plum-bg);color:var(--plum);border-color:transparent}
+.pill.teal{background:var(--teal-bg);color:var(--teal);border-color:transparent}
+.pill.amber{background:var(--amber-bg);color:var(--amber);border-color:transparent}
+.pill.crimson{background:var(--crimson-bg);color:var(--crimson);border-color:transparent}
+
+/* ---------- sections ---------- */
+section{
+  margin-bottom:2.8rem;
+  scroll-margin-top:5.5rem;
+}
+h2{
+  font-family:var(--sans);
+  font-size:1.25rem;
+  letter-spacing:-.01em;
+  margin:0 0 .35rem;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+.sec-sub{
+  font-family:var(--sans);
+  font-size:.88rem;
+  color:var(--ink-soft);
+  margin:0 0 1.15rem;
+}
+h3{
+  font-family:var(--sans);
+  font-size:1rem;
+  margin:0 0 .4rem;
+  line-height:1.35;
+}
+
+/* ---------- two-act cards ---------- */
+.acts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.85rem;
+  margin-bottom:1.15rem;
+}
+.act{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:1rem 1.05rem;
+}
+.act.act1{border-top:3px solid var(--indigo)}
+.act.act2{border-top:3px solid var(--plum)}
+.act-tag{
+  font-family:var(--sans);
+  font-size:.7rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:.25rem;
+}
+.act1 .act-tag{color:var(--indigo)}
+.act2 .act-tag{color:var(--plum)}
+.act p{margin:.35rem 0 0;font-size:.93rem;color:var(--ink-soft);line-height:1.52}
+
+/* ---------- visual timeline ---------- */
+.timeline-card{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:1rem 1.05rem;
+}
+.tl-head{
+  display:grid;
+  grid-template-columns:108px 1fr;
+  gap:.6rem;
+  font-family:var(--sans);
+  font-size:.69rem;
+  font-weight:700;
+  color:var(--ink-faint);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  padding-bottom:.45rem;
+  border-bottom:1px solid var(--rule-soft);
+  margin-bottom:.55rem;
+}
+.tl-months{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  text-align:center;
+}
+.tl-row{
+  display:grid;
+  grid-template-columns:108px 1fr;
+  gap:.6rem;
+  align-items:center;
+  padding:.35rem 0;
+}
+.tl-label{
+  font-family:var(--sans);
+  font-size:.76rem;
+  font-weight:600;
+  color:var(--ink);
+  line-height:1.2;
+}
+.tl-label small{display:block;font-weight:400;color:var(--ink-faint);font-size:.68rem}
+.tl-track{
+  position:relative;
+  height:24px;
+  background:var(--shade);
+  border-radius:6px;
+  overflow:hidden;
+}
+.tl-bar{
+  position:absolute;
+  top:2px;bottom:2px;
+  border-radius:4px;
+  font-family:var(--sans);
+  font-size:.67rem;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  overflow:hidden;
+  padding:0 5px;
+  text-decoration:none;
+}
+.b-indigo{background:var(--indigo-bg);color:var(--indigo);border:1px solid color-mix(in srgb,var(--indigo) 30%,transparent)}
+.b-plum{background:var(--plum-bg);color:var(--plum);border:1px solid color-mix(in srgb,var(--plum) 35%,transparent)}
+.b-teal{background:var(--teal-bg);color:var(--teal);border:1px solid color-mix(in srgb,var(--teal) 35%,transparent)}
+.b-amber{background:var(--amber-bg);color:var(--amber);border:1px solid color-mix(in srgb,var(--amber) 35%,transparent)}
+.b-solid-plum{background:var(--plum);color:#fff}
+.b-solid-teal{background:var(--teal);color:#fff}
+
+/* ---------- insight cards ---------- */
+.cards{
+  display:grid;
+  gap:.8rem;
+}
+.card{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:1rem 1.1rem;
+}
+.card p{margin:.35rem 0 0;font-size:.95rem;color:var(--ink-soft)}
+.card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.6rem;
+  flex-wrap:wrap;
+  margin-bottom:.25rem;
+}
+.card.accent-amber{border-left:3.5px solid var(--amber)}
+.card.accent-plum{border-left:3.5px solid var(--plum)}
+.card.accent-indigo{border-left:3.5px solid var(--indigo)}
+.card.accent-teal{border-left:3.5px solid var(--teal)}
+
+/* ---------- conflicts table ---------- */
+.conflict-list{display:grid;gap:.75rem}
+.conflict{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:.95rem 1.05rem;
+}
+.conflict-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:.5rem;
+  flex-wrap:wrap;
+  margin-bottom:.5rem;
+}
+.conflict-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.6rem;
+  font-family:var(--sans);
+  font-size:.83rem;
+  margin-bottom:.6rem;
+}
+.vs-box{
+  background:var(--shade);
+  border-radius:6px;
+  padding:.55rem .7rem;
+  color:var(--ink-soft);
+}
+.vs-box b{display:block;color:var(--ink);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem}
+.resolve{
+  font-family:var(--sans);
+  font-size:.86rem;
+  color:var(--ink);
+  padding-top:.55rem;
+  border-top:1px dashed var(--rule);
+}
+.resolve strong{color:var(--teal)}
+
+/* ---------- phase playbook ---------- */
+.phase{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:1.1rem 1.15rem;
+  margin-bottom:.9rem;
+}
+.phase.peak{
+  border-color:color-mix(in srgb,var(--plum) 45%,var(--rule));
+  box-shadow:0 2px 12px color-mix(in srgb,var(--plum) 8%,transparent);
+}
+.phase-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:.5rem;
+  flex-wrap:wrap;
+  margin-bottom:.35rem;
+}
+.phase-dates{
+  font-family:var(--mono);
+  font-size:.76rem;
+  font-weight:700;
+  color:var(--indigo);
+}
+.phase-transits{
+  font-family:var(--sans);
+  font-size:.81rem;
+  color:var(--ink-faint);
+  margin:0 0 .75rem;
+}
+.do-avoid{
+  display:grid;
+  grid-template-columns:1.35fr 1fr;
+  gap:.75rem;
+}
+.da-box{
+  background:var(--shade);
+  border-radius:8px;
+  padding:.7rem .85rem;
+  font-size:.92rem;
+}
+.da-box.do{background:var(--teal-bg)}
+.da-box.avoid{background:var(--crimson-bg)}
+.da-title{
+  font-family:var(--sans);
+  font-size:.7rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin:0 0 .35rem;
+}
+.do .da-title{color:var(--teal)}
+.avoid .da-title{color:var(--crimson)}
+.da-box ul{margin:0;padding-left:1.05rem}
+.da-box li{margin:.25rem 0;line-height:1.48;font-size:.9rem}
+
+/* ---------- operating rules ---------- */
+.rules{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.75rem;
+}
+.rule{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:.85rem .95rem;
+}
+.rule-n{
+  font-family:var(--mono);
+  font-size:.72rem;
+  font-weight:700;
+  color:var(--indigo);
+  margin-bottom:.2rem;
+}
+.rule h3{font-size:.92rem;margin:0 0 .25rem}
+.rule p{margin:0;font-size:.87rem;color:var(--ink-soft);line-height:1.48}
+
+/* ---------- life area filter ---------- */
+.filter-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.4rem;
+  margin-bottom:.9rem;
+}
+.fbtn{
+  font-family:var(--sans);
+  font-size:.78rem;
+  font-weight:600;
+  padding:.32rem .68rem;
+  border-radius:999px;
+  border:1px solid var(--rule);
+  background:var(--surface);
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+.fbtn:hover{color:var(--ink)}
+.fbtn.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.area-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.7rem;
+}
+.area-card{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:.85rem .95rem;
+  font-family:var(--sans);
+  font-size:.84rem;
+}
+.area-card.hide{display:none}
+.area-card h3{font-size:.92rem;margin:0 0 .4rem;color:var(--ink)}
+.area-line{margin:.25rem 0;color:var(--ink-soft);line-height:1.42}
+.area-line b{color:var(--ink)}
+.area-warn{margin:.35rem 0 0;color:var(--crimson);font-size:.8rem;line-height:1.38}
+
+/* ---------- collapsible details & tables ---------- */
+details{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:.85rem 1rem;
+  margin-bottom:.8rem;
+}
+summary{
+  font-family:var(--sans);
+  font-weight:700;
+  font-size:.94rem;
+  cursor:pointer;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.5rem;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{
+  content:"+";
+  font-family:var(--mono);
+  font-size:1.1rem;
+  color:var(--indigo);
+}
+details[open] summary::after{content:"−"}
+.tbl-wrap{overflow-x:auto;margin-top:.8rem}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-family:var(--sans);
+  font-size:.82rem;
+}
+th{
+  text-align:left;
+  font-size:.7rem;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--ink-faint);
+  padding:.45rem .5rem;
+  border-bottom:1px solid var(--rule);
+}
+td{
+  padding:.5rem .5rem;
+  border-bottom:1px solid var(--rule-soft);
+  vertical-align:top;
+  line-height:1.42;
+}
+td.dt{font-family:var(--mono);font-size:.76rem;white-space:nowrap;color:var(--indigo);font-weight:600}
+tr.hl td{background:var(--plum-bg)}
+
+footer{
+  margin-top:3rem;
+  padding-top:1.25rem;
+  border-top:1px solid var(--rule);
+  font-family:var(--sans);
+  font-size:.78rem;
+  color:var(--ink-faint);
+  line-height:1.55;
+}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .page{padding:1.4rem .95rem 4rem}
+  .acts,.do-avoid,.rules,.area-grid,.conflict-grid{grid-template-columns:1fr}
+  .tl-head,.tl-row{grid-template-columns:86px 1fr;gap:.45rem}
+  .tl-label{font-size:.71rem}
+  .tl-bar{font-size:.62rem}
+}
+</style>
+</head>
+<body>
+<nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+
+<nav class="subnav" aria-label="Page sections">
+  <div class="subnav-in">
+    <a href="#overview" class="active">Overview</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#insights">Insights</a>
+    <a href="#conflicts">Conflicts</a>
+    <a href="#playbook">Playbook</a>
+    <a href="#areas">By Area</a>
+    <a href="#dates">Dates</a>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">Dark</button>
+  </div>
+</nav>
+
+<main class="page">
+
+  <!-- HERO -->
+  <header class="hero" id="overview">
+    <p class="kicker">Multi-Clock Timing Playbook · Nov 2026 – Jul 2028</p>
+    <h1>Steven's Ascendant Years &amp; Major Peak</h1>
+    <p class="lede">
+      Four independent timing lenses—Modern outer planets, Hellenistic Zodiacal Releasing &amp; Profections, Quarterly Micro-Timing, and Chani weekly overlays—condensed into one commute-ready map.
+    </p>
+    <div class="now-strip">
+      <strong>Right now (late Nov 2026):</strong> You just cleared the opening Uranus shockwave (Jul 30 &amp; Oct 23, power 200) and sit inside your <strong>#1 quarterly green light (Nov 22 – Dec 3)</strong>. Ship one creative or career piece and sign anything formal <strong>before Dec 4</strong>—then settle into building for the big late-2027 payoff.
+    </div>
+    <div class="meta-pills">
+      <span class="pill indigo">Gemini Rising 4°44′–58′</span>
+      <span class="pill plum">Night Chart · Moon 19°35′ Aqu</span>
+      <span class="pill amber">Saturn 4°17′ Sag (7th)</span>
+      <span class="pill teal">Sun 22°29′ Vir (4th)</span>
+      <span class="pill">Born Sep 15, 1986 · 22:29 (AA)</span>
+    </div>
+  </header>
+
+  <!-- TWO-ACT CONVERGENCE + VISUAL TIMELINE -->
+  <section id="timeline">
+    <h2>The Two-Act Arc</h2>
+    <p class="sec-sub">Modern orbital transits and Hellenistic calendar-lot clocks share zero math—yet both split the next 20 months into the exact same two acts.</p>
+
+    <div class="acts">
+      <div class="act act1">
+        <div class="act-tag">Act I · Now – Oct 2027</div>
+        <h3>Workshop &amp; Retooling</h3>
+        <p><strong>Inner volume is high; outer spotlight is quieter.</strong> Uranus renovates your voice, tools, and identity while Hellenistic clocks run engine-room prep (Virgo 4th / Scorpio 6th) inside a creative 5th-house Libra year.</p>
+      </div>
+      <div class="act act2">
+        <div class="act-tag">Act II · Nov 2027 – Jul 2028</div>
+        <h3>Visibility &amp; Earned Payoff</h3>
+        <p><strong>Your strongest milestone of the 2020s.</strong> Hellenistic Major Peak (Oct 10, 2027 – Jun 6, 2028) converges with Jupiter conjunct your Sun (Nov 2027 – Jul 2028) and the final passes of Uranus, Pluto, and Neptune.</p>
+      </div>
+    </div>
+
+    <div class="timeline-card" aria-label="Multi-clock timeline">
+      <div class="tl-head">
+        <div>Clock</div>
+        <div class="tl-months">
+          <span>Late 26</span><span>Q1–Q2 27</span><span>Q3–Q4 27</span><span>Q1 28</span><span>Q2–Q3 28</span>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-label">Uranus → Asc<small>opp Natal Saturn</small></div>
+        <div class="tl-track">
+          <a href="#p0" class="tl-bar b-indigo" style="left:0%;width:14%">Peak</a>
+          <a href="#p2" class="tl-bar b-indigo" style="left:24%;width:18%">Hit #3 May</a>
+          <a href="#p4" class="tl-bar b-indigo" style="left:64%;width:22%">Near-Pass Feb</a>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-label">Pluto &amp; Neptune<small>Ballast + Vision</small></div>
+        <div class="tl-track">
+          <a href="#p1" class="tl-bar b-teal" style="left:0%;width:100%">Pluto Trine (Jan · Sep · Nov 27) + Neptune Sextile (Apr · Oct 27 · Feb 28)</a>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-label">Moon Sequence<small>Eclipse + Jup/Sat</small></div>
+        <div class="tl-track">
+          <a href="#p1" class="tl-bar b-amber" style="left:13%;width:8%" title="Feb 6 Solar Eclipse">★ Feb 6</a>
+          <a href="#p2" class="tl-bar b-amber" style="left:21%;width:18%">Mar–May Anchor</a>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-label">Jupiter → Sun<small>12-Yr Peak (4th)</small></div>
+        <div class="tl-track">
+          <a href="#p4" class="tl-bar b-solid-teal" style="left:58%;width:41%">Nov 27 → Mar 28 Apex (181) → Jul 28</a>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-label">ZR Spirit<small>Hellenistic Career</small></div>
+        <div class="tl-track">
+          <a href="#p1" class="tl-bar b-plum" style="left:0%;width:52%">Virgo (Workshop / Prep)</a>
+          <a href="#p4" class="tl-bar b-solid-plum" style="left:52%;width:40%">LIBRA MAJOR PEAK (Oct 27 – Jun 28)</a>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-label">Profection<small>Annual Ruler</small></div>
+        <div class="tl-track">
+          <a href="#p0" class="tl-bar b-plum" style="left:0%;width:49%">Age 40: 5th Libra (Venus)</a>
+          <a href="#p3" class="tl-bar b-plum" style="left:49%;width:51%">Age 41: 6th Scorpio (Mars → Spirit)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMERGENT INSIGHTS -->
+  <section id="insights">
+    <h2>4 Insights Only Visible Together</h2>
+    <p class="sec-sub">What none of the individual forecasts caught on its own—revealed only by layering your charts.</p>
+
+    <div class="cards">
+      <article class="card accent-amber">
+        <div class="card-head">
+          <h3>1. The Hidden Partnership Mirror (4° Gemini / 4° Sagittarius)</h3>
+          <span class="pill amber">Every Clock</span>
+        </div>
+        <p>Astrolog's power scan only scores Sun, Moon, Ascendant, and MC—so it hid that <strong>natal Saturn sits at 4°17′ Sagittarius</strong> (directly opposite your Ascendant and Tiffany's Jupiter at 3°38′ Gemini). Uranus isn't just renovating you solo; it's testing freedom vs. commitment—while <strong>Pluto and Neptune harmonize your Saturn</strong> the whole time. Transparent renegotiation with Tiffany strengthens foundations instead of cracking them.</p>
+      </article>
+
+      <article class="card accent-indigo">
+        <div class="card-head">
+          <h3>2. The Feb 6, 2027 Eclipse → Spring Moon Chain</h3>
+          <span class="pill indigo">Modern + Quarterly</span>
+        </div>
+        <p>Your Modern scan missed the <strong>Feb 6, 2027 Annular Solar Eclipse</strong> (17°47′ Aquarius, &lt;2° from your sect-leader Moon), while the Quarterly notes stop at Feb 28. Layering them reveals one continuous sequence: <strong>Feb 6 eclipse reset → Mar 2 Jupiter opp Moon &amp; North Node → Apr 22 Saturn sextile anchor → May 24 final pass</strong>. What shifts emotionally in early February becomes the exact seed you lock in during April.</p>
+      </article>
+
+      <article class="card accent-plum">
+        <div class="card-head">
+          <h3>3. Age-41 Profection Ignites Your Lot of Spirit 25 Days Early</h3>
+          <span class="pill plum">Hellenistic Stack</span>
+        </div>
+        <p>On <strong>Sep 15, 2027</strong>, your birthday year shifts into <strong>6th-house Scorpio</strong>—directly lighting up your <strong>natal Venus (main helper) and Lot of Spirit (calling)</strong> under your exalted, in-sect Mars in Capricorn. Just 25 days later, ZR Spirit enters its <strong>Libra Major Peak (Oct 10)</strong>, followed by Jupiter hitting your Sun (Nov 14). Daily craft turns directly into public consequence.</p>
+      </article>
+
+      <article class="card accent-teal">
+        <div class="card-head">
+          <h3>4. Stepping Out From Behind the Curtain</h3>
+          <span class="pill teal">Natal + Peak</span>
+        </div>
+        <p>Your chart ruler <strong>Mercury</strong> sits under the Sun's glare in Libra (5th)—a lifelong pattern of building smart work quietly behind the scenes. The <strong>Oct 2027 – Jun 2028 Major Peak</strong> pulls Libra straight into the 10th-from-Fortune career spotlight right as Jupiter hits your Sun. Spend 2027 deciding what deserves to be seen so you actually claim visibility when the curtain rises.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- CONFLICTS -->
+  <section id="conflicts">
+    <h2>Where the Clocks Conflict (and How to Read Them)</h2>
+    <p class="sec-sub">Four genuine tensions across the vault—each turns into sharper guidance once reconciled.</p>
+
+    <div class="conflict-list">
+      <div class="conflict">
+        <div class="conflict-top">
+          <h3>How "loud" is 2026 – mid 2027?</h3>
+          <span class="pill indigo">Inner vs. Outer</span>
+        </div>
+        <div class="conflict-grid">
+          <div class="vs-box"><b>Modern Scan</b>"Peak reinvention" (Uranus 200 in Oct 2026) + "busiest stretch" (Spring 2027).</div>
+          <div class="vs-box"><b>Hellenistic ZR</b>Quieter, non-peak engine-room prep through Oct 2027.</div>
+        </div>
+        <div class="resolve"><strong>Resolution:</strong> Outer planets measure <em>internal itch &amp; identity renovation</em>; ZR measures <em>external career prominence</em>. Feel the urgency inside now, expect outside recognition later.</div>
+      </div>
+
+      <div class="conflict">
+        <div class="conflict-top">
+          <h3>Feb 9 – 22, 2027: Green light or slow-down?</h3>
+          <span class="pill crimson">Within Hellenistic</span>
+        </div>
+        <div class="conflict-grid">
+          <div class="vs-box"><b>Timing Playbook</b>Rates Feb 14–22 as <code>++</code>: Venus on Fortune/Mars/Sun + Pisces career month (pay/body gains).</div>
+          <div class="vs-box"><b>Plain Forecast</b>Calls Feb 6–25 a slow-down stretch (Feb 6 Moon eclipse, Feb 9 Mercury Rx, Tiffany's Saturn square).</div>
+        </div>
+        <div class="resolve"><strong>Resolution:</strong> Great for <em>private financial/body traction</em> and carrying extra load while Tiffany rests; <strong>bad for cold launches or signing new external contracts</strong> (Mercury Rx Feb 9 – Mar 3).</div>
+      </div>
+
+      <div class="conflict">
+        <div class="conflict-top">
+          <h3>Late 2027 – Mid 2028: Effortless luck or earned grind?</h3>
+          <span class="pill amber">Jupiter Quality</span>
+        </div>
+        <div class="conflict-grid">
+          <div class="vs-box"><b>Modern Lens</b>Jupiter conj Sun = classic 12-year luck, confidence, ease.</div>
+          <div class="vs-box"><b>Hellenistic Lens</b>Night-chart Jupiter is out of sect, retrograde, and Saturn-overcome; Fortune sits in 7th-house Sagittarius.</div>
+        </div>
+        <div class="resolve"><strong>Resolution:</strong> Plan for <strong>high-yield, earned breakthroughs</strong>—not passive windfalls. Preparation done in 2026–2027 determines the size of the 2028 payoff.</div>
+      </div>
+
+      <div class="conflict">
+        <div class="conflict-top">
+          <h3>Oct 23, 2026: Maximum disruption vs. quiet restoration</h3>
+          <span class="pill">Personal vs. Collective</span>
+        </div>
+        <div class="conflict-grid">
+          <div class="vs-box"><b>Personal Astrolog</b>Uranus exact on Ascendant (power 200 — highest spike of 2025–2028).</div>
+          <div class="vs-box"><b>Chani Weekly</b>Quiet, restorative Venus cazimi for Gemini Rising.</div>
+        </div>
+        <div class="resolve"><strong>Resolution:</strong> <strong>Exact personal degrees beat generic rising-sign weather.</strong> Whenever a weekly reading collides with a hit to your 4° Gem/Sag or 19°–25° Aqu degrees, trust the personal hit.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAYBOOK -->
+  <section id="playbook">
+    <h2>Phase-by-Phase Playbook</h2>
+    <p class="sec-sub">What each window is for—so you can prepare mentally ahead of time.</p>
+
+    <article class="phase" id="p0">
+      <div class="phase-top">
+        <h3>Now – Dec 2026 · Quick Wins, Audit &amp; Sanctuary</h3>
+        <span class="phase-dates">2026-11-24 → 12-31</span>
+      </div>
+      <p class="phase-transits">Venus in Libra to Dec 4 · Mercury enters glare Dec 4 · Mars in 4th · Venus Return Dec 13 · Christmas pocket Dec 25–27</p>
+      <div class="do-avoid">
+        <div class="da-box do">
+          <div class="da-title">Optimal Moves</div>
+          <ul>
+            <li><strong>Before Dec 4:</strong> Ship one creative/career piece, make one ask, sign formal paper.</li>
+            <li><strong>Audit Jul–Nov 2026:</strong> Note what felt stale or electric (especially Jul 30 &amp; Oct 23)—that's your 18-month thesis.</li>
+            <li><strong>Dec 7–30:</strong> Run physical home projects; reset daily routines Dec 13; recharge Dec 25–27 while letting Tiffany enjoy her best month.</li>
+          </ul>
+        </div>
+        <div class="da-box avoid">
+          <div class="da-title">Watch-Outs</div>
+          <ul>
+            <li>Keep <strong>Nov 26</strong> and <strong>Dec 7–12</strong> low-friction.</li>
+            <li>Skip rushing fine-print contracts after Dec 4 (Mercury in glare).</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="phase" id="p1">
+      <div class="phase-top">
+        <h3>Phase 1 · Deepen, Renegotiate &amp; Eclipse Reset</h3>
+        <span class="phase-dates">2027-01 → 02</span>
+      </div>
+      <p class="phase-transits">Mars Rx Jan 10 · Venus on Saturn Jan 11 · Pluto trine Asc #3 Jan 20 · Tiffany's peak Jan 20–29 · Solar Eclipse on Moon Feb 6 · Mercury Rx Feb 9–Mar 3</p>
+      <div class="do-avoid">
+        <div class="da-box do">
+          <div class="da-title">Optimal Moves</div>
+          <ul>
+            <li><strong>Jan 11 &amp; Jan 20:</strong> Have one honest commitment/boundary talk; prune Jul–Nov experiments down to 1–2 durable builds.</li>
+            <li><strong>Jan 25 – Feb 8:</strong> Clean signing window; back Tiffany's #1 career peak (Jan 20–29).</li>
+            <li><strong>Feb 14–22:</strong> Quiet practical/money/body traction while carrying extra weight as Tiffany rests.</li>
+          </ul>
+        </div>
+        <div class="da-box avoid">
+          <div class="da-title">Watch-Outs</div>
+          <ul>
+            <li>Don't force stalled gears <strong>Jan 10–16</strong> or start new home tear-downs under Mars Rx.</li>
+            <li>Don't react impulsively to the <strong>Feb 6 Moon eclipse</strong>—observe first.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="phase" id="p2">
+      <div class="phase-top">
+        <h3>Phase 2 · The Convergence &amp; Upgrade <span class="pill amber">Busiest Stretch</span></h3>
+        <span class="phase-dates">2027-03 → 06</span>
+      </div>
+      <p class="phase-transits">Jupiter opp Moon #2 Mar 2 (+ Node) · Neptune sextile Asc #1 Apr 17 · Saturn sextile Moon Apr 22 · Uranus conj Asc #3 May 13 (180) · Jupiter opp Moon #3 May 24</p>
+      <div class="do-avoid">
+        <div class="da-box do">
+          <div class="da-title">Optimal Moves</div>
+          <ul>
+            <li><strong>March:</strong> Expand through other people—mentors, travel, study, sharp outside feedback on the Feb 6 eclipse thread.</li>
+            <li><strong>Apr 17–22 (Best anchor of 2027):</strong> Pair Neptune vision with Saturn structure—lock in 1–2 concrete habits, schedules, or flagship containers.</li>
+            <li><strong>May 13–24:</strong> Graduate from "testing" to "embodying"—make the visible voice, workflow, or identity pivot.</li>
+          </ul>
+        </div>
+        <div class="da-box avoid">
+          <div class="da-title">Watch-Outs</div>
+          <ul>
+            <li>Gemini/Uranus scatter: saying yes to 5 directions in March and finishing none. Let Apr 22 filter ruthlessly.</li>
+            <li>Reactive impatience with obligations as Fortune enters 7th house (Jun 12).</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="phase" id="p3">
+      <div class="phase-top">
+        <h3>Phase 3 · Clear the Base &amp; Dress Rehearsal</h3>
+        <span class="phase-dates">2027-07 → 10</span>
+      </div>
+      <p class="phase-transits">Mars conj 4th-house Sun Jul · Age 41 Scorpio/Spirit Profection Sep 15 · Pluto trine Asc #4 Sep 16 · Neptune sextile Asc #2 Oct 7 · Major Peak opens Oct 10</p>
+      <div class="do-avoid">
+        <div class="da-box do">
+          <div class="da-title">Optimal Moves</div>
+          <ul>
+            <li><strong>July:</strong> Burn off home, property, or family loose ends decisively so your foundation is rock-solid.</li>
+            <li><strong>Sep 16 – Oct 7:</strong> Polish your flagship narrative, craft, and positioning right before the curtain rises on Oct 10.</li>
+          </ul>
+        </div>
+        <div class="da-box avoid">
+          <div class="da-title">Watch-Outs</div>
+          <ul>
+            <li>Coasting during the Uranus lull (Aug–Nov) or dragging unresolved domestic clutter into your fall launch.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="phase peak" id="p4">
+      <div class="phase-top">
+        <h3>Phase 4 · The Spotlight &amp; Earned Payoff <span class="pill plum">Headline Apex</span></h3>
+        <span class="phase-dates">2027-11 → 2028-07</span>
+      </div>
+      <p class="phase-transits">ZR Libra Major Peak (to Jun 6) · Jupiter conj Sun #1 Nov 14 · Pluto trine #5 Nov 17 · Uranus near-pass Feb (172) + Neptune #3 Feb 17 · Jupiter conj Sun #2 Mar 13 (181) · #3 Jul 13</p>
+      <div class="do-avoid">
+        <div class="da-box do">
+          <div class="da-title">Optimal Moves</div>
+          <ul>
+            <li><strong>Nov 2027:</strong> Launch, pitch, publish, or claim larger scope—Jupiter + final Pluto trine makes moves stick.</li>
+            <li><strong>Feb – Mar 2028 (The Apex):</strong> Aim your boldest career/visibility asks or major home/property/family upgrades right here.</li>
+            <li><strong>May – Jul 2028:</strong> Harvest results and stabilize your upgraded baseline before Uranus exits orb.</li>
+          </ul>
+        </div>
+        <div class="da-box avoid">
+          <div class="da-title">Watch-Outs</div>
+          <ul>
+            <li>Hiding behind the curtain out of Mercury habit when the sky is offering visibility.</li>
+            <li>Neglecting partnership boundaries or sleep while accelerating (Fortune in 7th Sagittarius to Jun 2028).</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <h3 style="margin:1.6rem 0 .7rem">Six Mental Operating Rules</h3>
+    <div class="rules">
+      <div class="rule">
+        <div class="rule-n">01 · PROACTIVE NOVELTY</div>
+        <h3>Feed Uranus on purpose</h3>
+        <p>Schedule fresh tools, skills, writing upgrades, and style refreshes so restlessness drives creativity instead of blowups.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-n">02 · RIGHT SCOREBOARD</div>
+        <h3>Workshop now, spotlight later</h3>
+        <p>Grade 2026–2027 by alignment and craft—not instant applause. The public dividend arrives Nov 2027 – Jul 2028.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-n">03 · ACTIVE SEXTILES</div>
+        <h3>Book the gentle openings</h3>
+        <p>Sextiles don't fire on autopilot. Intentionally block creative reflection (Apr 17, Oct 7, Feb 17) and commitment reviews (Apr 22, Dec–Jan).</p>
+      </div>
+      <div class="rule">
+        <div class="rule-n">04 · CO-EVOLVE</div>
+        <h3>Upgrade commitments together</h3>
+        <p>Keep Tiffany in the loop early as your tastes evolve. Pluto and Neptune back your Saturn—honest renegotiation builds trust.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-n">05 · VISIBILITY</div>
+        <h3>Step out from the curtain</h3>
+        <p>Decide during 2027 what work deserves credit, so you actually publish and ask when Oct 2027 – Mar 2028 opens.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-n">06 · STAMINA</div>
+        <h3>Guard routines as infrastructure</h3>
+        <p>6th-house Venus and 7th-house Saturn punish burnout. Protect sleep and pacing through Jan/Feb 2027 and the 2028 surge.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BY LIFE AREA -->
+  <section id="areas">
+    <h2>Match the Window to the Goal</h2>
+    <p class="sec-sub">Tap a focus area to isolate your best windows across the next 20 months.</p>
+
+    <div class="filter-row" id="areaFilters">
+      <button class="fbtn on" data-f="all" type="button">All</button>
+      <button class="fbtn" data-f="career" type="button">Career</button>
+      <button class="fbtn" data-f="creative" type="button">Creative &amp; Tools</button>
+      <button class="fbtn" data-f="home" type="button">Home &amp; Roots</button>
+      <button class="fbtn" data-f="partner" type="button">Partnership</button>
+      <button class="fbtn" data-f="study" type="button">Study &amp; Travel</button>
+      <button class="fbtn" data-f="money" type="button">Money &amp; Signings</button>
+    </div>
+
+    <div class="area-grid" id="areaGrid">
+      <div class="area-card" data-cat="career">
+        <h3>Career &amp; Visibility</h3>
+        <div class="area-line"><b>Primary:</b> Oct 2027 – Jun 2028 (apex Nov 2027 &amp; Feb–Mar 2028)</div>
+        <div class="area-line"><b>Near-term:</b> Nov 24 – Dec 24, 2026; Feb 15+ &amp; May 2027</div>
+        <div class="area-warn">Watch: Don't stay hidden out of habit in 2028; earn growth cleanly.</div>
+      </div>
+      <div class="area-card" data-cat="creative">
+        <h3>Creative Builds, Tools &amp; Voice</h3>
+        <div class="area-line"><b>Primary:</b> Nov 22 – Dec 3, 2026; Apr 17 – May 24, 2027; Sep–Nov 2027</div>
+        <div class="area-line"><b>Prep:</b> All Age 40 (to Sep 2027); Jan 20, 2027 deepening</div>
+        <div class="area-warn">Watch: Scatter in Mar 2027—filter ruthlessly on Apr 22.</div>
+      </div>
+      <div class="area-card" data-cat="home">
+        <h3>Home, Property &amp; Foundations</h3>
+        <div class="area-line"><b>Primary:</b> Nov 2027 – Jul 2028 (Jupiter on 4th Sun, apex Mar 2028)</div>
+        <div class="area-line"><b>Prep:</b> Dec 2026 (physical projects); Jul 2027 (Mars clears friction)</div>
+        <div class="area-warn">Watch: Jan 10 – Feb 21, 2027 (Mars Rx: finish/redo only).</div>
+      </div>
+      <div class="area-card" data-cat="partner">
+        <h3>Partnership &amp; Commitments (Tiffany)</h3>
+        <div class="area-line"><b>Primary:</b> Nov 22 – Dec 3, 2026; Apr &amp; Nov 2027 (supported renegotiation)</div>
+        <div class="area-line"><b>Support:</b> Back Tiffany Jan 20–29, 2027; carry weight Feb 14–22</div>
+        <div class="area-warn">Watch: ~Jan 11, 2027 gravity; Jun 2027–Jun 2028 boundary check.</div>
+      </div>
+      <div class="area-card" data-cat="study">
+        <h3>Study, Travel &amp; Worldview</h3>
+        <div class="area-line"><b>Primary:</b> Mar 2 – May 24, 2027 (Jupiter opp Moon + Apr 22 anchor)</div>
+        <div class="area-line"><b>Prep:</b> Dec 25–27, 2026; Jan 20, 2027 (Pluto in 9th)</div>
+        <div class="area-warn">Watch: Feb 6, 2027 Moon eclipse—observe first, commit in April.</div>
+      </div>
+      <div class="area-card" data-cat="money">
+        <h3>Money, Health &amp; Formal Signings</h3>
+        <div class="area-line"><b>Money/Body:</b> Feb 9–22, 2027; Dec 2026 (via craft); Nov 2027–Jul 2028</div>
+        <div class="area-line"><b>Clean Signings:</b> Before Dec 4, 2026 · Jan 25 – Feb 8, 2027 · After Mar 3</div>
+        <div class="area-warn">Watch: Avoid signing Dec 4–Jan 24 (glare) &amp; Feb 9–Mar 3 (Mercury Rx).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPANDABLE DATES & SCOREBOARD -->
+  <section id="dates">
+    <h2>Reference Ledger &amp; Empirical Scoreboard</h2>
+    <p class="sec-sub">Expand when you want exact dates or calibration checkpoints.</p>
+
+    <details>
+      <summary>Full Chronological Date Ledger (25 Key Inflection Points, Nov 2026 – 2030)</summary>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Clock</th><th>Event &amp; Tactical Meaning</th></tr></thead>
+          <tbody>
+            <tr><td class="dt">2026-11-22–12-03</td><td>Hellenistic</td><td><strong>#1 Q1 green light:</strong> Venus in Libra (year house), sextile Jupiter Nov 28. Ship &amp; sign before Dec 4.</td></tr>
+            <tr><td class="dt">2026-12-04</td><td>Hellenistic</td><td>Venus leaves Libra; Mercury enters glare (to Jan 25). Shift to building &amp; sanctuary.</td></tr>
+            <tr><td class="dt">2026-12-13 / 25–27</td><td>Hellenistic</td><td>Venus Return (routine reset) + Christmas #2 pocket (trine Jupiter, supports Moon).</td></tr>
+            <tr><td class="dt">2027-01-10–11</td><td>Hellenistic</td><td>Mars stations Rx in 4th; Venus meets natal Saturn (weighty boundary talk; redo home projects).</td></tr>
+            <tr><td class="dt">2027-01-20</td><td>Modern</td><td><strong>Pluto trine Asc #3</strong> (+ sextile Saturn): deepen 1–2 experiments into lasting systems.</td></tr>
+            <tr><td class="dt">2027-01-20–29</td><td>Hellenistic</td><td>Tiffany's #1 peak; Steven gets brief clarity Jan 24/28. <strong>Signing window: Jan 25 – Feb 8.</strong></td></tr>
+            <tr><td class="dt">2027-02-06</td><td>Sky / Hell.</td><td><strong>Annular Solar Eclipse (17°47′ Aqu, &lt;2° from Moon):</strong> emotional/worldview reset launching Spring arc.</td></tr>
+            <tr><td class="dt">2027-02-09–03-03</td><td>Sky / Hell.</td><td>Mercury Rx (draft, don't sign). Quiet money/body lift for Steven <strong>Feb 14–22</strong> while Tiffany rests.</td></tr>
+            <tr><td class="dt">2027-03-02</td><td>Modern</td><td><strong>Jupiter opp Moon #2</strong> (+ Mar North Node on Moon): expand through mentors, travel, collaborators.</td></tr>
+            <tr><td class="dt">2027-04-17</td><td>Modern</td><td><strong>Neptune sextile Asc #1</strong> (+ trine Saturn): schedule creative/intuitive exploration deliberately.</td></tr>
+            <tr><td class="dt">2027-04-22</td><td>Modern</td><td><strong>Saturn sextile Moon:</strong> best structural anchor of 2027—formalize 1–2 flagship commitments.</td></tr>
+            <tr><td class="dt">2027-05-13</td><td>Modern</td><td><strong>Uranus conj Asc #3 (final exact, power 180):</strong> step visibly into the upgraded identity/workflow.</td></tr>
+            <tr><td class="dt">2027-05-24</td><td>Modern</td><td><strong>Jupiter opp Moon #3:</strong> close and integrate the Spring worldview/network expansion.</td></tr>
+            <tr><td class="dt">2027-06-12</td><td>Hellenistic</td><td>ZR Fortune shifts into 7th-house Sagittarius (to Jun 2028): partnership &amp; boundaries stay central.</td></tr>
+            <tr><td class="dt">2027-07</td><td>Modern</td><td>Mars conj 4th-house Virgo Sun: clear home, property, and foundation friction cleanly.</td></tr>
+            <tr><td class="dt">2027-09-15</td><td>Hellenistic</td><td><strong>Age 41 Profection (6th Scorpio, LoY Mars):</strong> ignites natal Venus + Lot of Spirit.</td></tr>
+            <tr><td class="dt">2027-09-16 / 10-07</td><td>Modern</td><td>Pluto trine Asc #4 + Neptune sextile Asc #2: final polish &amp; dress rehearsal before launch.</td></tr>
+            <tr class="hl"><td class="dt">2027-10-10</td><td>Hellenistic</td><td><strong>ZR Spirit MAJOR PEAK begins (Libra, to Jun 6, 2028):</strong> Mercury &amp; creative craft enter career spotlight.</td></tr>
+            <tr class="hl"><td class="dt">2027-11-14 / 17</td><td>Modern</td><td><strong>Jupiter conj Sun #1 + final Pluto trine #5:</strong> launch, pitch, and stake lasting claims.</td></tr>
+            <tr><td class="dt">2027-12–2028-01</td><td>Modern</td><td>Saturn sextile Moon returns: steady discipline and pacing into the apex.</td></tr>
+            <tr class="hl"><td class="dt">2028-02 / 02-17</td><td>Modern</td><td><strong>Uranus final near-pass (power 172) + final Neptune sextile #3:</strong> final outer-planet culmination.</td></tr>
+            <tr class="hl"><td class="dt">2028-03-13</td><td>Modern</td><td><strong>Jupiter conj Sun #2 (peak power 181):</strong> THE APEX of the 2026–2028 arc (career + 4th-house home).</td></tr>
+            <tr><td class="dt">2028-06-06</td><td>Hellenistic</td><td>ZR Major Peak &amp; Fortune Sagittarius sub-chapter close; consolidate reputation and gains.</td></tr>
+            <tr><td class="dt">2028-07-13</td><td>Modern</td><td><strong>Jupiter conj Sun #3</strong> as Uranus exits orb: final harvest &amp; new baseline.</td></tr>
+            <tr><td class="dt">2030-08-25</td><td>Hellenistic</td><td>Next dual-lot turning point (Loosing of the Bond, echoing 2013): multi-year pivot 2030–2032.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details>
+      <summary>Empirical Track Record &amp; Forward Checkpoints</summary>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Window</th><th>Prediction / Test</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="dt">2013-04-26</td><td>Dual-lot ZR chapter flip → confirmed etched-in-mind turning point (Apr/May 2013)</td><td><span class="pill teal">Confirmed ✓</span></td></tr>
+            <tr><td class="dt">2018-12–2020-03</td><td>ZR Spirit minor peak → confirmed 2019 financial audit (busiest work period to date)</td><td><span class="pill teal">Confirmed ✓</span></td></tr>
+            <tr><td class="dt">2022-07–2024-07</td><td>ZR Spirit moderate peak → confirmed pivotal vocation &amp; direction shift</td><td><span class="pill teal">Confirmed ✓</span></td></tr>
+            <tr><td class="dt">2026-07 &amp; 10-23</td><td>Score now: Did late Oct feel like Uranus disruption (power 200) or Chani Venus cazimi?</td><td><span class="pill amber">Log Now</span></td></tr>
+            <tr><td class="dt">2027-03-01</td><td>Score 12 dated quarterly playbook predictions (≥6/12 = evidence for)</td><td><span class="pill indigo">Scheduled</span></td></tr>
+            <tr><td class="dt">2027-10–2028-06</td><td>Headline joint test: Hellenistic Major Peak + Age 41 Spirit + Jupiter conj Sun</td><td><span class="pill plum">Calendar Set</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Synthesized 2026-11-24 from vault notes: <em>Steven - Timing Hub</em>, <em>Steven - Ascendant Years Forecast 2026-06 to 2028-07</em>, <em>Astrolog Research - Steven Long Transits 2025-01 to 2028-12</em>, <em>Hellenistic - Natal Reading Steven 2026-11-19</em>, <em>Hellenistic - Steven and Tiffany Timing Playbook &amp; Forecast (Nov 2026 – Feb 2027)</em>, and Chani Gemini Rising overlays. Exact Ascendant dates assume birth-certificate 22:29 (AA); Sun/Moon/Jupiter dates are birth-time independent.
+  </footer>
+</main>
+
+<script>
+(function(){
+  // Dark mode toggle with localStorage persistence
+  var btn = document.getElementById('themeBtn');
+  var saved = null;
+  try { saved = localStorage.getItem('steven-timing-theme'); } catch(e){}
+  if (saved === 'dark') {
+    document.body.classList.add('dark');
+    btn.textContent = 'Light';
+  }
+  btn.addEventListener('click', function(){
+    var isDark = document.body.classList.toggle('dark');
+    btn.textContent = isDark ? 'Light' : 'Dark';
+    try { localStorage.setItem('steven-timing-theme', isDark ? 'dark' : 'light'); } catch(e){}
+  });
+
+  // Life-area filter buttons
+  var filters = document.getElementById('areaFilters');
+  var cards = document.querySelectorAll('#areaGrid .area-card');
+  filters.addEventListener('click', function(e){
+    var b = e.target.closest('.fbtn');
+    if (!b) return;
+    filters.querySelectorAll('.fbtn').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    var cat = b.getAttribute('data-f');
+    cards.forEach(function(c){
+      c.classList.toggle('hide', cat !== 'all' && c.getAttribute('data-cat') !== cat);
+    });
+  });
+
+  // Active section highlight in sticky nav
+  var links = document.querySelectorAll('.subnav a[href^="#"]');
+  var secs = Array.from(links).map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) {
+          var id = '#' + en.target.id;
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    secs.forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
