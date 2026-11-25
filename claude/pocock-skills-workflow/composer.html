@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prompt &amp; Artifact Composer — Matt Pocock’s Skills (v1.3.2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F6F4EE;
+      --surface: #FFFFFF;
+      --surface-recessed: #EFECE4;
+      --surface-code: #FAF8F3;
+      --ink: #181715;
+      --ink-2: #55514A;
+      --ink-3: #868076;
+      --hairline: #E4DFD4;
+      --hairline-strong: #CEC7B8;
+
+      --spine: #0D6E64;
+      --spine-tint: rgba(13, 110, 100, 0.075);
+      --spine-border: rgba(13, 110, 100, 0.30);
+
+      --reset: #C25E12;
+      --reset-tint: rgba(194, 94, 18, 0.085);
+      --reset-border: rgba(194, 94, 18, 0.35);
+
+      --shadow-card: 0 1px 2px rgba(24, 23, 21, 0.04), 0 4px 12px rgba(24, 23, 21, 0.03);
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="obsidian"] {
+      --bg: #0F1114;
+      --surface: #171A1F;
+      --surface-recessed: #13161B;
+      --surface-code: #12151A;
+      --ink: #F0EDE6;
+      --ink-2: #A6A198;
+      --ink-3: #706C65;
+      --hairline: #252A32;
+      --hairline-strong: #373E49;
+
+      --spine: #2DD4BF;
+      --spine-tint: rgba(45, 212, 191, 0.08);
+      --spine-border: rgba(45, 212, 191, 0.30);
+
+      --reset: #F59E0B;
+      --reset-tint: rgba(245, 158, 11, 0.11);
+      --reset-border: rgba(245, 158, 11, 0.35);
+
+      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    code, pre { font-family: var(--font-mono); }
+
+    .topbar {
+      position: sticky;
+      top: 33px;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .brand h1 em { font-style: italic; color: var(--spine); }
+
+    .site-nav {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 2px;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      font-size: 0.76rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink-2);
+      transition: all 140ms ease;
+    }
+
+    .nav-link:hover { color: var(--ink); }
+    .nav-link.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .btn:hover { border-color: var(--hairline-strong); color: var(--ink); }
+    .btn.primary { background: var(--spine); border-color: var(--spine); color: #FFFFFF; }
+    [data-theme="obsidian"] .btn.primary { color: #0F1114; font-weight: 600; }
+
+    .page {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 26px 28px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .sec-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .sec-head h2 {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+    }
+
+    .sec-head p { font-size: 0.84rem; color: var(--ink-3); }
+
+    /* Composer Card */
+    .composer-grid {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--surface-recessed);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .panel-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .sit-btn {
+      text-align: left;
+      font-family: inherit;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 9px 11px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: all 140ms ease;
+    }
+
+    .sit-btn:hover { border-color: var(--hairline-strong); }
+    .sit-btn.active {
+      background: var(--spine-tint);
+      border-color: var(--spine);
+    }
+
+    .sit-btn strong { font-size: 0.8rem; color: var(--ink); }
+    .sit-btn span { font-family: var(--font-mono); font-size: 0.67rem; color: var(--spine); }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-3);
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: 8px 11px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline-strong);
+      background: var(--surface-code);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 0.84rem;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field textarea:focus { border-color: var(--spine); }
+
+    .field textarea { resize: vertical; min-height: 68px; }
+
+    /* Output Sequence Strip */
+    .seq-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--spine-tint);
+    }
+
+    .seq-step {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--spine-border);
+      color: var(--spine);
+    }
+
+    .seq-step.is-clear {
+      border-color: var(--reset-border);
+      background: var(--reset-tint);
+      color: var(--reset);
+    }
+
+    .prompt-out {
+      background: var(--surface-code);
+      padding: 18px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.62;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 210px;
+    }
+
+    .rule-note {
+      padding: 12px 18px;
+      border-top: 1px solid var(--hairline);
+      font-size: 0.8rem;
+      color: var(--ink-2);
+      background: color-mix(in srgb, var(--surface-recessed) 50%, var(--surface));
+    }
+
+    /* Starter Artifact Templates */
+    .tmpl-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--surface-recessed);
+    }
+
+    .tmpl-tab {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 5px 11px;
+      border-radius: 6px;
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    .tmpl-tab.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+      font-weight: 600;
+    }
+
+    .tmpl-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+    }
+
+    .tmpl-pre {
+      background: var(--surface-code);
+      padding: 20px 22px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.6;
+      color: var(--ink);
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    @media (max-width: 960px) {
+      .composer-grid { grid-template-columns: 1fr; }
+      .topbar-inner, .page { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>Prompt &amp; Artifact <em>Composer</em></h1>
+      </div>
+      <nav class="site-nav" aria-label="Companion pages">
+        <a class="nav-link" href="index.html">Atlas</a>
+        <a class="nav-link" href="paths.html">Paths</a>
+        <a class="nav-link" href="pomodoro.html">Pomodoro</a>
+        <a class="nav-link" href="legacy.html">Legacy</a>
+        <a class="nav-link" href="drills.html">Drills</a>
+        <a class="nav-link active" href="composer.html">Composer</a>
+        <a class="nav-link" href="craft.html">Craft Lab</a>
+      </nav>
+      <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- 1. LIVE SESSION LAUNCHER -->
+    <section>
+      <div class="sec-head">
+        <h2>Session Prompt Launcher</h2>
+        <p>Pick your situation, fill in 2–3 quick details, and copy a disciplined starter prompt straight into your coding agent.</p>
+      </div>
+
+      <div class="composer-grid">
+        <div class="panel">
+          <div class="panel-head"><span>1 · Configure Situation</span></div>
+          <div class="panel-body">
+            <div class="sit-grid" id="sitGrid"></div>
+            <div id="fieldsWrap" style="display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span id="outLabel">2 · Copy-Ready Starter Prompt</span>
+            <button id="copyPromptBtn" class="btn primary" type="button" style="padding:4px 11px; font-size:0.74rem;">Copy Prompt</button>
+          </div>
+          <div class="seq-strip" id="seqStrip"></div>
+          <pre class="prompt-out" id="promptOut"></pre>
+          <div class="rule-note" id="ruleNote"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. STARTER REPO ARTIFACT TEMPLATES -->
+    <section>
+      <div class="sec-head">
+        <h2>Starter Repo Artifacts (v1.3.2 Conventions)</h2>
+        <p>Ready-to-drop Markdown files following the <code>GLOSSARY.md</code>, ADR, and lean <code>AGENTS.md</code> conventions.</p>
+      </div>
+
+      <div class="panel">
+        <div class="tmpl-tabs" id="tmplTabs"></div>
+        <pre class="tmpl-pre" id="tmplPre"></pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SITUATIONS = [
+      {
+        id: 'feature', label: 'New Feature', cmd: '/grill-with-docs',
+        seq: ['/grill-with-docs', '/to-spec', '/to-tickets', '✂ /clear', '/implement-spec', '/code-review', '/pr'],
+        rule: 'Keep steps 1–3 in ONE unbroken context window. Clear context completely before running /implement or /implement-spec.',
+        fields: [
+          { key: 'goal', label: 'What are you building?', placeholder: 'e.g. Keyboard shortcuts for the Pomodoro timer' },
+          { key: 'scope', label: 'Key constraints / non-goals', placeholder: 'e.g. Ignore inputs, no external deps, local-first only' },
+          { key: 'stack', label: 'Repo / Stack', placeholder: 'e.g. Vite + React + TypeScript + Vitest' }
+        ],
+        build: v => `/grill-with-docs
+
+I want to build: ${v.goal || '<describe feature>'}
+Stack: ${v.stack || '<your stack>'}
+Constraints / non-goals: ${v.scope || '<key constraints>'}
+
+Interview me relentlessly down every branch of the design tree before we write any spec or code. Update GLOSSARY.md and propose ADRs under docs/adr/ as decisions settle.`
+      },
+      {
+        id: 'bug', label: 'Stubborn Bug', cmd: '/diagnosing-bugs',
+        seq: ['/diagnosing-bugs', '/tdd', '/code-review', '/pr', '/retro'],
+        rule: 'Start in a FRESH context window. Refuse any code edits until a single deterministic command reproduces the failure.',
+        fields: [
+          { key: 'issue', label: 'Issue ID / Title', placeholder: 'e.g. #811 Duplicate charge on Stripe retry' },
+          { key: 'symptom', label: 'Observed symptom', placeholder: 'e.g. Parallel webhook retries both create a Charge row' },
+          { key: 'area', label: 'Suspected file / area', placeholder: 'e.g. packages/billing/src/webhooks.ts' }
+        ],
+        build: v => `/diagnosing-bugs ${v.issue || '#<issue>'}
+
+Observed symptom: ${v.symptom || '<what breaks and when>'}
+Area: ${v.area || '<module or file path>'}
+
+Do not theorize or patch production code yet. First build a single deterministic red-repro command that fails on this exact bug, minimize it, isolate root cause, fix it, and lock in a regression test (note any missing seam if untestable).`
+      },
+      {
+        id: 'handoff', label: 'Context > 100k', cmd: '/handoff',
+        seq: ['/handoff', '✂ /clear', 'Paste into fresh 0k window'],
+        rule: 'Never let auto-compaction blur settled constraints past ~100–125k tokens. Run /handoff, clear, and paste the output into a fresh window.',
+        fields: [
+          { key: 'next', label: 'Exact next step after clearing', placeholder: 'e.g. Run /to-spec for Team Study Rooms' },
+          { key: 'keep', label: 'Must-preserve decisions', placeholder: 'e.g. SSE over WebSockets, 6-char room code, 2h idle TTL' }
+        ],
+        build: v => `/handoff
+
+We are approaching the context limit and will clear into a fresh window.
+Next step in the new window: ${v.next || '<next command or ticket>'}
+Make sure the handoff explicitly preserves: ${v.keep || '<settled decisions & file paths>'}
+
+Compress settled decisions, dead ends we already ruled out, modified files, and the exact next command so a fresh 0k agent can resume immediately.`
+      },
+      {
+        id: 'foggy', label: 'Foggy Big Idea', cmd: '/wayfinder',
+        seq: ['/wayfinder', '/research', '/prototype', '/handoff', '→ /to-spec'],
+        rule: 'Don’t force a sprawling idea straight into /to-spec. Settle macro decisions first, then converge back to Step 02.',
+        fields: [
+          { key: 'goal', label: 'High-level initiative', placeholder: 'e.g. Team Study Rooms with live presence' },
+          { key: 'unknowns', label: 'Biggest unknowns', placeholder: 'e.g. Transport (SSE vs WS), auth model, mobile layout' }
+        ],
+        build: v => `/wayfinder
+
+Initiative: ${v.goal || '<foggy high-level goal>'}
+Known unknowns: ${v.unknowns || '<what feels fuzzy or risky>'}
+
+Map this into explicit decision tickets so we can settle unknowns systematically (via /research or /prototype where needed) before writing a spec.`
+      },
+      {
+        id: 'sme', label: 'Ask a Colleague', cmd: '/to-questionnaire',
+        seq: ['/to-questionnaire', 'Send async .md', '→ /to-spec'],
+        rule: 'Never guess product, legal, or stakeholder rules mid-grilling. Capture crisp decision-oriented questions in an async Markdown form.',
+        fields: [
+          { key: 'who', label: 'Who is answering?', placeholder: 'e.g. Product Lead + Legal counsel' },
+          { key: 'qs', label: 'Open decisions blocking you', placeholder: 'e.g. Data retention window, manager visibility of pause counts' }
+        ],
+        build: v => `/to-questionnaire
+
+Recipient: ${v.who || '<role / teammate>'}
+Blocking decisions we cannot answer from the codebase: ${v.qs || '<list open questions>'}
+
+Interview me briefly about the send, then write a concise async Markdown questionnaire (to-questionnaire-<slug>.md) optimized for fast, unambiguous answers.`
+      },
+      {
+        id: 'setup', label: 'New Repo Setup', cmd: '/setup-matt-pocock-skills',
+        seq: ['/setup-matt-pocock-skills', '✂ /clear', '/grill-with-docs'],
+        rule: 'Run once per repository in a standalone session, then clear before starting your first feature.',
+        fields: [
+          { key: 'tracker', label: 'Issue tracker preference', placeholder: 'e.g. GitHub Issues (gh) or local .scratch/issues/' },
+          { key: 'mono', label: 'Single app or monorepo?', placeholder: 'e.g. Single app (root GLOSSARY.md) or Monorepo (GLOSSARY-MAP.md)' }
+        ],
+        build: v => `/setup-matt-pocock-skills
+
+Tracker preference: ${v.tracker || 'GitHub Issues (gh)'}
+Repo layout: ${v.mono || 'Single app (root GLOSSARY.md)'}
+
+Inspect the repo, configure docs/agents/ and GLOSSARY.md (or GLOSSARY-MAP.md), wire triage labels, and append the minimal pointer block to AGENTS.md.`
+      }
+    ];
+
+    const TEMPLATES = [
+      {
+        id: 'glossary',
+        filename: 'GLOSSARY.md',
+        content: `# Domain Glossary
+
+Canonical ubiquitous language for this repository. Every spec, ticket, ADR, and code symbol should use these exact terms.
+
+## Core Terms
+
+- **Interval**: A single timed block (Focus 25m, Short Break 5m, or Long Break 15m). Never call this a "round" or "session".
+- **Cycle**: Four completed Focus Intervals, after which a Long Break triggers.
+- **Session State**: One of \`idle | running | paused | completed\`.
+- **Wall-Clock Deadline (\`endsAt\`)**: Absolute epoch ms timestamp used to compute remaining time (\`Math.max(0, endsAt - now())\`), eliminating background-tab tick drift.
+
+## Naming Rules
+
+- Prefer domain nouns over framework nouns (\`Interval\`, not \`TimerSlice\`).
+- Update this file inline during \`/grill-with-docs\` whenever a new term settles.
+`
+      },
+      {
+        id: 'glossary-map',
+        filename: 'GLOSSARY-MAP.md',
+        content: `# Glossary Map (Monorepo Bounded Contexts)
+
+Load ONLY the glossary for the bounded context you are editing. Do not conflate identically named terms across contexts.
+
+| Bounded Context | Path | Owns |
+| :--- | :--- | :--- |
+| **Billing** | \`packages/billing/GLOSSARY.md\` | Invoice, Charge, IdempotencyKey, WebhookEvent |
+| **Auth** | \`packages/auth/GLOSSARY.md\` | Tenant, Member, Session, Role |
+| **Web App** | \`packages/web/GLOSSARY.md\` | Workspace, View, ShortcutGuard |
+`
+      },
+      {
+        id: 'adr',
+        filename: '001-wall-clock-timer.md',
+        content: `# ADR-001: Compute Remaining Time from Wall-Clock Deadlines
+
+- **Status:** Accepted
+- **Date:** 2026-11-24
+- **Context:** Browsers throttle \`setInterval\` to <=1 tick/minute in background tabs and suspend timers entirely during laptop/phone sleep. Decrementing a counter each second causes multi-minute drift.
+
+## Decision
+
+Store an absolute epoch timestamp (\`endsAt\`) when an Interval starts and compute remaining time purely as:
+
+\`\`\`ts
+remainingMs = Math.max(0, endsAt - now());
+\`\`\`
+
+All time-dependent functions accept an injectable \`now: () => number\` clock seam for deterministic unit testing.
+
+## Consequences
+
+- Zero drift across background tabs and device sleep.
+- Pause must snapshot \`remainingMs\` and recompute \`endsAt\` on resume.
+- Waking long past \`endsAt\` clamps cleanly to \`0\` in \`completed\` state without auto-starting unattended breaks.
+`
+      },
+      {
+        id: 'agents',
+        filename: 'AGENTS.md',
+        content: `# AGENTS.md
+
+Lean executive controller for coding agents. Keep under ~80 lines; point to durable docs instead of duplicating explanations models already know.
+
+## Commands
+
+- Test (single-shot): \`pnpm vitest run\` — NEVER run \`npm test\` (watch mode hangs agents).
+- Typecheck: \`pnpm typecheck\`
+- Lint: \`pnpm lint\`
+
+## Domain & Workflow Pointers
+
+- Domain terminology: \`GLOSSARY.md\`
+- Architectural decisions: \`docs/adr/\`
+- Issue tracker & triage config: \`docs/agents/issue-tracker.md\`
+
+## Non-Negotiable Guardrails
+
+- Time-dependent code MUST accept an injected \`now: () => number\` clock parameter (see \`docs/adr/001-wall-clock-timer.md\`).
+- Every \`window\`/\`document\` event listener MUST ship with an unmount cleanup test.
+- Production DB migrations on hot tables MUST use \`CREATE INDEX CONCURRENTLY\`.
+`
+      }
+    ];
+
+    let activeSit = SITUATIONS[0].id;
+    let activeTmpl = TEMPLATES[0].id;
+    const fieldValues = {};
+
+    function renderSituations() {
+      const wrap = document.getElementById('sitGrid');
+      wrap.innerHTML = SITUATIONS.map(s => `
+        <button type="button" class="sit-btn ${s.id === activeSit ? 'active' : ''}" data-sit="${s.id}">
+          <strong>${s.label}</strong>
+          <span>${s.cmd}</span>
+        </button>
+      `).join('');
+      wrap.querySelectorAll('[data-sit]').forEach(b => {
+        b.onclick = () => { activeSit = b.dataset.sit; renderComposer(); };
+      });
+    }
+
+    function renderFields() {
+      const s = SITUATIONS.find(x => x.id === activeSit);
+      const wrap = document.getElementById('fieldsWrap');
+      wrap.innerHTML = s.fields.map(f => {
+        const val = fieldValues[`${s.id}:${f.key}`] || '';
+        return `
+          <div class="field">
+            <label for="f-${f.key}">${f.label}</label>
+            <input id="f-${f.key}" type="text" placeholder="${f.placeholder}" value="${val.replace(/"/g, '&quot;')}" />
+          </div>
+        `;
+      }).join('');
+      s.fields.forEach(f => {
+        document.getElementById(`f-${f.key}`).addEventListener('input', e => {
+          fieldValues[`${s.id}:${f.key}`] = e.target.value;
+          renderOutput();
+        });
+      });
+    }
+
+    function renderOutput() {
+      const s = SITUATIONS.find(x => x.id === activeSit);
+      const vals = {};
+      s.fields.forEach(f => { vals[f.key] = (fieldValues[`${s.id}:${f.key}`] || '').trim(); });
+
+      document.getElementById('seqStrip').innerHTML = s.seq
+        .map(step => `<span class="seq-step ${step.includes('✂') ? 'is-clear' : ''}">${step}</span>`)
+        .join('<span style="color:var(--ink-3); font-size:0.75rem;">→</span>');
+
+      const outText = s.build(vals);
+      document.getElementById('promptOut').textContent = outText;
+      document.getElementById('ruleNote').innerHTML = `<strong>Context Rule:</strong> ${s.rule}`;
+
+      const copyBtn = document.getElementById('copyPromptBtn');
+      copyBtn.onclick = () => {
+        navigator.clipboard?.writeText(outText).catch(() => {});
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(() => (copyBtn.textContent = 'Copy Prompt'), 1300);
+      };
+    }
+
+    function renderComposer() {
+      renderSituations();
+      renderFields();
+      renderOutput();
+    }
+
+    function renderTemplates() {
+      const t = TEMPLATES.find(x => x.id === activeTmpl);
+      const tabs = document.getElementById('tmplTabs');
+      tabs.innerHTML = TEMPLATES.map(x => `
+        <button type="button" class="tmpl-tab ${x.id === activeTmpl ? 'active' : ''}" data-t="${x.id}">${x.filename}</button>
+      `).join('') + `
+        <div class="tmpl-actions">
+          <button type="button" class="btn" id="copyTmplBtn" style="padding:4px 10px; font-size:0.73rem;">Copy</button>
+          <button type="button" class="btn primary" id="dlTmplBtn" style="padding:4px 10px; font-size:0.73rem;">Download .md</button>
+        </div>
+      `;
+
+      tabs.querySelectorAll('[data-t]').forEach(b => {
+        b.onclick = () => { activeTmpl = b.dataset.t; renderTemplates(); };
+      });
+
+      document.getElementById('tmplPre').textContent = t.content;
+
+      document.getElementById('copyTmplBtn').onclick = e => {
+        navigator.clipboard?.writeText(t.content).catch(() => {});
+        e.target.textContent = 'Copied ✓';
+        setTimeout(() => (e.target.textContent = 'Copy'), 1300);
+      };
+
+      document.getElementById('dlTmplBtn').onclick = () => {
+        const blob = new Blob([t.content], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = t.filename;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+    }
+
+    // Synced Paper / Obsidian Theme
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeText').textContent = t === 'obsidian' ? 'Paper' : 'Obsidian';
+      try { localStorage.setItem('pocock-atlas-theme', t); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem('pocock-atlas-theme'); } catch (e) { return null; } })();
+    setTheme(savedTheme || 'paper');
+    document.getElementById('themeBtn').onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      setTheme(cur === 'obsidian' ? 'paper' : 'obsidian');
+    };
+
+    renderComposer();
+    renderTemplates();
+  </script>
+</body>
+</html>

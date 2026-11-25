@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Happy Path vs. Other Paths — Matt Pocock’s Skills (v1.3.1)</title>
+  <title>Happy Path vs. Other Paths — Matt Pocock’s Skills (v1.3.2)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -745,6 +745,20 @@
       .compare-split, .happy-summary { grid-template-columns: 1fr; }
       .topbar-inner, .page { padding-left: 16px; padding-right: 16px; }
     }
+
+    @media print {
+      @page { size: landscape; margin: 8mm; }
+      #ms-homebar, .topbar, .mode-pills, .cat-filters, .e2e-shell, #resetHappy { display: none !important; }
+      body { background: #FFFFFF !important; color: #111111 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { max-width: none !important; padding: 0 !important; gap: 10px !important; }
+      .viz-panel, .sc-card, .matrix-card { box-shadow: none !important; break-inside: avoid; }
+      .viz-head { padding: 8px 12px !important; }
+      .rail-stage { padding: 8px 12px !important; gap: 8px !important; }
+      .scenario-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
+      .sc-card { padding: 7px 9px !important; gap: 5px !important; }
+      .sc-q { font-size: 0.72rem !important; }
+      .matrix-table th, .matrix-table td { padding: 6px 10px !important; font-size: 0.72rem !important; }
+    }
   </style>
 </head>
 <body><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
@@ -756,13 +770,18 @@
         <h1>Happy Path <em>vs.</em> Other Paths</h1>
       </div>
       <nav class="site-nav" aria-label="Companion pages">
-        <a class="nav-link" href="index.html">Workflow Atlas</a>
-        <a class="nav-link active" href="paths.html">Happy vs. Other</a>
-        <a class="nav-link" href="pomodoro.html">Pomodoro Demo</a>
-        <a class="nav-link" href="legacy.html">Legacy Rescue</a>
-        <a class="nav-link" href="drills.html">Ask-Matt Drills</a>
+        <a class="nav-link" href="index.html">Atlas</a>
+        <a class="nav-link active" href="paths.html">Paths</a>
+        <a class="nav-link" href="pomodoro.html">Pomodoro</a>
+        <a class="nav-link" href="legacy.html">Legacy</a>
+        <a class="nav-link" href="drills.html">Drills</a>
+        <a class="nav-link" href="composer.html">Composer</a>
+        <a class="nav-link" href="craft.html">Craft Lab</a>
       </nav>
-      <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" type="button" onclick="window.print()" title="Print 1-page landscape cheat sheet">Print</button>
+        <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+      </div>
     </div>
   </header>
 

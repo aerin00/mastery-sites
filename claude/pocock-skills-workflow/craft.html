@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spot the Slop Craft Lab — Matt Pocock’s Skills (v1.3.2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F6F4EE;
+      --surface: #FFFFFF;
+      --surface-recessed: #EFECE4;
+      --surface-code: #FAF8F3;
+      --ink: #181715;
+      --ink-2: #55514A;
+      --ink-3: #868076;
+      --hairline: #E4DFD4;
+      --hairline-strong: #CEC7B8;
+
+      --spine: #0D6E64;
+      --spine-tint: rgba(13, 110, 100, 0.08);
+      --spine-border: rgba(13, 110, 100, 0.30);
+
+      --bad: #B42318;
+      --bad-bg: #FEE4E2;
+      --bad-bd: rgba(180, 35, 24, 0.32);
+
+      --good: #157A42;
+      --good-bg: #E2F6EB;
+      --good-bd: rgba(21, 122, 66, 0.32);
+
+      --shadow-card: 0 1px 2px rgba(24, 23, 21, 0.04), 0 4px 12px rgba(24, 23, 21, 0.03);
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="obsidian"] {
+      --bg: #0F1114;
+      --surface: #171A1F;
+      --surface-recessed: #13161B;
+      --surface-code: #12151A;
+      --ink: #F0EDE6;
+      --ink-2: #A6A198;
+      --ink-3: #706C65;
+      --hairline: #252A32;
+      --hairline-strong: #373E49;
+
+      --spine: #2DD4BF;
+      --spine-tint: rgba(45, 212, 191, 0.08);
+      --spine-border: rgba(45, 212, 191, 0.30);
+
+      --bad: #F87171;
+      --bad-bg: rgba(248, 113, 113, 0.14);
+      --bad-bd: rgba(248, 113, 113, 0.36);
+
+      --good: #4ADE80;
+      --good-bg: rgba(74, 222, 128, 0.14);
+      --good-bd: rgba(74, 222, 128, 0.36);
+
+      --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    code, pre { font-family: var(--font-mono); }
+
+    .topbar {
+      position: sticky;
+      top: 33px;
+      z-index: 40;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .brand h1 em { font-style: italic; color: var(--spine); }
+
+    .site-nav {
+      display: inline-flex;
+      background: var(--surface-recessed);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-sm);
+      padding: 2px;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      font-size: 0.76rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--ink-2);
+      transition: all 140ms ease;
+    }
+
+    .nav-link:hover { color: var(--ink); }
+    .nav-link.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface);
+      color: var(--ink-2);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 140ms ease;
+    }
+
+    .btn:hover { border-color: var(--hairline-strong); color: var(--ink); }
+    .btn.active {
+      background: var(--spine-tint);
+      border-color: var(--spine-border);
+      color: var(--spine);
+      font-weight: 600;
+    }
+
+    .page {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 26px 28px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .intro-bar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .intro-bar h2 {
+      font-family: var(--font-serif);
+      font-size: 1.85rem;
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    .intro-bar p {
+      font-size: 0.86rem;
+      color: var(--ink-2);
+      margin-top: 4px;
+    }
+
+    /* Lab Switcher Tabs */
+    .lab-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .lab-tab {
+      text-align: left;
+      font-family: inherit;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md);
+      padding: 13px 15px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      box-shadow: var(--shadow-card);
+      transition: all 140ms ease;
+    }
+
+    .lab-tab:hover { border-color: var(--hairline-strong); transform: translateY(-1px); }
+    .lab-tab.active {
+      border-color: var(--spine);
+      background: var(--spine-tint);
+    }
+
+    .lt-skill {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--spine);
+    }
+
+    .lt-title { font-size: 0.88rem; font-weight: 600; color: var(--ink); }
+    .lt-metric { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-3); margin-top: 2px; }
+
+    /* Side-by-Side Comparison Stage */
+    .diff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .side-card {
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-card.bad  { border-top: 3px solid var(--bad); }
+    .side-card.good { border-top: 3px solid var(--good); }
+
+    .side-head {
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--hairline);
+      background: var(--surface-recessed);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .side-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .side-card.bad  .side-label { color: var(--bad); }
+    .side-card.good .side-label { color: var(--good); }
+
+    .side-stat {
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      color: var(--ink-3);
+    }
+
+    .artifact-pre {
+      flex: 1;
+      background: var(--surface-code);
+      padding: 16px 18px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      line-height: 1.62;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .hl-bad, .hl-good {
+      padding: 1px 3px;
+      border-radius: 3px;
+      transition: background 180ms ease;
+    }
+
+    body.annotate .hl-bad  { background: var(--bad-bg);  color: var(--bad); }
+    body.annotate .hl-good { background: var(--good-bg); color: var(--good); }
+
+    .notes-foot {
+      padding: 14px 18px;
+      border-top: 1px solid var(--hairline);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 0.8rem;
+      color: var(--ink-2);
+    }
+
+    .note-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .note-row b { flex-shrink: 0; font-family: var(--font-mono); font-size: 0.72rem; }
+    .side-card.bad  .note-row b { color: var(--bad); }
+    .side-card.good .note-row b { color: var(--good); }
+
+    @media (max-width: 980px) {
+      .lab-tabs { grid-template-columns: 1fr 1fr; }
+      .diff-grid { grid-template-columns: 1fr; }
+      .topbar-inner, .page { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body class="annotate"><nav id="ms-homebar" class="ms-homebar" aria-label="All sites"><a href="https://mastery-sites.stenguye.workers.dev/">All sites</a></nav>
+<style>#ms-homebar{height:auto;min-height:0;max-height:none;width:auto;max-width:none;overflow:visible;margin:0;border:0;align-self:auto;flex:none;float:none;transition:none;position:sticky;top:0;z-index:2147483647;display:block;padding:8px 14px;background:#111827;font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;border-bottom:1px solid #1f2937}#ms-homebar a{display:inline;margin:0;padding:0;border:0;background:none;font:inherit;color:#93c5fd;text-decoration:none}#ms-homebar a:hover{text-decoration:underline;color:#bfdbfe}</style>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <h1>Spot the Slop · <em>Craft Lab</em></h1>
+      </div>
+      <nav class="site-nav" aria-label="Companion pages">
+        <a class="nav-link" href="index.html">Atlas</a>
+        <a class="nav-link" href="paths.html">Paths</a>
+        <a class="nav-link" href="pomodoro.html">Pomodoro</a>
+        <a class="nav-link" href="legacy.html">Legacy</a>
+        <a class="nav-link" href="drills.html">Drills</a>
+        <a class="nav-link" href="composer.html">Composer</a>
+        <a class="nav-link active" href="craft.html">Craft Lab</a>
+      </nav>
+      <div style="display:flex; gap:8px;">
+        <button id="annBtn" class="btn active" type="button">Highlights: ON</button>
+        <button id="themeBtn" class="btn" type="button"><span id="themeText">Obsidian</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="intro-bar">
+      <div>
+        <h2>What Good Actually Looks Like</h2>
+        <p>Side-by-side comparisons of common AI-slop artifacts vs. disciplined Matt Pocock skill outputs.</p>
+      </div>
+    </div>
+
+    <div class="lab-tabs" id="labTabs"></div>
+
+    <div class="diff-grid" id="diffGrid"></div>
+  </main>
+
+  <script>
+    const LABS = [
+      {
+        id: 'pr',
+        skill: '/pr (v1.3)',
+        title: 'Pull Request Description',
+        metric: '2 min review vs. 15 min slog',
+        badStat: '~420 words · Buries the risk',
+        goodStat: '~95 words · Evidence first',
+        badHtml: `## Summary
+This PR implements a comprehensive, production-ready
+Pomodoro timer feature with modern React best practices
+and clean TypeScript architecture!
+
+## Changes Made
+- <span class="hl-bad">Created src/timer/engine.ts (added 142 lines)</span>
+- <span class="hl-bad">Created src/ui/TimerRing.tsx (added 98 lines)</span>
+- <span class="hl-bad">Created src/audio/chime.ts (added 44 lines)</span>
+- <span class="hl-bad">Updated package.json and tsconfig.json</span>
+- <span class="hl-bad">Added comprehensive unit tests to ensure reliability</span>
+
+## Notes for Reviewers
+<span class="hl-bad">Please let me know if you have any feedback!
+Everything should work as expected.</span>`,
+        goodHtml: `## Proof
+- <span class="hl-good">25/25 unit &amp; clock-drift tests pass (pnpm vitest run)</span>
+- <span class="hl-good">Manually verified 2h tab-sleep &amp; Safari reload clamp</span>
+- Zero external audio/network dependencies
+
+## Blast Radius &amp; Risk
+- <span class="hl-good">Isolated to new src/timer/, src/ui/, src/audio/, src/storage/</span>
+- <span class="hl-good">Writes versioned localStorage key pomo.v1 only</span>
+
+## Rollback
+- <span class="hl-good">Single git revert; zero schema or API changes</span>
+
+## Decisions
+- Wall-clock endsAt seam: docs/adr/001-wall-clock-timer.md`,
+        badNotes: [
+          ['✕', 'Repeats the file list GitHub already shows in the diff tab.'],
+          ['✕', 'Claims "everything should work" with zero runnable verification proof.'],
+          ['✕', 'Hides blast radius, state mutations, and rollback strategy.']
+        ],
+        goodNotes: [
+          ['✓', 'Leads bottom-up with concrete verification proof and exact test command.'],
+          ['✓', 'Explicitly scopes blast radius and versioned storage keys.'],
+          ['✓', 'Gives the reviewer a 1-line rollback plan and links ADR-001 for "why".']
+        ]
+      },
+      {
+        id: 'agents',
+        skill: '/writing-for-agents',
+        title: 'AGENTS.md Controller',
+        metric: '85% lower always-on token tax',
+        badStat: '600+ lines · Loaded every single turn',
+        goodStat: '35 lines · Pointer-driven',
+        badHtml: `# Engineering Guidelines
+<span class="hl-bad">Always write clean, maintainable, well-documented code.
+Follow SOLID principles and DRY best practices.
+Use TypeScript strict types instead of any.</span>
+
+## How to Write React Components
+<span class="hl-bad">Prefer functional components with hooks. Keep components
+small and reusable. Use semantic HTML elements for
+accessibility and add aria-labels where appropriate...
+[... 480 more lines explaining basic React &amp; Git ...]</span>
+
+## Database Rules
+We use PostgreSQL 16. <span class="hl-bad">Always index foreign keys...</span>`,
+        goodHtml: `# AGENTS.md
+## Commands
+- <span class="hl-good">Test: pnpm vitest run (NEVER npm test — watch mode hangs)</span>
+- Typecheck: pnpm typecheck
+
+## Pointers (Load on Demand)
+- <span class="hl-good">Domain terms: GLOSSARY.md</span>
+- <span class="hl-good">Decisions: docs/adr/</span>
+- <span class="hl-good">Tracker &amp; labels: docs/agents/issue-tracker.md</span>
+
+## Repo-Specific Guardrails (from /retro)
+- <span class="hl-good">Time code MUST accept injected now: () =&gt; number (ADR-001)</span>
+- <span class="hl-good">Hot-table migrations MUST use CREATE INDEX CONCURRENTLY</span>
+- <span class="hl-good">Every window/document listener MUST include unmount test</span>`,
+        badNotes: [
+          ['✕', 'Burns thousands of always-loaded tokens teaching LLMs basics they already know.'],
+          ['✕', 'Buries critical repo-specific traps inside generic textbook essays.'],
+          ['✕', 'High cognitive load — humans stop updating it, so it rots immediately.']
+        ],
+        goodNotes: [
+          ['✓', 'Every single line prevents a real failure discovered in this specific repo.'],
+          ['✓', 'Uses pointers to GLOSSARY.md & docs/adr/ instead of duplicating prose.'],
+          ['✓', 'Minimal always-on Context Load leaves room for actual code reasoning.']
+        ]
+      },
+      {
+        id: 'tickets',
+        skill: '/to-tickets',
+        title: 'Spec-to-Ticket Slicing',
+        metric: 'Unlocks parallel /implement-spec',
+        badStat: 'Horizontal layers · Zero parallelism',
+        goodStat: 'Vertical tracer bullets · Clear DAG',
+        badHtml: `<span class="hl-bad">Ticket 1: Create all database tables &amp; TypeScript types
+  (blocks everything; nothing testable end-to-end)</span>
+
+<span class="hl-bad">Ticket 2: Build all backend services &amp; helper utils
+  (400+ LOC diff, blocked by Ticket 1)</span>
+
+<span class="hl-bad">Ticket 3: Build entire frontend UI &amp; styling
+  (blocked by Ticket 2; huge merge conflict zone)</span>
+
+<span class="hl-bad">Ticket 4: Write tests and fix integration bugs
+  (tests bolted on at the very end!)</span>`,
+        goodHtml: `<span class="hl-good">T1 · Pure Timer Engine + fake-clock /tdd suite</span>
+  blockedBy: none · ships a verified seam immediately
+
+<span class="hl-good">T2 · TimerRing SVG UI + keyboard controls</span>
+  blockedBy: [T1] · <span class="hl-good">parallelizable in wt-t2 ⚡</span>
+
+<span class="hl-good">T3 · Web Audio Chime + mute toggle</span>
+  blockedBy: [T1] · <span class="hl-good">parallelizable in wt-t3 ⚡</span>
+
+<span class="hl-good">T4 · localStorage persistence + tab-sleep resync</span>
+  blockedBy: [T2, T3] · closes the vertical slice`,
+        badNotes: [
+          ['✕', 'Horizontal layer tickets force strictly serial work and giant unreviewable diffs.'],
+          ['✕', 'Deferring tests to Ticket 4 breaks /tdd and hides broken seams until the end.'],
+          ['✕', '/implement-spec cannot parallelize a linear chain.']
+        ],
+        goodNotes: [
+          ['✓', 'Every ticket carries its own behavioral tests (/tdd) and crisp acceptance criteria.'],
+          ['✓', 'T2 and T3 touch disjoint modules, letting /implement-spec run both concurrently.'],
+          ['✓', 'Each ticket fits comfortably inside a single ~20k fresh context window.']
+        ]
+      },
+      {
+        id: 'modules',
+        skill: '/codebase-design',
+        title: 'Module Architecture',
+        metric: 'Deep module vs. shallow tangle',
+        badStat: 'Coupled to globals · Untestable',
+        goodStat: 'Deep seam · 12ms deterministic tests',
+        badHtml: `// billing.ts (1,420 lines mixing Express, SQL &amp; Stripe)
+export async function handleWebhook(req: Request, res: Response) {
+  <span class="hl-bad">const row = await db.query('SELECT * FROM events WHERE id=$1', [req.body.id]);</span>
+  if (!row) {
+    <span class="hl-bad">// Race window! Two retries both reach here!</span>
+    <span class="hl-bad">await stripe.charges.create({ amount: req.body.amount });</span>
+    <span class="hl-bad">await db.query('INSERT INTO events ...');</span>
+    <span class="hl-bad">await sendgrid.send({ to: req.body.email, ... });</span>
+  }
+  res.json({ ok: true });
+}`,
+        goodHtml: `// Deep module: narrow interface, hides idempotency complexity
+export async function <span class="hl-good">processWebhookEvent</span>(
+  event: WebhookEvent,
+  deps: { <span class="hl-good">ledger: LedgerRepo; gateway: PaymentGateway</span> }
+): Promise&lt;'applied' | 'duplicate'&gt; {
+  const inserted = await <span class="hl-good">deps.ledger.recordEventIfNew(event.id)</span>;
+  if (!inserted) return 'duplicate'; // DB UNIQUE constraint
+
+  await deps.gateway.capture(event.charge);
+  return 'applied';
+}`,
+        badNotes: [
+          ['✕', 'Mixes HTTP parsing, SQL, Stripe SDK, and email in one un-mockable function.'],
+          ['✕', 'Requires spinning up Express + mocking 6 globals just to test a race condition.'],
+          ['✕', 'Check-then-act SELECT/INSERT leaks duplicate charges under retries.']
+        ],
+        goodNotes: [
+          ['✓', 'Tiny, obvious interface: (event, deps) → "applied" | "duplicate".'],
+          ['✓', 'Testable in 12ms with an in-memory or transactional LedgerRepo seam.'],
+          ['✓', 'Encapsulates the idempotency invariant where callers cannot bypass it.']
+        ]
+      }
+    ];
+
+    let activeId = LABS[0].id;
+    let annotateOn = true;
+
+    function render() {
+      document.body.classList.toggle('annotate', annotateOn);
+      const annBtn = document.getElementById('annBtn');
+      annBtn.textContent = `Highlights: ${annotateOn ? 'ON' : 'OFF'}`;
+      annBtn.classList.toggle('active', annotateOn);
+
+      const tabs = document.getElementById('labTabs');
+      tabs.innerHTML = LABS.map(l => `
+        <button type="button" class="lab-tab ${l.id === activeId ? 'active' : ''}" data-id="${l.id}">
+          <span class="lt-skill">${l.skill}</span>
+          <span class="lt-title">${l.title}</span>
+          <span class="lt-metric">${l.metric}</span>
+        </button>
+      `).join('');
+      tabs.querySelectorAll('[data-id]').forEach(b => {
+        b.onclick = () => { activeId = b.dataset.id; render(); };
+      });
+
+      const cur = LABS.find(l => l.id === activeId);
+      document.getElementById('diffGrid').innerHTML = `
+        <article class="side-card bad">
+          <div class="side-head">
+            <span class="side-label">✕ Typical AI Slop</span>
+            <span class="side-stat">${cur.badStat}</span>
+          </div>
+          <pre class="artifact-pre">${cur.badHtml}</pre>
+          <div class="notes-foot">
+            ${cur.badNotes.map(n => `<div class="note-row"><b>${n[0]}</b><span>${n[1]}</span></div>`).join('')}
+          </div>
+        </article>
+
+        <article class="side-card good">
+          <div class="side-head">
+            <span class="side-label">✓ Disciplined (${cur.skill})</span>
+            <span class="side-stat">${cur.goodStat}</span>
+          </div>
+          <pre class="artifact-pre">${cur.goodHtml}</pre>
+          <div class="notes-foot">
+            ${cur.goodNotes.map(n => `<div class="note-row"><b>${n[0]}</b><span>${n[1]}</span></div>`).join('')}
+          </div>
+        </article>
+      `;
+    }
+
+    document.getElementById('annBtn').onclick = () => { annotateOn = !annotateOn; render(); };
+
+    // Synced Paper / Obsidian Theme
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('themeText').textContent = t === 'obsidian' ? 'Paper' : 'Obsidian';
+      try { localStorage.setItem('pocock-atlas-theme', t); } catch (e) {}
+    }
+    const savedTheme = (() => { try { return localStorage.getItem('pocock-atlas-theme'); } catch (e) { return null; } })();
+    setTheme(savedTheme || 'paper');
+    document.getElementById('themeBtn').onclick = () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      setTheme(cur === 'obsidian' ? 'paper' : 'obsidian');
+    };
+
+    render();
+  </script>
+</body>
+</html>
